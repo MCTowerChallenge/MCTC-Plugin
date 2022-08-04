@@ -3,15 +3,7 @@ version: '${project.version}'
 main: io.github.idkahn.towerchallenge.TowerChallenge
 api-version: 1.19
 commands:
-  removeBlocks:
-    description: Removes placed blocks
-    usage: /removeBlocks
-    permission: TowerChallenge.removeBlocks
-  enableTower:
-    description: Starts tower listener
-    usage: /enableTower
-    permission: TowerChallenge.enableTower
-  disableTower:
-    description: Stops tower listener
-    usage: /disableTower
-    permission: TowerChallenge.disableTower
+  tower:
+    description: tower
+    usage: /tower
+    permission: TowerChallenge.tower
