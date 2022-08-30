@@ -7,9 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class TowerCommands implements CommandExecutor {
 
     private TowerListener towerListener;
@@ -46,11 +43,6 @@ public class TowerCommands implements CommandExecutor {
                                 towerListener.disableEvents();
                             }
                         }
-                        break;
-                    case ("time"):
-                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-                        LocalDateTime now = LocalDateTime.now();
-                        sender.sendMessage(now.format(dtf));
                         break;
                     default:
                         sender.sendMessage(Component.text("Invalid Command").color(NamedTextColor.RED));

@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
-public enum TeamColors {
+public enum Teams {
     RED,
     ORANGE,
     YELLOW,

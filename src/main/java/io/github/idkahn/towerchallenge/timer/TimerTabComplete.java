@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.towering;
+package io.github.idkahn.towerchallenge.timer;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,34 +11,24 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TowerTabComplete implements TabCompleter {
+public class TimerTabComplete implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (command.getName().equalsIgnoreCase("tower")) {
+        if (command.getName().equalsIgnoreCase("timer")) {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<String>();
 
-                strings.add("enable");
-                strings.add("disable");
-                strings.add("remove");
-                strings.add("events");
-                strings.add("time");
+                strings.add("set");
+                strings.add("show");
+                strings.add("hide");
+                strings.add("pause");
+                strings.add("resume");
+                strings.add("start");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
                 return strings.stream().filter(compare).collect(Collectors.toList());
 
-            } else if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("events")) {
-                    List<String> strings = new ArrayList<String>();
-
-                    strings.add("enable");
-                    strings.add("disable");
-
-                    Predicate<String> compare = cmd -> cmd.contains(args[1]);
-
-                    return strings.stream().filter(compare).collect(Collectors.toList());
-                }
             }
         }
 
