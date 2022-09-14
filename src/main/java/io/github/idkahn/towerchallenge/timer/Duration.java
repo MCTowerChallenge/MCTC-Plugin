@@ -151,11 +151,11 @@ public class Duration {
         return seconds;
     }
 
-    public long getNanos() {
-        return nanos;
-    }
     public void setNanos(long nanos) {
         this.nanos = nanos;
+    }
+    public long getNanos() {
+        return nanos;
     }
 
     public String getFormattedTime() {
