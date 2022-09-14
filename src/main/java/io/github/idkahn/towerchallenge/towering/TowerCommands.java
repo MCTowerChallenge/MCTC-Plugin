@@ -33,6 +33,12 @@ public class TowerCommands implements CommandExecutor {
                         sender.sendMessage(Component.text("Removing Tower Blocks"));
                         towerListener.removeBlocks();
                         break;
+                    case ("newteam"):
+                        if (args.length >= 2) {
+                            sender.sendMessage(Component.text("Creating new Team"));
+                            TowerTeam team = new TowerTeam(args[1]);
+                        }
+                        break;
                     case ("events"):
                         if (args.length >= 2) {
                             if (args[1].equalsIgnoreCase("enable")) {

@@ -20,4 +20,8 @@ public class Tower {
         blocks = new ArrayList<>();
     }
 
+    public void setCorner(int[] coords) {
+
+    }
+
 }

@@ -37,7 +37,7 @@ public class TowerListener implements Listener {
     private boolean isTowering;
     private boolean cancelEvents;
 
-    JavaPlugin plugin;
+    private JavaPlugin plugin;
 
     public TowerListener(JavaPlugin plugin) {
         this.plugin = plugin;
