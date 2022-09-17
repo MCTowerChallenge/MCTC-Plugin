@@ -4,13 +4,12 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.Teams;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
+import it.unimi.dsi.fastutil.Hash;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
@@ -20,16 +19,26 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Iterator;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.*;
 
 public class TowerListener implements Listener {
 
     private EnumMap<Teams, ArrayList<BlockState>> towers;
+
+    private TowerTeam[] teams;
 
     BlockSets blockSets;
 
@@ -44,10 +53,67 @@ public class TowerListener implements Listener {
         this.blockSets = new BlockSets();
         this.isTowering = false;
         this.cancelEvents = false;
+
+        initTeams();
+
         this.towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
         for (Teams team : Teams.values()) {
             towers.put(team, new ArrayList<BlockState>());
         }
+    }
+
+    public void initTeams() {
+        plugin.reloadConfig();
+        // Get team configs
+        List maps = plugin.getConfig().getMapList("Teams");
+        this.teams = new TowerTeam[maps.size()];
+        for (int i = 0; i < maps.size(); i++) {
+            // for each team in the config
+            HashMap map = (HashMap) maps.get(i);
+            teams[i] = new TowerTeam(plugin, (String) map.get("name"), (String) map.get("color"));
+            ArrayList<String> players = (ArrayList<String>) map.get("players");
+            if (players != null) {
+                for (String uuid : players) {
+                    // add each player to team, if able
+                    OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+                    if (player.hasPlayedBefore()) {
+                        teams[i].addPlayer(player, false);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+
+        initTeams();
+//        Player player = event.getPlayer();
+//        plugin.reloadConfig();
+//        List maps = plugin.getConfig().getMapList("Teams");
+//
+//        for (Object o : maps) {
+//            HashMap map = (HashMap) o;
+//            ArrayList<String> players = (ArrayList<String>) map.get("players");
+//            for (String uuid : players) {
+//                if (player.getUniqueId().toString() == uuid) {
+//
+//                }
+//            }
+//        }
+//
+//        for (TowerTeam team : teams) {
+//            if (team.hasPlayer(player)) {
+//                for (Object o : maps) {
+//                    HashMap map = (HashMap) o;
+//                    if (map.get("name") == team.getDisplayName()) {
+//                        if (map.get)
+//                    }
+//                }
+//            }
+//        }
+
+
     }
 
     @EventHandler

@@ -12,15 +12,20 @@ public final class TowerChallenge extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 
+        this.saveDefaultConfig();
+
         // Tower Phase
         TowerListener towerListener = new TowerListener(this);
-        TowerCommands towerCommands = new TowerCommands(towerListener);
+        TowerCommands towerCommands = new TowerCommands(this, towerListener);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
         getServer().getPluginManager().registerEvents(towerListener, this);
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
+        // Teams
+        ChatHandler chatHandler = new ChatHandler();
+        getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Timer
         Timer timer = new Timer(this);

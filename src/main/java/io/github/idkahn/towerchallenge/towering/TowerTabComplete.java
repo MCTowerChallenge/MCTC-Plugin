@@ -18,9 +18,15 @@ public class TowerTabComplete implements TabCompleter {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<String>();
 
+                strings.add("book");
                 strings.add("enable");
                 strings.add("disable");
                 strings.add("remove");
+                strings.add("reloadTeams");
+                strings.add("gui");
+                strings.add("config");
+                strings.add("newTeam");
+                strings.add("getRegion");
                 strings.add("events");
                 strings.add("time");
 
