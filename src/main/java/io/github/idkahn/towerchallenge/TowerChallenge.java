@@ -1,5 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
+import io.github.idkahn.towerchallenge.gui.HatGUI;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
@@ -14,9 +15,12 @@ public final class TowerChallenge extends JavaPlugin {
 
         this.saveDefaultConfig();
 
-        // Tower Phase
         TowerListener towerListener = new TowerListener(this);
-        TowerCommands towerCommands = new TowerCommands(this, towerListener);
+
+        HatGUI hatGUI = new HatGUI(this, towerListener);
+        getServer().getPluginManager().registerEvents(hatGUI, this);
+
+        TowerCommands towerCommands = new TowerCommands(this, towerListener, hatGUI);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
         getServer().getPluginManager().registerEvents(towerListener, this);

@@ -1,6 +1,8 @@
 Teams:
   - name: 'Red'
     color: '#B02E26'
+    players:
+      - 999c184d-b267-4cc1-a4ee-31aa5906964f
   - name: 'Orange'
     color: '#F9801D'
   - name: 'Yellow'
@@ -33,3 +35,7 @@ Teams:
     color: '#F9FFFE'
   - name: 'God'
     color: '#F7E983'
+Hats:
+  - name: 'Witch Hat'
+    item: 'leather_horse_armor'
+    custom_model_data: 1

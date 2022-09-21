@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.Teams;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
-import it.unimi.dsi.fastutil.Hash;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,23 +21,16 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.bukkit.scoreboard.Team;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.logging.Level;
 
 public class TowerListener implements Listener {
 
     private EnumMap<Teams, ArrayList<BlockState>> towers;
 
-    private TowerTeam[] teams;
+    private HashMap<String, TowerTeam> teams;
 
     BlockSets blockSets;
 
@@ -53,8 +45,8 @@ public class TowerListener implements Listener {
         this.blockSets = new BlockSets();
         this.isTowering = false;
         this.cancelEvents = false;
-
-        initTeams();
+        this.teams = new HashMap<>();
+        loadTeams();
 
         this.towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
         for (Teams team : Teams.values()) {
@@ -62,57 +54,71 @@ public class TowerListener implements Listener {
         }
     }
 
-    public void initTeams() {
+    public TowerTeam getTeam(String name) {
+        return this.teams.get(name);
+    }
+
+    public void loadTeams() {
+        Bukkit.getLogger().warning("[Tower Challenge] Loading Team Config...");
         plugin.reloadConfig();
         // Get team configs
         List maps = plugin.getConfig().getMapList("Teams");
-        this.teams = new TowerTeam[maps.size()];
+        HashMap<String, TowerTeam> newTeams = new HashMap<>();
         for (int i = 0; i < maps.size(); i++) {
             // for each team in the config
             HashMap map = (HashMap) maps.get(i);
-            teams[i] = new TowerTeam(plugin, (String) map.get("name"), (String) map.get("color"));
+            // retrieve all config values
+            String name = (String) map.get("name");
+            String color = (String) map.get("color");
             ArrayList<String> players = (ArrayList<String>) map.get("players");
+
+
+            // Create new Team
+            if (teams.get(name) != null) {
+                newTeams.put(name, this.teams.get(name));
+            } else {
+                if (color != null) {
+                    newTeams.put(name, new TowerTeam(plugin, name, color));
+                } else {
+                    newTeams.put(name, new TowerTeam(plugin, name));
+                }
+            }
+
+//            //TODO: Check teams for extra players
+//            for (Team entry : TowerTeam.scoreboard.getTeams()) {
+////            for (String entry : newTeams.get(name).getEntries()) {
+//                Bukkit.getServer().sendMessage(entry.displayName());
+//
+//            }
+
+
             if (players != null) {
                 for (String uuid : players) {
                     // add each player to team, if able
                     OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
                     if (player.hasPlayedBefore()) {
-                        teams[i].addPlayer(player, false);
+                        newTeams.get(name).addPlayer(player, false);
                     }
                 }
             }
         }
+
+        // Set
+        Set<String> removedTeams = teams.keySet();
+        removedTeams.removeAll(newTeams.keySet());
+        for (String team : removedTeams) {
+            this.teams.get(team).destroyTeam();
+        }
+
+        this.teams = newTeams;
+        Bukkit.getLogger().info("[Tower Challenge] Team Config Loaded!");
     }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
 
-        initTeams();
-//        Player player = event.getPlayer();
-//        plugin.reloadConfig();
-//        List maps = plugin.getConfig().getMapList("Teams");
-//
-//        for (Object o : maps) {
-//            HashMap map = (HashMap) o;
-//            ArrayList<String> players = (ArrayList<String>) map.get("players");
-//            for (String uuid : players) {
-//                if (player.getUniqueId().toString() == uuid) {
-//
-//                }
-//            }
-//        }
-//
-//        for (TowerTeam team : teams) {
-//            if (team.hasPlayer(player)) {
-//                for (Object o : maps) {
-//                    HashMap map = (HashMap) o;
-//                    if (map.get("name") == team.getDisplayName()) {
-//                        if (map.get)
-//                    }
-//                }
-//            }
-//        }
-
+        loadTeams();
+        event.joinMessage(Component.text(String.format("%s joined the game", event.getPlayer().getName())));
 
     }
 

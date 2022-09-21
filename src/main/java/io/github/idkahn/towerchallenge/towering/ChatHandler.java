@@ -15,15 +15,19 @@ public class ChatHandler implements Listener {
     public void onPlayerChat(AsyncChatEvent event) {
         Team playerTeam = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getPlayerTeam(event.getPlayer());
 
-        ComponentBuilder message = Component.text();
-
-        if (playerTeam != null) {
-            message.append(playerTeam.prefix());
+        if (event.isCancelled()) {
+            return;
         }
 
-        message.append(Component.text("<").append(event.getPlayer().name()).append(Component.text("> ")))
-                .append(event.message())
-                .build();
+        Component prefix = Component.empty();
+        Component name = Component.text(String.format("<%s> ", event.getPlayer().getName()));
+        Component body = event.message();
+
+        if (playerTeam != null && playerTeam.prefix() != null) {
+            prefix = playerTeam.prefix();
+        }
+
+        Component message = prefix.append(name).append(body);
 
         for (Audience audience : event.viewers()) {
             audience.sendMessage(message);

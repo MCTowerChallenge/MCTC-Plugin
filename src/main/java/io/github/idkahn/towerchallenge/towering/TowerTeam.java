@@ -19,7 +19,7 @@ public class TowerTeam {
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 
     // Server's scoreboard
-    private final Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+    public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
 
     private Team team;
     private Tower tower;
@@ -27,11 +27,13 @@ public class TowerTeam {
     private JavaPlugin plugin;
     private String name;
     private String displayName;
+    private String color;
 
-    public TowerTeam(JavaPlugin plugin, String displayName) {
+    public TowerTeam(JavaPlugin plugin, String displayName, String color) {
         this.plugin = plugin;
         this.displayName = displayName;
         this.name = displayName.replaceAll("\\s", "");
+        this.color = color;
         Team team = scoreboard.getTeam(this.name);
         if (team != null) {
             this.team = team;
@@ -39,12 +41,20 @@ public class TowerTeam {
             this.team = scoreboard.registerNewTeam(this.name);
             this.team.displayName(Component.text(displayName));
         }
+        this.team.prefix(Component.text("[").append(Component.text(name, TextColor.fromHexString(color))).append(Component.text("] ")));
+        this.tower = new Tower();
     }
 
-    public TowerTeam(JavaPlugin plugin, String name, String color) {
-        this(plugin, name);
-        team.prefix(Component.text("[").append(Component.text(name, TextColor.fromHexString(color))).append(Component.text("] ")));
-        this.tower = new Tower();
+    public String getColor() {
+        return color;
+    }
+
+    public TowerTeam(JavaPlugin plugin, String displayName) {
+        this(plugin, displayName, "#FFFFFF");
+    }
+
+    public void destroyTeam() {
+        team.unregister();
     }
 
     public void setArea(ProtectedRegion teamArea) {
@@ -74,14 +84,18 @@ public class TowerTeam {
         addPlayer(player, true);
     }
 
+    public void removePlayer(OfflinePlayer player) {
+        team.removePlayer(player);
+    }
+
     public Boolean hasPlayer(OfflinePlayer player) {
 
         return team.hasPlayer(player);
 
     }
 
-    public void removePlayer(OfflinePlayer player) {
-        team.removePlayer(player);
+    public Set<String> getEntries() {
+        return team.getEntries();
     }
 
     public Component getDisplayName() {

@@ -6,13 +6,9 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import net.kyori.adventure.inventory.Book;
+import io.github.idkahn.towerchallenge.gui.HatGUI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEventSource;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -22,7 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,16 +34,17 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
-import java.util.function.UnaryOperator;
 
 public class TowerCommands implements CommandExecutor {
 
     private TowerListener towerListener;
     private JavaPlugin plugin;
+    private HatGUI hatGUI;
 
-    public TowerCommands(JavaPlugin plugin, TowerListener towerListener) {
+    public TowerCommands(JavaPlugin plugin, TowerListener towerListener, HatGUI hatGUI) {
         this.plugin = plugin;
         this.towerListener = towerListener;
+        this.hatGUI = hatGUI;
     }
 
     @Override
@@ -86,23 +82,34 @@ public class TowerCommands implements CommandExecutor {
                         break;
                     case ("reloadteams"):
                         sender.sendMessage(Component.text("Reloading Teams from Config"));
-                        towerListener.initTeams();
+                        towerListener.loadTeams();
+                        break;
+                    case ("reloadhats"):
+                        sender.sendMessage(Component.text("Reloading Hats from Config"));
+                        hatGUI.reloadHats();
+                        break;
+                    case ("reloadconfig"):
+                        sender.sendMessage(Component.text("Reloading Hats from Config"));
+                        towerListener.loadTeams();
+                        hatGUI.reloadHats();
                         break;
                     case ("gui"):
                         if (sender instanceof Player) {
                             Player player = (Player) sender;
-                            Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, Component.empty());
-                            ItemStack blankSlot = new ItemStack(Material.PAPER);
-                            ItemMeta meta = blankSlot.getItemMeta();
-                            meta.setCustomModelData(3);
-                            blankSlot.setItemMeta(meta);
+                            Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, Component.text("\uF808\uE001", NamedTextColor.WHITE));
                             ItemStack[] stacks = new ItemStack[27];
-                            Arrays.fill(stacks, blankSlot);
+                            Arrays.fill(stacks, new ItemStack(Material.AIR));
                             stacks[11] = new ItemStack(Material.ENDER_EYE);
                             stacks[15] = new ItemStack(Material.TROPICAL_FISH_BUCKET);
                             inv.setContents(stacks);
                             player.openInventory(inv);
                         }
+                        break;
+                    case ("team"):
+                        sender.sendMessage(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam((Player) sender).displayName());
+                        break;
+                    case ("hat"):
+                        hatGUI.openInventory((Player) sender);
                         break;
                     case ("config"):
 
