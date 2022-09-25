@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
-import io.github.idkahn.towerchallenge.gui.HatGUI;
+import io.github.idkahn.towerchallenge.Wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
@@ -17,10 +17,10 @@ public final class TowerChallenge extends JavaPlugin {
 
         TowerListener towerListener = new TowerListener(this);
 
-        HatGUI hatGUI = new HatGUI(this, towerListener);
-        getServer().getPluginManager().registerEvents(hatGUI, this);
+//        HatGUI hatGUI = new HatGUI(this, towerListener);
+//        getServer().getPluginManager().registerEvents(hatGUI, this);
 
-        TowerCommands towerCommands = new TowerCommands(this, towerListener, hatGUI);
+        TowerCommands towerCommands = new TowerCommands(this, towerListener);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
         getServer().getPluginManager().registerEvents(towerListener, this);
@@ -30,6 +30,10 @@ public final class TowerChallenge extends JavaPlugin {
         // Teams
         ChatHandler chatHandler = new ChatHandler();
         getServer().getPluginManager().registerEvents(chatHandler, this);
+
+        // Wands
+        WandListener wandListener = new WandListener();
+        getServer().getPluginManager().registerEvents(wandListener, this);
 
         // Timer
         Timer timer = new Timer(this);

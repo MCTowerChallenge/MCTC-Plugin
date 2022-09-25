@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.gui;
+package io.github.idkahn.towerchallenge.Hats;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;

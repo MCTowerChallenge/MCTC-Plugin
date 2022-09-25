@@ -3,11 +3,13 @@ package io.github.idkahn.towerchallenge.towering;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import io.github.idkahn.towerchallenge.Hats.HatGUI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -28,6 +30,7 @@ public class TowerTeam {
     private String name;
     private String displayName;
     private String color;
+    private HatGUI hatGUI;
 
     public TowerTeam(JavaPlugin plugin, String displayName, String color) {
         this.plugin = plugin;
@@ -43,14 +46,19 @@ public class TowerTeam {
         }
         this.team.prefix(Component.text("[").append(Component.text(name, TextColor.fromHexString(color))).append(Component.text("] ")));
         this.tower = new Tower();
-    }
-
-    public String getColor() {
-        return color;
+        this.hatGUI = new HatGUI(plugin, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
     }
 
     public TowerTeam(JavaPlugin plugin, String displayName) {
         this(plugin, displayName, "#FFFFFF");
+    }
+
+    public void reloadHats() {
+        hatGUI.reloadHats();
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void destroyTeam() {
@@ -62,7 +70,12 @@ public class TowerTeam {
     }
 
     public void addPlayer(OfflinePlayer player, Boolean addToConfig) {
-        team.addPlayer(player);
+        try {
+            team.addPlayer(player);
+        } catch (IllegalArgumentException e) {
+            plugin.getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");
+            return;
+        }
         if (addToConfig) {
             List configTeams = plugin.getConfig().getMapList("Teams");
             for (Object o : configTeams) {
@@ -100,6 +113,10 @@ public class TowerTeam {
 
     public Component getDisplayName() {
         return team.displayName();
+    }
+
+    public void openHatGUI(Player player) {
+        hatGUI.openInventory(player);
     }
 
 }

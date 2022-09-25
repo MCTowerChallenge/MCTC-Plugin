@@ -38,4 +38,5 @@ Teams:
 Hats:
   - name: 'Witch Hat'
     item: 'leather_horse_armor'
+    author: 'Apple270'
     custom_model_data: 1

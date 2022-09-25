@@ -3,6 +3,7 @@ package io.github.idkahn.towerchallenge.towering;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.Teams;
+import io.github.idkahn.towerchallenge.Hats.HatGUI;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -24,7 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class TowerListener implements Listener {
 
@@ -40,6 +40,8 @@ public class TowerListener implements Listener {
 
     private JavaPlugin plugin;
 
+    public static HatGUI defaultHats;
+
     public TowerListener(JavaPlugin plugin) {
         this.plugin = plugin;
         this.blockSets = new BlockSets();
@@ -52,14 +54,29 @@ public class TowerListener implements Listener {
         for (Teams team : Teams.values()) {
             towers.put(team, new ArrayList<BlockState>());
         }
+        defaultHats = new HatGUI(plugin, Color.RED);
     }
 
     public TowerTeam getTeam(String name) {
         return this.teams.get(name);
     }
 
+    public TowerTeam getPlayerTeam(OfflinePlayer player) {
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
+        if (team != null) {
+            return getTeam(team.getName());
+        } else {
+            return null;
+        }
+    }
+
+    public void loadConfig() {
+        loadTeams();
+        loadHats();
+    }
+
     public void loadTeams() {
-        Bukkit.getLogger().warning("[Tower Challenge] Loading Team Config...");
+        Bukkit.getLogger().info("[Tower Challenge] Loading Team Config...");
         plugin.reloadConfig();
         // Get team configs
         List maps = plugin.getConfig().getMapList("Teams");
@@ -91,14 +108,12 @@ public class TowerListener implements Listener {
 //
 //            }
 
-
             if (players != null) {
                 for (String uuid : players) {
                     // add each player to team, if able
                     OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-                    if (player.hasPlayedBefore()) {
-                        newTeams.get(name).addPlayer(player, false);
-                    }
+                    plugin.getLogger().info("Checking team for " + player.getName() + "...");
+                    newTeams.get(name).addPlayer(player, false);
                 }
             }
         }
@@ -112,6 +127,13 @@ public class TowerListener implements Listener {
 
         this.teams = newTeams;
         Bukkit.getLogger().info("[Tower Challenge] Team Config Loaded!");
+    }
+
+    public void loadHats() {
+        Bukkit.getLogger().info("[Tower Challenge] Loading Hat Config...");
+        teams.forEach((name, team) -> {
+            team.reloadHats();
+        });
     }
 
     @EventHandler

@@ -1,7 +1,7 @@
-package io.github.idkahn.towerchallenge.gui;
+package io.github.idkahn.towerchallenge.Hats;
 
-import io.github.idkahn.towerchallenge.towering.TowerListener;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -11,47 +11,51 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 
 public class HatGUI implements Listener {
 
+    private static final String UI_NAME = "Select a Hat!";
     private Plugin plugin;
     private List<ItemStack> hats;
     private Inventory inventory;
-    private TowerListener towerListener;
+    private Color color;
 
-    public HatGUI(Plugin plugin, TowerListener towerListener) {
+    public static int getInventorySize(int NumberOfItems) {
+        return 9*((NumberOfItems/9)+1);
+    }
+
+    public HatGUI(Plugin plugin, Color color) {
         this.plugin = plugin;
         this.hats = new ArrayList<>();
-        this.inventory = Bukkit.createInventory(null, 9, Component.text("Select a Hat!"));
-        this.towerListener = towerListener;
+        int numHats = plugin.getConfig().getList("Hats").size();
+        this.inventory = Bukkit.createInventory(null, getInventorySize(numHats), Component.text(UI_NAME));
+        this.color = color;
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         this.reloadHats();
     }
 
-    @EventHandler()
+    @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (!event.getInventory().equals(inventory))
             return;
-        if (event.getCurrentItem() == null) return;
-        if (event.getCurrentItem().getItemMeta() == null) return;
-        if (event.getCurrentItem().getItemMeta().displayName() == null) return;
+        event.setCancelled(true);
 
-//        if (event.getCurrentItem().getItemMeta().lore().get(0).contains(Component.text("Hat"))) {
-            Player player = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
+        if (HatUtil.isHat(event.getCurrentItem())) {
             player.getInventory().setHelmet(event.getCurrentItem());
             player.closeInventory();
-            event.setCancelled(true);
-//        }
+        }
     }
 
     public Inventory getInventory() {
@@ -59,41 +63,37 @@ public class HatGUI implements Listener {
     }
 
     public void openInventory(Player player) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-
-        for (ItemStack item : inventory.getContents()) {
-            if (item != null) {
-                if (item.getItemMeta() instanceof LeatherArmorMeta) {
-                    LeatherArmorMeta meta =  (LeatherArmorMeta) item.getItemMeta();
-                    String color = towerListener.getTeam(scoreboard.getPlayerTeam(player).getName()).getColor();
-                    meta.setColor(Color.fromRGB(Integer.parseInt(color.replaceAll("#", ""), 16)));
-                    item.setItemMeta(meta);
-                }
-            }
-
-        }
         player.openInventory(inventory);
-
     }
 
     public void reloadHats() {
         plugin.reloadConfig();
         List<HashMap> configHats = (List<HashMap>) plugin.getConfig().getList("Hats");
+        int numHats = configHats.size();
+        int newSize = getInventorySize(numHats);
 
         this.hats.clear();
         this.inventory.clear();
+        if (this.inventory.getSize() != newSize) {
+            this.inventory = Bukkit.createInventory(null, newSize, Component.text(UI_NAME));
+        }
 
         for (HashMap config : configHats) {
             String name = (String) config.get("name");
             String item = ((String) config.get("item")).toUpperCase();
+            String author = ((String) config.get("author"));
             int customModelData = (int) config.get("custom_model_data");
-
-            ItemStack hat = new ItemStack(Material.getMaterial(item));
+            ItemStack hat = HatUtil.setHat(new ItemStack(Material.getMaterial(item)));
             ItemMeta hatMeta = hat.getItemMeta();
-            hatMeta.displayName(Component.text(name));
+
+            hatMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
             hatMeta.setCustomModelData(customModelData);
-            List<Component> lore = new ArrayList<Component>();
-            lore.add(Component.text("Hat"));
+            List<Component> lore = new ArrayList<>();
+            if (author != null) {
+                lore.add(Component.text("Hat by " + author + "").decoration(TextDecoration.ITALIC, false));
+            } else {
+                lore.add(Component.text("Hat author unknown").decoration(TextDecoration.ITALIC, false));
+            }
             hatMeta.lore(lore);
             hatMeta.addAttributeModifier(
                     Attribute.GENERIC_ARMOR,
@@ -115,7 +115,13 @@ public class HatGUI implements Listener {
                             EquipmentSlot.HEAD
                     )
             );
-            hat.setItemMeta(hatMeta);
+            if (hatMeta instanceof LeatherArmorMeta && color != null) {
+                LeatherArmorMeta armorMeta = (LeatherArmorMeta) hatMeta;
+                armorMeta.setColor(color);
+                hat.setItemMeta(armorMeta);
+            } else {
+                hat.setItemMeta(hatMeta);
+            }
             this.hats.add(hat);
         }
 
