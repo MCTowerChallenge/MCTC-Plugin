@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +39,11 @@ public class HatGUI implements Listener {
         this.inventory = Bukkit.createInventory(null, getInventorySize(numHats), Component.text(UI_NAME));
         this.color = color;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        this.reloadHats();
+        this.loadHats();
+    }
+
+    public HatGUI(Plugin plugin, String hexColor) {
+        this(plugin, Color.fromRGB(Integer.parseInt(hexColor.replaceAll("#", ""), 16)));
     }
 
     @EventHandler
@@ -66,7 +68,7 @@ public class HatGUI implements Listener {
         player.openInventory(inventory);
     }
 
-    public void reloadHats() {
+    public void loadHats() {
         plugin.reloadConfig();
         List<HashMap> configHats = (List<HashMap>) plugin.getConfig().getList("Hats");
         int numHats = configHats.size();

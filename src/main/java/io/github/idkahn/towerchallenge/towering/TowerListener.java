@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge.towering;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.Teams;
 import io.github.idkahn.towerchallenge.Hats.HatGUI;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
@@ -19,7 +20,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -31,6 +34,7 @@ public class TowerListener implements Listener {
     private EnumMap<Teams, ArrayList<BlockState>> towers;
 
     private HashMap<String, TowerTeam> teams;
+    private GodTeam godTeam;
 
     BlockSets blockSets;
 
@@ -61,13 +65,25 @@ public class TowerListener implements Listener {
         return this.teams.get(name);
     }
 
+    public HashMap<String, TowerTeam> getTeams() {
+        return teams;
+    }
+
     public TowerTeam getPlayerTeam(OfflinePlayer player) {
         Team team = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
         if (team != null) {
-            return getTeam(team.getName());
+            if (team.getName().equals("God")) {
+                return godTeam;
+            } else {
+                return getTeam(team.getName());
+            }
         } else {
             return null;
         }
+    }
+
+    public GodTeam getGodTeam() {
+        return godTeam;
     }
 
     public void loadConfig() {
@@ -78,6 +94,11 @@ public class TowerListener implements Listener {
     public void loadTeams() {
         Bukkit.getLogger().info("[Tower Challenge] Loading Team Config...");
         plugin.reloadConfig();
+        godTeam = new GodTeam(plugin, "God", "#F7E983");
+        List<String> godPlayers = plugin.getConfig().getStringList("Gods");
+        for (String uuid : godPlayers) {
+            godTeam.addPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
+        }
         // Get team configs
         List maps = plugin.getConfig().getMapList("Teams");
         HashMap<String, TowerTeam> newTeams = new HashMap<>();
@@ -118,12 +139,12 @@ public class TowerListener implements Listener {
             }
         }
 
-        // Set
-        Set<String> removedTeams = teams.keySet();
-        removedTeams.removeAll(newTeams.keySet());
-        for (String team : removedTeams) {
-            this.teams.get(team).destroyTeam();
-        }
+//        // Set
+//        Set<String> removedTeams = teams.keySet();
+//        removedTeams.removeAll(newTeams.keySet());
+//        for (String team : removedTeams) {
+//            this.teams.get(team).destroyTeam();
+//        }
 
         this.teams = newTeams;
         Bukkit.getLogger().info("[Tower Challenge] Team Config Loaded!");
@@ -132,15 +153,50 @@ public class TowerListener implements Listener {
     public void loadHats() {
         Bukkit.getLogger().info("[Tower Challenge] Loading Hat Config...");
         teams.forEach((name, team) -> {
-            team.reloadHats();
+            team.loadHats();
         });
+    }
+
+    @EventHandler
+    public void onEntityPortal(final EntityPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
+            plugin.getLogger().info("Entity in overworld, sending to nether...");
+            event.setTo(ChallengeManager.netherPortal);
+        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
+            plugin.getLogger().info("Entity in nether, sending to overworld...");
+            event.setTo(ChallengeManager.overworldPortal);
+        }
+    }
+    @EventHandler
+    public void onPlayerPortal(final PlayerPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
+            plugin.getLogger().info("Player in overworld, sending to nether...");
+            event.setTo(ChallengeManager.netherPortal);
+        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
+            plugin.getLogger().info("Player in nether, sending to overworld...");
+            event.setTo(ChallengeManager.overworldPortal);
+        }
     }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
 
+        Player player = event.getPlayer();
         loadTeams();
-        event.joinMessage(Component.text(String.format("%s joined the game", event.getPlayer().getName())));
+
+        if (!player.hasPlayedBefore()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    player.teleport(getPlayerTeam(player).getSpawnpoint());
+                }
+            }, 1);
+        }
+//        event.joinMessage(Component.text(String.format("%s joined the game", event.getPlayer().getName())));
 
     }
 

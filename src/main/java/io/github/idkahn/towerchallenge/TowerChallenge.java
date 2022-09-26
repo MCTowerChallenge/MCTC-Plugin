@@ -5,15 +5,31 @@ import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
 import io.github.idkahn.towerchallenge.towering.*;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+
 public final class TowerChallenge extends JavaPlugin {
+
+    public static File regionConfigFile;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
 
         this.saveDefaultConfig();
+
+        regionConfigFile = new File(getDataFolder(), "regions.yml");
+        YamlConfiguration regionConfig = YamlConfiguration.loadConfiguration(regionConfigFile);
+
+        try {
+            regionConfig.save(regionConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         TowerListener towerListener = new TowerListener(this);
 

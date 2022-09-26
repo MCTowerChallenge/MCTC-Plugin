@@ -1,3 +1,5 @@
+Gods:
+  - 4e8c7ae2-1c55-4ea0-ba11-0c1fc151505d
 Teams:
   - name: 'Red'
     color: '#B02E26'
@@ -33,8 +35,6 @@ Teams:
     color: '#9D9D97'
   - name: 'White'
     color: '#F9FFFE'
-  - name: 'God'
-    color: '#F7E983'
 Hats:
   - name: 'Witch Hat'
     item: 'leather_horse_armor'

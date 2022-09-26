@@ -28,6 +28,7 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("reloadConfig");
 //                strings.add("gui");
                 strings.add("hat");
+                strings.add("color");
 //                strings.add("config");
 //                strings.add("newTeam");
 //                strings.add("getRegion");
