@@ -1,27 +1,20 @@
 package io.github.idkahn.towerchallenge.towering;
 
+import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.Hats.HatGUI;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class GodTeam extends TowerTeam {
 
-    private Map<String, String> playerHatColors;
-    private Map<String, HatGUI> hatColorGUIS;
+    private final Map<String, String> playerHatColors = new HashMap<>();
+    private final Map<String, HatGUI> hatColorGUIS = new HashMap<>();
 
-    public GodTeam(JavaPlugin plugin, String displayName, String color) {
-        super(plugin, displayName, color);
-        playerHatColors = new HashMap<>();
-        hatColorGUIS = new HashMap<>();
+    public GodTeam(EventManager manager, String displayName, String color) {
+        super(manager, displayName, color);
         hatColorGUIS.put(getColor(), getHatGUI());
     }
 
@@ -35,15 +28,13 @@ public class GodTeam extends TowerTeam {
                     hatColorGUIS.put(hexColor, new HatGUI(getPlugin(), hexColor));
                     playerHatColors.put(player.getUniqueId().toString(), hexColor);
 //                    getPlugin().getLogger().info(hatColorGUIS.get(hexColor).toString());
-                } catch (NumberFormatException exception) {
-                    getPlugin().getLogger().info("Input is not a valid hex number!");
                 } catch (IllegalArgumentException exception) {
                     getPlugin().getLogger().info("Input is not a valid hex number!");
                 }
             }
         } else {
 //            getPlugin().getLogger().info("Color is null, setting default color");
-            playerHatColors.put(player.getUniqueId().toString(), getColor());
+            resetPlayerColor(player);
         }
     }
 

@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.Hats.HatGUI;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import net.kyori.adventure.text.Component;
@@ -27,9 +28,10 @@ public class TowerTeam {
     // Server's scoreboard
     public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
 
-    private Team team;
+    private final Team team;
     private ProtectedRegion teamArea;
     private JavaPlugin plugin;
+    private EventManager manager;
     private String name;
     private String displayName;
     private String color;
@@ -38,8 +40,9 @@ public class TowerTeam {
     private SpawnArea spawnArea;
     private TowerArea towerArea;
 
-    public TowerTeam(JavaPlugin plugin, String displayName, String color) {
-        this.plugin = plugin;
+    public TowerTeam(EventManager manager, String displayName, String color) {
+        this.manager = manager;
+        this.plugin = manager.getPlugin();
         this.displayName = displayName;
         this.name = displayName.replaceAll("\\s", "");
         this.color = color;
@@ -55,8 +58,8 @@ public class TowerTeam {
         this.loadRegions();
     }
 
-    public TowerTeam(JavaPlugin plugin, String displayName) {
-        this(plugin, displayName, "#FFFFFF");
+    public TowerTeam(EventManager manager, String displayName) {
+        this(manager, displayName, "#FFFFFF");
     }
 
     public void loadHats() {
@@ -71,8 +74,8 @@ public class TowerTeam {
         if (regions != null && regions.size() >= 2) {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(plugin, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("world")))).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(plugin, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")));
+            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("world")))).getRegion(spawn.get("name")));
+            this.towerArea = new TowerArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")));
         }
     }
 

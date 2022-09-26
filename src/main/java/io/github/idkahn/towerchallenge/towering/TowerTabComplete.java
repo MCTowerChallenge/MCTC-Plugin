@@ -29,6 +29,7 @@ public class TowerTabComplete implements TabCompleter {
 //                strings.add("gui");
                 strings.add("hat");
                 strings.add("color");
+                strings.add("toggleTower");
 //                strings.add("config");
 //                strings.add("newTeam");
 //                strings.add("getRegion");
@@ -41,7 +42,7 @@ public class TowerTabComplete implements TabCompleter {
 
             } else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("events")) {
-                    List<String> strings = new ArrayList<String>();
+                    List<String> strings = new ArrayList<>();
 
                     strings.add("enable");
                     strings.add("disable");
@@ -53,7 +54,7 @@ public class TowerTabComplete implements TabCompleter {
             }
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
 
     }
 }

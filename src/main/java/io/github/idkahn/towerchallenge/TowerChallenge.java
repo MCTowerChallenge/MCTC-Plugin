@@ -4,8 +4,10 @@ import io.github.idkahn.towerchallenge.Wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
-import io.github.idkahn.towerchallenge.towering.*;
-import org.bukkit.configuration.file.FileConfiguration;
+import io.github.idkahn.towerchallenge.towering.ChatHandler;
+import io.github.idkahn.towerchallenge.towering.TowerCommands;
+import io.github.idkahn.towerchallenge.towering.TowerListener;
+import io.github.idkahn.towerchallenge.towering.TowerTabComplete;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,12 +33,11 @@ public final class TowerChallenge extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        TowerListener towerListener = new TowerListener(this);
+        EventManager manager = new EventManager(this);
 
-//        HatGUI hatGUI = new HatGUI(this, towerListener);
-//        getServer().getPluginManager().registerEvents(hatGUI, this);
+        TowerListener towerListener = new TowerListener(manager);
 
-        TowerCommands towerCommands = new TowerCommands(this, towerListener);
+        TowerCommands towerCommands = new TowerCommands(manager, towerListener);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
         getServer().getPluginManager().registerEvents(towerListener, this);
@@ -58,9 +59,6 @@ public final class TowerChallenge extends JavaPlugin {
 
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
-
-
-//        getLogger().info("Hello World!");
 
     }
 

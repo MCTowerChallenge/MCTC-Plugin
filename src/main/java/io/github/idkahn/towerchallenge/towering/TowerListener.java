@@ -2,9 +2,9 @@ package io.github.idkahn.towerchallenge.towering;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
-import io.github.idkahn.towerchallenge.ChallengeManager;
-import io.github.idkahn.towerchallenge.Teams;
+import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.Hats.HatGUI;
+import io.github.idkahn.towerchallenge.Teams;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -31,7 +31,7 @@ import java.util.*;
 
 public class TowerListener implements Listener {
 
-    private EnumMap<Teams, ArrayList<BlockState>> towers;
+    private final EnumMap<Teams, ArrayList<BlockState>> towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
 
     private HashMap<String, TowerTeam> teams;
     private GodTeam godTeam;
@@ -42,21 +42,21 @@ public class TowerListener implements Listener {
     private boolean isTowering;
     private boolean cancelEvents;
 
-    private JavaPlugin plugin;
+    private final EventManager manager;
+    private final JavaPlugin plugin;
 
     public static HatGUI defaultHats;
 
-    public TowerListener(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public TowerListener(EventManager manager) {
+        this.manager = manager;
+        this.plugin = manager.getPlugin();
         this.blockSets = new BlockSets();
         this.isTowering = false;
         this.cancelEvents = false;
         this.teams = new HashMap<>();
         loadTeams();
-
-        this.towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
         for (Teams team : Teams.values()) {
-            towers.put(team, new ArrayList<BlockState>());
+            towers.put(team, new ArrayList<>());
         }
         defaultHats = new HatGUI(plugin, Color.RED);
     }
@@ -94,7 +94,7 @@ public class TowerListener implements Listener {
     public void loadTeams() {
         Bukkit.getLogger().info("[Tower Challenge] Loading Team Config...");
         plugin.reloadConfig();
-        godTeam = new GodTeam(plugin, "God", "#F7E983");
+        godTeam = new GodTeam(manager, "God", "#F7E983");
         List<String> godPlayers = plugin.getConfig().getStringList("Gods");
         for (String uuid : godPlayers) {
             godTeam.addPlayer(Bukkit.getOfflinePlayer(UUID.fromString(uuid)));
@@ -116,9 +116,9 @@ public class TowerListener implements Listener {
                 newTeams.put(name, this.teams.get(name));
             } else {
                 if (color != null) {
-                    newTeams.put(name, new TowerTeam(plugin, name, color));
+                    newTeams.put(name, new TowerTeam(manager, name, color));
                 } else {
-                    newTeams.put(name, new TowerTeam(plugin, name));
+                    newTeams.put(name, new TowerTeam(manager, name, color));
                 }
             }
 
@@ -152,9 +152,7 @@ public class TowerListener implements Listener {
 
     public void loadHats() {
         Bukkit.getLogger().info("[Tower Challenge] Loading Hat Config...");
-        teams.forEach((name, team) -> {
-            team.loadHats();
-        });
+        teams.forEach((name, team) -> team.loadHats());
     }
 
     @EventHandler
@@ -162,11 +160,9 @@ public class TowerListener implements Listener {
         if (event.isCancelled())
             return;
         if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
-            plugin.getLogger().info("Entity in overworld, sending to nether...");
-            event.setTo(ChallengeManager.netherPortal);
+            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
         } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
-            plugin.getLogger().info("Entity in nether, sending to overworld...");
-            event.setTo(ChallengeManager.overworldPortal);
+            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
         }
     }
     @EventHandler
@@ -174,11 +170,9 @@ public class TowerListener implements Listener {
         if (event.isCancelled())
             return;
         if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
-            plugin.getLogger().info("Player in overworld, sending to nether...");
-            event.setTo(ChallengeManager.netherPortal);
+            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
         } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
-            plugin.getLogger().info("Player in nether, sending to overworld...");
-            event.setTo(ChallengeManager.overworldPortal);
+            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
         }
     }
 
@@ -189,12 +183,7 @@ public class TowerListener implements Listener {
         loadTeams();
 
         if (!player.hasPlayedBefore()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    player.teleport(getPlayerTeam(player).getSpawnpoint());
-                }
-            }, 1);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.teleport(getPlayerTeam(player).getSpawnpoint()), 1);
         }
 //        event.joinMessage(Component.text(String.format("%s joined the game", event.getPlayer().getName())));
 
