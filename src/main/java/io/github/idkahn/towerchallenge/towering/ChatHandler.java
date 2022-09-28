@@ -24,13 +24,16 @@ public class ChatHandler implements Listener {
 
         Component prefix = Component.empty();
         Component name = Component.text(String.format("<%s> ", event.getPlayer().getName()));
-        Component body = event.message();
+        Component body = event.message().replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement("\uE100").build())
+                .replaceText(TextReplacementConfig.builder().match(":benbyyPog:").replacement("\uE101").build())
+                .replaceText(TextReplacementConfig.builder().match(":lafond2LoveFonda:").replacement("\uE102").build())
+                .replaceText(TextReplacementConfig.builder().match(":lafond2laFlameda:").replacement("\uE103").build());
 
         if (playerTeam != null && playerTeam.prefix() != null) {
             prefix = playerTeam.prefix();
         }
 
-        Component message = prefix.append(name).append(body.replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement("\uE100").build()));
+        Component message = prefix.append(name).append(body);
         Component nightBotMessage = null;
 
         String stringBody = PlainTextComponentSerializer.plainText().serialize(body);

@@ -95,8 +95,12 @@ public class TowerTeam {
         try {
             team.addPlayer(player);
             if (!displayName.equals("God")) {
-                spawnArea.addPlayer(player);
-                towerArea.addPlayer(player);
+                if (spawnArea != null) {
+                    spawnArea.addPlayer(player);
+                }
+                if (towerArea != null) {
+                    towerArea.addPlayer(player);
+                }
             }
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");

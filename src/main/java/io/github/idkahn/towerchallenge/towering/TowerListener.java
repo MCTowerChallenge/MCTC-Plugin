@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.Hats.HatGUI;
+import io.github.idkahn.towerchallenge.Hats.HatUtil;
 import io.github.idkahn.towerchallenge.Teams;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.text.Component;
@@ -21,8 +22,13 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -153,6 +159,26 @@ public class TowerListener implements Listener {
     public void loadHats() {
         Bukkit.getLogger().info("[Tower Challenge] Loading Hat Config...");
         teams.forEach((name, team) -> team.loadHats());
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.isCancelled())
+            return;
+
+        Player player = (Player) event.getWhoClicked();
+        if (player.getGameMode().equals(GameMode.CREATIVE))
+            return;
+
+        ItemStack item = event.getCurrentItem();
+        int slot = event.getSlot();
+
+        if (HatUtil.isHat(item)) {
+            if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
+                event.setCancelled(true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.getInventory().clear(slot), 1);
+            }
+        }
     }
 
     @EventHandler

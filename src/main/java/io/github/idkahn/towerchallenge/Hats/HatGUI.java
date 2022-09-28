@@ -17,12 +17,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
 public class HatGUI implements Listener {
 
-    private static final String UI_NAME = "Select a Hat!";
+    public static final String UI_NAME = "Select a Hat!";
     private Plugin plugin;
     private List<ItemStack> hats;
     private Inventory inventory;
@@ -48,6 +49,8 @@ public class HatGUI implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
+        if (event.isCancelled())
+            return;
         if (!event.getInventory().equals(inventory))
             return;
         event.setCancelled(true);
@@ -56,7 +59,9 @@ public class HatGUI implements Listener {
 
         if (HatUtil.isHat(event.getCurrentItem())) {
             player.getInventory().setHelmet(event.getCurrentItem());
-            player.closeInventory();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                player.closeInventory();
+            }, 1);
         }
     }
 
