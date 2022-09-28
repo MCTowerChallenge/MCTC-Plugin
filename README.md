@@ -1,2 +1,2 @@
 # TowerChallenge
-PaperMC Plugin with utilities for running Tower Challenges
+PaperMC Plugin with utilities for running MCTC
