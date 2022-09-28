@@ -26,8 +26,8 @@ public class ChatHandler implements Listener {
         Component name = Component.text(String.format("<%s> ", event.getPlayer().getName()));
         Component body = event.message().replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement("\uE100").build())
                 .replaceText(TextReplacementConfig.builder().match(":benbyyPog:").replacement("\uE101").build())
-                .replaceText(TextReplacementConfig.builder().match(":lafond2LoveFonda:").replacement("\uE102").build())
-                .replaceText(TextReplacementConfig.builder().match(":lafond2laFlameda:").replacement("\uE103").build());
+                .replaceText(TextReplacementConfig.builder().match(":LoveFonda:").replacement("\uE102").build())
+                .replaceText(TextReplacementConfig.builder().match(":LaFlameda:").replacement("\uE103").build());
 
         if (playerTeam != null && playerTeam.prefix() != null) {
             prefix = playerTeam.prefix();
