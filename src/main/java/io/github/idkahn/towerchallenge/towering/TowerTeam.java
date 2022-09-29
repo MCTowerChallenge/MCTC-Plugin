@@ -75,7 +75,7 @@ public class TowerTeam {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
             this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("world")))).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")));
+            this.towerArea = new TowerArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")), displayName);
         }
     }
 

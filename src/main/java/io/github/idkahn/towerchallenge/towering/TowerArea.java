@@ -1,25 +1,31 @@
 package io.github.idkahn.towerchallenge.towering;
 
+import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.bukkit.event.block.BreakBlockEvent;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
+import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.scoreboard.Score;
 
 import java.util.EnumMap;
+import java.util.Locale;
 
 public class TowerArea implements Listener {
 
@@ -27,11 +33,15 @@ public class TowerArea implements Listener {
 
     private final ProtectedRegion region;
     private final EventManager manager;
+    private Score score;
 
-    public TowerArea(EventManager manager, ProtectedRegion region) {
+    public TowerArea(EventManager manager, ProtectedRegion region, String name) {
         this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
         this.region = region;
+        score = manager.getObjective().getScore(name);
+        score.setScore(blocks.size());
+
     }
 
     public void addPlayer(OfflinePlayer player) {
@@ -45,47 +55,72 @@ public class TowerArea implements Listener {
     /**
      * Stores the block to the tower, as it is at the moment it's added.
      * @param block Block to be added
-     * @return whether the event should be cancelled
+     * @return true, if the tower already has that block
      */
-    private boolean addBlock(Audience audience, Block block) {
-        if (region.contains(BukkitAdapter.adapt(block.getLocation()).toVector().toBlockPoint())) {
-            Material material = block.getType();
-            BlockState blockState = block.getState();
-            if (blocks.get(material) == null) {
-                blocks.put(material, blockState);
-                audience.sendMessage(Component.text(String.format("Tower has %d blocks", blocks.size())));
-                return false;
-            } else {
-                // block is already in tower
-                return true;
-            }
-        } else {
-            // block is outside this region
+    private boolean addBlock(Audience audience, BlockState block) {
+        Material material = block.getType();
+        if (blocks.get(material) == null) {
+            blocks.put(material, block);
+            audience.sendMessage(Component.text(String.format("Tower has %d blocks", blocks.size())));
+            score.setScore(blocks.size());
             return false;
+        } else {
+            // block is already in tower
+            return true;
         }
     }
 
     /**
      * Removes a block from the tower
      * @param block Block to be removed
-     * @return whether the event should be cancelled
      */
-    private boolean removeBlock(Audience audience, Block block) {
-        if (region.contains(BukkitAdapter.adapt(block.getLocation()).toVector().toBlockPoint())) {
-            Material material = block.getType();
-            blocks.remove(material);
+    private void removeBlock(Audience audience, BlockState block) {
+        Material material = block.getType();
+        if (blocks.remove(material) != null) {
+            // block did not exist in tower
             audience.sendMessage(Component.text(String.format("Tower has %d blocks", blocks.size())));
+            score.setScore(blocks.size());
         }
-        return false;
+    }
+
+    /**
+     * Checks whether a block is in the region
+     * @param block block to check
+     * @return true, if the block is in the region
+     */
+    private boolean checkInRegion(BlockState block) {
+        return region.contains(BukkitAdapter.adapt(block.getLocation()).toVector().toBlockPoint());
+    }
+    private boolean checkInRegion(Location location) {
+        return region.contains(BukkitAdapter.adapt(location).toVector().toBlockPoint());
+    }
+    private boolean checkInRegion(Entity entity) {
+        return region.contains(BukkitAdapter.adapt(entity.getLocation()).toVector().toBlockPoint());
+    }
+
+    private boolean checkFullBlock(BlockState block) {
+        return manager.isFullBlock(block.getType());
     }
 
     @EventHandler
     public void onPlaceBlock(final BlockPlaceEvent event) {
         if (event.isCancelled())
             return;
-        if (manager.getEventPhase().equals(EventManager.Phase.TOWERING)) {
-            boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced());
-            event.setCancelled(cancelEvent);
+        BlockState block = event.getBlockPlaced().getState();
+        if (checkInRegion(block)) {
+            if (manager.isTowering()) {
+                if (checkFullBlock(block)) {
+                    boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
+                    event.setCancelled(cancelEvent);
+                } else {
+                    event.getPlayer().sendMessage(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
+                            .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
+                    event.setCancelled(true);
+                }
+            } else {
+                event.getPlayer().sendMessage(Component.text("You cannot build in the tower areas yet!"));
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -93,11 +128,132 @@ public class TowerArea implements Listener {
     public void onBreakBlock(final BlockBreakEvent event) {
         if (event.isCancelled())
             return;
-        if (manager.getEventPhase().equals(EventManager.Phase.TOWERING)) {
-            boolean cancelEvent = removeBlock(event.getPlayer(), event.getBlock());
-            event.setCancelled(cancelEvent);
+        BlockState block = event.getBlock().getState();
+        if (checkInRegion(block)) {
+            if (manager.isTowering()) {
+                removeBlock(event.getPlayer(), event.getBlock().getState());
+            } else {
+                event.getPlayer().sendMessage(Component.text("You cannot build in the tower areas yet!"));
+                event.setCancelled(true);
+            }
         }
     }
 
+    @EventHandler
+    public void onBlockBurn(final BlockBurnEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockSpread(final BlockSpreadEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(final BlockExplodeEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityExplode(final EntityExplodeEvent event) {
+        if (event.isCancelled())
+            return;
+        if (region.contains(BukkitAdapter.adapt(event.getLocation()).toVector().toBlockPoint())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockFade(final BlockFadeEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPistonExtend(final BlockPistonExtendEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPistonRetract(final BlockPistonRetractEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onSpongeAbsorb(final SpongeAbsorbEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onTNTPrime(final TNTPrimeEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockGrow(final BlockGrowEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockForm(final BlockFormEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityChangeBlock(final EntityChangeBlockEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerShearBlock(final PlayerShearBlockEvent event) {
+        if (event.isCancelled())
+            return;
+        if (checkInRegion(event.getBlock().getState())) {
+            event.setCancelled(true);
+        }
+    }
 
 }

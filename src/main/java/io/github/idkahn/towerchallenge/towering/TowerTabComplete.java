@@ -30,6 +30,8 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("hat");
                 strings.add("color");
                 strings.add("toggleTower");
+                strings.add("addFullBlock");
+                strings.add("removeFullBlock");
 //                strings.add("config");
 //                strings.add("newTeam");
 //                strings.add("getRegion");

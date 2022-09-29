@@ -8,11 +8,13 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,9 +43,77 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch(args[0].toLowerCase()) {
+                    case ("addfullblock"):
+                        if (args.length < 2) {
+                            if (sender instanceof Player) {
+                                Player player = (Player) sender;
+                                ItemStack item = player.getInventory().getItemInMainHand();
+                                if (item == null || item.getType().isAir()) {
+                                    player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                    player.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                                } else {
+                                    try {
+                                        manager.addFullBlock(item.getType());
+                                        player.sendMessage(Component.text(EventManager.formatBlockType(item.getType())).append(Component.text("added as a full block.")));
+                                    } catch (IllegalArgumentException e) {
+                                        player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
+                                        player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                        player.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                                    }
+                                }
+                            } else {
+                                sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                            }
+                        } else {
+                            try {
+                                Material type = Material.valueOf(args[1].toUpperCase());
+                                manager.addFullBlock(type);
+                                sender.sendMessage(Component.text(EventManager.formatBlockType(type)).append(Component.text("added as a full block.")));
+                            } catch (IllegalArgumentException e) {
+                                sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                            }
+                        }
+                        break;
+                    case("removefullblock"):
+                        if (args.length < 2) {
+                            if (sender instanceof Player) {
+                                Player player = (Player) sender;
+                                ItemStack item = player.getInventory().getItemInMainHand();
+                                if (item == null || item.getType().isAir()) {
+                                    player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                    player.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                                } else {
+                                    try {
+                                        manager.removeFullBlock(item.getType());
+                                        player.sendMessage(Component.text(EventManager.formatBlockType(item.getType())).append(Component.text("is no longer a full block.")));
+                                    } catch (IllegalArgumentException e) {
+                                        player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
+                                        player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                        player.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                                    }
+                                }
+                            } else {
+                                sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                            }
+                        } else {
+                            try {
+                                Material type = Material.valueOf(args[1].toUpperCase());
+                                manager.removeFullBlock(type);
+                                sender.sendMessage(Component.text(EventManager.formatBlockType(type)).append(Component.text("is no longer a full block.")));
+                            } catch (IllegalArgumentException e) {
+                                sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
+                                sender.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
+                            }
+                        }
+                        break;
                     case ("wand"):
                         if (!(sender instanceof Player)) {
-                            sender.sendMessage(Component.text("You must be a player to run this command!").color(NamedTextColor.DARK_RED));
+                            sender.sendMessage(Component.text("You must be a player to run this command.").color(NamedTextColor.DARK_RED));
                             break;
                         }
                         if (args[1] == null) {
