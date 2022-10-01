@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.Wands;
+package io.github.idkahn.towerchallenge.wands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

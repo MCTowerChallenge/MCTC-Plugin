@@ -1,10 +1,8 @@
-package io.github.idkahn.towerchallenge.Commands;
+package io.github.idkahn.towerchallenge.commands;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
 
 public class CommandHandler extends CommandArgument implements CommandExecutor {
 

@@ -3,7 +3,6 @@ package io.github.idkahn.towerchallenge.towering;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
@@ -13,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,7 +23,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.scoreboard.Score;
 
 import java.util.EnumMap;
-import java.util.Locale;
 
 public class TowerArea implements Listener {
 

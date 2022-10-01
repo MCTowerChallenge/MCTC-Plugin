@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.Hats.HatGUI;
+import io.github.idkahn.towerchallenge.hats.HatGUI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -13,8 +13,8 @@ public class GodTeam extends TowerTeam {
     private final Map<String, String> playerHatColors = new HashMap<>();
     private final Map<String, HatGUI> hatColorGUIS = new HashMap<>();
 
-    public GodTeam(EventManager manager, String displayName, String color) {
-        super(manager, displayName, color);
+    public GodTeam(EventManager manager, String displayName, String color, String dye) {
+        super(manager, displayName, color, dye);
         hatColorGUIS.put(getColor(), getHatGUI());
     }
 

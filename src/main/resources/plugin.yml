@@ -2,11 +2,19 @@ name: TowerChallenge
 version: '${project.version}'
 main: io.github.idkahn.towerchallenge.TowerChallenge
 api-version: 1.19
-depend: [WorldGuard, WorldEdit, NBTAPI]
+depend:
+  - WorldGuard
+  - WorldEdit
+  - NBTAPI
 commands:
   tower:
-    description: tower
+    description: Commands relating to the towers
     usage: /tower
   timer:
-    description: /timer
+    description: Commands relating to the Event Timer
     usage: /timer
+  questbook:
+    description: Gives the player a questbook
+    usage: /questbook
+    aliases:
+      - qb

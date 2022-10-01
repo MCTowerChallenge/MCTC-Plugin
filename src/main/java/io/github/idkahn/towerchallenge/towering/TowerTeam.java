@@ -5,7 +5,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.Hats.HatGUI;
+import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -35,17 +35,19 @@ public class TowerTeam {
     private String name;
     private String displayName;
     private String color;
+    private String dye;
     private HatGUI hatGUI;
 
     private SpawnArea spawnArea;
     private TowerArea towerArea;
 
-    public TowerTeam(EventManager manager, String displayName, String color) {
+    public TowerTeam(EventManager manager, String displayName, String color, String dye) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
         this.displayName = displayName;
         this.name = displayName.replaceAll("\\s", "");
         this.color = color;
+        this.dye = dye.toUpperCase();
         Team team = scoreboard.getTeam(this.name);
         if (team != null) {
             this.team = team;
@@ -59,7 +61,7 @@ public class TowerTeam {
     }
 
     public TowerTeam(EventManager manager, String displayName) {
-        this(manager, displayName, "#FFFFFF");
+        this(manager, displayName, "#FFFFFF", "white");
     }
 
     public void loadHats() {
@@ -81,6 +83,10 @@ public class TowerTeam {
 
     public String getColor() {
         return color;
+    }
+
+    public String getDye() {
+        return dye;
     }
 
     public void destroyTeam() {

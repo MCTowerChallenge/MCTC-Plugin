@@ -2,7 +2,7 @@ package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.Wands.WandGUI;
+import io.github.idkahn.towerchallenge.wands.WandGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,10 +32,10 @@ public class TowerCommands implements CommandExecutor {
 
 
 
-    public TowerCommands(EventManager manager, TowerListener towerListener) {
+    public TowerCommands(EventManager manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        this.towerListener = towerListener;
+        this.towerListener = manager.getTowerListener();
     }
 
     @Override

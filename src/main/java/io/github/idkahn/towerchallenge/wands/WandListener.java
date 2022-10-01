@@ -1,23 +1,17 @@
-package io.github.idkahn.towerchallenge.Wands;
+package io.github.idkahn.towerchallenge.wands;
 
 import de.tr7zw.nbtapi.NBTEntity;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Vector;
-import org.mozilla.javascript.debug.DebuggableObject;
 
 public class WandListener implements Listener {
 
@@ -25,7 +19,10 @@ public class WandListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        if (event.getAction() == Action.PHYSICAL || item == null)
+        if (event.getAction() == Action.PHYSICAL
+                || event.getAction() == Action.LEFT_CLICK_AIR
+                || event.getAction() == Action.LEFT_CLICK_BLOCK
+                || item == null)
             return;
         if (WandUtil.isWand(item)) {
             switch (WandUtil.getMagic(item)) {

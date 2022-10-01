@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.Wands;
+package io.github.idkahn.towerchallenge.wands;
 
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.inventory.ItemStack;

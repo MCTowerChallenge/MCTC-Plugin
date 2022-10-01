@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
-import io.github.idkahn.towerchallenge.Wands.WandListener;
+import io.github.idkahn.towerchallenge.wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
@@ -17,6 +17,7 @@ import java.io.IOException;
 public final class TowerChallenge extends JavaPlugin {
 
     public static File regionConfigFile;
+    public static File questConfigFile;
 
     @Override
     public void onEnable() {
@@ -27,20 +28,22 @@ public final class TowerChallenge extends JavaPlugin {
         regionConfigFile = new File(getDataFolder(), "regions.yml");
         YamlConfiguration regionConfig = YamlConfiguration.loadConfiguration(regionConfigFile);
 
+        questConfigFile = new File(getDataFolder(), "quests.yml");
+        YamlConfiguration questConfig = YamlConfiguration.loadConfiguration(questConfigFile);
+
         try {
             regionConfig.save(regionConfigFile);
+            questConfig.save(questConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         EventManager manager = new EventManager(this);
 
-        TowerListener towerListener = new TowerListener(manager);
 
-        TowerCommands towerCommands = new TowerCommands(manager, towerListener);
+        TowerCommands towerCommands = new TowerCommands(manager);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
-        getServer().getPluginManager().registerEvents(towerListener, this);
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 

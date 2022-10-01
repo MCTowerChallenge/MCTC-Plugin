@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.Hats;
+package io.github.idkahn.towerchallenge.hats;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -13,11 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
@@ -52,6 +52,8 @@ public class HatGUI implements Listener {
         if (event.isCancelled())
             return;
         if (!event.getInventory().equals(inventory))
+            return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir())
             return;
         event.setCancelled(true);
 
@@ -94,6 +96,8 @@ public class HatGUI implements Listener {
             ItemMeta hatMeta = hat.getItemMeta();
 
             hatMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
+            hatMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            hatMeta.addItemFlags(ItemFlag.HIDE_DYE);
             hatMeta.setCustomModelData(customModelData);
             List<Component> lore = new ArrayList<>();
             if (author != null) {

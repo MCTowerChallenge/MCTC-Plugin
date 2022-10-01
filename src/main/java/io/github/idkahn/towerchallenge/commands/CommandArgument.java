@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.Commands;
+package io.github.idkahn.towerchallenge.commands;
 
 import java.util.HashMap;
 

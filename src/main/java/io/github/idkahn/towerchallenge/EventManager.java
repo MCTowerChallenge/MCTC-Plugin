@@ -1,17 +1,14 @@
 package io.github.idkahn.towerchallenge;
 
+import io.github.idkahn.towerchallenge.quests.QuestManager;
+import io.github.idkahn.towerchallenge.towering.TowerListener;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-
-import java.util.EnumSet;
 
 public class EventManager {
 
@@ -42,13 +39,16 @@ public class EventManager {
     }
 
     // Instance Variables
-    private final JavaPlugin plugin;
+    private final TowerChallenge plugin;
     private Phase eventPhase;
     private BlockSets blockSets;
     private Objective towerHeight;
+    private QuestManager questManager;
+
+    private TowerListener towerListener;
 
     // Constructor
-    public EventManager(JavaPlugin plugin) {
+    public EventManager(TowerChallenge plugin) {
         this.plugin = plugin;
         eventPhase = Phase.SETUP;
         blockSets = new BlockSets();
@@ -56,6 +56,9 @@ public class EventManager {
         if (towerHeight == null) {
             towerHeight = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective(OBJECTIVE_NAME, "dummy", Component.text("Tower Height"));
         }
+        questManager = new QuestManager(this);
+        towerListener = new TowerListener(this);
+        Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
     }
 
     // Accessors and Mutators
@@ -86,8 +89,16 @@ public class EventManager {
         return towerHeight;
     }
 
-    public JavaPlugin getPlugin() {
+    public TowerChallenge getPlugin() {
         return plugin;
+    }
+
+    public TowerListener getTowerListener() {
+        return towerListener;
+    }
+
+    public QuestManager getQuestManager() {
+        return questManager;
     }
 
     // Methods

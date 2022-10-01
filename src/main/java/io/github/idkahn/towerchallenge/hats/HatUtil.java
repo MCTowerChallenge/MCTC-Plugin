@@ -1,7 +1,6 @@
-package io.github.idkahn.towerchallenge.Hats;
+package io.github.idkahn.towerchallenge.hats;
 
 import de.tr7zw.nbtapi.NBTItem;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 public class HatUtil {
