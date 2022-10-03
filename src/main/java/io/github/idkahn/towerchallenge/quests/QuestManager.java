@@ -131,7 +131,7 @@ public class QuestManager implements Listener {
             item = new ItemStack(Material.BAMBOO);
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setCustomModelData(1);
-            itemMeta.displayName(Component.text("OR"));
+            itemMeta.displayName(Component.text("OR").decoration(TextDecoration.ITALIC, false));
             item.setItemMeta(itemMeta);
         } else if (type.equals("item")) {
             String id = (String) map.get("item");

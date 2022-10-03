@@ -10,6 +10,9 @@ commands:
   tower:
     description: Commands relating to the towers
     usage: /tower
+  hat:
+    description: Opens the hat gui
+    usage: /hat
   timer:
     description: Commands relating to the Event Timer
     usage: /timer
@@ -18,3 +21,6 @@ commands:
     usage: /questbook
     aliases:
       - qb
+  god:
+    description: Toggles player invulnerability
+    usage: /god

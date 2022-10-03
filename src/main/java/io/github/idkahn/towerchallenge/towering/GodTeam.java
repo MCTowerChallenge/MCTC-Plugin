@@ -2,6 +2,8 @@ package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -30,6 +32,7 @@ public class GodTeam extends TowerTeam {
 //                    getPlugin().getLogger().info(hatColorGUIS.get(hexColor).toString());
                 } catch (IllegalArgumentException exception) {
                     getPlugin().getLogger().info("Input is not a valid hex number!");
+                    player.sendMessage(Component.text("Input is not a valid hex number!").color(NamedTextColor.DARK_RED));
                 }
             }
         } else {

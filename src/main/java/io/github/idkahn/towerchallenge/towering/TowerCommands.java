@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import javax.naming.Name;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,6 +115,10 @@ public class TowerCommands implements CommandExecutor {
                     case ("wand"):
                         if (!(sender instanceof Player)) {
                             sender.sendMessage(Component.text("You must be a player to run this command.").color(NamedTextColor.DARK_RED));
+                            break;
+                        }
+                        if (!(((Player) sender).hasPermission("towerchallenge.tower.wand"))) {
+                            sender.sendMessage(PERMISSION_WARN);
                             break;
                         }
                         if (args[1] == null) {

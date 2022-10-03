@@ -74,6 +74,7 @@ public class Quest implements Listener {
             completedItem = new ItemStack(Material.valueOf(completed.getDye()+"_CONCRETE"));
             ItemMeta completedMeta = completedItem.getItemMeta();
             completedMeta.displayName(completed.getDisplayName().decoration(TextDecoration.ITALIC, false));
+            completedMeta.setCustomModelData(1);
             completedItem.setItemMeta(completedMeta);
         } else {
             completedItem = new ItemStack(Material.BARRIER);

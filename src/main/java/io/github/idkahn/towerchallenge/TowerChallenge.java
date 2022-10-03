@@ -1,5 +1,7 @@
 package io.github.idkahn.towerchallenge;
 
+import io.github.idkahn.towerchallenge.commands.GodCommand;
+import io.github.idkahn.towerchallenge.hats.HatCommands;
 import io.github.idkahn.towerchallenge.wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
@@ -47,6 +49,10 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
+        HatCommands hatCommands = new HatCommands(manager.getTowerListener());
+        this.getCommand("hat").setExecutor(hatCommands);
+
+
         // Teams
         ChatHandler chatHandler = new ChatHandler();
         getServer().getPluginManager().registerEvents(chatHandler, this);
@@ -62,6 +68,10 @@ public final class TowerChallenge extends JavaPlugin {
 
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
+
+        // Other Commands
+        GodCommand godCommand = new GodCommand();
+        this.getCommand("god").setExecutor(godCommand);
 
     }
 
