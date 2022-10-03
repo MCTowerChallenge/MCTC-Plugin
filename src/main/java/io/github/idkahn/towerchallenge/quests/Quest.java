@@ -36,7 +36,6 @@ public class Quest implements Listener {
     private ArrayList<ItemStack> criteria;
     private ArrayList<ItemStack> reward;
     private TowerTeam completed;
-
     private Inventory inventory;
 
     public Quest(QuestManager questManager, Component name, ArrayList<Component> description, ArrayList<ItemStack> criteria, ArrayList<ItemStack> reward, TowerTeam completed) {
@@ -56,7 +55,7 @@ public class Quest implements Listener {
         ItemStack backButton = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
         ItemMeta backButtonMeta = backButton.getItemMeta();
         backButtonMeta.displayName(Component.text("Back").decoration(TextDecoration.ITALIC, false));
-        backButtonMeta.setCustomModelData(0);
+        backButtonMeta.setCustomModelData(1);
         backButton.setItemMeta(backButtonMeta);
         inventory.setItem(45, backButton);
 
@@ -102,7 +101,7 @@ public class Quest implements Listener {
         itemMeta.displayName(name.decoration(TextDecoration.ITALIC, false));
         itemMeta.lore(description);
         if (completed != null) {
-            itemMeta.setCustomModelData(0);
+            itemMeta.setCustomModelData(1);
         }
         item.setItemMeta(itemMeta);
         return item;

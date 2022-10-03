@@ -37,9 +37,9 @@ public class TowerListener implements Listener {
 
     private final EnumMap<Teams, ArrayList<BlockState>> towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
 
-    private HashMap<String, TowerTeam> teams;
     private GodTeam godTeam;
 
+    private HashMap<String, TowerTeam> teams;
     BlockSets blockSets;
 
     // Whether server is currently in Towering State
@@ -57,7 +57,7 @@ public class TowerListener implements Listener {
         this.blockSets = new BlockSets();
         this.isTowering = false;
         this.cancelEvents = false;
-        this.teams = new HashMap<>();
+        this.teams = manager.getTeams();
         loadTeams();
         for (Teams team : Teams.values()) {
             towers.put(team, new ArrayList<>());

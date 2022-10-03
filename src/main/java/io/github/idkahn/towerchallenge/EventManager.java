@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge;
 
 import io.github.idkahn.towerchallenge.quests.QuestManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -9,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+
+import java.util.HashMap;
 
 public class EventManager {
 
@@ -47,17 +50,20 @@ public class EventManager {
 
     private TowerListener towerListener;
 
+    private HashMap<String, TowerTeam> teams;
+
     // Constructor
     public EventManager(TowerChallenge plugin) {
         this.plugin = plugin;
+        this.teams = new HashMap<>();
         eventPhase = Phase.SETUP;
         blockSets = new BlockSets();
         towerHeight = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(OBJECTIVE_NAME);
         if (towerHeight == null) {
             towerHeight = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective(OBJECTIVE_NAME, "dummy", Component.text("Tower Height"));
         }
-        questManager = new QuestManager(this);
         towerListener = new TowerListener(this);
+        questManager = new QuestManager(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
     }
 
@@ -91,6 +97,13 @@ public class EventManager {
 
     public TowerChallenge getPlugin() {
         return plugin;
+    }
+
+    public HashMap<String, TowerTeam> getTeams() {
+        return teams;
+    }
+    public void setTeams(HashMap<String, TowerTeam> teams) {
+        this.teams = teams;
     }
 
     public TowerListener getTowerListener() {

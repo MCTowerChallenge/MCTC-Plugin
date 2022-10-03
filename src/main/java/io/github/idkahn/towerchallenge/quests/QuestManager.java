@@ -5,6 +5,7 @@ import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.hats.HatUtil;
+import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import it.unimi.dsi.fastutil.Hash;
 import net.kyori.adventure.text.Component;
@@ -129,7 +130,7 @@ public class QuestManager implements Listener {
         } else if (type.equals("or")) {
             item = new ItemStack(Material.BAMBOO);
             ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.setCustomModelData(0);
+            itemMeta.setCustomModelData(1);
             itemMeta.displayName(Component.text("OR"));
             item.setItemMeta(itemMeta);
         } else if (type.equals("item")) {
@@ -177,7 +178,7 @@ public class QuestManager implements Listener {
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
         ItemMeta exitMeta = exit.getItemMeta();
         exitMeta.displayName(Component.text("Exit").decoration(TextDecoration.ITALIC, false));
-        exitMeta.setCustomModelData(1);
+        exitMeta.setCustomModelData(2);
         exit.setItemMeta(exitMeta);
         this.questPicker.setItem(this.questPicker.getSize()-1, exit);
 
@@ -207,9 +208,9 @@ public class QuestManager implements Listener {
                 configItemGroup(map, reward);
             }
 
-//            TowerTeam completedTeam = eventManager.getTowerListener().getTeams().get(configCompleted);
+            TowerTeam completedTeam = eventManager.getTowerListener().getTeams().get(configCompleted);
 
-            Quest newQuest = new Quest(this, name, description, criteria, reward, null);
+            Quest newQuest = new Quest(this, name, description, criteria, reward, completedTeam);
             quests.add(newQuest);
             questPicker.addItem(newQuest.getItem());
 //            Bukkit.getServer().sendMessage(Component.text(quests.size()));

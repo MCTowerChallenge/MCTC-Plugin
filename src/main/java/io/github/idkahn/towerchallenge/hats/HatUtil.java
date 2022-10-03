@@ -34,6 +34,9 @@ public class HatUtil {
      * @return
      */
     public static Boolean isHat(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return false;
+        }
         NBTItem nbtItem = new NBTItem(itemStack);
         return nbtItem.getBoolean(NBT_TAG);
     }
