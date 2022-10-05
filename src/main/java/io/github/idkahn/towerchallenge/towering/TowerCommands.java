@@ -41,6 +41,7 @@ public class TowerCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch(args[0].toLowerCase()) {
@@ -112,92 +113,32 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                         break;
-                    case ("wand"):
-                        if (!(sender instanceof Player)) {
-                            sender.sendMessage(Component.text("You must be a player to run this command.").color(NamedTextColor.DARK_RED));
-                            break;
-                        }
-                        if (!(((Player) sender).hasPermission("towerchallenge.tower.wand"))) {
-                            sender.sendMessage(PERMISSION_WARN);
-                            break;
-                        }
-                        if (args[1] == null) {
-                            sender.sendMessage(Component.text("Please enter a wand ID!").color(NamedTextColor.DARK_RED));
-                            break;
-                        }
-                        try {
-                            int id = Integer.parseInt(args[1]);
-                            WandGUI.getWand((Player) sender, id);
-                        } catch (NumberFormatException e) {
-                            sender.sendMessage(Component.text("Please enter a valid ID!").color(NamedTextColor.DARK_RED));
-                        }
-                        break;
+//                    case ("wand"):
+//                        if (!(sender instanceof Player)) {
+//                            sender.sendMessage(Component.text("You must be a player to run this command.").color(NamedTextColor.DARK_RED));
+//                            break;
+//                        }
+//                        if (!(((Player) sender).hasPermission("towerchallenge.tower.wand"))) {
+//                            sender.sendMessage(PERMISSION_WARN);
+//                            break;
+//                        }
+//                        if (args[1] == null) {
+//                            sender.sendMessage(Component.text("Please enter a wand ID!").color(NamedTextColor.DARK_RED));
+//                            break;
+//                        }
+//                        try {
+//                            int id = Integer.parseInt(args[1]);
+//                            WandGUI.getWand((Player) sender, id);
+//                        } catch (NumberFormatException e) {
+//                            sender.sendMessage(Component.text("Please enter a valid ID!").color(NamedTextColor.DARK_RED));
+//                        }
+//                        break;
                     case ("reloadconfig"):
                         sender.sendMessage(Component.text("Reloading Config"));
                         towerListener.loadConfig();
                         break;
-                    case("initregionconfig"):
-                        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.regionConfigFile);
-                        towerListener.getTeams().forEach((String string, TowerTeam team) -> {
-                            List<HashMap<String, String>> list = new ArrayList<>();
-                            HashMap<String, String> spawn = new HashMap<>();
-                            spawn.put("world", "world_nether");
-                            spawn.put("name", PlainTextComponentSerializer.plainText().serialize(team.getDisplayName()).replaceAll(" ", "_").toLowerCase()+"_base");
-                            list.add(spawn);
-                            HashMap<String, String> tower = new HashMap<>();
-                            tower.put("world", "world");
-                            tower.put("name", PlainTextComponentSerializer.plainText().serialize(team.getDisplayName()).replaceAll(" ", "_").toLowerCase()+"_tower");
-                            list.add(tower);
-                            config.set(PlainTextComponentSerializer.plainText().serialize(team.getDisplayName()), list);
-                        });
-                        try {
-                            config.save(TowerChallenge.regionConfigFile);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
-//                    case ("gui"):
-//                        if (sender instanceof Player) {
-//                            Player player = (Player) sender;
-//                            Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, Component.text("\uF808\uE001", NamedTextColor.WHITE));
-//                            ItemStack[] stacks = new ItemStack[27];
-//                            Arrays.fill(stacks, new ItemStack(Material.AIR));
-//                            stacks[11] = new ItemStack(Material.ENDER_EYE);
-//                            stacks[15] = new ItemStack(Material.TROPICAL_FISH_BUCKET);
-//                            inv.setContents(stacks);
-//                            player.openInventory(inv);
-//                        }
-//                        break;
-                    case ("color"):
-                        if (!(sender instanceof Player)) {
-                            sender.sendMessage(Component.text("You must be a player to use this command!"));
-                            break;
-                        } else {
-                            TowerTeam team = towerListener.getPlayerTeam((Player) sender);
-                            if (PlainTextComponentSerializer.plainText().serialize(team.getDisplayName()).equals("God")) {
-                                String color = null;
-                                try {
-                                    color = args[1];
-                                    sender.sendMessage("Setting hat color to " + color + "...");
-                                } catch (ArrayIndexOutOfBoundsException e) {
-                                    sender.sendMessage("No color given, setting default...");
-                                }
-                                Bukkit.getLogger().info("Setting player color to " + color);
-                                ((GodTeam) team).setPlayerHatColor((Player) sender, color);
-                            }
-                        }
-                        break;
-                    case ("hat"):
-                        if (sender instanceof Player) {
-                            Player player = (Player) sender;
-                            TowerTeam team = towerListener.getPlayerTeam(player);
-                            if (team != null) {
-                                team.openHatGUI(player);
-                            } else {
-                                player.sendMessage(Component.text("You are not assigned a team! Giving default hats.").color(NamedTextColor.DARK_RED));
-                                TowerListener.defaultHats.openInventory(player);
-                            }
-                        }
+                    case ("resetendportal"):
+                        manager.resetEndPortal();
                         break;
                     case ("toggletower"):
                         if (manager.getEventPhase().equals(EventManager.Phase.TOWERING)) {

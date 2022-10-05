@@ -10,12 +10,17 @@ commands:
   tower:
     description: Commands relating to the towers
     usage: /tower
+    permission: towerchallenge.tower
   hat:
     description: Opens the hat gui
     usage: /hat
+  wand:
+    description: Opens the wand gui
+    usage: /wand
   timer:
     description: Commands relating to the Event Timer
     usage: /timer
+    permission: towerchallenge.timer
   questbook:
     description: Gives the player a questbook
     usage: /questbook
@@ -24,3 +29,8 @@ commands:
   god:
     description: Toggles player invulnerability
     usage: /god
+    permission: towerchallenge.god
+  penelope:
+    description: Commands for controlling Penelope events
+    usage: /penelope [create|remove|set|reload]
+    permission: towerchallenge.penelope

@@ -1,8 +1,11 @@
 package io.github.idkahn.towerchallenge.wands;
 
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.UUID;
 
 public class WandUtil {
 
@@ -25,6 +28,14 @@ public class WandUtil {
         }
     }
 
+    public static ItemStack randomUUID(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir())
+            return itemStack;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setUUID("id", UUID.randomUUID());
+        return nbtItem.getItem();
+    }
+
     /**
      * Sets the value of the "is_wand" NBT tag on an itemstack
      * @param itemStack ItemStack to change
@@ -34,11 +45,11 @@ public class WandUtil {
     public static ItemStack setWand(ItemStack itemStack, Boolean state) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setBoolean(WAND_TAG, state);
-        return nbtItem.getItem();
+        return randomUUID(nbtItem.getItem());
     }
 
     public static ItemStack setMagic(ItemStack itemStack, int ID) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
+        ItemMeta itemMeta = setWand(itemStack).getItemMeta();
         itemMeta.setCustomModelData(ID);
         itemStack.setItemMeta(itemMeta);
         NBTItem nbtItem = new NBTItem(itemStack);

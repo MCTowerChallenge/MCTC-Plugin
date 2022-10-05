@@ -79,7 +79,7 @@ public class TowerListener implements Listener {
             if (team.getName().equals("God")) {
                 return godTeam;
             } else {
-                return getTeam(team.getName());
+                return getTeam(PlainTextComponentSerializer.plainText().serialize(team.displayName()));
             }
         } else {
             return null;
@@ -118,6 +118,7 @@ public class TowerListener implements Listener {
 
             // Create new Team
             if (teams.get(name) != null) {
+                this.teams.get(name).loadPortal();
                 newTeams.put(name, this.teams.get(name));
             } else {
                 newTeams.put(name, new TowerTeam(manager, name, color, dye));

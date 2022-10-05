@@ -2,6 +2,10 @@ package io.github.idkahn.towerchallenge;
 
 import io.github.idkahn.towerchallenge.commands.GodCommand;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
+import io.github.idkahn.towerchallenge.penelope.PenelopeCommands;
+import io.github.idkahn.towerchallenge.penelope.PenelopeTabComplete;
+import io.github.idkahn.towerchallenge.wands.WandCommands;
+import io.github.idkahn.towerchallenge.wands.WandGUI;
 import io.github.idkahn.towerchallenge.wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
@@ -20,6 +24,9 @@ public final class TowerChallenge extends JavaPlugin {
 
     public static File regionConfigFile;
     public static File questConfigFile;
+    public static File penelopeConfigFile;
+    public static File wandConfigFile;
+    public static File endPortalConfigFile;
 
     @Override
     public void onEnable() {
@@ -33,9 +40,21 @@ public final class TowerChallenge extends JavaPlugin {
         questConfigFile = new File(getDataFolder(), "quests.yml");
         YamlConfiguration questConfig = YamlConfiguration.loadConfiguration(questConfigFile);
 
+        penelopeConfigFile = new File(getDataFolder(), "penelope.yml");
+        YamlConfiguration penelopeConfig = YamlConfiguration.loadConfiguration(penelopeConfigFile);
+
+        wandConfigFile = new File(getDataFolder(), "wands.yml");
+        YamlConfiguration wandConfig = YamlConfiguration.loadConfiguration(wandConfigFile);
+
+        endPortalConfigFile = new File(getDataFolder(), "portalframes.yml");
+        YamlConfiguration endPortalConfig = YamlConfiguration.loadConfiguration(endPortalConfigFile);
+
         try {
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
+            penelopeConfig.save(penelopeConfigFile);
+            wandConfig.save(wandConfigFile);
+            endPortalConfig.save(endPortalConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,6 +77,8 @@ public final class TowerChallenge extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Wands
+        WandCommands wandCommands = new WandCommands(this);
+        this.getCommand("wand").setExecutor(wandCommands);
         WandListener wandListener = new WandListener();
         getServer().getPluginManager().registerEvents(wandListener, this);
 
@@ -70,6 +91,11 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
         // Other Commands
+        PenelopeCommands penelopeCommands = new PenelopeCommands();
+        this.getCommand("penelope").setExecutor(penelopeCommands);
+        PenelopeTabComplete penelopeTabComplete = new PenelopeTabComplete();
+        this.getCommand("penelope").setTabCompleter(penelopeTabComplete);
+
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
 

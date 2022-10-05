@@ -4,7 +4,9 @@ import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -50,6 +52,21 @@ public class GodTeam extends TowerTeam {
     }
 
     @Override
+    public void loadPortal() {
+
+    }
+
+    @Override
+    public Location getFrameLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean hasEye() {
+        return false;
+    }
+
+        @Override
     public void openHatGUI(Player player) {
 //        Bukkit.getLogger().info(getColor(player) + " " + hatColorGUIS.get(getColor(player)));
         HatGUI gui = hatColorGUIS.get(getColor(player));

@@ -12,6 +12,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventManager {
 
@@ -47,8 +49,8 @@ public class EventManager {
     private BlockSets blockSets;
     private Objective towerHeight;
     private QuestManager questManager;
-
     private TowerListener towerListener;
+    private EndPortal endPortal;
 
     private HashMap<String, TowerTeam> teams;
 
@@ -65,6 +67,7 @@ public class EventManager {
         towerListener = new TowerListener(this);
         questManager = new QuestManager(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
+        endPortal = new EndPortal(this);
     }
 
     // Accessors and Mutators
@@ -102,6 +105,29 @@ public class EventManager {
     public HashMap<String, TowerTeam> getTeams() {
         return teams;
     }
+
+    public int getCompletedPortalFrames() {
+        int count = 0;
+        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+            if (entry.getValue().hasEye()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void resetEndPortal() {
+        Bukkit.getLogger().info("Resetting End Portal");
+        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+            Bukkit.getLogger().info("Resetting frame for " + entry.getKey());
+            entry.getValue().resetFrame();
+        }
+    }
+
+    public EndPortal getEndPortal() {
+        return endPortal;
+    }
+
     public void setTeams(HashMap<String, TowerTeam> teams) {
         this.teams = teams;
     }

@@ -18,25 +18,11 @@ public class TowerTabComplete implements TabCompleter {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<>();
 
-//                strings.add("book");
-//                strings.add("enable");
-//                strings.add("disable");
-//                strings.add("remove");
-//                strings.add("reloadTeams");
-//                strings.add("reloadHats");
-                strings.add("wand");
                 strings.add("reloadConfig");
-//                strings.add("gui");
-                strings.add("hat");
-                strings.add("color");
                 strings.add("toggleTower");
                 strings.add("addFullBlock");
                 strings.add("removeFullBlock");
-//                strings.add("config");
-//                strings.add("newTeam");
-//                strings.add("getRegion");
-//                strings.add("events");
-//                strings.add("time");
+                strings.add("resetEndPortal");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
