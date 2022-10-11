@@ -16,7 +16,7 @@ public class TimerTabComplete implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("timer")) {
             if (args.length == 1) {
-                List<String> strings = new ArrayList<String>();
+                List<String> strings = new ArrayList<>();
 
                 strings.add("set");
                 strings.add("show");
@@ -24,6 +24,7 @@ public class TimerTabComplete implements TabCompleter {
                 strings.add("pause");
                 strings.add("resume");
                 strings.add("start");
+                strings.add("reset");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
@@ -32,7 +33,7 @@ public class TimerTabComplete implements TabCompleter {
             }
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
 
     }
 }

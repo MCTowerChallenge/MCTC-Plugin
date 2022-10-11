@@ -26,12 +26,8 @@ public class WandListener implements Listener {
             return;
         if (WandUtil.isWand(item)) {
             switch (WandUtil.getMagic(item)) {
-                case(0):
-                    smite(player);
-                    break;
-                case(1):
-                    cow(player);
-                    break;
+                case (1) -> cow(player);
+                case (2) -> smite(player);
             }
         }
     }

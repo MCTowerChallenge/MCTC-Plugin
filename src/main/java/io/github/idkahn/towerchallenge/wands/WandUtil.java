@@ -1,7 +1,6 @@
 package io.github.idkahn.towerchallenge.wands;
 
 import de.tr7zw.nbtapi.NBTItem;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -14,10 +13,10 @@ public class WandUtil {
 
 
     public enum MagicTypes {
-        LIGHTNING(0),
-        COW(1);
+        COW(1),
+        LIGHTNING(2);
 
-        private int value;
+        private final int value;
 
         MagicTypes(int value) {
             this.value = value;
@@ -67,9 +66,9 @@ public class WandUtil {
     }
 
     /**
-     * Checks if an itemstack is a hat
-     * @param itemStack
-     * @return
+     * Checks if an itemstack is a wand
+     * @param itemStack item to check
+     * @return true, if the item is a wand
      */
     public static Boolean isWand(ItemStack itemStack) {
         NBTItem nbtItem = new NBTItem(itemStack);

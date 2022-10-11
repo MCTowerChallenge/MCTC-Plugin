@@ -2,7 +2,10 @@ package io.github.idkahn.towerchallenge.towering;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import de.tr7zw.nbtapi.NBTList;
+import de.tr7zw.nbtapi.NBTTileEntity;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
@@ -12,7 +15,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,14 +35,32 @@ public class TowerArea implements Listener {
 
     private final ProtectedRegion region;
     private final EventManager manager;
-    private Score score;
+    private final TowerTeam team;
+    private final Score score;
 
-    public TowerArea(EventManager manager, ProtectedRegion region, String name) {
+    public TowerArea(TowerTeam team, EventManager manager, ProtectedRegion region, String name) {
+        this.team = team;
         this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
         this.region = region;
         score = manager.getObjective().getScore(name);
         score.setScore(blocks.size());
+        scanBlocks();
+    }
+
+    public void scanBlocks() {
+        BlockVector3 minPoint = region.getMinimumPoint();
+        BlockVector3 maxPoint = region.getMaximumPoint();
+        for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
+            for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
+                for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
+                    Block block = Bukkit.getWorld("world").getBlockAt(x, y, z);
+                    if (!block.getType().isAir()) {
+                        addBlock(null, block.getState());
+                    }
+                }
+            }
+        }
 
     }
 
@@ -49,6 +72,20 @@ public class TowerArea implements Listener {
         region.getMembers().removePlayer(player.getUniqueId());
     }
 
+    public void sendBlockCount(Audience audience) {
+        if (blocks.size() == 1) {
+            audience.sendMessage(
+                    team.getDisplayName().color(team.getTextColor()).append(Component.text(" Tower"))
+                            .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
+            );
+        } else {
+            audience.sendMessage(
+                    team.getDisplayName().color(team.getTextColor()).append(Component.text(" Tower"))
+                            .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
+            );
+        }
+    }
+
     /**
      * Stores the block to the tower, as it is at the moment it's added.
      * @param block Block to be added
@@ -56,13 +93,23 @@ public class TowerArea implements Listener {
      */
     private boolean addBlock(Audience audience, BlockState block) {
         Material material = block.getType();
+        if (block instanceof ShulkerBox box) {
+            NBTTileEntity boxNBT = new NBTTileEntity(box);
+            NBTList<String> tags = boxNBT.getStringList("Tags");
+            if (tags.contains("given")) {
+                return false;
+            }
+        }
         if (blocks.get(material) == null) {
             blocks.put(material, block);
-            audience.sendMessage(Component.text(String.format("Tower has %d blocks", blocks.size())));
+//            sendBlockCount(audience);
             score.setScore(blocks.size());
             return false;
         } else {
             // block is already in tower
+            if (audience != null) {
+                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+            }
             return true;
         }
     }
@@ -71,11 +118,10 @@ public class TowerArea implements Listener {
      * Removes a block from the tower
      * @param block Block to be removed
      */
-    private void removeBlock(Audience audience, BlockState block) {
+    private void removeBlock(BlockState block) {
         Material material = block.getType();
         if (blocks.remove(material) != null) {
             // block did not exist in tower
-            audience.sendMessage(Component.text(String.format("Tower has %d blocks", blocks.size())));
             score.setScore(blocks.size());
         }
     }
@@ -110,12 +156,12 @@ public class TowerArea implements Listener {
                     boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
                     event.setCancelled(cancelEvent);
                 } else {
-                    event.getPlayer().sendMessage(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
+                    event.getPlayer().sendActionBar(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
                             .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
                     event.setCancelled(true);
                 }
             } else {
-                event.getPlayer().sendMessage(Component.text("You cannot build in the tower areas yet!"));
+                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
                 event.setCancelled(true);
             }
         }
@@ -128,9 +174,9 @@ public class TowerArea implements Listener {
         BlockState block = event.getBlock().getState();
         if (checkInRegion(block)) {
             if (manager.isTowering()) {
-                removeBlock(event.getPlayer(), event.getBlock().getState());
+                removeBlock(event.getBlock().getState());
             } else {
-                event.getPlayer().sendMessage(Component.text("You cannot build in the tower areas yet!"));
+                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
                 event.setCancelled(true);
             }
         }

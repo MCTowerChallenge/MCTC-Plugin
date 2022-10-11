@@ -2,7 +2,6 @@ package io.github.idkahn.towerchallenge.wands;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
-import io.github.idkahn.towerchallenge.hats.HatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -20,30 +19,31 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class WandGUI implements Listener {
 
     public static final String UI_NAME = "Pick a wand!";
-    private Plugin plugin;
-    private List<ItemStack> wands;
+    private final Plugin plugin;
+    private final List<ItemStack> wands;
     private Inventory inventory;
 
     public WandGUI(Plugin plugin) {
         this.plugin = plugin;
         this.wands = new ArrayList<>();
-        int numHats = plugin.getConfig().getList("Hats").size();
+        int numHats = Objects.requireNonNull(YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile).getList("Wands")).size();
         this.inventory = Bukkit.createInventory(null, HatGUI.getInventorySize(numHats), Component.text(UI_NAME));
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         this.loadWands();
     }
 
-    public static void getWand(Player player, int id) {
-        ItemStack stick = WandUtil.setMagic(new ItemStack(Material.STICK), id);
-        ItemMeta stickMeta = stick.getItemMeta();
-        stickMeta.displayName(Component.text("Wand").decoration(TextDecoration.ITALIC, false));
-        stick.setItemMeta(stickMeta);
-        player.getInventory().addItem(stick);
-    }
+//    public static void getWand(Player player, int id) {
+//        ItemStack stick = WandUtil.setMagic(new ItemStack(Material.STICK), id);
+//        ItemMeta stickMeta = stick.getItemMeta();
+//        stickMeta.displayName(Component.text("Wand").decoration(TextDecoration.ITALIC, false));
+//        stick.setItemMeta(stickMeta);
+//        player.getInventory().addItem(stick);
+//    }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
@@ -59,9 +59,7 @@ public class WandGUI implements Listener {
 
         if (WandUtil.isWand(event.getCurrentItem())) {
             player.getInventory().addItem(event.getCurrentItem());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                player.closeInventory();
-            }, 1);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, player::closeInventory, 1);
         }
     }
 

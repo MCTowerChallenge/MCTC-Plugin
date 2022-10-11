@@ -2,12 +2,14 @@ package io.github.idkahn.towerchallenge;
 
 import io.github.idkahn.towerchallenge.towering.GodTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
@@ -17,13 +19,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import javax.naming.Name;
-import javax.xml.validation.SchemaFactoryConfigurationError;
-import java.time.Duration;
-
 public class EndPortal implements Listener {
 
-    private EventManager eventManager;
+    private final EventManager eventManager;
 
     public EndPortal(EventManager eventManager) {
         this.eventManager = eventManager;
@@ -31,9 +29,29 @@ public class EndPortal implements Listener {
     }
 
     public void openPortal() {
-        Bukkit.getServer().sendMessage(Component.text("<", NamedTextColor.WHITE)
-                .append(Component.text("Herobrine", NamedTextColor.DARK_RED))
-                .append(Component.text("> You don't know what you did....", NamedTextColor.WHITE)));
+        for (int x = -116; x <= -114; x++) {
+            for (int z = -191; z <= -187; z++) {
+                Location block = new Location(Bukkit.getWorld("world_nether"), x, 93, z);
+                block.getBlock().setType(Material.END_PORTAL);
+            }
+        }
+//        Bukkit.getServer().sendMessage(Component.text("<", NamedTextColor.WHITE)
+//                .append(Component.text("Herobrine", NamedTextColor.DARK_RED))
+//                .append(Component.text("> You don't know what you did....", NamedTextColor.WHITE)));
+        Bukkit.getServer().sendMessage(Component.text("End Portal ").color(TextColor.fromHexString("#f0ffd0"))
+                .append(Component.text("has been opened!").color(NamedTextColor.WHITE)));
+        Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.end_portal.spawn"), Sound.Source.MASTER, 100, 1));
+        final Title title = Title.title(Component.text("End Portal").color(TextColor.fromHexString("#f0ffd0")), Component.text("has been opened!").color(NamedTextColor.WHITE));
+        Bukkit.getServer().showTitle(title);
+    }
+
+    public void resetPortal() {
+        for (int x = -116; x <= -114; x++) {
+            for (int z = -191; z <= -187; z++) {
+                Location block = new Location(Bukkit.getWorld("world_nether"), x, 93, z);
+                block.getBlock().setType(Material.AIR);
+            }
+        }
     }
 
     @EventHandler
@@ -42,6 +60,7 @@ public class EndPortal implements Listener {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
             TowerTeam team = eventManager.getTowerListener().getPlayerTeam(player);
+            assert block != null;
             if (block.getType().equals(Material.END_PORTAL_FRAME)) {
                 if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
                     if (event.getItem().getType().equals(Material.ENDER_EYE)) {

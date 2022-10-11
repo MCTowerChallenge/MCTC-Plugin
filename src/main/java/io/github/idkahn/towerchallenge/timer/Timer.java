@@ -1,8 +1,11 @@
 package io.github.idkahn.towerchallenge.timer;
 
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,23 +17,33 @@ public class Timer extends BukkitRunnable {
 
     private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
     private LocalDateTime endTime;
-    private Duration maxDuration;
+    private final Duration maxDuration;
     private Duration timeLeft;
+    private final Duration intermission;
+    private boolean hadIntermission;
+    private boolean started;
     private TimerState state;
-    private BossBar bossBar;
-    private JavaPlugin plugin;
+    private final BossBar bossBar;
+
+    private boolean bossBarShown;
 
     private LocalDateTime lastPause;
 
     public Timer(JavaPlugin plugin) {
         LocalDateTime now = LocalDateTime.now();
-        this.endTime = now.plusSeconds(30);
+        this.endTime = now.plusHours(5);
         this.maxDuration = new Duration(now, this.endTime);
         this.timeLeft = new Duration(this.maxDuration);
+        this.intermission = new Duration(0, 0, 0, 2, 30, 0, 0);
+        this.hadIntermission = false;
+        this.started = false;
         this.lastPause = now;
         this.state = TimerState.PAUSED;
-        this.plugin = plugin;
-        this.bossBar = BossBar.bossBar(Component.text("Time Left: ").append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.LIGHT_PURPLE)), 1.0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_12);
+        this.bossBar = BossBar.bossBar(Component.text("Time Left: ").append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE)), 1.0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
+        this.bossBar.color(BossBar.Color.BLUE);
+        this.bossBarShown = false;
+        TimerListener timerListener = new TimerListener(this);
+        Bukkit.getServer().getPluginManager().registerEvents(timerListener, plugin);
         this.runTaskTimer(plugin, 0, 1);
     }
 
@@ -42,14 +55,31 @@ public class Timer extends BukkitRunnable {
             return;
         }
 
+        if (!this.hadIntermission) {
+            if (this.timeLeft.getTime() <= intermission.getTime()) {
+                pause();
+                this.hadIntermission = true;
+                Title title = Title.title(Component.text("Intermission").color(NamedTextColor.WHITE), Component.text("30 minute break!").color(NamedTextColor.BLUE));
+                Bukkit.getServer().showTitle(title);
+                Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.wither.death"), Sound.Source.MASTER, 100, 1));
+                Component newName = Component.text("Intermission!");
+                bossBar.name(newName);
+                return;
+            }
+        }
         if (this.timeLeft.getTime() <= 0) {
 //            Bukkit.getServer().sendMessage(Component.text(this.timeLeft.getTime() + " Timer Ended"));
-            this.state = TimerState.ENDED;
+            if (this.state != TimerState.ENDED) {
+                Title title = Title.title(Component.text("Time is up!").color(NamedTextColor.WHITE), Component.text("No more crafting!").color(NamedTextColor.BLUE));
+                Bukkit.getServer().showTitle(title);
+                Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "ui.toast.challenge_complete"), Sound.Source.MASTER, 100, 1));
+                Component newName = Component.text("Time is up!");
+                bossBar.name(newName);
+                this.state = TimerState.ENDED;
+            }
         }
 
         if (this.state == TimerState.ENDED) {
-            Component newName = Component.text("Time is up!");
-            bossBar.name(newName);
             return;
         }
 
@@ -59,7 +89,7 @@ public class Timer extends BukkitRunnable {
 
         this.timeLeft.setFromDateTime(LocalDateTime.now(), this.endTime);
         Component newName = Component.text("Time Left: ")
-            .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.LIGHT_PURPLE));
+            .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE));
         bossBar.name(newName);
         float progress = this.timeLeft.getTime().floatValue()/this.maxDuration.getTime().floatValue();
 //        Bukkit.getServer().sendMessage(Component.text(progress));
@@ -74,19 +104,20 @@ public class Timer extends BukkitRunnable {
     }
 
     public void setDuration(Duration input) {
+        this.hadIntermission = input.compareTo(intermission) <= 0;
         LocalDateTime now = LocalDateTime.now();
         this.endTime = input.getDateTime(now);
-        this.maxDuration = new Duration(input);
+//        this.maxDuration = new Duration(input);
 //        Bukkit.getServer().sendMessage(Component.text(now.toString()));
 //        Bukkit.getServer().sendMessage(Component.text(this.endTime.toString()));
 //        Bukkit.getServer().sendMessage(Component.text(input.toString()));
-        this.timeLeft = new Duration(this.maxDuration);
+        this.timeLeft = new Duration(input);
         this.lastPause = now;
         this.state = TimerState.PAUSED;
         Component newName = Component.text("Time Left: ")
-                .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.LIGHT_PURPLE));
+                .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE));
         bossBar.name(newName);
-        bossBar.progress(1.0f);
+        bossBar.progress(this.timeLeft.getTime().floatValue()/this.maxDuration.getTime().floatValue());
     }
 
     public void pause() {
@@ -99,9 +130,19 @@ public class Timer extends BukkitRunnable {
         }
     }
 
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+
     public void resume() {
         if (this.state == TimerState.ENDED || this.state == TimerState.UNSET) {
             return;
+        }
+        if (!this.started) {
+            this.started = true;
+            Title title = Title.title(Component.text("Timer Started!").color(NamedTextColor.WHITE), Component.empty());
+            Bukkit.getServer().showTitle(title);
+            Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.wither.spawn"), Sound.Source.MASTER, 100, 1));
         }
         if (this.state != TimerState.RUNNING) {
             LocalDateTime now = LocalDateTime.now();
@@ -120,17 +161,26 @@ public class Timer extends BukkitRunnable {
         return timeLeft;
     }
 
-    public void showBossBar() {
+    public BossBar getBossBar() {
+        return bossBar;
+    }
 
+    public boolean isBossBarShown() {
+        return bossBarShown;
+    }
+
+    public void showBossBar() {
+        bossBarShown = true;
 //        this.timeLeft.setFromDateTime(LocalDateTime.now(), this.time);
 //        Component newName = Component.text("Time Left: ")
-//                .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.LIGHT_PURPLE));
+//                .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE));
 //        bossBar.name(newName);
         Bukkit.getServer().showBossBar(bossBar);
     }
 
     public void removeBossBar() {
 //        this.cancel();
+        bossBarShown = false;
         Bukkit.getServer().hideBossBar(bossBar);
     }
 

@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.towering;
+package io.github.idkahn.towerchallenge.candy;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,20 +11,15 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TowerTabComplete implements TabCompleter {
+public class CandyTabComplete implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (command.getName().equalsIgnoreCase("tower")) {
+        if (command.getName().equalsIgnoreCase("candy")) {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<>();
 
-                strings.add("reloadConfig");
-                strings.add("toggleTower");
-                strings.add("addFullBlock");
-                strings.add("removeFullBlock");
-                strings.add("dealItems");
-                strings.add("showTowerScores");
-                strings.add("resetEndPortal");
+                strings.add("reset");
+                strings.add("spawn");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 

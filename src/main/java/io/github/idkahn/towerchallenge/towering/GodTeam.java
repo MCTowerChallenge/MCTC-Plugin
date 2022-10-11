@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

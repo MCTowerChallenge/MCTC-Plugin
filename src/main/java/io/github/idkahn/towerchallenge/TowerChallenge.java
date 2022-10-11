@@ -1,19 +1,22 @@
 package io.github.idkahn.towerchallenge;
 
+import io.github.idkahn.towerchallenge.candy.CandyCommands;
+import io.github.idkahn.towerchallenge.candy.CandyTabComplete;
+import io.github.idkahn.towerchallenge.commands.EnderChestCommand;
 import io.github.idkahn.towerchallenge.commands.GodCommand;
+import io.github.idkahn.towerchallenge.commands.InvseeCommand;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
+import io.github.idkahn.towerchallenge.hats.HatTabComplete;
 import io.github.idkahn.towerchallenge.penelope.PenelopeCommands;
 import io.github.idkahn.towerchallenge.penelope.PenelopeTabComplete;
-import io.github.idkahn.towerchallenge.wands.WandCommands;
-import io.github.idkahn.towerchallenge.wands.WandGUI;
-import io.github.idkahn.towerchallenge.wands.WandListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
 import io.github.idkahn.towerchallenge.towering.ChatHandler;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
-import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.TowerTabComplete;
+import io.github.idkahn.towerchallenge.wands.WandCommands;
+import io.github.idkahn.towerchallenge.wands.WandListener;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +30,7 @@ public final class TowerChallenge extends JavaPlugin {
     public static File penelopeConfigFile;
     public static File wandConfigFile;
     public static File endPortalConfigFile;
+    public static File candyConfigFile;
 
     @Override
     public void onEnable() {
@@ -49,12 +53,16 @@ public final class TowerChallenge extends JavaPlugin {
         endPortalConfigFile = new File(getDataFolder(), "portalframes.yml");
         YamlConfiguration endPortalConfig = YamlConfiguration.loadConfiguration(endPortalConfigFile);
 
+        candyConfigFile = new File(getDataFolder(), "candy.yml");
+        YamlConfiguration candyConfig = YamlConfiguration.loadConfiguration(candyConfigFile);
+
         try {
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
             penelopeConfig.save(penelopeConfigFile);
             wandConfig.save(wandConfigFile);
             endPortalConfig.save(endPortalConfigFile);
+            candyConfig.save(candyConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +77,9 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
         HatCommands hatCommands = new HatCommands(manager.getTowerListener());
+        HatTabComplete hatTabComplete = new HatTabComplete();
         this.getCommand("hat").setExecutor(hatCommands);
+        this.getCommand("hat").setTabCompleter(hatTabComplete);
 
 
         // Teams
@@ -96,8 +106,16 @@ public final class TowerChallenge extends JavaPlugin {
         PenelopeTabComplete penelopeTabComplete = new PenelopeTabComplete();
         this.getCommand("penelope").setTabCompleter(penelopeTabComplete);
 
+        CandyCommands candyCommands = new CandyCommands();
+        this.getCommand("candy").setExecutor(candyCommands);
+        CandyTabComplete candyTabComplete = new CandyTabComplete();
+        this.getCommand("candy").setTabCompleter(candyTabComplete);
+
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
+
+        new EnderChestCommand(this);
+        new InvseeCommand(this);
 
     }
 

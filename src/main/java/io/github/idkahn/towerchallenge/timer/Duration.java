@@ -1,9 +1,11 @@
 package io.github.idkahn.towerchallenge.timer;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Duration {
+public class Duration implements Comparable<Duration> {
 
     private long years;
     private long months;
@@ -174,5 +176,10 @@ public class Duration {
     @Override
     public String toString() {
         return getYears() + " years " + getMonths() + " months " + getDays() + " days " + padZeros(getHours()) +":"+ padZeros(getMinutes()) +":"+ padZeros(getSeconds()) +":"+getNanos();
+    }
+
+    @Override
+    public int compareTo(@NotNull Duration o) {
+        return Long.compare(this.getTime(), o.getTime());
     }
 }

@@ -1,25 +1,31 @@
 package io.github.idkahn.towerchallenge.quests;
 
+import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Quest implements Listener {
 
@@ -30,13 +36,14 @@ public class Quest implements Listener {
     // Is Completed
     // Who Completed
 
-    private QuestManager questManager;
-    private Component name;
-    private ArrayList<Component> description;
-    private ArrayList<ItemStack> criteria;
-    private ArrayList<ItemStack> reward;
-    private TowerTeam completed;
+    private final QuestManager questManager;
+    private final Component name;
+    private final ArrayList<Component> description;
+    private final ArrayList<ItemStack> criteria;
+    private final ArrayList<ItemStack> reward;
+    private final TowerTeam completed;
     private Inventory inventory;
+    private Inventory completeUI;
 
     public Quest(QuestManager questManager, Component name, ArrayList<Component> description, ArrayList<ItemStack> criteria, ArrayList<ItemStack> reward, TowerTeam completed) {
         this.questManager = questManager;
@@ -46,6 +53,7 @@ public class Quest implements Listener {
         this.reward = reward;
         this.completed = completed;
         initInventory();
+        initCompleteUI();
         Bukkit.getServer().getPluginManager().registerEvents(this, questManager.getEventManager().getPlugin());
     }
 
@@ -82,7 +90,7 @@ public class Quest implements Listener {
             completedMeta.displayName(Component.text("Not Completed Yet").decoration(TextDecoration.ITALIC, false));
             completedItem.setItemMeta(completedMeta);
         }
-        inventory.setItem(17, completedItem);
+        inventory.setItem(17, QuestUtil.setButton(completedItem));
 
         for (int i = 0; i < criteria.size(); i++) {
             ItemStack item = criteria.get(i);
@@ -90,10 +98,57 @@ public class Quest implements Listener {
         }
 
         for (int i = 0; i < reward.size(); i++) {
-            ItemStack item = reward.get(i);
+            ItemStack item = QuestUtil.setButton(reward.get(i));
             inventory.setItem(32+(Math.floorDiv(i,3)*9)+i, item);
         }
 
+    }
+
+    public void initCompleteUI() {
+        HashMap<String, TowerTeam> teams = questManager.getEventManager().getTowerListener().getTeams();
+        completeUI = Bukkit.createInventory(null, HatGUI.getInventorySize(teams.size()+2), Component.text("Completed By: "));
+
+        ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
+        ItemMeta exitMeta = exit.getItemMeta();
+        exitMeta.displayName(Component.text("Exit").decoration(TextDecoration.ITALIC, false));
+        exitMeta.setCustomModelData(2);
+        exit.setItemMeta(exitMeta);
+        completeUI.setItem(completeUI.getSize()-1, exit);
+
+        for (Map.Entry<String, TowerTeam> entry : teams.entrySet()) {
+            TowerTeam team = entry.getValue();
+            ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(team.getDye()+"_CONCRETE")));
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.displayName(team.getDisplayName().decoration(TextDecoration.ITALIC, false));
+            itemMeta.setCustomModelData(1);
+            item.setItemMeta(itemMeta);
+            completeUI.addItem(item);
+        }
+
+        ItemStack unset = QuestUtil.setButton(new ItemStack(Material.BARRIER));
+        ItemMeta unsetMeta = unset.getItemMeta();
+        unsetMeta.displayName(Component.text("None").decoration(TextDecoration.ITALIC, false));
+        unset.setItemMeta(unsetMeta);
+        completeUI.addItem(unset);
+    }
+
+    public void closeInventories() {
+        inventory.close();
+        completeUI.close();
+    }
+
+    public String getTextName() {
+        return PlainTextComponentSerializer.plainText().serialize(name);
+    }
+    public List<Player> getViewers() {
+        ArrayList<HumanEntity> players = new ArrayList<>();
+        players.addAll(inventory.getViewers());
+        players.addAll(completeUI.getViewers());
+        return players.stream().map((entity) -> (Player) entity).collect(Collectors.toList());
+    }
+
+    public Component getName() {
+        return name;
     }
 
     public ItemStack getItem() {
@@ -111,21 +166,80 @@ public class Quest implements Listener {
     public void openInventory(Player player) {
         player.openInventory(inventory);
     }
+    public void openCompleteUI(Player player) {
+        player.openInventory(completeUI);
+    }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled())
             return;
-        if (!event.getInventory().equals(inventory))
-            return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir())
             return;
-        event.setCancelled(true);
+        if (event.getInventory().equals(inventory)) {
+            event.setCancelled(true);
 
-        Player player = (Player) event.getWhoClicked();
+            Player player = (Player) event.getWhoClicked();
 
-        if (QuestUtil.isButton(event.getCurrentItem())) {
-            questManager.openQuestPicker(player);
+            ItemStack item = event.getCurrentItem();
+            if (QuestUtil.isButton(item)) {
+                if (item.getType().equals(Material.REDSTONE_BLOCK)) {
+                    questManager.openQuestPicker(player);
+                } else if (event.getSlot() == 17) {
+                    if (player.hasPermission("towerchallenge.quest.complete")) {
+                        openCompleteUI(player);
+                    }
+                } else {
+                    if (player.hasPermission("towerchallenge.quest.getreward")) {
+                        player.getInventory().addItem(item);
+                    }
+                }
+            }
+        } else if (event.getInventory().equals(completeUI)) {
+            event.setCancelled(true);
+
+            Player player = (Player) event.getWhoClicked();
+
+            ItemStack item = event.getCurrentItem();
+            if (QuestUtil.isButton(item)) {
+                if (event.getSlot() == completeUI.getSize()-1) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(questManager.getEventManager().getPlugin(), player::closeInventory, 1);
+                } else {
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.questConfigFile);
+                    try {
+                        if (item.getType().equals(Material.BARRIER)) {
+                            String questName = PlainTextComponentSerializer.plainText().serialize(name);
+                            config.set("Quests."+questName+".completed", null);
+                            config.save(TowerChallenge.questConfigFile);
+                            player.sendMessage(name.append(Component.text(" set to incomplete.")));
+                        } else {
+                            String questName = PlainTextComponentSerializer.plainText().serialize(name);
+                            String teamName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item.getItemMeta().displayName()));
+                            TowerTeam team = questManager.getEventManager().getTowerListener().getTeam(teamName);
+                            config.set("Quests."+questName+".completed", teamName);
+                            config.save(TowerChallenge.questConfigFile);
+                            player.sendMessage(name.append(Component.text(" set to complete by ")).append(Component.text(teamName)).append(Component.text(".")));
+//                            Title title = Title.title(Component.text("Quest Completed!").color(NamedTextColor.WHITE), Component.text(questName).color(NamedTextColor.GRAY));
+//                            Bukkit.getServer().showTitle(title);
+                            Bukkit.getServer().sendMessage(
+                                    Component.text(questName, NamedTextColor.AQUA)
+                                            .clickEvent(ClickEvent.runCommand("/qb quest "+questName))
+                                            .hoverEvent(HoverEvent.showText(Component.text("Open Quest Page")))
+                                            .append(Component.text(" has been completed by ", NamedTextColor.WHITE))
+                                            .append(team.getDisplayName().color(team.getTextColor()))
+                            );
+                            Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
+                            // entity.player.levelup
+                        }
+                        questManager.loadQuests();
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(questManager.getEventManager().getPlugin(), () ->
+                                questManager.getQuest(PlainTextComponentSerializer.plainText().serialize(name)).openInventory(player), 1);
+                    } catch (IOException e) {
+                        Bukkit.getLogger().info(e.getMessage());
+                    }
+                }
+            }
+
         }
     }
 

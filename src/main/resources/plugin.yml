@@ -30,7 +30,23 @@ commands:
     description: Toggles player invulnerability
     usage: /god
     permission: towerchallenge.god
+  enderchest:
+    description: Opens the player's enderchest
+    usage: /enderchest
+    permission: towerchallenge.enderchest
+    aliases:
+      - ec
+  inventorysee:
+    description: Views a player's inventory
+    usage: /<command> [Player Name]
+    permission: towerchallenge.invsee
+    aliases:
+      - invsee
   penelope:
     description: Commands for controlling Penelope events
     usage: /penelope [create|remove|set|reload]
     permission: towerchallenge.penelope
+  candy:
+    description: commands for candy
+    usage: /candy
+    permission: towerchallenge.candy

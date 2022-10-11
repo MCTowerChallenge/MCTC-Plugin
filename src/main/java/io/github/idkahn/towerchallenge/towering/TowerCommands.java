@@ -1,41 +1,26 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.wands.WandGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import javax.naming.Name;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class TowerCommands implements CommandExecutor {
 
     public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
-    private TowerListener towerListener;
-    private EventManager manager;
-    private JavaPlugin plugin;
-
-
+    private final TowerListener towerListener;
+    private final EventManager manager;
 
     public TowerCommands(EventManager manager) {
         this.manager = manager;
-        this.plugin = manager.getPlugin();
         this.towerListener = manager.getTowerListener();
     }
 
@@ -47,10 +32,9 @@ public class TowerCommands implements CommandExecutor {
                 switch(args[0].toLowerCase()) {
                     case ("addfullblock"):
                         if (args.length < 2) {
-                            if (sender instanceof Player) {
-                                Player player = (Player) sender;
+                            if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
-                                if (item == null || item.getType().isAir()) {
+                                if (item.getType().isAir()) {
                                     player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
                                     player.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
                                 } else {
@@ -81,10 +65,9 @@ public class TowerCommands implements CommandExecutor {
                         break;
                     case("removefullblock"):
                         if (args.length < 2) {
-                            if (sender instanceof Player) {
-                                Player player = (Player) sender;
+                            if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
-                                if (item == null || item.getType().isAir()) {
+                                if (item.getType().isAir()) {
                                     player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
                                     player.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
                                 } else {
@@ -137,14 +120,31 @@ public class TowerCommands implements CommandExecutor {
                         sender.sendMessage(Component.text("Reloading Config"));
                         towerListener.loadConfig();
                         break;
+                    case ("openendportal"):
+                        manager.openEndPortal();
                     case ("resetendportal"):
                         manager.resetEndPortal();
+                        break;
+                    case ("showtowerscores"):
+                        manager.showTowerScores();
+                        break;
+                    case ("dealitems"):
+                        if (args.length < 2) {
+                            manager.dealItems();
+                        } else {
+                            Player player = Bukkit.getPlayer(args[1]);
+                            if (player != null) {
+                                manager.dealPlayerItems(player);
+                            }
+                        }
                         break;
                     case ("toggletower"):
                         if (manager.getEventPhase().equals(EventManager.Phase.TOWERING)) {
                             manager.setEventPhase(EventManager.Phase.SETUP);
+                            sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));
                         } else if (manager.getEventPhase().equals(EventManager.Phase.SETUP)) {
                             manager.setEventPhase(EventManager.Phase.TOWERING);
+                            sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
                         break;
                     default:

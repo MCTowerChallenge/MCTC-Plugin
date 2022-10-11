@@ -24,13 +24,13 @@ import java.util.*;
 public class HatGUI implements Listener {
 
     public static final String UI_NAME = "Select a Hat!";
-    private Plugin plugin;
-    private List<ItemStack> hats;
+    private final Plugin plugin;
+    private final List<ItemStack> hats;
     private Inventory inventory;
-    private Color color;
+    private final Color color;
 
     public static int getInventorySize(int NumberOfItems) {
-        return 9*((NumberOfItems/9)+1);
+        return 9*(((NumberOfItems-1)/9)+1);
     }
 
     public HatGUI(Plugin plugin, Color color) {
@@ -61,9 +61,7 @@ public class HatGUI implements Listener {
 
         if (HatUtil.isHat(event.getCurrentItem())) {
             player.getInventory().setHelmet(event.getCurrentItem());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                player.closeInventory();
-            }, 1);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, player::closeInventory, 1);
         }
     }
 
@@ -126,8 +124,7 @@ public class HatGUI implements Listener {
                             EquipmentSlot.HEAD
                     )
             );
-            if (hatMeta instanceof LeatherArmorMeta && color != null) {
-                LeatherArmorMeta armorMeta = (LeatherArmorMeta) hatMeta;
+            if (hatMeta instanceof LeatherArmorMeta armorMeta && color != null) {
                 armorMeta.setColor(color);
                 hat.setItemMeta(armorMeta);
             } else {

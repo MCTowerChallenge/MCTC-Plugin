@@ -3,9 +3,9 @@ package io.github.idkahn.towerchallenge.towering;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.Teams;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.hats.HatUtil;
-import io.github.idkahn.towerchallenge.Teams;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -227,8 +227,7 @@ public class TowerListener implements Listener {
                 return;
             }
 
-            if (placedBlockState instanceof ShulkerBox) {
-                ShulkerBox shulkerBox = (ShulkerBox) placedBlockState;
+            if (placedBlockState instanceof ShulkerBox shulkerBox) {
 
                 if (shulkerBox.customName() != null) {
                     String shulkerBoxName = PlainTextComponentSerializer.plainText().serialize(shulkerBox.customName());
@@ -276,179 +275,6 @@ public class TowerListener implements Listener {
             }
         }
 
-    }
-
-
-
-    @EventHandler
-    public void onBreakBlock(final BlockBreakEvent event) {
-
-        Player player = event.getPlayer();
-        BlockState brokenBlockState = event.getBlock().getState();
-
-        if (isTowering) {
-            for (ArrayList<BlockState> list : towers.values()) {
-                Iterator<BlockState> listIterator = list.iterator();
-                while (listIterator.hasNext()) {
-                    BlockState blockState = listIterator.next();
-
-                    Location blockLocation = blockState.getLocation();
-
-                    if (blockLocation.getX() == brokenBlockState.getX() &&
-                            blockLocation.getY() == brokenBlockState.getY() &&
-                            blockLocation.getZ() == brokenBlockState.getZ()) {
-
-    //                    event.getPlayer().sendMessage(event.getBlock().getType().name());
-                        listIterator.remove();
-                        player.sendMessage("Blocks Placed: " + towers.get(Teams.RED).size());
-                        return;
-                    }
-
-                }
-            }
-        }
-
-    }
-
-    @EventHandler
-    public void onBlockBurn(final BlockBurnEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.getLogger().info("Cancelled BlockBurn");
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockSpread(final BlockSpreadEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.getLogger().info("Cancelled BlockSpread");
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockExplode(final BlockExplodeEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.getLogger().info("Cancelled BlockExplode");
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEntityExplode(final EntityExplodeEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.getLogger().info("Cancelled EntityExplode");
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockFade(final BlockFadeEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockFade"));
-//        event.setCancelled(true);
-    }
-
-//    @EventHandler
-//    public void onBlockIgnite(final BlockIgniteEvent event) {
-//        if (isTowering) event.setCancelled(true);
-////        Bukkit.broadcast(Component.text("Cancelled BlockIgnite"));
-////        event.setCancelled(true);
-//    }
-
-    @EventHandler
-    public void onBlockPistonExtend(final BlockPistonExtendEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockPistonExtend"));
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockPistonRetract(final BlockPistonRetractEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockPistonRetract"));
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpongeAbsorb(final SpongeAbsorbEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled SpongeAbsorb"));
-//        event.setCancelled(true);
-    }
-
-//    @EventHandler
-//    public void onBlockDestroy(final BlockDestroyEvent event) {
-//        if (isTowering) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockDestroy"));
-//        event.setCancelled(true);
-//    }
-
-    @EventHandler
-    public void onTNTPrime(final TNTPrimeEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled TNTPrime"));
-//        event.setCancelled(true);
-    }
-
-//    @EventHandler
-//    public void onBlockPhysics(final BlockPhysicsEvent event) {
-//        if (fallingBlocks.contains(event.getBlock().getRelative(BlockFace.UP).getType())) {
-//            if (isTowering) event.setCancelled(true);
-////            Bukkit.broadcast(Component.text("Cancelled BlockPhysics ").append(Component.text(event.getBlock().getType().name())));
-////            event.setCancelled(true);
-//        }
-//    }
-
-    @EventHandler
-    public void onBlockGrow(final BlockGrowEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockGrow ").append(Component.text(event.getBlock().getType().name())));
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockForm(final BlockFormEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled BlockForm ").append(Component.text(event.getBlock().getType().name())));
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEntityChangeBlock(final EntityChangeBlockEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled EntityChangeBlock ").append(Component.text(event.getEntity().getType().name())));
-//        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onPlayerShearBlock(final PlayerShearBlockEvent event) {
-        if (isTowering || cancelEvents) event.setCancelled(true);
-//        Bukkit.broadcast(Component.text("Cancelled EntityChangeBlock ").append(Component.text(event.getEntity().getType().name())));
-//        event.setCancelled(true);
-    }
-
-    public void enableTower() {
-        isTowering = true;
-    }
-
-    public void disableTower() {
-        isTowering = false;
-    }
-
-    public void enableEvents() {
-        cancelEvents = false;
-    }
-
-    public void disableEvents() {
-        cancelEvents = true;
-    }
-
-    public void removeBlocks() {
-        for (ArrayList<BlockState> list : towers.values()) {
-            Iterator<BlockState> listIterator = list.iterator();
-            while (listIterator.hasNext()) {
-                BlockState blockState = listIterator.next();
-                blockState.getBlock().setType(Material.AIR);
-                listIterator.remove();
-            }
-        }
     }
 
 }

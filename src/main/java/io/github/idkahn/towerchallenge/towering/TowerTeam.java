@@ -4,20 +4,26 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTList;
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.hats.HatGUI;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -33,14 +39,12 @@ public class TowerTeam {
     public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
 
     private final Team team;
-    private ProtectedRegion teamArea;
-    private JavaPlugin plugin;
-    private EventManager manager;
-    private String name;
-    private String displayName;
-    private String color;
-    private String dye;
-    private HatGUI hatGUI;
+    private final JavaPlugin plugin;
+    private final EventManager manager;
+    private final String displayName;
+    private final String color;
+    private final String dye;
+    private final HatGUI hatGUI;
 
     private SpawnArea spawnArea;
     private TowerArea towerArea;
@@ -51,24 +55,20 @@ public class TowerTeam {
         this.manager = manager;
         this.plugin = manager.getPlugin();
         this.displayName = displayName;
-        this.name = displayName.replaceAll("\\s", "");
+        String name = displayName.replaceAll("\\s", "");
         this.color = color;
         this.dye = dye.toUpperCase();
-        Team team = scoreboard.getTeam(this.name);
+        Team team = scoreboard.getTeam(name);
         if (team != null) {
             this.team = team;
         } else {
-            this.team = scoreboard.registerNewTeam(this.name);
+            this.team = scoreboard.registerNewTeam(name);
             this.team.displayName(Component.text(displayName));
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
         this.hatGUI = new HatGUI(plugin, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
         this.loadRegions();
         this.loadPortal();
-    }
-
-    public TowerTeam(EventManager manager, String displayName) {
-        this(manager, displayName, "#FFFFFF", "white");
     }
 
     public void loadHats() {
@@ -84,7 +84,7 @@ public class TowerTeam {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
             this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("world")))).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")), displayName);
+            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")), displayName);
         }
     }
 
@@ -104,8 +104,13 @@ public class TowerTeam {
         return color;
     }
 
+
+
     public TextColor getTextColor() {
         return TextColor.fromHexString(color);
+    }
+    public Color getBukkitColor() {
+        return Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16));
     }
 
     public String getDye() {
@@ -117,7 +122,6 @@ public class TowerTeam {
     }
 
     public void setArea(ProtectedRegion teamArea) {
-        this.teamArea = teamArea;
     }
 
     public void addPlayer(OfflinePlayer player, Boolean addToConfig) {
@@ -187,21 +191,22 @@ public class TowerTeam {
 
         int remainingEyes = 16-manager.getCompletedPortalFrames();
 
-        final Component mainTitle = getDisplayName().color(getTextColor());
-//        final Component subtitle = Component.text("There are ", NamedTextColor.DARK_GRAY)
-//                .append(Component.text(16-manager.getCompletedPortalFrames(), NamedTextColor.DARK_RED))
-//                .append(Component.text(" remaining.", NamedTextColor.DARK_GRAY));
-        final Component subtitle = Component.text("has contributed to the End Portal!").color(NamedTextColor.WHITE);
+//        final Component mainTitle = getDisplayName().color(getTextColor());
+////        final Component subtitle = Component.text("There are ", NamedTextColor.DARK_GRAY)
+////                .append(Component.text(16-manager.getCompletedPortalFrames(), NamedTextColor.DARK_RED))
+////                .append(Component.text(" remaining.", NamedTextColor.DARK_GRAY));
+//        final Component subtitle = Component.text("has contributed to the End Portal!").color(NamedTextColor.WHITE);
 
         final Component chatMessage = getDisplayName().color(getTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes+" remain... /th").color(NamedTextColor.DARK_RED));
+                .append(Component.text(remainingEyes+" remain... ").color(TextColor.fromHexString("#44b9ad")));
 
         // Creates a simple title with the default values for fade-in, stay on screen and fade-out durations
-        final Title title = Title.title(mainTitle, subtitle);
+//        final Title title = Title.title(mainTitle, subtitle);
 
         // Send the title to your audience
-        Bukkit.getServer().showTitle(title);
+//        Bukkit.getServer().showTitle(title);
+        Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
         Bukkit.getServer().sendMessage(chatMessage);
 
         if (remainingEyes <= 0) {
@@ -254,4 +259,88 @@ public class TowerTeam {
         return plugin;
     }
 
+    public void giveShulker(Player player, int number) {
+
+        NBTItem shulker = new NBTItem(new ItemStack(Material.valueOf(dye.toUpperCase()+"_SHULKER_BOX")));
+        NBTList<String> tags = shulker.getStringList("Tags");
+        tags.add("given");
+        shulker.setObject("Tags", tags);
+        for (int i = 0; i < number; i++) {
+            player.getInventory().addItem(shulker.getItem());
+        }
+
+    }
+
+    public void dealItems(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        ItemStack hat = inventory.getHelmet();
+        if (hat == null || hat.getType().isAir()) {
+            hat = new ItemStack(Material.DIAMOND_HELMET);
+            ItemMeta hatMeta = hat.getItemMeta();
+            hatMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+            hat.setItemMeta(hatMeta);
+        }
+        inventory.clear();
+
+        ItemStack pickaxe = new ItemStack(Material.NETHERITE_PICKAXE);
+        ItemMeta pickaxeMeta = pickaxe.getItemMeta();
+        pickaxeMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        pickaxeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
+        pickaxeMeta.addEnchant(Enchantment.SILK_TOUCH, 1, false);
+        pickaxe.setItemMeta(pickaxeMeta);
+
+        ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
+        ItemMeta axeMeta = axe.getItemMeta();
+        axeMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        axeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
+        axe.setItemMeta(axeMeta);
+
+        ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL);
+        ItemMeta shovelMeta = shovel.getItemMeta();
+        shovelMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        shovelMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
+        shovel.setItemMeta(shovelMeta);
+
+        ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
+        ItemMeta chestplateMeta = chestplate.getItemMeta();
+        chestplateMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        chestplate.setItemMeta(chestplateMeta);
+
+        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
+        ItemMeta leggingsMeta = leggings.getItemMeta();
+        leggingsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        leggings.setItemMeta(leggingsMeta);
+
+        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
+        ItemMeta bootsMeta = boots.getItemMeta();
+        bootsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        boots.setItemMeta(bootsMeta);
+
+        ItemStack goldBoots = new ItemStack(Material.GOLDEN_BOOTS);
+        ItemMeta goldBootsMeta = goldBoots.getItemMeta();
+        goldBootsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        goldBootsMeta.addEnchant(Enchantment.SOUL_SPEED, 1, false);
+        goldBoots.setItemMeta(goldBootsMeta);
+
+        ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+
+        ItemStack torches = new ItemStack(Material.TORCH, 64);
+
+        inventory.setHelmet(hat);
+        inventory.setChestplate(chestplate);
+        inventory.setLeggings(leggings);
+        inventory.setBoots(boots);
+
+        inventory.setItem(0, axe);
+        inventory.setItem(1, pickaxe);
+        inventory.setItem(2, shovel);
+        inventory.setItem(3, torches);
+        inventory.setItem(4, steak);
+        inventory.setItem(5, goldBoots);
+        giveShulker(player, 3);
+
+        inventory.setItem(30, torches);
+        inventory.setItem(31, steak);
+
+    }
 }
