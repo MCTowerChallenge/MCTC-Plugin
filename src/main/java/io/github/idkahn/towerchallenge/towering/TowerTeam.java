@@ -4,16 +4,19 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtapi.NBTList;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.candy.Candy;
+import io.github.idkahn.towerchallenge.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -23,12 +26,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.*;
 
 public class TowerTeam {
@@ -37,6 +42,10 @@ public class TowerTeam {
 
     // Server's scoreboard
     public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+    public static String SHULKER_NAME = "Starting Shulker Box";
+    public static String BUNDLE_NAME = "Candy Basket";
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final Team team;
     private final JavaPlugin plugin;
@@ -46,6 +55,7 @@ public class TowerTeam {
     private final String dye;
     private final HatGUI hatGUI;
 
+    private int extraScore;
     private SpawnArea spawnArea;
     private TowerArea towerArea;
 
@@ -58,6 +68,8 @@ public class TowerTeam {
         String name = displayName.replaceAll("\\s", "");
         this.color = color;
         this.dye = dye.toUpperCase();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        extraScore = config.getInt(displayName);
         Team team = scoreboard.getTeam(name);
         if (team != null) {
             this.team = team;
@@ -66,13 +78,9 @@ public class TowerTeam {
             this.team.displayName(Component.text(displayName));
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
-        this.hatGUI = new HatGUI(plugin, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
+        this.hatGUI = new HatGUI(manager, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
         this.loadRegions();
         this.loadPortal();
-    }
-
-    public void loadHats() {
-        hatGUI.loadHats();
     }
 
     public void loadRegions() {
@@ -100,11 +108,50 @@ public class TowerTeam {
         Bukkit.getLogger().info("Loaded portal frame for " + displayName + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
     }
 
+    public int getScore() {
+        int score = manager.getObjective().getScore(PlainTextComponentSerializer.plainText().serialize(getDisplayName())).getScore();
+        return score+extraScore;
+    }
+
+    public int addExtraScore(int score) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        extraScore += score;
+        config.set(displayName, extraScore);
+        try {
+            config.save(TowerChallenge.teamScoreConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return extraScore;
+    }
+
+    public int removeExtraScore(int score) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        extraScore -= score;
+        config.set(displayName, extraScore);
+        try {
+            config.save(TowerChallenge.teamScoreConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return extraScore;
+    }
+
+    public int getExtraScore() {
+        return extraScore;
+    }
+
+    public void setExtraScore(int extraScore) {
+        this.extraScore = extraScore;
+    }
+
     public String getColor() {
         return color;
     }
 
-
+    public EventManager getManager() {
+        return manager;
+    }
 
     public TextColor getTextColor() {
         return TextColor.fromHexString(color);
@@ -115,6 +162,21 @@ public class TowerTeam {
 
     public String getDye() {
         return dye;
+    }
+
+    public Audience getAudience() {
+        return Audience.audience(getOnlinePlayers());
+    }
+
+    public Set<Player> getOnlinePlayers() {
+        Set<Player> players = new HashSet<>();
+        for (String name : team.getEntries()) {
+            Player player = Bukkit.getPlayer(name);
+            if (player != null && player.isOnline()) {
+                players.add(player);
+            }
+        }
+        return players;
     }
 
     public void destroyTeam() {
@@ -199,7 +261,7 @@ public class TowerTeam {
 
         final Component chatMessage = getDisplayName().color(getTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes+" remain... ").color(TextColor.fromHexString("#44b9ad")));
+                .append(Component.text(remainingEyes+" remain... ").color(TowerChallenge.PRIMARY_COLOR));
 
         // Creates a simple title with the default values for fade-in, stay on screen and fade-out durations
 //        final Title title = Title.title(mainTitle, subtitle);
@@ -244,6 +306,12 @@ public class TowerTeam {
         return team.getEntries();
     }
 
+    public void clear() {
+        team.removeEntries(team.getEntries());
+        towerArea.clearPlayers();
+        spawnArea.clearPlayers();
+    }
+
     public Component getDisplayName() {
         return team.displayName();
     }
@@ -261,14 +329,34 @@ public class TowerTeam {
 
     public void giveShulker(Player player, int number) {
 
-        NBTItem shulker = new NBTItem(new ItemStack(Material.valueOf(dye.toUpperCase()+"_SHULKER_BOX")));
-        NBTList<String> tags = shulker.getStringList("Tags");
-        tags.add("given");
-        shulker.setObject("Tags", tags);
+        ItemStack shulker = new ItemStack(Material.valueOf(dye.toUpperCase()+"_SHULKER_BOX"));
+        ItemMeta shulkerMeta = shulker.getItemMeta();
+        shulkerMeta.displayName(Component.text(SHULKER_NAME).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA));
+        shulker.setItemMeta(shulkerMeta);
         for (int i = 0; i < number; i++) {
-            player.getInventory().addItem(shulker.getItem());
+            player.getInventory().addItem(shulker);
         }
 
+    }
+
+    public void giveBundle(Player player, int candies, int customModelID) {
+        ItemStack bundle = CandyUtils.setBundle(CandyUtils.setTeam(new ItemStack(Material.BUNDLE), this));
+        BundleMeta bundleMeta = (BundleMeta) bundle.getItemMeta();
+        bundleMeta.displayName(Component.text(BUNDLE_NAME).decoration(TextDecoration.ITALIC, false));
+        bundleMeta.setCustomModelData(customModelID);
+        ItemStack[] candyItems = new ItemStack[candies];
+        Arrays.fill(candyItems, Candy.randomCandy());
+        bundleMeta.setItems(Arrays.stream(candyItems).toList());
+        bundle.setItemMeta(bundleMeta);
+        player.getInventory().addItem(bundle);
+    }
+
+    public void giveBundle(Player player, int candies) {
+        giveBundle(player, candies, RANDOM.nextInt(3));
+    }
+
+    public void giveBundle(Player player) {
+        giveBundle(player, 0, RANDOM.nextInt(3));
     }
 
     public void dealItems(Player player) {
@@ -329,18 +417,20 @@ public class TowerTeam {
         inventory.setHelmet(hat);
         inventory.setChestplate(chestplate);
         inventory.setLeggings(leggings);
-        inventory.setBoots(boots);
+        inventory.setBoots(goldBoots);
 
         inventory.setItem(0, axe);
         inventory.setItem(1, pickaxe);
         inventory.setItem(2, shovel);
-        inventory.setItem(3, torches);
-        inventory.setItem(4, steak);
-        inventory.setItem(5, goldBoots);
+        inventory.setItem(3, manager.getQuestManager().getBook());
+        giveBundle(player);
+        inventory.setItem(5, steak);
+        inventory.setItem(6, torches);
+        inventory.setItem(8, boots);
         giveShulker(player, 3);
 
-        inventory.setItem(30, torches);
-        inventory.setItem(31, steak);
+        inventory.setItem(32, steak);
+        inventory.setItem(33, torches);
 
     }
 }

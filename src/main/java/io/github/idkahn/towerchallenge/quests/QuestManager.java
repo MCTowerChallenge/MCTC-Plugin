@@ -6,6 +6,7 @@ import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -39,13 +40,13 @@ public class QuestManager implements Listener {
 
     private Inventory questPicker;
     private Inventory completePicker;
+    private int stage;
 
     public QuestManager(EventManager eventManager) {
         this.eventManager = eventManager;
         QuestListener listener = new QuestListener(this);
         QuestCommands commands = new QuestCommands(this);
         this.quests = new HashMap<>();
-
         eventManager.getPlugin().getCommand("questbook").setExecutor(commands);
         Bukkit.getServer().getPluginManager().registerEvents(this, eventManager.getPlugin());
 
@@ -101,8 +102,8 @@ public class QuestManager implements Listener {
         bookMeta.addEnchant(Enchantment.MENDING, 0, true);
         bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         bookMeta.lore(new ArrayList<Component>(){{
-            add(Component.text("Right click with me in your hand"));
-            add(Component.text("to open the quest menu!"));
+            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
+            add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
         }});
         book.setItemMeta(bookMeta);
         return book;
@@ -129,6 +130,11 @@ public class QuestManager implements Listener {
                 itemMeta.displayName(Component.text("OR").decoration(TextDecoration.ITALIC, false));
                 item.setItemMeta(itemMeta);
             }
+            case "voucher" -> {
+                String itemName = (String) map.get("name");
+                int amount = (int) map.get("amount");
+                item = QuestUtil.setVoucher(new BlockVoucher(itemName, amount));
+            }
             case "item" -> {
                 String id = (String) map.get("item");
                 if (id == null) {
@@ -146,6 +152,13 @@ public class QuestManager implements Listener {
                 String itemName = (String) map.get("name");
                 if (itemName != null) {
                     itemMeta.displayName(Component.text(itemName).decoration(TextDecoration.ITALIC, false));
+                }
+                Object objEnchanted = map.get("enchanted");
+                if (objEnchanted != null) {
+                    if ((boolean) objEnchanted) {
+                        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        itemMeta.addEnchant(Enchantment.MENDING, 1, false);
+                    }
                 }
                 Object modelData = map.get("custom_model_data");
                 if (modelData != null) {
@@ -175,16 +188,16 @@ public class QuestManager implements Listener {
         }
         quests.clear();
 
-        int currentStage = config.getInt("Current Stage");
+        stage = config.getInt("Current Stage");
         List<?> stages = config.getList("Stages");
         if (stages == null || stages.size() == 0) {
             return;
         }
-        List<String> stage = (List<String>) stages.get(currentStage);
+        List<String> stageQuests = (List<String>) stages.get(stage);
 
 //        Bukkit.getServer().sendMessage(Component.text(maps.size()));
-        this.questPicker = Bukkit.createInventory(null, HatGUI.getInventorySize(stage.size()+1), Component.text(UI_NAME));
-        this.completePicker = Bukkit.createInventory(null, HatGUI.getInventorySize(stage.size()+1), Component.text(UI_NAME));
+        this.questPicker = Bukkit.createInventory(null, HatGUI.getInventorySize(stageQuests.size()+1), Component.text(UI_NAME));
+        this.completePicker = Bukkit.createInventory(null, HatGUI.getInventorySize(stageQuests.size()+1), Component.text(UI_NAME));
 
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
         ItemMeta exitMeta = exit.getItemMeta();
@@ -194,7 +207,7 @@ public class QuestManager implements Listener {
         this.questPicker.setItem(this.questPicker.getSize()-1, exit);
         this.completePicker.setItem(this.completePicker.getSize()-1, exit);
 
-        for (String configName : stage) {
+        for (String configName : stageQuests) {
             List<String> configDescription = config.getStringList("Quests."+configName+".description");
             List<Map<?, ?>> configCriteria = config.getMapList("Quests."+configName+".criteria");
             List<Map<?, ?>> configReward = config.getMapList("Quests."+configName+".reward");
@@ -204,7 +217,15 @@ public class QuestManager implements Listener {
 
             ArrayList<Component> description = new ArrayList<>();
             for (String line : configDescription) {
-                description.add(Component.text(line).decoration(TextDecoration.ITALIC, false));
+                TextColor color = TowerChallenge.PRIMARY_COLOR;
+                String newLine;
+                if (line.startsWith("[") && line.endsWith("]")) {
+                    newLine = line.substring(1, line.length()-1);
+                    color = TowerChallenge.SECONDARY_COLOR;
+                } else {
+                    newLine = line;
+                }
+                description.add(Component.text(newLine).decoration(TextDecoration.ITALIC, false).color(color));
             }
 
             ArrayList<ItemStack> criteria = new ArrayList<>();
@@ -238,6 +259,10 @@ public class QuestManager implements Listener {
 
     public Quest getQuest(String name) {
         return quests.get(name);
+    }
+
+    public int getStage() {
+        return stage;
     }
 
     public void openQuestPicker(Player player) {

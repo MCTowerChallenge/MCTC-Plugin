@@ -1,10 +1,12 @@
 package io.github.idkahn.towerchallenge;
 
 import io.github.idkahn.towerchallenge.candy.Candy;
-import io.github.idkahn.towerchallenge.other.PeacefulListener;
+import io.github.idkahn.towerchallenge.steve.SteveListener;
 import io.github.idkahn.towerchallenge.quests.QuestManager;
+import io.github.idkahn.towerchallenge.steve.SteveManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -76,7 +78,7 @@ public class EventManager {
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         endPortal = new EndPortal(this);
         new Candy(this);
-        new PeacefulListener(this);
+        new SteveManager(this);
     }
 
     // Accessors and Mutators
@@ -102,7 +104,7 @@ public class EventManager {
         return towerHeight;
     }
 
-    public void showTowerScores() {
+    public void showTowerScores(Audience audience) {
         ArrayList<TowerTeam> sortedTeams = new ArrayList<>(towerListener.getTeams().values());
         sortedTeams.sort((o1, o2) -> {
             Score score1 = towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(o1.getDisplayName()));
@@ -111,13 +113,13 @@ public class EventManager {
         });
 
         for (TowerTeam team : sortedTeams) {
-//            if (team.getEntries().size() > 0) {
-                Bukkit.getServer().sendMessage(team.getDisplayName().color(team.getTextColor())
+            if (team.getEntries().size() > 0) {
+                audience.sendMessage(team.getDisplayName().color(team.getTextColor())
                         .append(Component.text(" has ").color(NamedTextColor.WHITE)
-                                .append(Component.text(towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(team.getDisplayName())).getScore())
-                                        .color(NamedTextColor.AQUA))
+                                .append(Component.text(towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(team.getDisplayName())).getScore()+team.getExtraScore())
+                                        .color(TowerChallenge.PRIMARY_COLOR))
                                 .append(Component.text(" blocks"))));
-//            }
+            }
         }
 
     }
@@ -144,8 +146,24 @@ public class EventManager {
         Bukkit.getLogger().info("Resetting End Portal");
         endPortal.resetPortal();
         for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+            if (entry.getValue().getTeam().getName().equalsIgnoreCase("Lime") ||
+                    entry.getValue().getTeam().getName().equalsIgnoreCase("Purple") ||
+                    entry.getValue().getTeam().getName().equalsIgnoreCase("Magenta") ||
+                    entry.getValue().getTeam().getName().equalsIgnoreCase("White") ||
+                    entry.getValue().getTeam().getName().equalsIgnoreCase("DarkGray") ||
+                    entry.getValue().getTeam().getName().equalsIgnoreCase("Brown"))
+                return;
             Bukkit.getLogger().info("Resetting frame for " + entry.getKey());
             entry.getValue().resetFrame();
+        }
+    }
+
+    public void resetTeams() {
+        for (Map.Entry<String, TowerTeam> entry : towerListener.getTeams().entrySet()) {
+
+            TowerTeam team = entry.getValue();
+            team.clear();
+
         }
     }
 
@@ -170,11 +188,8 @@ public class EventManager {
         Bukkit.getLogger().info("Dealing items...");
         for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
             TowerTeam team = entry.getValue();
-            for (String uuid : team.getTeam().getEntries()) {
-                Entity entity = Bukkit.getEntity(UUID.fromString(uuid));
-                if (entity instanceof Player player) {
-                    dealPlayerItems(player);
-                }
+            for (Player player : team.getOnlinePlayers()) {
+                dealPlayerItems(player);
             }
         }
     }

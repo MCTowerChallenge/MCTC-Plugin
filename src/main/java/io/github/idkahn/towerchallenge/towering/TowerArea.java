@@ -11,6 +11,7 @@ import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -72,6 +73,10 @@ public class TowerArea implements Listener {
         region.getMembers().removePlayer(player.getUniqueId());
     }
 
+    public void clearPlayers() {
+        region.getMembers().clear();
+    }
+
     public void sendBlockCount(Audience audience) {
         if (blocks.size() == 1) {
             audience.sendMessage(
@@ -86,6 +91,15 @@ public class TowerArea implements Listener {
         }
     }
 
+    private boolean exclude(BlockState block) {
+        if (block instanceof ShulkerBox box) {
+            if (box.customName() != null && PlainTextComponentSerializer.plainText().serialize(box.customName()).equals(TowerTeam.SHULKER_NAME)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Stores the block to the tower, as it is at the moment it's added.
      * @param block Block to be added
@@ -93,13 +107,11 @@ public class TowerArea implements Listener {
      */
     private boolean addBlock(Audience audience, BlockState block) {
         Material material = block.getType();
-        if (block instanceof ShulkerBox box) {
-            NBTTileEntity boxNBT = new NBTTileEntity(box);
-            NBTList<String> tags = boxNBT.getStringList("Tags");
-            if (tags.contains("given")) {
-                return false;
-            }
+
+        if (exclude(block)) {
+            return false;
         }
+
         if (blocks.get(material) == null) {
             blocks.put(material, block);
 //            sendBlockCount(audience);
@@ -119,6 +131,10 @@ public class TowerArea implements Listener {
      * @param block Block to be removed
      */
     private void removeBlock(BlockState block) {
+        if (exclude(block)) {
+            return;
+        }
+
         Material material = block.getType();
         if (blocks.remove(material) != null) {
             // block did not exist in tower

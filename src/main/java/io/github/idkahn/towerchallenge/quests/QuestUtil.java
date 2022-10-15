@@ -10,6 +10,7 @@ public class QuestUtil {
 
     public static final String NBT_TAG = "is_questbook";
     public static final String BUTTON_TAG = "is_button";
+    public static final String VOUCHER_TAG = "is_voucher";
 
     /**
      * Sets the value of the "is_questbook" NBT tag on an itemstack
@@ -39,6 +40,9 @@ public class QuestUtil {
      * @return
      */
     public static Boolean isQuestbook(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return false;
+        }
         NBTItem nbtItem = new NBTItem(itemStack);
         return nbtItem.getBoolean(NBT_TAG);
     }
@@ -54,8 +58,29 @@ public class QuestUtil {
     }
 
     public static Boolean isButton(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return false;
+        }
         NBTItem nbtItem = new NBTItem(itemStack);
         return nbtItem.getBoolean(BUTTON_TAG);
+    }
+
+    public static ItemStack setVoucher(ItemStack itemStack, Boolean hatState) {
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setBoolean(VOUCHER_TAG, hatState);
+        return nbtItem.getItem();
+    }
+
+    public static ItemStack setVoucher(ItemStack itemStack) {
+        return setVoucher(itemStack, true);
+    }
+
+    public static Boolean isVoucher(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return false;
+        }
+        NBTItem nbtItem = new NBTItem(itemStack);
+        return nbtItem.getBoolean(VOUCHER_TAG);
     }
 
 }

@@ -7,6 +7,7 @@ import io.github.idkahn.towerchallenge.commands.GodCommand;
 import io.github.idkahn.towerchallenge.commands.InvseeCommand;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
 import io.github.idkahn.towerchallenge.hats.HatTabComplete;
+import io.github.idkahn.towerchallenge.messaging.MessageCommands;
 import io.github.idkahn.towerchallenge.penelope.PenelopeCommands;
 import io.github.idkahn.towerchallenge.penelope.PenelopeTabComplete;
 import io.github.idkahn.towerchallenge.timer.Timer;
@@ -17,6 +18,7 @@ import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerTabComplete;
 import io.github.idkahn.towerchallenge.wands.WandCommands;
 import io.github.idkahn.towerchallenge.wands.WandListener;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,6 +33,14 @@ public final class TowerChallenge extends JavaPlugin {
     public static File wandConfigFile;
     public static File endPortalConfigFile;
     public static File candyConfigFile;
+    public static File hatConfigFile;
+    public static File steveConfigFile;
+    public static File teamScoreConfigFile;
+
+    public static TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
+    public static TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
+    //d0608c
+    //124f49
 
     @Override
     public void onEnable() {
@@ -56,6 +66,15 @@ public final class TowerChallenge extends JavaPlugin {
         candyConfigFile = new File(getDataFolder(), "candy.yml");
         YamlConfiguration candyConfig = YamlConfiguration.loadConfiguration(candyConfigFile);
 
+        hatConfigFile = new File(getDataFolder(), "hat.yml");
+        YamlConfiguration hatConfig = YamlConfiguration.loadConfiguration(hatConfigFile);
+
+        steveConfigFile = new File(getDataFolder(), "steve.yml");
+        YamlConfiguration steveConfig = YamlConfiguration.loadConfiguration(steveConfigFile);
+
+        teamScoreConfigFile = new File(getDataFolder(), "teamscores.yml");
+        YamlConfiguration teamScoreConfig = YamlConfiguration.loadConfiguration(teamScoreConfigFile);
+
         try {
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
@@ -63,6 +82,9 @@ public final class TowerChallenge extends JavaPlugin {
             wandConfig.save(wandConfigFile);
             endPortalConfig.save(endPortalConfigFile);
             candyConfig.save(candyConfigFile);
+            hatConfig.save(hatConfigFile);
+            steveConfig.save(steveConfigFile);
+            teamScoreConfig.save(teamScoreConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,7 +128,7 @@ public final class TowerChallenge extends JavaPlugin {
         PenelopeTabComplete penelopeTabComplete = new PenelopeTabComplete();
         this.getCommand("penelope").setTabCompleter(penelopeTabComplete);
 
-        CandyCommands candyCommands = new CandyCommands();
+        CandyCommands candyCommands = new CandyCommands(manager);
         this.getCommand("candy").setExecutor(candyCommands);
         CandyTabComplete candyTabComplete = new CandyTabComplete();
         this.getCommand("candy").setTabCompleter(candyTabComplete);
@@ -116,6 +138,7 @@ public final class TowerChallenge extends JavaPlugin {
 
         new EnderChestCommand(this);
         new InvseeCommand(this);
+        new MessageCommands(manager);
 
     }
 

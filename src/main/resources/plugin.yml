@@ -17,6 +17,7 @@ commands:
   wand:
     description: Opens the wand gui
     usage: /wand
+    permission: towerchallenge.wand
   timer:
     description: Commands relating to the Event Timer
     usage: /timer
@@ -50,3 +51,9 @@ commands:
     description: commands for candy
     usage: /candy
     permission: towerchallenge.candy
+  steve:
+    description: commands for steve
+    usage: /steve
+  msg:
+    description: message
+    usage: /msg <Player> <Message>

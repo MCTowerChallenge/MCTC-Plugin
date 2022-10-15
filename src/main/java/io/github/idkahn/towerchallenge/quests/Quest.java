@@ -65,7 +65,7 @@ public class Quest implements Listener {
         backButtonMeta.displayName(Component.text("Back").decoration(TextDecoration.ITALIC, false));
         backButtonMeta.setCustomModelData(1);
         backButton.setItemMeta(backButtonMeta);
-        inventory.setItem(45, backButton);
+        inventory.setItem(36, backButton);
 
         ItemStack descriptionItem = new ItemStack(Material.PAPER);
         ItemMeta descriptionMeta = descriptionItem.getItemMeta();
@@ -94,12 +94,25 @@ public class Quest implements Listener {
 
         for (int i = 0; i < criteria.size(); i++) {
             ItemStack item = criteria.get(i);
-            inventory.setItem(28+(Math.floorDiv(i,3)*9)+i, item);
+            if (i < 3) {
+                inventory.setItem(28+i, item);
+            } else if (i < 6) {
+                inventory.setItem(37+i-3, item);
+            } else {
+                Bukkit.getLogger().info("Quest "+getTextName()+" has too many criteria items. Maximum of 6.");
+            }
         }
 
         for (int i = 0; i < reward.size(); i++) {
             ItemStack item = QuestUtil.setButton(reward.get(i));
-            inventory.setItem(32+(Math.floorDiv(i,3)*9)+i, item);
+            if (i < 3) {
+                inventory.setItem(32+i, item);
+            } else if (i < 6) {
+                inventory.setItem(41+i-3, item);
+            } else {
+                Bukkit.getLogger().info("Quest "+getTextName()+" has too many reward items. Maximum of 6.");
+            }
+
         }
 
     }
@@ -191,7 +204,11 @@ public class Quest implements Listener {
                     }
                 } else {
                     if (player.hasPermission("towerchallenge.quest.getreward")) {
-                        player.getInventory().addItem(item);
+                        if (QuestUtil.isVoucher(item)) {
+                            player.getInventory().addItem(BlockVoucher.getVouchers(2));
+                        } else {
+                            player.getInventory().addItem(item);
+                        }
                     }
                 }
             }

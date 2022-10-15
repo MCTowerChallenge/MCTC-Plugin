@@ -23,6 +23,7 @@ public class QuestCommands implements CommandExecutor {
 
     public QuestCommands(QuestManager questManager) {
         this.questManager = questManager;
+        questManager.getEventManager().getPlugin().getCommand("questbook").setTabCompleter(new QuestTabComplete());
     }
 
     @Override

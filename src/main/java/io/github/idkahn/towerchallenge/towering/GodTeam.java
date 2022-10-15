@@ -28,7 +28,7 @@ public class GodTeam extends TowerTeam {
             } else {
                 try {
 //                    getPlugin().getLogger().info("Setting color to " + hexColor);
-                    hatColorGUIS.put(hexColor, new HatGUI(getPlugin(), hexColor));
+                    hatColorGUIS.put(hexColor, new HatGUI(getManager(), hexColor));
                     playerHatColors.put(player.getUniqueId().toString(), hexColor);
 //                    getPlugin().getLogger().info(hatColorGUIS.get(hexColor).toString());
                 } catch (IllegalArgumentException exception) {

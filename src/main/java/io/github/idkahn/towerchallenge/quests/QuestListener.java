@@ -1,5 +1,6 @@
 package io.github.idkahn.towerchallenge.quests;
 
+import io.github.idkahn.towerchallenge.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.wands.WandUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -27,9 +28,11 @@ public class QuestListener implements Listener {
             return;
         CraftingInventory inventory = event.getInventory();
         for (ItemStack item : inventory.getMatrix()) {
-            if (QuestUtil.isQuestbook(item)) {
+//            event.getWhoClicked().sendMessage("Craft");
+            if (QuestUtil.isQuestbook(item) || QuestUtil.isVoucher(item) || CandyUtils.isCandy(item)) {
                 event.getWhoClicked().sendMessage(Component.text("Nice try ;)"));
                 event.setCancelled(true);
+                return;
             }
         }
     }

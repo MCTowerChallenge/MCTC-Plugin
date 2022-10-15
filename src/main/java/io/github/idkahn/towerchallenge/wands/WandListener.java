@@ -49,7 +49,7 @@ public class WandListener implements Listener {
     public void smite(Player player) {
         RayTraceResult rayTrace = player.rayTraceBlocks(50);
         if (rayTrace != null) {
-            player.getWorld().strikeLightning(rayTrace.getHitBlock().getLocation());
+            player.getWorld().strikeLightning(rayTrace.getHitBlock().getLocation().add(0, 1, 0));
         }
     }
 

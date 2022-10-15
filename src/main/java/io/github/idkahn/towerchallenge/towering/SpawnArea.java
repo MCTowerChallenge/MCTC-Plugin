@@ -38,6 +38,10 @@ public class SpawnArea implements Listener {
         region.getMembers().removePlayer(player.getUniqueId());
     }
 
+    public void clearPlayers() {
+        region.getMembers().clear();
+    }
+
     public Location getSpawnpoint() {
         return BukkitAdapter.adapt(region.getFlag(Flags.SPAWN_LOC));
     }

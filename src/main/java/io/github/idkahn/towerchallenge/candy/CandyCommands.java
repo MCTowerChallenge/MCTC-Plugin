@@ -1,6 +1,8 @@
 package io.github.idkahn.towerchallenge.candy;
 
+import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -18,8 +20,10 @@ import java.io.IOException;
 
 public class CandyCommands implements CommandExecutor {
 
-    public CandyCommands() {
+    private EventManager eventManager;
 
+    public CandyCommands(EventManager eventManager) {
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -48,6 +52,27 @@ public class CandyCommands implements CommandExecutor {
                     armorStand.addDisabledSlots(EquipmentSlot.values());
                     armorStand.setInvulnerable(true);
                     player.sendMessage("Spawned new candy armorstand");
+                }
+            }
+            if (args[0].equalsIgnoreCase("bundle")) {
+                if (args.length < 2) {
+                    sender.sendMessage(CommandUtils.errorMessage("Please enter a player to give a bundle"));
+                } else {
+                    Player player = Bukkit.getPlayer(args[1]);
+                    if (player != null) {
+                        if (args.length < 3) {
+                            eventManager.getTowerListener().getPlayerTeam(player).giveBundle(player);
+                        } else {
+                            try {
+                                int number = Integer.parseInt(args[2]);
+                                eventManager.getTowerListener().getPlayerTeam(player).giveBundle(player, number);
+                            } catch (NumberFormatException e) {
+                                sender.sendMessage(CommandUtils.errorMessage("Please enter a valid number of candies."));
+                            }
+                        }
+                    } else {
+                        sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                    }
                 }
             }
         } else {

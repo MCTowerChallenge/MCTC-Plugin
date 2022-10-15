@@ -1,6 +1,8 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.quests.BlockVoucher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -120,13 +122,13 @@ public class TowerCommands implements CommandExecutor {
                         sender.sendMessage(Component.text("Reloading Config"));
                         towerListener.loadConfig();
                         break;
-                    case ("openendportal"):
-                        manager.openEndPortal();
+//                    case ("openendportal"):
+//                        manager.openEndPortal();
                     case ("resetendportal"):
                         manager.resetEndPortal();
                         break;
                     case ("showtowerscores"):
-                        manager.showTowerScores();
+                        manager.showTowerScores(sender);
                         break;
                     case ("dealitems"):
                         if (args.length < 2) {
@@ -135,7 +137,114 @@ public class TowerCommands implements CommandExecutor {
                             Player player = Bukkit.getPlayer(args[1]);
                             if (player != null) {
                                 manager.dealPlayerItems(player);
+                            } else {
+                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                             }
+                        }
+                        break;
+                    case ("resetteams"):
+                        manager.resetTeams();
+                        towerListener.loadTeams();
+                        break;
+                    case ("shulker"):
+                        if (args.length < 2) {
+                            sender.sendMessage(CommandUtils.errorMessage("Please enter a player to give a shulker"));
+                        } else {
+                            Player player = Bukkit.getPlayer(args[1]);
+                            if (player != null) {
+                                if (args.length < 3) {
+                                    manager.getTowerListener().getPlayerTeam(player).giveShulker(player, 1);
+                                } else {
+                                    try {
+                                        int number = Integer.parseInt(args[2]);
+                                        manager.getTowerListener().getPlayerTeam(player).giveShulker(player, number);
+                                    } catch (NumberFormatException e) {
+                                        sender.sendMessage(CommandUtils.errorMessage("Please enter a valid number of shulkers."));
+                                    }
+                                }
+                            } else {
+                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                            }
+                        }
+                        break;
+                    case ("addscore"):
+                        if (args.length < 2) {
+                            sender.sendMessage(CommandUtils.errorMessage("Please enter a player to add score to"));
+                        } else {
+                            Player player = Bukkit.getPlayer(args[1]);
+                            if (player != null) {
+                                TowerTeam team = towerListener.getPlayerTeam(player);
+                                if (team != null) {
+                                    if (args.length < 3) {
+                                        sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to add."));
+                                    } else {
+                                        try {
+                                            int number = Integer.parseInt(args[2]);
+                                            team.addExtraScore(number);
+                                            sender.sendMessage(Component.text("Added ")
+                                                    .append(Component.text(number))
+                                                    .append(Component.text(", score for "))
+                                                    .append(team.getDisplayName())
+                                                    .append(Component.text(" is now "))
+                                                    .append(Component.text(team.getScore())));
+                                        } catch (NumberFormatException e) {
+                                            sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to add."));
+                                        }
+                                    }
+                                } else {
+                                    sender.sendMessage(CommandUtils.errorMessage("Selected player is not on a team."));
+                                }
+                            } else {
+                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                            }
+                        }
+                        break;
+                    case ("removescore"):
+                        if (args.length < 2) {
+                            sender.sendMessage(CommandUtils.errorMessage("Please enter a player to remove score from"));
+                        } else {
+                            Player player = Bukkit.getPlayer(args[1]);
+                            if (player != null) {
+                                TowerTeam team = towerListener.getPlayerTeam(player);
+                                if (team != null) {
+                                    if (args.length < 3) {
+                                        sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to remove."));
+                                    } else {
+                                        try {
+                                            int number = Integer.parseInt(args[2]);
+                                            team.removeExtraScore(number);
+                                            sender.sendMessage(Component.text("Removed ")
+                                                    .append(Component.text(number))
+                                                    .append(Component.text(", score for "))
+                                                    .append(team.getDisplayName())
+                                                    .append(Component.text(" is now "))
+                                                    .append(Component.text(team.getScore())));
+                                        } catch (NumberFormatException e) {
+                                            sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to remove."));
+                                        }
+                                    }
+                                } else {
+                                    sender.sendMessage(CommandUtils.errorMessage("Selected player is not on a team."));
+                                }
+                            } else {
+                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                            }
+                        }
+                        break;
+                    case ("voucher"):
+                        if (sender instanceof Player player) {
+                            int number = 1;
+                            if (args.length > 1) {
+                                try {
+                                    number = Integer.parseInt(args[1]);
+                                } catch (NumberFormatException e) {
+                                    sender.sendMessage(CommandUtils.errorMessage("Invalid number for amount of vouchers."));
+                                    return true;
+                                }
+                            }
+                            player.getInventory().addItem(BlockVoucher.getVouchers(number));
+                        } else {
+                            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
                         break;
                     case ("toggletower"):

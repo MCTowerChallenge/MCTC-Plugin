@@ -1,8 +1,10 @@
 package io.github.idkahn.towerchallenge.towering;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.HumanEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +25,27 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("addFullBlock");
                 strings.add("removeFullBlock");
                 strings.add("dealItems");
+                strings.add("shulker");
+                strings.add("voucher");
                 strings.add("showTowerScores");
                 strings.add("resetEndPortal");
+                strings.add("resetTeams");
+                strings.add("addScore");
+                strings.add("removeScore");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
                 return strings.stream().filter(compare).collect(Collectors.toList());
 
+            } else if (args.length == 2) {
+
+                if (args[0].equalsIgnoreCase("shulker") || args[0].equalsIgnoreCase("dealItems") || args[0].equalsIgnoreCase("addScore") || args[0].equalsIgnoreCase("removeScore")) {
+                    List<String> strings = new ArrayList<>(Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).toList());
+
+                    Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[1].toLowerCase());
+
+                    return strings.stream().filter(compare).collect(Collectors.toList());
+                }
             }
         }
 

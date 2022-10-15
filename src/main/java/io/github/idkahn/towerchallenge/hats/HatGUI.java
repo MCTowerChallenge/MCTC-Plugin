@@ -1,12 +1,17 @@
 package io.github.idkahn.towerchallenge.hats;
 
+import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.towering.GodTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,34 +29,32 @@ import java.util.*;
 public class HatGUI implements Listener {
 
     public static final String UI_NAME = "Select a Hat!";
+    private final EventManager eventManager;
     private final Plugin plugin;
-    private final List<ItemStack> hats;
-    private Inventory inventory;
     private final Color color;
+    private final Map<UUID, Inventory> inventories;
 
     public static int getInventorySize(int NumberOfItems) {
         return 9*(((NumberOfItems-1)/9)+1);
     }
 
-    public HatGUI(Plugin plugin, Color color) {
-        this.plugin = plugin;
-        this.hats = new ArrayList<>();
-        int numHats = plugin.getConfig().getList("Hats").size();
-        this.inventory = Bukkit.createInventory(null, getInventorySize(numHats), Component.text(UI_NAME));
+    public HatGUI(EventManager eventManager, Color color) {
+        this.plugin = eventManager.getPlugin();
+        this.eventManager = eventManager;
+        this.inventories = new HashMap<>();
         this.color = color;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        this.loadHats();
     }
 
-    public HatGUI(Plugin plugin, String hexColor) {
-        this(plugin, Color.fromRGB(Integer.parseInt(hexColor.replaceAll("#", ""), 16)));
+    public HatGUI(EventManager eventManager, String hexColor) {
+        this(eventManager, Color.fromRGB(Integer.parseInt(hexColor.replaceAll("#", ""), 16)));
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled())
             return;
-        if (!event.getInventory().equals(inventory))
+        if (!event.getInventory().equals(getInventory((Player) event.getWhoClicked())))
             return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir())
             return;
@@ -65,80 +68,105 @@ public class HatGUI implements Listener {
         }
     }
 
-    public Inventory getInventory() {
+    public void openInventory(Player player) {
+        player.openInventory(createInventory(player));
+    }
+
+    public Inventory getInventory(Player player) {
+        return inventories.get(player.getUniqueId());
+    }
+
+    public Inventory createInventory(Player player) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        List<HashMap> hats = new ArrayList<>();
+        // gets Normal Hats
+        hats.addAll((List<HashMap>) config.getList("Hats"));
+        // gets God hats, if applicable
+        if (eventManager.getTowerListener().getPlayerTeam(player) instanceof GodTeam) {
+            hats.addAll((List<HashMap>) config.getList("GodHats"));
+        }
+        // gets Player's hats, if applicable
+        List<HashMap> playerHats = (List<HashMap>) config.getList("PlayerHats."+player.getUniqueId());
+        if (playerHats != null) {
+            hats.addAll(playerHats);
+        }
+
+        int numHats = hats.size();
+        int newSize = getInventorySize(numHats);
+
+        List<ItemStack> hatItems = new ArrayList<>();
+
+        for (HashMap hat : hats) {
+            String name = (String) hat.get("name");
+            String item = ((String) hat.get("item")).toUpperCase();
+            String author = ((String) hat.get("author"));
+            String inspired = ((String) hat.get("inspired"));
+            int customModelData = (int) hat.get("custom_model_data");
+            String colorString = (String) hat.get("color");
+            Color color = this.color;
+            if (colorString != null) {
+                color = Color.fromRGB(Integer.parseInt(colorString.replaceAll("#", ""), 16));
+            }
+            hatItems.add(getHat(name, Material.getMaterial(item), author, inspired, customModelData, color));
+        }
+
+        Inventory inventory = Bukkit.createInventory(null, newSize, Component.text(UI_NAME));
+        inventories.put(player.getUniqueId(), inventory);
+
+        for (int i = 0; i < hatItems.size(); i++) {
+            inventory.setItem(i, hatItems.get(i));
+        }
+
         return inventory;
     }
 
-    public void openInventory(Player player) {
-        player.openInventory(inventory);
+    public ItemStack getHat(String name, Material type, String author, String inspired, int customModelData) {
+        return getHat(name, type, author, inspired, customModelData, color);
     }
 
-    public void loadHats() {
-        plugin.reloadConfig();
-        List<HashMap> configHats = (List<HashMap>) plugin.getConfig().getList("Hats");
-        int numHats = configHats.size();
-        int newSize = getInventorySize(numHats);
+    public ItemStack getHat(String name, Material type, String author, String inspired, int customModelData, Color color) {
+        ItemStack hat = HatUtil.setHat(new ItemStack(type));
+        ItemMeta hatMeta = hat.getItemMeta();
 
-        this.hats.clear();
-        this.inventory.clear();
-        if (this.inventory.getSize() != newSize) {
-            this.inventory = Bukkit.createInventory(null, newSize, Component.text(UI_NAME));
+        hatMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
+        hatMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        hatMeta.addItemFlags(ItemFlag.HIDE_DYE);
+        hatMeta.setCustomModelData(customModelData);
+        List<Component> lore = new ArrayList<>();
+        if (author != null) {
+            lore.add(Component.text("Model by " + author + "").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
         }
-
-        for (HashMap config : configHats) {
-            String name = (String) config.get("name");
-            String item = ((String) config.get("item")).toUpperCase();
-            String author = ((String) config.get("author"));
-            int customModelData = (int) config.get("custom_model_data");
-            ItemStack hat = HatUtil.setHat(new ItemStack(Material.getMaterial(item)));
-            ItemMeta hatMeta = hat.getItemMeta();
-
-            hatMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
-            hatMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            hatMeta.addItemFlags(ItemFlag.HIDE_DYE);
-            hatMeta.setCustomModelData(customModelData);
-            List<Component> lore = new ArrayList<>();
-            if (author != null) {
-                lore.add(Component.text("Hat by " + author + "").decoration(TextDecoration.ITALIC, false));
-            } else {
-                lore.add(Component.text("Hat author unknown").decoration(TextDecoration.ITALIC, false));
-            }
-            hatMeta.lore(lore);
-            hatMeta.addAttributeModifier(
-                    Attribute.GENERIC_ARMOR,
-                    new AttributeModifier(
-                            UUID.randomUUID(),
-                            "armor",
-                            3.0,
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            EquipmentSlot.HEAD
-                    )
-            );
-            hatMeta.addAttributeModifier(
-                    Attribute.GENERIC_ARMOR_TOUGHNESS,
-                    new AttributeModifier(
-                            UUID.randomUUID(),
-                            "armor",
-                            2.0,
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            EquipmentSlot.HEAD
-                    )
-            );
-            if (hatMeta instanceof LeatherArmorMeta armorMeta && color != null) {
-                armorMeta.setColor(color);
-                hat.setItemMeta(armorMeta);
-            } else {
-                hat.setItemMeta(hatMeta);
-            }
-            this.hats.add(hat);
+        if (inspired != null) {
+            lore.add(Component.text("Inspired by " + inspired + "").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
         }
-
-        if (this.hats.size() <= 9) {
-            for (int i = 0; i < this.hats.size(); i++) {
-                this.inventory.setItem(i, this.hats.get(i));
-            }
+        hatMeta.lore(lore);
+        hatMeta.addAttributeModifier(
+                Attribute.GENERIC_ARMOR,
+                new AttributeModifier(
+                        UUID.randomUUID(),
+                        "armor",
+                        3.0,
+                        AttributeModifier.Operation.ADD_NUMBER,
+                        EquipmentSlot.HEAD
+                )
+        );
+        hatMeta.addAttributeModifier(
+                Attribute.GENERIC_ARMOR_TOUGHNESS,
+                new AttributeModifier(
+                        UUID.randomUUID(),
+                        "armor",
+                        2.0,
+                        AttributeModifier.Operation.ADD_NUMBER,
+                        EquipmentSlot.HEAD
+                )
+        );
+        if (hatMeta instanceof LeatherArmorMeta armorMeta && color != null) {
+            armorMeta.setColor(color);
+            hat.setItemMeta(armorMeta);
+        } else {
+            hat.setItemMeta(hatMeta);
         }
-
+        return hat;
     }
 
 }

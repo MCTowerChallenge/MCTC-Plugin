@@ -66,6 +66,7 @@ public class EndPortal implements Listener {
                     if (event.getItem().getType().equals(Material.ENDER_EYE)) {
                         event.setCancelled(true);
                         if (block.getLocation().equals(team.getFrameLocation())) {
+                            player.getInventory().setItem(event.getHand(), null);
                             team.placeEye();
                         } else if (team instanceof GodTeam) {
                             eventManager.getTowerListener().getTeams().forEach((key, checkTeam) -> {

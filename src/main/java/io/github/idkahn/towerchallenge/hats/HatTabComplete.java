@@ -19,18 +19,9 @@ public class HatTabComplete implements TabCompleter {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<>();
 
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-                    if (player.hasPermission("towerchallenge.hat.hand")) {
-                        strings.add("hand");
-                    }
-                    if (player.hasPermission("towerchallenge.hat.getitem")) {
-                        strings.add("getItem");
-                    }
-                    if (player.hasPermission("towerchallenge.hat.color")) {
-                        strings.add("color");
-                    }
-                }
+                strings.add("hand");
+                strings.add("getItem");
+                strings.add("color");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 

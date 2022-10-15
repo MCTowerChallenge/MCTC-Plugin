@@ -1,15 +1,22 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
+import com.ibm.icu.impl.UtilityExtensions;
+import com.ibm.icu.impl.locale.LocaleValidityChecker;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.Teams;
+import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.hats.HatUtil;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.BlockState;
@@ -24,9 +31,13 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -36,6 +47,8 @@ import java.util.*;
 public class TowerListener implements Listener {
 
     private final EnumMap<Teams, ArrayList<BlockState>> towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
+
+    public static final Location STEVE_LECTERN = new Location(Bukkit.getWorld("world"), -708, 56, -1331);
 
     private GodTeam godTeam;
 
@@ -62,7 +75,7 @@ public class TowerListener implements Listener {
         for (Teams team : Teams.values()) {
             towers.put(team, new ArrayList<>());
         }
-        defaultHats = new HatGUI(plugin, Color.RED);
+        defaultHats = new HatGUI(manager, Color.RED);
     }
 
     public TowerTeam getTeam(String name) {
@@ -92,7 +105,6 @@ public class TowerListener implements Listener {
 
     public void loadConfig() {
         loadTeams();
-        loadHats();
     }
 
     public void loadTeams() {
@@ -152,15 +164,61 @@ public class TowerListener implements Listener {
         Bukkit.getLogger().info("[Tower Challenge] Team Config Loaded!");
     }
 
-    public void loadHats() {
-        Bukkit.getLogger().info("[Tower Challenge] Loading Hat Config...");
-        teams.forEach((name, team) -> team.loadHats());
+    @EventHandler
+    public void onPortalCreate(final PortalCreateEvent event) {
+        if (event.isCancelled())
+            return;
+
+        if (event.getReason().equals(PortalCreateEvent.CreateReason.NETHER_PAIR)) {
+            event.setCancelled(true);
+        }
+        if (event.getReason().equals(PortalCreateEvent.CreateReason.FIRE)) {
+            if (event.getEntity() == null
+                    || !(event.getEntity() instanceof Player player)
+                    || !(getPlayerTeam(player) instanceof GodTeam)) {
+                event.setCancelled(true);
+                Location location = event.getBlocks().get(0).getLocation();
+                ComponentBuilder message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
+                message.append(Component.text("A portal was attempted to be opened at ")
+                        .append(Component.text("X: "+location.getBlockX()))
+                        .append(Component.text(", Y: "+location.getBlockY()))
+                        .append(Component.text(", Z: "+location.getBlockZ()))
+                );
+                if (event.getEntity() instanceof Player player) {
+                    message.append(Component.text(" by ").append(player.name()));
+                    message.append(Component.text(" [Teleport]").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
+                            .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+                            .clickEvent(ClickEvent.runCommand("/tp "+player.getName()))
+                    );
+                } else {
+                    message.append(Component.text(" [Teleport]").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
+                            .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+                            .clickEvent(ClickEvent.runCommand("/tp "+location.getBlockX()+" "+location.getBlockY()+" "+location.getBlockZ()))
+                    );
+                }
+                godTeam.getAudience().sendMessage(message.build());
+            }
+        }
+        if (event.getBlocks().get(0).getType().equals(Material.END_PORTAL_FRAME)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled())
             return;
+
+        if (event.getView().getTopInventory() instanceof AnvilInventory) {
+            if(event.getCurrentItem().getItemMeta() instanceof BlockStateMeta blockStateMeta){
+                if(blockStateMeta.getBlockState() instanceof ShulkerBox){
+                    if (PlainTextComponentSerializer.plainText().serialize(blockStateMeta.displayName()).equals(TowerTeam.SHULKER_NAME)) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+        }
 
         Player player = (Player) event.getWhoClicked();
         if (player.getGameMode().equals(GameMode.CREATIVE))
@@ -173,6 +231,17 @@ public class TowerListener implements Listener {
             if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 event.setCancelled(true);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.getInventory().clear(slot), 1);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock() != null) {
+            if (event.getClickedBlock().getType().equals(Material.LECTERN)) {
+                if (event.getClickedBlock().getLocation().equals(STEVE_LECTERN)) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
