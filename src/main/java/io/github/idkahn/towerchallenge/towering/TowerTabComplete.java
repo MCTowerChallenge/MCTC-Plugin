@@ -32,6 +32,7 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("resetTeams");
                 strings.add("addScore");
                 strings.add("removeScore");
+                strings.add("pickWinner");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 

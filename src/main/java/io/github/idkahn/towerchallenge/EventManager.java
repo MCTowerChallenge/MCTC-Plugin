@@ -1,11 +1,13 @@
 package io.github.idkahn.towerchallenge;
 
+import com.google.common.annotations.GwtIncompatible;
 import io.github.idkahn.towerchallenge.candy.Candy;
 import io.github.idkahn.towerchallenge.steve.SteveListener;
 import io.github.idkahn.towerchallenge.quests.QuestManager;
 import io.github.idkahn.towerchallenge.steve.SteveManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.WinnerGUI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -60,6 +62,7 @@ public class EventManager {
     private Objective towerHeight;
     private final TowerListener towerListener;
     private final EndPortal endPortal;
+    private final WinnerGUI winnerGUI;
 
     private final HashMap<String, TowerTeam> teams;
 
@@ -77,6 +80,7 @@ public class EventManager {
         questManager = new QuestManager(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         endPortal = new EndPortal(this);
+        winnerGUI = new WinnerGUI(this);
         new Candy(this);
         new SteveManager(this);
     }
@@ -126,6 +130,10 @@ public class EventManager {
 
     public TowerChallenge getPlugin() {
         return plugin;
+    }
+
+    public WinnerGUI getWinnerGUI() {
+        return winnerGUI;
     }
 
     public HashMap<String, TowerTeam> getTeams() {

@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.io.IOException;
 import java.util.*;
 
 public class HatGUI implements Listener {
@@ -33,6 +34,7 @@ public class HatGUI implements Listener {
     private final Plugin plugin;
     private final Color color;
     private final Map<UUID, Inventory> inventories;
+    private List<String> winners;
 
     public static int getInventorySize(int NumberOfItems) {
         return 9*(((NumberOfItems-1)/9)+1);
@@ -42,6 +44,7 @@ public class HatGUI implements Listener {
         this.plugin = eventManager.getPlugin();
         this.eventManager = eventManager;
         this.inventories = new HashMap<>();
+        this.winners = new ArrayList<>();
         this.color = color;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -68,6 +71,44 @@ public class HatGUI implements Listener {
         }
     }
 
+    public List<String> getWinners() {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        winners = config.getStringList("Winners");
+        return winners;
+    }
+
+    public void addWinner(Player player) {
+        addWinner(player.getUniqueId().toString());
+    }
+
+    public void addWinner(String uuid) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        winners = config.getStringList("Winners");
+        winners.add(uuid);
+        config.set("Winners", winners);
+        try {
+            config.save(TowerChallenge.hatConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeWinner(String uuid) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        winners = config.getStringList("Winners");
+        winners.remove(uuid);
+        config.set("Winners", winners);
+        try {
+            config.save(TowerChallenge.hatConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeWinners(Player player) {
+        removeWinner(player.getUniqueId().toString());
+    }
+
     public void openInventory(Player player) {
         player.openInventory(createInventory(player));
     }
@@ -89,6 +130,10 @@ public class HatGUI implements Listener {
         List<HashMap> playerHats = (List<HashMap>) config.getList("PlayerHats."+player.getUniqueId());
         if (playerHats != null) {
             hats.addAll(playerHats);
+        }
+        winners = config.getStringList("Winners");
+        if (winners.contains(player.getUniqueId().toString())) {
+            hats.addAll((List<HashMap>) config.getList("WinnerHats"));
         }
 
         int numHats = hats.size();

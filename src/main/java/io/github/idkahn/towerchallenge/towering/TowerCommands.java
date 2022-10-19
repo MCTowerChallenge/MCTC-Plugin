@@ -231,6 +231,13 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                         break;
+                    case ("pickwinner"):
+                        if (sender instanceof Player player) {
+                            manager.getWinnerGUI().openUI(player);
+                        } else {
+                            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+                        }
+                        break;
                     case ("voucher"):
                         if (sender instanceof Player player) {
                             int number = 1;

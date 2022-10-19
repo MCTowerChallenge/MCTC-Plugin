@@ -57,3 +57,8 @@ commands:
   msg:
     description: message
     usage: /msg <Player> <Message>
+  godhelp:
+    description: Messages the gods
+    usage: /godhelp <Message>
+    aliases:
+      - gh

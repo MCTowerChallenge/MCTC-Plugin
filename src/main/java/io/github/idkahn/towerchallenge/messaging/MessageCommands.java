@@ -28,76 +28,108 @@ public class MessageCommands implements CommandExecutor {
     public MessageCommands(EventManager eventManager) {
         this.eventManager = eventManager;
         eventManager.getPlugin().getCommand("msg").setExecutor(this);
+        eventManager.getPlugin().getCommand("msg").setTabCompleter(new MessageTabComplete());
+        eventManager.getPlugin().getCommand("godhelp").setExecutor(this);
+        eventManager.getPlugin().getCommand("godhelp").setTabCompleter(new MessageTabComplete());
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (command.getName().equalsIgnoreCase("msg")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+                return true;
+            }
 
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+            if (args.length < 1) {
+                sender.sendMessage(CommandUtils.errorMessage("Please enter a player to message."));
+            }
+
+            String[] body = Arrays.copyOfRange(args, 1, args.length);
+
+            TowerTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
+            Audience sendFrom;
+            if (checkTeam(senderTeam)) {
+                sendFrom = senderTeam.getAudience();
+            } else {
+                if (player.getName().equalsIgnoreCase("Mystievous") || player.getName().equalsIgnoreCase("apple270")) {
+                    Player mysti = Bukkit.getPlayer("Mystievous");
+                    Player apple = Bukkit.getPlayer("apple270");
+
+                    Set<Player> mystiApple = new HashSet<>();
+
+                    if (mysti != null) {
+                        mystiApple.add(mysti);
+                    }
+                    if (apple != null) {
+                        mystiApple.add(apple);
+                    }
+
+                    sendFrom = Audience.audience(mystiApple);
+
+                } else {
+                    sendFrom = player;
+                }
+            }
+
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target != null) {
+                if ((target.getName().equalsIgnoreCase("Mystievous") || target.getName().equalsIgnoreCase("apple270"))) {
+                    Player mysti = Bukkit.getPlayer("Mystievous");
+                    Player apple = Bukkit.getPlayer("apple270");
+                    if (!(player.equals(mysti) || player.equals(apple))) {
+                        if (mysti != null && mysti.isOnline()) {
+                            send(mysti, formatFromMessage(player, body));
+                        }
+                        if (apple != null && apple.isOnline()) {
+                            send(apple, formatFromMessage(player, body));
+                        }
+                        sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{
+                            add(mysti);
+                            add(apple);
+                        }}, body));
+                        return true;
+                    }
+                }
+                TowerTeam targetTeam = eventManager.getTowerListener().getPlayerTeam(target);
+                if (checkTeam(targetTeam)) {
+                    send(targetTeam.getAudience(), formatFromMessage(player, body));
+                    sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
+                } else {
+                    send(target, formatFromMessage(player, body));
+                    sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{add(target);}}, body));
+                }
+            } else {
+                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+            }
             return true;
         }
 
-        if (args.length < 1) {
-            sender.sendMessage(CommandUtils.errorMessage("Please enter a player to message."));
-        }
+        if (command.getName().equalsIgnoreCase("godhelp")) {
 
-        String[] body = Arrays.copyOfRange(args, 1, args.length);
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+                return true;
+            }
 
-        TowerTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
-        Audience sendFrom;
-        if (checkTeam(senderTeam)) {
-            sendFrom = senderTeam.getAudience();
-        } else {
-            if (player.getName().equalsIgnoreCase("Mystievous") || player.getName().equalsIgnoreCase("apple270")) {
-                Player mysti = Bukkit.getPlayer("Mystievous");
-                Player apple = Bukkit.getPlayer("apple270");
-
-                Set<Player> mystiApple = new HashSet<>();
-
-                if (mysti != null) {
-                    mystiApple.add(mysti);
-                }
-                if (apple != null) {
-                    mystiApple.add(apple);
-                }
-
-                sendFrom = Audience.audience(mystiApple);
-
+            TowerTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
+            Audience sendFrom;
+            if (checkTeam(senderTeam)) {
+                sendFrom = senderTeam.getAudience();
             } else {
-                sendFrom = player;
-            }
-        }
-
-        Player target = Bukkit.getPlayer(args[0]);
-        if (target != null) {
-            if ((target.getName().equalsIgnoreCase("Mystievous") || target.getName().equalsIgnoreCase("apple270"))) {
-                Player mysti = Bukkit.getPlayer("Mystievous");
-                Player apple = Bukkit.getPlayer("apple270");
-                if (!(player.equals(mysti) || player.equals(apple))) {
-                    if (mysti != null && mysti.isOnline()) {
-                        send(mysti, formatFromMessage(player, body));
-                    }
-                    if (apple != null && apple.isOnline()) {
-                        send(apple, formatFromMessage(player, body));
-                    }
-                    sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{
-                        add(mysti);
-                        add(apple);
-                    }}, body));
-                    return true;
+                if (senderTeam instanceof GodTeam) {
+                    sendFrom = Audience.empty();
+                } else {
+                    sendFrom = player;
                 }
             }
-            TowerTeam targetTeam = eventManager.getTowerListener().getPlayerTeam(target);
-            if (checkTeam(targetTeam)) {
-                send(targetTeam.getAudience(), formatFromMessage(player, body));
-                sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
-            } else {
-                send(target, formatFromMessage(player, body));
-                sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{add(target);}}, body));
-            }
-        } else {
-            sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+
+            TowerTeam targetTeam = eventManager.getTowerListener().getGodTeam();
+
+            send(targetTeam.getAudience(), formatFromToGods(player, args));
+            sendFrom.sendMessage(formatFromToGods(player, args));
+            return true;
+
         }
         return true;
     }
@@ -183,15 +215,21 @@ public class MessageCommands implements CommandExecutor {
     private Component formatFromMessage(Player sender, String[] body) {
         ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
-//        TowerTeam team = eventManager.getTowerListener().getPlayerTeam(sender);
-
-//        if (checkTeam(team)) {
         message.append(formatPlayer(sender))
                 .append(Component.text(" whispers to your team: "));
-//        } else {
-//            message.append(formatPlayer(sender))
-//                    .append(Component.text(" whispers to you: "));
-//        }
+
+        for (String string : body) {
+            message.append(Component.text(string+" "));
+        }
+
+        return message.build();
+    }
+
+    private Component formatFromToGods(Player sender, String[] body) {
+        ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
+
+        message.append(formatPlayer(sender))
+                .append(Component.text(" whispers to the Gods: "));
 
         for (String string : body) {
             message.append(Component.text(string+" "));
