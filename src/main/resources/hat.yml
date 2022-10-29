@@ -1,0 +1,84 @@
+Hats:
+- name: Diamond Helmet
+  item: diamond_helmet
+  custom_model_data: 0
+- name: Witch Hat
+  item: leather_horse_armor
+  custom_model_data: 1
+  author: apple270
+- name: Hockey Mask
+  item: leather_horse_armor
+  custom_model_data: 2
+  author: apple270
+- name: Ghost Mask
+  item: leather_horse_armor
+  custom_model_data: 21
+  author: apple270
+- name: Pummy
+  item: leather_horse_armor
+  custom_model_data: 3
+  author: apple270
+- name: Ghosti
+  item: leather_horse_armor
+  custom_model_data: 4
+  author: apple270
+- name: Horns
+  item: leather_horse_armor
+  custom_model_data: 5
+  author: apple270
+- name: Halo
+  item: leather_horse_armor
+  custom_model_data: 6
+  author: apple270
+- name: Fall Crown
+  item: leather_horse_armor
+  custom_model_data: 7
+  author: apple270
+  inspired: '@chloe_haruku'
+GodHats:
+- name: God Crown
+  item: leather_horse_armor
+  custom_model_data: 9
+  author: apple270
+  inspired: '@groenneir'
+WinnerHats:
+- name: Winner's Crown
+  item: leather_horse_armor
+  custom_model_data: 8
+  author: apple270
+Winners:
+PlayerHats:
+  999c184d-b267-4cc1-a4ee-31aa5906964f:
+  - name: Mysti's Crown
+    item: leather_horse_armor
+    custom_model_data: 10
+    author: apple270
+    inspired: '@groenneir'
+  c53317e9-650d-4932-b1da-2cccef96c478:
+  - name: Apple's Crown
+    item: leather_horse_armor
+    custom_model_data: 11
+    author: apple270
+    inspired: '@groenneir'
+  4e8c7ae2-1c55-4ea0-ba11-0c1fc151505d:
+  - name: Lafonda's Crown
+    item: leather_horse_armor
+    custom_model_data: 12
+    author: apple270
+    inspired: '@groenneir'
+  5c07ef9d-de7f-4e97-ab1d-d0eee7a5161b:
+  - name: Benny's Horns
+    item: leather_horse_armor
+    custom_model_data: 5
+    author: apple270
+    color: '#1D1D21'
+  244556e4-2bd7-45a8-8d03-d3fbcb5dc75e:
+  - name: birthday boi \o/
+    item: leather_horse_armor
+    custom_model_data: 22
+    author: apple270
+  e7672100-23b4-4ca3-b9ea-7e91503a1160:
+  - name: birthday boi \o/
+    item: leather_horse_armor
+    custom_model_data: 22
+    author: apple270

@@ -1,0 +1,56 @@
+Dialogue:
+- message:
+  - text: My oh my, do my orbits deceive me?? Trick or treaters! At last!
+  delay: 6
+- message:
+  - text: Oh.. you're not trick or treaters you say? How unfortunate. Well! I'm not
+      buying anyth-
+  delay: 5
+- message:
+  - text: Friends of Penelope's? Well why didn't you say so sooner, sillies. Any friend
+      of penelopes is a friend of mine! How's that wonderful mare doing? It's been
+      so long since we spoke last.
+  delay: 8
+- message:
+  - text: She's cursed?? Oh no!
+  delay: 5
+- message:
+  - text: I see, so you tried to make a potion to cure her but were unsuccessful?
+      And you need my help?? To get an extremely rare and valuable Nether Heart???
+  delay: 8
+- message:
+  - text: Well you're in luck, I have 3! Now where did I put those things? Ah, yes.
+      I hid them!
+  delay: 7
+- message:
+  - text: Well, of course I did! They were far 2 valuable to be kept here in my small
+      but wonderfully decorated cave home.
+  delay: 8
+- message:
+  - text: 'Now while I look for this riddle- '
+  - text: cause all great treasures have riddles not maps
+    italics: true
+  - text: ' - you both should go out and spread some halloween spirit by trick or
+      treating! Take a break from that new craze '
+  - text: MCTC
+    italics: true
+  delay: 6
+- message:
+  - text: more like mc-takingovertrickortreatingtime
+    italics: true
+  delay: 4
+- message:
+  - text: After you've knocked on every critter's home and collected every piece of
+      candy around, come back here and I'll hopefully have found that riddle!
+  delay: 6
+- message:
+  - text: 'How many? Well obviously '
+  - text: someone
+    italics: true
+  - text: ' wasn''t paying attention earlier! I told you already silly look back at
+      our conversation<3'
+  delay: 15
+- message:
+  - text: where the heck was it???
+    italics: true
+  delay: 0

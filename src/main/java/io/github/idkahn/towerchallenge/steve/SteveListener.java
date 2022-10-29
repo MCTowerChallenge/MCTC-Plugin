@@ -80,21 +80,23 @@ public class SteveListener implements Listener {
         TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
         if (steveManager.getEventManager().getQuestManager().getStage() == 2) {
             if (team != null) {
-                if (steveHouse.contains(BukkitAdapter.adapt(event.getTo()).toVector().toBlockPoint()) && steveManager.getTeamStage(team) == 0) {
-                    steveManager.setTeamStage(team, 1);
-                    steveManager.playDialogue(player);
+                if (steveHouse != null) {
+                    if (steveHouse.contains(BukkitAdapter.adapt(event.getTo()).toVector().toBlockPoint()) && steveManager.getTeamStage(team) == 0) {
+                        steveManager.setTeamStage(team, 1);
+                        steveManager.playDialogue(player);
 
-                    ComponentBuilder message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
-                    message.append(Component.text("steve was found "));
-                    message.append(Component.text("by ").append(player.name()));
-                    message.append(Component.text(" [Teleport]").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
-                            .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
-                            .clickEvent(ClickEvent.runCommand("/tp "+player.getName()))
-                    );
+                        ComponentBuilder message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
+                        message.append(Component.text("steve was found "));
+                        message.append(Component.text("by ").append(player.name()));
+                        message.append(Component.text(" [Teleport]").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
+                                .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+                                .clickEvent(ClickEvent.runCommand("/tp "+player.getName()))
+                        );
 
-                    steveManager.getEventManager().getTowerListener().getGodTeam().getAudience().sendMessage(message.build());
-    //                player.sendMessage(message.build());
-    //                event.getPlayer().sendMessage("You found steve!");
+                        steveManager.getEventManager().getTowerListener().getGodTeam().getAudience().sendMessage(message.build());
+        //                player.sendMessage(message.build());
+        //                event.getPlayer().sendMessage("You found steve!");
+                    }
                 }
             }
         }
@@ -155,7 +157,7 @@ public class SteveListener implements Listener {
         Location location = event.getLoc();
 
         if (isSteve(entity)) {
-            if (!steveHouse.contains(BukkitAdapter.adapt(location).toVector().toBlockPoint())) {
+            if (steveHouse != null && !steveHouse.contains(BukkitAdapter.adapt(location).toVector().toBlockPoint())) {
                 event.setCancelled(true);
             }
         }

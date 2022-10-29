@@ -1,0 +1,447 @@
+Current Stage: 2
+Stages:
+- - The Nether Potion (1/8)
+  - The Nether Potion (2/8)
+  - The Nether Potion (3/8)
+  - The Nether Potion (4/8)
+  - The Nether Potion (5/8)
+  - The Nether Potion (6/8)
+  - The Nether Potion (7/8)
+  - The Nether Potion (8/8)
+- - The Overworld Potion (1/8)
+  - The Overworld Potion (2/8)
+  - The Overworld Potion (3/8)
+  - The Overworld Potion (4/8)
+  - The Overworld Potion (5/8)
+  - The Overworld Potion (6/8)
+  - The Overworld Potion (7/8)
+  - The Overworld Potion (8/8)
+- - The Final Attempt
+Quests:
+  The Nether Potion (1/8):
+    description:
+    - '[Get 1 blaze rod.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:blaze_rod
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:experience_bottle
+      amount: 2
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Light Blue
+  The Nether Potion (2/8):
+    description:
+    - '[Get 1 glowstone dust.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:glowstone_dust
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:iron_ingot
+      amount: 4
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Yellow
+  The Nether Potion (3/8):
+    description:
+    - '[Get 1 nether wart.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:nether_wart
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:coal
+      amount: 32
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Pink
+  The Nether Potion (4/8):
+    description:
+    - '[Get 1 bone.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:bone
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:coal
+      amount: 8
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Nether Potion (5/8):
+    description:
+    - '[Get 1 gold nugget.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:gold_nugget
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:iron_ingot
+      amount: 8
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Red
+  The Nether Potion (6/8):
+    description:
+    - '[Get 1 quartz.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:quartz
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:experience_bottle
+      amount: 1
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Nether Potion (7/8):
+    description:
+    - '[Get 1 crimson or warped fungus.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:crimson_fungus
+      amount: 1
+    - type: or
+    - type: item
+      item: minecraft:warped_fungus
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:golden_carrot
+      amount: 4
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Yellow
+  The Nether Potion (8/8):
+    description:
+    - '[Get 1 crimson or warped roots.]'
+    - ''
+    - Someone has set a curse on Penelope,
+    - my lovely, beautiful horse!
+    - ''
+    - I've seen this curse before.
+    - It's a big ask, but I need some
+    - supplies to help reverse the curse!
+    - ''
+    - If you can find these items for me,
+    - then I believe I can whip something up to fix this!
+    criteria:
+    - type: item
+      item: minecraft:crimson_roots
+      amount: 1
+    - type: or
+    - type: item
+      item: minecraft:warped_roots
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:iron_ingot
+      amount: 6
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Overworld Potion (1/8):
+    description:
+    - '[Get 1 flint.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:flint
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:golden_carrot
+      amount: 2
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Pink
+  The Overworld Potion (2/8):
+    description:
+    - '[Get 1 sugar cane.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:sugar_cane
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:experience_bottle
+      amount: 1
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Cyan
+  The Overworld Potion (3/8):
+    description:
+    - '[Get 1 of any fruit or berry.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:apple
+      name: 1 of any
+      amount: 1
+    - type: item
+      item: minecraft:melon_slice
+      name: 1 of any
+      amount: 1
+    - type: item
+      item: minecraft:pumpkin
+      name: 1 of any
+      amount: 1
+    - type: item
+      item: minecraft:sweet_berries
+      name: 1 of any
+      amount: 1
+    - type: item
+      item: minecraft:glow_berries
+      name: 1 of any
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:coal
+      amount: 16
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Cyan
+  The Overworld Potion (4/8):
+    description:
+    - '[Get 1 black dye.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:black_dye
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:experience_bottle
+      amount: 2
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Overworld Potion (5/8):
+    description:
+    - '[Get 1 white dye.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:white_dye
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:coal
+      amount: 8
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Red
+  The Overworld Potion (6/8):
+    description:
+    - '[Get 1 bucket of water.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:water_bucket
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:iron_ingot
+      amount: 8
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Overworld Potion (7/8):
+    description:
+    - '[Get 1 wheat.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:wheat
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:experience_bottle
+      amount: 2
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Green
+  The Overworld Potion (8/8):
+    description:
+    - '[Get 1 rotten flesh.]'
+    - ''
+    - The potion I created from the resources
+    - of the nether was not strong enough...
+    - ''
+    - You must venture into the overworld
+    - to grab ingredients for something
+    - even more potent!
+    criteria:
+    - type: item
+      item: minecraft:rotten_flesh
+      amount: 1
+    reward:
+    - type: item
+      item: minecraft:coal
+      amount: 8
+    - type: voucher
+      amount: 2
+      name: Do 4 of these quests for 2 free block vouchers!
+    completed: Pink
+  The Final Attempt:
+    description:
+    - I could have sworn those were the
+    - ingredients for the potion??
+    - ''
+    - Wait a second.. This page feels weird..
+    - AHA! They were stuck together!
+    - ''
+    - But there's only one being that has what I need.
+    - I know I'm asking a lot from you
+    - but please we must save Penelope!
+    - ''
+    - Find my old friend Steve Skellington;
+    - he's a traveling healer, hopefully he has what I need…
+    criteria:
+    - type: item
+      item: minecraft:paper
+      amount: 1
+      name: Find Steve Skellington
+    reward:
+    - type: item
+      item: minecraft:ender_pearl
+      enchanted: true
+      amount: 1
+      name: One free teleport to any location.
+    completed: Yellow

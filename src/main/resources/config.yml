@@ -1,42 +1,64 @@
 Gods:
-  - 4e8c7ae2-1c55-4ea0-ba11-0c1fc151505d
+#- 999c184d-b267-4cc1-a4ee-31aa5906964f
 Teams:
-  - name: 'Red'
-    color: '#B02E26'
-    players:
-      - 999c184d-b267-4cc1-a4ee-31aa5906964f
-  - name: 'Orange'
-    color: '#F9801D'
-  - name: 'Yellow'
-    color: '#FED83D'
-  - name: 'Lime'
-    color: '#80C71F'
-  - name: 'Green'
-    color: '#5E7C16'
-  - name: 'Cyan'
-    color: '#169C9C'
-  - name: 'Light Blue'
-    color: '#3AB3DA'
-  - name: 'Blue'
-    color: '#3C44AA'
-  - name: 'Purple'
-    color: '#8932B8'
-  - name: 'Magenta'
-    color: '#C74EBD'
-  - name: 'Pink'
-    color: '#F38BAA'
-  - name: 'Brown'
-    color: '#835432'
-  - name: 'Black'
-    color: '#1D1D21'
-  - name: 'Gray'
-    color: '#474F52'
-  - name: 'Light Gray'
-    color: '#9D9D97'
-  - name: 'White'
-    color: '#F9FFFE'
-Hats:
-  - name: 'Witch Hat'
-    item: 'leather_horse_armor'
-    author: 'Apple270'
-    custom_model_data: 1
+- name: 'Red'
+  color: '#B02E26'
+  dye: 'red'
+  players:
+#  - 999c184d-b267-4cc1-a4ee-31aa5906964f
+- name: 'Orange'
+  color: '#F9801D'
+  dye: 'orange'
+  players:
+- name: 'Yellow'
+  color: '#FED83D'
+  dye: 'yellow'
+  players:
+- name: 'Green'
+  color: '#5E7C16'
+  dye: 'green'
+  players:
+- name: 'Cyan'
+  color: '#169C9C'
+  dye: 'cyan'
+  players:
+- name: 'Light Blue'
+  color: '#3AB3DA'
+  dye: 'light_blue'
+  players:
+- name: 'Blue'
+  color: '#3C44AA'
+  dye: 'blue'
+  players:
+- name: 'Purple'
+  color: '#8932B8'
+  dye: 'purple'
+  players:
+- name: 'Magenta'
+  color: '#C74EBD'
+  dye: 'magenta'
+  players:
+- name: 'Pink'
+  color: '#F38BAA'
+  dye: 'pink'
+  players:
+- name: 'Brown'
+  color: '#835432'
+  dye: 'brown'
+  players:
+- name: 'Black'
+  color: '#1D1D21'
+  dye: 'black'
+  players:
+- name: 'Gray'
+  color: '#474F52'
+  dye: 'gray'
+  players:
+- name: 'Light Gray'
+  color: '#9D9D97'
+  dye: 'light_gray'
+  players:
+- name: 'White'
+  color: '#F9FFFE'
+  dye: 'white'
+  players:

@@ -124,7 +124,8 @@ public class TowerListener implements Listener {
             // retrieve all config values
             String name = (String) map.get("name");
             String color = (String) map.get("color");
-            String dye = (String) map.get("dye");
+            String configDye = (String) map.get("dye");
+            String dye = (configDye != null) ? configDye : "white";
             ArrayList<String> players = (ArrayList<String>) map.get("players");
 
 
@@ -133,6 +134,7 @@ public class TowerListener implements Listener {
                 this.teams.get(name).loadPortal();
                 newTeams.put(name, this.teams.get(name));
             } else {
+
                 newTeams.put(name, new TowerTeam(manager, name, color, dye));
             }
 
@@ -235,27 +237,27 @@ public class TowerListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock() != null) {
-            if (event.getClickedBlock().getType().equals(Material.LECTERN)) {
-                if (event.getClickedBlock().getLocation().equals(STEVE_LECTERN)) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
+//    @EventHandler
+//    public void onPlayerInteract(final PlayerInteractEvent event) {
+//        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock() != null) {
+//            if (event.getClickedBlock().getType().equals(Material.LECTERN)) {
+//                if (event.getClickedBlock().getLocation().equals(STEVE_LECTERN)) {
+//                    event.setCancelled(true);
+//                }
+//            }
+//        }
+//    }
 
-    @EventHandler
-    public void onEntityPortal(final EntityPortalEvent event) {
-        if (event.isCancelled())
-            return;
-        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
-            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
-        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
-            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
-        }
-    }
+//    @EventHandler
+//    public void onEntityPortal(final EntityPortalEvent event) {
+//        if (event.isCancelled())
+//            return;
+//        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
+//            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
+//        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
+//            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
+//        }
+//    }
     @EventHandler
     public void onPlayerPortal(final PlayerPortalEvent event) {
         if (event.isCancelled())
@@ -275,73 +277,6 @@ public class TowerListener implements Listener {
 
         if (!player.hasPlayedBefore()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.teleport(getPlayerTeam(player).getSpawnpoint()), 1);
-        }
-//        event.joinMessage(Component.text(String.format("%s joined the game", event.getPlayer().getName())));
-
-    }
-
-    @EventHandler
-    public void onPlaceBlock(final BlockPlaceEvent event) {
-
-        Player player = event.getPlayer();
-        BlockState placedBlockState = event.getBlockPlaced().getState(); // Snapshot of the block at the moment it is placed
-        
-        if (isTowering) {
-            if (!blockSets.fullBlocks.contains(event.getBlockPlaced().getType())) {
-                // Placed block is not registered as a full block
-                TextComponent text = Component.text(placedBlockState.getType().name(), NamedTextColor.RED)
-                        .append(Component.text(" is not a full block!", NamedTextColor.WHITE));
-                player.sendActionBar(text);
-                event.setCancelled(true);
-                return;
-            }
-
-            if (placedBlockState instanceof ShulkerBox shulkerBox) {
-
-                if (shulkerBox.customName() != null) {
-                    String shulkerBoxName = PlainTextComponentSerializer.plainText().serialize(shulkerBox.customName());
-
-                    if (shulkerBoxName.equals("Starting Shulker")) {
-                        return;
-                    }
-                }
-            }
-
-
-            for (ArrayList<BlockState> array : towers.values()) {
-                for (BlockState blockState : array) {
-                    if (placedBlockState.getType() == blockState.getType()) {
-                        event.setCancelled(true);
-
-                        TextComponent text = Component.text("You have already placed ").
-                                append(Component.text(placedBlockState.getType().name(), NamedTextColor.RED))
-                                .append(Component.text("!"));
-
-                        player.sendActionBar(text);
-                        return;
-                    }
-                }
-            }
-
-            towers.get(Teams.RED).add(placedBlockState);
-            player.sendMessage("Blocks Placed: " + towers.get(Teams.RED).size());
-        }
-
-        if (isTowering || cancelEvents && !event.isCancelled()) {
-            if (event.getItemInHand().getType() == Material.WET_SPONGE) {
-
-                BlockData wetSponge = Material.WET_SPONGE.createBlockData();
-
-                if (event.getBlockPlaced().getWorld().getEnvironment() == World.Environment.NETHER) {
-                    event.setCancelled(true);
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            event.getBlock().setBlockData(wetSponge, false);
-                        }
-                    }.runTask(plugin);
-                }
-            }
         }
 
     }

@@ -49,27 +49,33 @@ public final class TowerChallenge extends JavaPlugin {
         this.saveDefaultConfig();
 
         regionConfigFile = new File(getDataFolder(), "regions.yml");
+        saveResource("regions.yml", false);
         YamlConfiguration regionConfig = YamlConfiguration.loadConfiguration(regionConfigFile);
 
         questConfigFile = new File(getDataFolder(), "quests.yml");
+        saveResource("quests.yml", false);
         YamlConfiguration questConfig = YamlConfiguration.loadConfiguration(questConfigFile);
 
         penelopeConfigFile = new File(getDataFolder(), "penelope.yml");
         YamlConfiguration penelopeConfig = YamlConfiguration.loadConfiguration(penelopeConfigFile);
 
         wandConfigFile = new File(getDataFolder(), "wands.yml");
+        saveResource("wands.yml", false);
         YamlConfiguration wandConfig = YamlConfiguration.loadConfiguration(wandConfigFile);
 
         endPortalConfigFile = new File(getDataFolder(), "portalframes.yml");
+        saveResource("portalframes.yml", false);
         YamlConfiguration endPortalConfig = YamlConfiguration.loadConfiguration(endPortalConfigFile);
 
         candyConfigFile = new File(getDataFolder(), "candy.yml");
         YamlConfiguration candyConfig = YamlConfiguration.loadConfiguration(candyConfigFile);
 
         hatConfigFile = new File(getDataFolder(), "hat.yml");
+        saveResource("hat.yml", false);
         YamlConfiguration hatConfig = YamlConfiguration.loadConfiguration(hatConfigFile);
 
         steveConfigFile = new File(getDataFolder(), "steve.yml");
+        saveResource("steve.yml", false);
         YamlConfiguration steveConfig = YamlConfiguration.loadConfiguration(steveConfigFile);
 
         teamScoreConfigFile = new File(getDataFolder(), "teamscores.yml");

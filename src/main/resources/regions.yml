@@ -1,0 +1,80 @@
+#Brown:
+#- world: world_nether
+#  name: brown_base
+#- world: world
+#  name: brown_tower
+#Gray:
+#- world: world_nether
+#  name: gray_base
+#- world: world
+#  name: gray_tower
+#Cyan:
+#- world: world_nether
+#  name: cyan_base
+#- world: world
+#  name: cyan_tower
+#Blue:
+#- world: world_nether
+#  name: blue_base
+#- world: world
+#  name: blue_tower
+#Magenta:
+#- world: world_nether
+#  name: magenta_base
+#- world: world
+#  name: magenta_tower
+#Black:
+#- world: world_nether
+#  name: black_base
+#- world: world
+#  name: black_tower
+#Orange:
+#- world: world_nether
+#  name: orange_base
+#- world: world
+#  name: orange_tower
+#Red:
+#- world: world_nether
+#  name: red_base
+#- world: world
+#  name: red_tower
+#Light Blue:
+#- world: world_nether
+#  name: light_blue_base
+#- world: world
+#  name: light_blue_tower
+#Lime:
+#- world: world_nether
+#  name: lime_base
+#- world: world
+#  name: lime_tower
+#Pink:
+#- world: world_nether
+#  name: pink_base
+#- world: world
+#  name: pink_tower
+#White:
+#- world: world_nether
+#  name: white_base
+#- world: world
+#  name: white_tower
+#Yellow:
+#- world: world_nether
+#  name: yellow_base
+#- world: world
+#  name: yellow_tower
+#Purple:
+#- world: world_nether
+#  name: purple_base
+#- world: world
+#  name: purple_tower
+#Light Gray:
+#- world: world_nether
+#  name: light_gray_base
+#- world: world
+#  name: light_gray_tower
+#Green:
+#- world: world_nether
+#  name: green_base
+#- world: world
+#  name: green_tower

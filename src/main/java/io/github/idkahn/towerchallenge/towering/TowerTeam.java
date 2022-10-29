@@ -98,14 +98,20 @@ public class TowerTeam {
 
     public void loadPortal() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
-        this.frameLocation = new Location(Bukkit.getWorld(config.getString(displayName+".world")), config.getInt(displayName+".x"), config.getInt(displayName+".y"), config.getInt(displayName+".z"));
-        Block block = this.frameLocation.getBlock();
-        block.setType(Material.END_PORTAL_FRAME);
-        EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
-        blockData.setFacing(BlockFace.valueOf((config.getString(displayName+".facing")).toUpperCase()));
-        blockData.setEye(config.getBoolean(displayName+".completed"));
-        block.setBlockData(blockData);
-        Bukkit.getLogger().info("Loaded portal frame for " + displayName + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+        if (config.isString(displayName+".world")) {
+            this.frameLocation = new Location(Bukkit.getWorld(config.getString(displayName+".world")), config.getInt(displayName+".x"), config.getInt(displayName+".y"), config.getInt(displayName+".z"));
+            Block block = this.frameLocation.getBlock();
+            block.setType(Material.END_PORTAL_FRAME);
+            EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
+            if (config.isString(displayName+".facing")) {
+                blockData.setFacing(BlockFace.valueOf((config.getString(displayName+".facing")).toUpperCase()));
+            }
+            if (config.isBoolean(displayName+".completed")) {
+                blockData.setEye(config.getBoolean(displayName+".completed"));
+                block.setBlockData(blockData);
+            }
+            Bukkit.getLogger().info("Loaded portal frame for " + displayName + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+        }
     }
 
     public int getScore() {
@@ -308,8 +314,12 @@ public class TowerTeam {
 
     public void clear() {
         team.removeEntries(team.getEntries());
-        towerArea.clearPlayers();
-        spawnArea.clearPlayers();
+        if (towerArea != null) {
+            towerArea.clearPlayers();
+        }
+        if (spawnArea != null) {
+            spawnArea.clearPlayers();
+        }
     }
 
     public Component getDisplayName() {

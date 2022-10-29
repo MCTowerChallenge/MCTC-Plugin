@@ -31,7 +31,11 @@ public class WandGUI implements Listener {
     public WandGUI(Plugin plugin) {
         this.plugin = plugin;
         this.wands = new ArrayList<>();
-        int numHats = Objects.requireNonNull(YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile).getList("Wands")).size();
+        List wands = YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile).getList("Wands");
+        int numHats = 0;
+        if (wands != null) {
+            numHats = wands.size();
+        }
         this.inventory = Bukkit.createInventory(null, HatGUI.getInventorySize(numHats), Component.text(UI_NAME));
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         this.loadWands();
@@ -79,6 +83,8 @@ public class WandGUI implements Listener {
     public void loadWands() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile);
         List<HashMap> configWands = (List<HashMap>) config.getList("Wands");
+        if (configWands == null)
+            return;
         int numHats = configWands.size();
         int newSize = HatGUI.getInventorySize(numHats);
 
