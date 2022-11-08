@@ -6,8 +6,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.candy.Candy;
-import io.github.idkahn.towerchallenge.candy.CandyUtils;
+import io.github.idkahn.towerchallenge.halloween.candy.Candy;
+import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -91,8 +91,8 @@ public class TowerTeam {
         if (regions != null && regions.size() >= 2) {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("world")))).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("world")))).getRegion(tower.get("name")), displayName);
+            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("December MCTC")))).getRegion(spawn.get("name")));
+            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("December MCTC")))).getRegion(tower.get("name")), displayName);
         }
     }
 
@@ -375,50 +375,52 @@ public class TowerTeam {
         if (hat == null || hat.getType().isAir()) {
             hat = new ItemStack(Material.DIAMOND_HELMET);
             ItemMeta hatMeta = hat.getItemMeta();
-            hatMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+            hatMeta.setUnbreakable(true);
             hat.setItemMeta(hatMeta);
         }
         inventory.clear();
 
+        ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
+        ItemMeta chestplateMeta = chestplate.getItemMeta();
+        chestplateMeta.setUnbreakable(true);
+        chestplate.setItemMeta(chestplateMeta);
+
+        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
+        ItemMeta leggingsMeta = leggings.getItemMeta();
+        leggingsMeta.setUnbreakable(true);
+        leggings.setItemMeta(leggingsMeta);
+
+        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
+        ItemMeta bootsMeta = boots.getItemMeta();
+        bootsMeta.setUnbreakable(true);
+        bootsMeta.addEnchant(Enchantment.DEPTH_STRIDER, 3, false);
+        boots.setItemMeta(bootsMeta);
+
         ItemStack pickaxe = new ItemStack(Material.NETHERITE_PICKAXE);
+        if (player.getName().equals("ScaredArti")) {
+            pickaxe.lore(new ArrayList<>() {{
+                add(Component.text("Look what you made me do...").color(TowerChallenge.SECONDARY_COLOR));
+            }});
+        }
+
         ItemMeta pickaxeMeta = pickaxe.getItemMeta();
-        pickaxeMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        pickaxeMeta.setUnbreakable(true);
+
         pickaxeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
         pickaxeMeta.addEnchant(Enchantment.SILK_TOUCH, 1, false);
         pickaxe.setItemMeta(pickaxeMeta);
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
         ItemMeta axeMeta = axe.getItemMeta();
-        axeMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        axeMeta.setUnbreakable(true);
         axeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
         axe.setItemMeta(axeMeta);
 
         ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL);
         ItemMeta shovelMeta = shovel.getItemMeta();
-        shovelMeta.addEnchant(Enchantment.DURABILITY, 3, false);
+        shovelMeta.setUnbreakable(true);
         shovelMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
         shovel.setItemMeta(shovelMeta);
-
-        ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-        ItemMeta chestplateMeta = chestplate.getItemMeta();
-        chestplateMeta.addEnchant(Enchantment.DURABILITY, 3, false);
-        chestplate.setItemMeta(chestplateMeta);
-
-        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
-        ItemMeta leggingsMeta = leggings.getItemMeta();
-        leggingsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
-        leggings.setItemMeta(leggingsMeta);
-
-        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
-        ItemMeta bootsMeta = boots.getItemMeta();
-        bootsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
-        boots.setItemMeta(bootsMeta);
-
-        ItemStack goldBoots = new ItemStack(Material.GOLDEN_BOOTS);
-        ItemMeta goldBootsMeta = goldBoots.getItemMeta();
-        goldBootsMeta.addEnchant(Enchantment.DURABILITY, 3, false);
-        goldBootsMeta.addEnchant(Enchantment.SOUL_SPEED, 1, false);
-        goldBoots.setItemMeta(goldBootsMeta);
 
         ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 
@@ -427,7 +429,7 @@ public class TowerTeam {
         inventory.setHelmet(hat);
         inventory.setChestplate(chestplate);
         inventory.setLeggings(leggings);
-        inventory.setBoots(goldBoots);
+        inventory.setBoots(boots);
 
         inventory.setItem(0, axe);
         inventory.setItem(1, pickaxe);
@@ -436,7 +438,6 @@ public class TowerTeam {
         giveBundle(player);
         inventory.setItem(5, steak);
         inventory.setItem(6, torches);
-        inventory.setItem(8, boots);
         giveShulker(player, 3);
 
         inventory.setItem(32, steak);

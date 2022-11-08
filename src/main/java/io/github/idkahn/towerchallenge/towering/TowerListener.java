@@ -48,7 +48,7 @@ public class TowerListener implements Listener {
 
     private final EnumMap<Teams, ArrayList<BlockState>> towers = new EnumMap<Teams, ArrayList<BlockState>>(Teams.class);
 
-    public static final Location STEVE_LECTERN = new Location(Bukkit.getWorld("world"), -708, 56, -1331);
+    public static final Location STEVE_LECTERN = new Location(Bukkit.getWorld("December MCTC"), -708, 56, -1331);
 
     private GodTeam godTeam;
 
@@ -252,9 +252,9 @@ public class TowerListener implements Listener {
 //    public void onEntityPortal(final EntityPortalEvent event) {
 //        if (event.isCancelled())
 //            return;
-//        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
+//        if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC_nether"))) {
 //            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
-//        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
+//        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC"))) {
 //            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
 //        }
 //    }
@@ -262,9 +262,9 @@ public class TowerListener implements Listener {
     public void onPlayerPortal(final PlayerPortalEvent event) {
         if (event.isCancelled())
             return;
-        if (event.getTo().getWorld().equals(Bukkit.getWorld("world_nether"))) {
+        if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC_nether"))) {
             event.setTo(EventManager.NETHER_PORTAL_LOCATION);
-        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("world"))) {
+        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC"))) {
             event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
         }
     }

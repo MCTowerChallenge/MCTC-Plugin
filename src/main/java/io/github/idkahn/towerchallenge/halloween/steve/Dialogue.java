@@ -1,15 +1,13 @@
-package io.github.idkahn.towerchallenge.steve;
+package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Dialogue {
 

@@ -1,9 +1,8 @@
-package io.github.idkahn.towerchallenge.steve;
+package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,20 +11,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-import org.bukkit.map.MinecraftFont;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +42,7 @@ public class SteveManager {
         this.steveCommands = new SteveCommands(this);
         eventManager.getPlugin().getCommand("steve").setExecutor(steveCommands);
         loadSteve();
-        World world = Bukkit.getServer().getWorld("world");
+        World world = Bukkit.getServer().getWorld("December MCTC");
 
         File riddleFile = new File(eventManager.getPlugin().getDataFolder(), "riddle.png");
         BufferedImage riddle = null;

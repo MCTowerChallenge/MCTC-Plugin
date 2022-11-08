@@ -31,7 +31,7 @@ public class EndPortal implements Listener {
     public void openPortal() {
         for (int x = -116; x <= -114; x++) {
             for (int z = -191; z <= -187; z++) {
-                Location block = new Location(Bukkit.getWorld("world_nether"), x, 93, z);
+                Location block = new Location(Bukkit.getWorld("December MCTC_nether"), x, 93, z);
                 block.getBlock().setType(Material.END_PORTAL);
             }
         }
@@ -48,7 +48,7 @@ public class EndPortal implements Listener {
     public void resetPortal() {
         for (int x = -116; x <= -114; x++) {
             for (int z = -191; z <= -187; z++) {
-                Location block = new Location(Bukkit.getWorld("world_nether"), x, 93, z);
+                Location block = new Location(Bukkit.getWorld("December MCTC_nether"), x, 93, z);
                 block.getBlock().setType(Material.AIR);
             }
         }

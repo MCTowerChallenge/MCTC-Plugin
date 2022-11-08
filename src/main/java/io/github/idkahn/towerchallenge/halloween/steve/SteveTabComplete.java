@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.steve;
+package io.github.idkahn.towerchallenge.halloween.steve;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

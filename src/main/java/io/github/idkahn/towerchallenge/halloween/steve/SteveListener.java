@@ -1,11 +1,10 @@
-package io.github.idkahn.towerchallenge.steve;
+package io.github.idkahn.towerchallenge.halloween.steve;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.candy.CandyUtils;
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -34,7 +33,7 @@ public class SteveListener implements Listener {
 
     public final static String STEVE_NAME = "steve skellington";
     public final static String STEVE_REGION_NAME = "steve_house";
-    public final static World STEVE_WORLD = Bukkit.getWorld("world");
+    public final static World STEVE_WORLD = Bukkit.getWorld("December MCTC");
 
     private ProtectedRegion steveHouse;
     private SteveManager steveManager;
@@ -45,7 +44,9 @@ public class SteveListener implements Listener {
     public SteveListener(SteveManager steveManager) {
         this.steveManager = steveManager;
         Bukkit.getServer().getPluginManager().registerEvents(this, steveManager.getEventManager().getPlugin());
-        steveHouse = TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD)).getRegion(STEVE_REGION_NAME);
+        if (TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD)).hasRegion(STEVE_REGION_NAME)) {
+            steveHouse = TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD)).getRegion(STEVE_REGION_NAME);
+        }
         notEnoughCandy = new Dialogue(steveManager, Component.text("You haven't found all 32 candies yet! Come back when you have.").color(NamedTextColor.GRAY), 3);
         notEnoughCandy.setNext(new Dialogue(steveManager, Component.text("What do you mean “...32?” ??? Yes! Get to trick or treating already!").color(NamedTextColor.GRAY), 3))
                 .setNext(new Dialogue(steveManager, Component.text("Now where was I? Oh yeah, maybe over here?").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true), 0))

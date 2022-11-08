@@ -1,7 +1,6 @@
 package io.github.idkahn.towerchallenge.quests;
 
-import io.github.idkahn.towerchallenge.candy.CandyUtils;
-import io.github.idkahn.towerchallenge.wands.WandUtil;
+import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

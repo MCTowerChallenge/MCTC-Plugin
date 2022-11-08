@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge;
 
-import io.github.idkahn.towerchallenge.candy.CandyCommands;
-import io.github.idkahn.towerchallenge.candy.CandyTabComplete;
+import io.github.idkahn.towerchallenge.halloween.candy.CandyCommands;
+import io.github.idkahn.towerchallenge.halloween.candy.CandyTabComplete;
 import io.github.idkahn.towerchallenge.commands.EnderChestCommand;
 import io.github.idkahn.towerchallenge.commands.GodCommand;
 import io.github.idkahn.towerchallenge.commands.InvseeCommand;

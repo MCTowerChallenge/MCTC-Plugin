@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.candy;
+package io.github.idkahn.towerchallenge.halloween.candy;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;

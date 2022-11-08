@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.candy;
+package io.github.idkahn.towerchallenge.halloween.candy;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;

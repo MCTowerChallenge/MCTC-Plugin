@@ -55,7 +55,7 @@ public class TowerArea implements Listener {
         for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
             for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
                 for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
-                    Block block = Bukkit.getWorld("world").getBlockAt(x, y, z);
+                    Block block = Bukkit.getWorld("December MCTC").getBlockAt(x, y, z);
                     if (!block.getType().isAir()) {
                         addBlock(null, block.getState());
                     }

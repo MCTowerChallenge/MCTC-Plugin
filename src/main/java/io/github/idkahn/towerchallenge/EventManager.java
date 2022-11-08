@@ -1,10 +1,8 @@
 package io.github.idkahn.towerchallenge;
 
-import com.google.common.annotations.GwtIncompatible;
-import io.github.idkahn.towerchallenge.candy.Candy;
-import io.github.idkahn.towerchallenge.steve.SteveListener;
+import io.github.idkahn.towerchallenge.halloween.candy.Candy;
 import io.github.idkahn.towerchallenge.quests.QuestManager;
-import io.github.idkahn.towerchallenge.steve.SteveManager;
+import io.github.idkahn.towerchallenge.halloween.steve.SteveManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import io.github.idkahn.towerchallenge.towering.WinnerGUI;
@@ -16,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -24,7 +21,6 @@ import org.bukkit.scoreboard.Score;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class EventManager {
 
@@ -41,8 +37,8 @@ public class EventManager {
     }
 
     // Constants
-    public static final Location NETHER_PORTAL_LOCATION = new Location(Bukkit.getWorld("world_nether"), -112, 92, -173, 0, 0);
-    public static final Location OVERWORLD_PORTAL_LOCATION = new Location(Bukkit.getWorld("world"), -584, 65, -1327, 270, 0);
+    public static final Location NETHER_PORTAL_LOCATION = new Location(Bukkit.getWorld("December MCTC_nether"), -112, 92, -173, 0, 0);
+    public static final Location OVERWORLD_PORTAL_LOCATION = new Location(Bukkit.getWorld("December MCTC"), -584, 65, -1327, 270, 0);
     private static final String OBJECTIVE_NAME = "TowerHeight";
 
     public static String formatBlockType(Material material) {
