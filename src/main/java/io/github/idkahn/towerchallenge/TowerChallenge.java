@@ -1,5 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
+import io.github.idkahn.towerchallenge.commands.BroadcastCommand;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyCommands;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyTabComplete;
 import io.github.idkahn.towerchallenge.commands.EnderChestCommand;
@@ -141,6 +142,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
+
+        BroadcastCommand broadcastCommand = new BroadcastCommand(manager);
+        this.getCommand("broadcast").setExecutor(broadcastCommand);
 
         new EnderChestCommand(this);
         new InvseeCommand(this);

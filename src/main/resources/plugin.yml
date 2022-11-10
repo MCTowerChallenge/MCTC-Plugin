@@ -31,6 +31,14 @@ commands:
     description: Toggles player invulnerability
     usage: /god
     permission: towerchallenge.god
+  broadcast:
+    description: Broadcasts a message to all players
+    usage: /broadcast
+    permission: towerchallenge.broadcast
+    aliases:
+      - bc
+      - bcast
+      - announce
   enderchest:
     description: Opens the player's enderchest
     usage: /enderchest

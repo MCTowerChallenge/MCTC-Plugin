@@ -1,5 +1,7 @@
 package io.github.idkahn.towerchallenge;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum DefaultFontInfo {
 
     A('A', 5),
@@ -100,8 +102,8 @@ public enum DefaultFontInfo {
     STAR('☆', 7),
     DEFAULT('a', 4);
 
-    private char character;
-    private int length;
+    private final char character;
+    private final int length;
 
     DefaultFontInfo(char character, int length) {
         this.character = character;
@@ -126,5 +128,13 @@ public enum DefaultFontInfo {
             if (dFI.getCharacter() == c) return dFI;
         }
         return DefaultFontInfo.DEFAULT;
+    }
+
+    public static int getStringLength(@NotNull String s) {
+        int count = 0;
+        for (char c : s.toCharArray()) {
+            count += getDefaultFontInfo(c).getLength();
+        }
+        return count;
     }
 }
