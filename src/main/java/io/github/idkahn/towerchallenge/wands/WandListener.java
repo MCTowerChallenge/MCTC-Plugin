@@ -28,6 +28,7 @@ public class WandListener implements Listener {
             switch (WandUtil.getMagic(item)) {
                 case (1) -> cow(player);
                 case (2) -> smite(player);
+                case (3) -> firework(player);
             }
         }
     }
@@ -69,6 +70,35 @@ public class WandListener implements Listener {
         firework.addPassenger(cow);
         firework.setShotAtAngle(true);
         firework.setVelocity(player.getEyeLocation().getDirection().multiply(1.25));
+    }
+
+    public void firework(Player player) {
+        Firework firework = (Firework) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREWORK);
+        firework.setSilent(true);
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        fireworkMeta.setPower(2);
+        fireworkMeta.clearEffects();
+        fireworkMeta.addEffect(FireworkEffect.builder()
+                .with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.RED).
+                .build());
+//        fireworkMeta.addEffect(FireworkEffect.builder()
+//                .with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.ORANGE)
+//                .build());
+//        fireworkMeta.addEffect(FireworkEffect.builder()
+//                .with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.YELLOW)
+//                .build());
+//        fireworkMeta.addEffect(FireworkEffect.builder()
+//                .with(FireworkEffect.Type.BALL).withColor(Color.GREEN).withFade(Color.GREEN)
+//                .build());
+//        fireworkMeta.addEffect(FireworkEffect.builder()
+//                .with(FireworkEffect.Type.BALL).withColor(Color.BLUE).withFade(Color.BLUE)
+//                .build());
+//        fireworkMeta.addEffect(FireworkEffect.builder()
+//                .with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.PURPLE)
+//                .build());
+        firework.setFireworkMeta(fireworkMeta);
+        firework.setShotAtAngle(true);
+        firework.setVelocity(player.getEyeLocation().getDirection().multiply(1));
     }
 
 }

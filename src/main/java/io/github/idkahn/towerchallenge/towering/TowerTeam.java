@@ -9,6 +9,7 @@ import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.halloween.candy.Candy;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
+import io.github.idkahn.towerchallenge.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -438,6 +439,7 @@ public class TowerTeam {
         giveBundle(player);
         inventory.setItem(5, steak);
         inventory.setItem(6, torches);
+        SpawnCompass.giveCompass(player);
         giveShulker(player, 3);
 
         inventory.setItem(32, steak);

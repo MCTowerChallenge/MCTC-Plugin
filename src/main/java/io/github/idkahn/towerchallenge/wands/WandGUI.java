@@ -1,5 +1,6 @@
 package io.github.idkahn.towerchallenge.wands;
 
+import io.github.idkahn.towerchallenge.NBTUtils;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import net.kyori.adventure.text.Component;
@@ -75,7 +76,7 @@ public class WandGUI implements Listener {
     public void randomIds() {
         ItemStack[] items = inventory.getContents();
         for (int i = 0; i < items.length; i++) {
-            ItemStack item = WandUtil.randomUUID(items[i]);
+            ItemStack item = NBTUtils.randomUUID(items[i]);
             inventory.setItem(i, item);
         }
     }
@@ -98,15 +99,16 @@ public class WandGUI implements Listener {
             String name = (String) wand.get("name");
             String type = ((String) wand.get("item")).toUpperCase();
             int magic = (int) wand.get("magic");
+            int model = (int) wand.get("model");
             String author = (String) wand.get("author");
-            ItemStack item = WandUtil.setMagic(new ItemStack(Material.getMaterial(type)), magic);
+            ItemStack item = WandUtil.setMagic(new ItemStack(Material.getMaterial(type)), magic, model);
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
             if (author != null) {
                 lore.add(Component.text("Model by " + author + "").decoration(TextDecoration.ITALIC, false));
-            } else {
-                lore.add(Component.text("Model author unknown").decoration(TextDecoration.ITALIC, false));
+//            } else {
+//                lore.add(Component.text("Model author unknown").decoration(TextDecoration.ITALIC, false));
             }
             itemMeta.lore(lore);
             item.setItemMeta(itemMeta);

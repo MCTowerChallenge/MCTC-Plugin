@@ -1,10 +1,8 @@
 package io.github.idkahn.towerchallenge.wands;
 
-import de.tr7zw.nbtapi.NBTItem;
+import io.github.idkahn.towerchallenge.NBTUtils;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.UUID;
 
 public class WandUtil {
 
@@ -14,7 +12,8 @@ public class WandUtil {
 
     public enum MagicTypes {
         COW(1),
-        LIGHTNING(2);
+        LIGHTNING(2),
+        FIREWORK(3);
 
         private final int value;
 
@@ -27,14 +26,6 @@ public class WandUtil {
         }
     }
 
-    public static ItemStack randomUUID(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir())
-            return itemStack;
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setUUID("id", UUID.randomUUID());
-        return nbtItem.getItem();
-    }
-
     /**
      * Sets the value of the "is_wand" NBT tag on an itemstack
      * @param itemStack ItemStack to change
@@ -42,18 +33,18 @@ public class WandUtil {
      * @return ItemStack, with the updated is_wand tag
      */
     public static ItemStack setWand(ItemStack itemStack, Boolean state) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setBoolean(WAND_TAG, state);
-        return randomUUID(nbtItem.getItem());
+        return NBTUtils.setBool(WAND_TAG, itemStack, state);
+    }
+
+    public static ItemStack setMagic(ItemStack itemStack, int ID, int model) {
+        ItemMeta itemMeta = setWand(itemStack).getItemMeta();
+        itemMeta.setCustomModelData(model);
+        itemStack.setItemMeta(itemMeta);
+        return NBTUtils.setInteger(MAGIC_TAG, itemStack, ID);
     }
 
     public static ItemStack setMagic(ItemStack itemStack, int ID) {
-        ItemMeta itemMeta = setWand(itemStack).getItemMeta();
-        itemMeta.setCustomModelData(ID);
-        itemStack.setItemMeta(itemMeta);
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setInteger(MAGIC_TAG, ID);
-        return nbtItem.getItem();
+        return setMagic(itemStack, ID, 0);
     }
 
     /**
@@ -71,13 +62,11 @@ public class WandUtil {
      * @return true, if the item is a wand
      */
     public static Boolean isWand(ItemStack itemStack) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getBoolean(WAND_TAG);
+        return NBTUtils.boolState(WAND_TAG, itemStack);
     }
 
     public static int getMagic(ItemStack itemStack) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getInteger(MAGIC_TAG);
+        return NBTUtils.getInteger(MAGIC_TAG, itemStack);
     }
 
 }

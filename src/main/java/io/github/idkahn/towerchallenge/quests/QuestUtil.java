@@ -1,9 +1,7 @@
 package io.github.idkahn.towerchallenge.quests;
 
-import de.tr7zw.nbtapi.NBTItem;
+import io.github.idkahn.towerchallenge.NBTUtils;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 public class QuestUtil {
 
@@ -19,10 +17,7 @@ public class QuestUtil {
      * @return ItemStack, with the updated is_questbook tag
      */
     public static ItemStack setQuestbook(ItemStack itemStack, Boolean questbookState) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setBoolean(NBT_TAG, questbookState);
-        nbtItem.setUUID("id", UUID.randomUUID());
-        return nbtItem.getItem();
+        return NBTUtils.setBool(NBT_TAG, itemStack, questbookState);
     }
 
     /**
@@ -40,17 +35,11 @@ public class QuestUtil {
      * @return
      */
     public static Boolean isQuestbook(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) {
-            return false;
-        }
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getBoolean(NBT_TAG);
+        return NBTUtils.boolState(NBT_TAG, itemStack);
     }
 
-    public static ItemStack setButton(ItemStack itemStack, Boolean hatState) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setBoolean(BUTTON_TAG, hatState);
-        return nbtItem.getItem();
+    public static ItemStack setButton(ItemStack itemStack, Boolean state) {
+        return NBTUtils.setBool(BUTTON_TAG, itemStack, state);
     }
 
     public static ItemStack setButton(ItemStack itemStack) {
@@ -58,17 +47,11 @@ public class QuestUtil {
     }
 
     public static Boolean isButton(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) {
-            return false;
-        }
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getBoolean(BUTTON_TAG);
+        return NBTUtils.boolState(BUTTON_TAG, itemStack);
     }
 
-    public static ItemStack setVoucher(ItemStack itemStack, Boolean hatState) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setBoolean(VOUCHER_TAG, hatState);
-        return nbtItem.getItem();
+    public static ItemStack setVoucher(ItemStack itemStack, Boolean state) {
+        return NBTUtils.setBool(VOUCHER_TAG, itemStack, state);
     }
 
     public static ItemStack setVoucher(ItemStack itemStack) {
@@ -76,11 +59,7 @@ public class QuestUtil {
     }
 
     public static Boolean isVoucher(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) {
-            return false;
-        }
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getBoolean(VOUCHER_TAG);
+        return NBTUtils.boolState(VOUCHER_TAG, itemStack);
     }
 
 }

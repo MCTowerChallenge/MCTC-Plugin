@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge.hats;
 
-import de.tr7zw.nbtapi.NBTItem;
+import io.github.idkahn.towerchallenge.NBTUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class HatUtil {
@@ -14,9 +14,7 @@ public class HatUtil {
      * @return ItemStack, with the updated is_hat tag
      */
     public static ItemStack setHat(ItemStack itemStack, Boolean hatState) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setBoolean(NBT_TAG, hatState);
-        return nbtItem.getItem();
+        return NBTUtils.setBool(NBT_TAG, itemStack, hatState);
     }
 
     /**
@@ -34,11 +32,7 @@ public class HatUtil {
      * @return
      */
     public static Boolean isHat(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) {
-            return false;
-        }
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getBoolean(NBT_TAG);
+        return NBTUtils.boolState(NBT_TAG, itemStack);
     }
 
 }
