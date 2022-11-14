@@ -79,7 +79,7 @@ public class WandListener implements Listener {
         fireworkMeta.setPower(2);
         fireworkMeta.clearEffects();
         fireworkMeta.addEffect(FireworkEffect.builder()
-                .with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.RED).
+                .with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.RED)
                 .build());
 //        fireworkMeta.addEffect(FireworkEffect.builder()
 //                .with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.ORANGE)
