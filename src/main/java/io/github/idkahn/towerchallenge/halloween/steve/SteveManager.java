@@ -5,6 +5,7 @@ import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -29,20 +30,18 @@ import java.util.Map;
 
 public class SteveManager {
 
-    private EventManager eventManager;
-    private SteveListener steveListener;
-    private SteveCommands steveCommands;
+    private final EventManager eventManager;
     private YamlConfiguration config;
     private Dialogue firstDialogue;
-    private MapView riddleMapView;
+    private final MapView riddleMapView;
 
     public SteveManager(EventManager eventManager) {
         this.eventManager = eventManager;
-        this.steveListener = new SteveListener(this);
-        this.steveCommands = new SteveCommands(this);
+        new SteveListener(this);
+        SteveCommands steveCommands = new SteveCommands(this);
         eventManager.getPlugin().getCommand("steve").setExecutor(steveCommands);
         loadSteve();
-        World world = Bukkit.getServer().getWorld("December MCTC");
+        World world = TowerChallenge.WORLD;
 
         File riddleFile = new File(eventManager.getPlugin().getDataFolder(), "riddle.png");
         BufferedImage riddle = null;
@@ -81,20 +80,17 @@ public class SteveManager {
             List<Map<?, ?>> configMessage = (List<Map<?, ?>>) map.get("message");
             int configDelay = (int) map.get("delay");
 
-            ComponentBuilder message = Component.text().color(NamedTextColor.GRAY);
+            ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY);
 
             for (Map<?, ?> text : configMessage) {
                 Object italics = text.get("italics");
-                ComponentBuilder builder = Component.text();
+                ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
                 builder.append(Component.text((String) text.get("text")));
                 if (italics != null) {
                     builder.decoration(TextDecoration.ITALIC, (boolean) italics);
                 }
                 message.append(builder.build());
             }
-
-            //            Bukkit.getLogger().info(PlainTextComponentSerializer.plainText().serialize(message.build()));
-//            Bukkit.getLogger().info(Long.toString(delay));
 
             Dialogue thisDialogue = new Dialogue(this, message.build(), configDelay);
             if (previousDialogue == null) {

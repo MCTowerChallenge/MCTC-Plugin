@@ -20,6 +20,8 @@ import io.github.idkahn.towerchallenge.towering.TowerTabComplete;
 import io.github.idkahn.towerchallenge.wands.WandCommands;
 import io.github.idkahn.towerchallenge.wands.WandListener;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -42,6 +44,11 @@ public final class TowerChallenge extends JavaPlugin {
     public static TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
     //d0608c
     //124f49
+
+    public static String WORLD_NAME = "December MCTC";
+    public static World WORLD = Bukkit.getWorld(WORLD_NAME);
+    public static World NETHER = Bukkit.getWorld(WORLD_NAME+"_nether");
+    public static World END = Bukkit.getWorld(WORLD_NAME+"_the_end");
 
     @Override
     public void onEnable() {

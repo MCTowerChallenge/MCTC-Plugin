@@ -2,12 +2,14 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,20 +34,21 @@ import org.bukkit.inventory.meta.BundleMeta;
 public class SteveListener implements Listener {
 
     public final static String STEVE_NAME = "steve skellington";
-    public final static String STEVE_REGION_NAME = "steve_house";
-    public final static World STEVE_WORLD = Bukkit.getWorld("December MCTC");
+    public final static String STEVE_REGION_NAME = "steve";
+    public final static World STEVE_WORLD = TowerChallenge.WORLD;
 
     private ProtectedRegion steveHouse;
-    private SteveManager steveManager;
+    private final SteveManager steveManager;
 
-    private Dialogue notEnoughCandy;
-    private Dialogue enoughCandy;
+    private final Dialogue notEnoughCandy;
+    private final Dialogue enoughCandy;
 
     public SteveListener(SteveManager steveManager) {
         this.steveManager = steveManager;
         Bukkit.getServer().getPluginManager().registerEvents(this, steveManager.getEventManager().getPlugin());
-        if (TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD)).hasRegion(STEVE_REGION_NAME)) {
-            steveHouse = TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD)).getRegion(STEVE_REGION_NAME);
+        RegionManager regionManager = TowerTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD));
+        if (regionManager != null && regionManager.hasRegion(STEVE_REGION_NAME)) {
+            steveHouse = regionManager.getRegion(STEVE_REGION_NAME);
         }
         notEnoughCandy = new Dialogue(steveManager, Component.text("You haven't found all 32 candies yet! Come back when you have.").color(NamedTextColor.GRAY), 3);
         notEnoughCandy.setNext(new Dialogue(steveManager, Component.text("What do you mean “...32?” ??? Yes! Get to trick or treating already!").color(NamedTextColor.GRAY), 3))
@@ -86,7 +89,7 @@ public class SteveListener implements Listener {
                         steveManager.setTeamStage(team, 1);
                         steveManager.playDialogue(player);
 
-                        ComponentBuilder message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
+                        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
                         message.append(Component.text("steve was found "));
                         message.append(Component.text("by ").append(player.name()));
                         message.append(Component.text(" [Teleport]").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
@@ -95,8 +98,6 @@ public class SteveListener implements Listener {
                         );
 
                         steveManager.getEventManager().getTowerListener().getGodTeam().getAudience().sendMessage(message.build());
-        //                player.sendMessage(message.build());
-        //                event.getPlayer().sendMessage("You found steve!");
                     }
                 }
             }

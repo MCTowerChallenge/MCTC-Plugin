@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SteveCommands implements CommandExecutor {
 
-    private SteveManager steveManager;
+    private final SteveManager steveManager;
 
     public SteveCommands(SteveManager steveManager) {
         this.steveManager = steveManager;

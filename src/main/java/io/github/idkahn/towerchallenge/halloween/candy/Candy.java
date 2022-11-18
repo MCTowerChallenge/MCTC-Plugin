@@ -31,8 +31,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,7 +61,7 @@ public class Candy implements Listener {
         }
 
         private static final List<CandyType> VALUES =
-                Collections.unmodifiableList(Arrays.asList(values()));
+                List.of(values());
         private static final int SIZE = VALUES.size();
         private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -75,7 +73,7 @@ public class Candy implements Listener {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private EventManager manager;
+    private final EventManager manager;
 
     public Candy(EventManager manager) {
         this.manager = manager;
@@ -206,7 +204,7 @@ public class Candy implements Listener {
             ItemStack item = event.getCurrentItem();
 
             if (event.getClick().equals(ClickType.RIGHT)) {
-                if (CandyUtils.isBundle(event.getClickedInventory().getItem(event.getSlot()))) {
+                if (event.getClickedInventory() != null && CandyUtils.isBundle(event.getClickedInventory().getItem(event.getSlot()))) {
                     if (!CandyUtils.isCandy(event.getCurrentItem())) {
                         event.setCancelled(true);
                         return;

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BroadcastCommand implements CommandExecutor {
 
-    private EventManager manager;
+    private final EventManager manager;
 
     public BroadcastCommand(EventManager manager) {
         this.manager = manager;

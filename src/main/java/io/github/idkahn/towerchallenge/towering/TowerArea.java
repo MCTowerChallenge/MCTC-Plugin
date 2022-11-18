@@ -4,12 +4,12 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import de.tr7zw.nbtapi.NBTList;
-import de.tr7zw.nbtapi.NBTTileEntity;
 import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -55,7 +55,7 @@ public class TowerArea implements Listener {
         for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
             for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
                 for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
-                    Block block = Bukkit.getWorld("December MCTC").getBlockAt(x, y, z);
+                    Block block = TowerChallenge.WORLD.getBlockAt(x, y, z);
                     if (!block.getType().isAir()) {
                         addBlock(null, block.getState());
                     }
@@ -93,9 +93,8 @@ public class TowerArea implements Listener {
 
     private boolean exclude(BlockState block) {
         if (block instanceof ShulkerBox box) {
-            if (box.customName() != null && PlainTextComponentSerializer.plainText().serialize(box.customName()).equals(TowerTeam.SHULKER_NAME)) {
-                return true;
-            }
+            Component boxName = box.customName();
+            return boxName != null && PlainTextComponentSerializer.plainText().serialize(boxName).equals(TowerTeam.SHULKER_NAME);
         }
         return false;
     }

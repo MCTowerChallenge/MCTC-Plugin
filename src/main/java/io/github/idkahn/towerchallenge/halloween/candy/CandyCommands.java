@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class CandyCommands implements CommandExecutor {
 
-    private EventManager eventManager;
+    private final EventManager eventManager;
 
     public CandyCommands(EventManager eventManager) {
         this.eventManager = eventManager;
