@@ -89,11 +89,11 @@ public class TowerTeam {
         List maps = config.getMapList(displayName);
         List<Map> regions = (List<Map>) maps;
 
-        if (regions != null && regions.size() >= 2) {
+        if (regions.size() >= 2) {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(spawn.get("December MCTC")))).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(plugin.getServer().getWorld(tower.get("December MCTC")))).getRegion(tower.get("name")), displayName);
+            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(spawn.get("name")));
+            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(tower.get("name")), displayName);
         }
     }
 

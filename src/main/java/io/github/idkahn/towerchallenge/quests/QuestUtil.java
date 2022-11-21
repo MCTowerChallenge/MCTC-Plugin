@@ -29,11 +29,6 @@ public class QuestUtil {
         return setQuestbook(itemStack, true);
     }
 
-    /**
-     * Checks if an itemstack is a hat
-     * @param itemStack
-     * @return
-     */
     public static Boolean isQuestbook(ItemStack itemStack) {
         return NBTUtils.boolState(NBT_TAG, itemStack);
     }

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class QuestListener implements Listener {
 
-    private QuestManager questManager;
+    private final QuestManager questManager;
 
     public QuestListener(QuestManager questManager) {
         this.questManager = questManager;

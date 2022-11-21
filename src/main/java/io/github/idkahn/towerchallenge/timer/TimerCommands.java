@@ -42,13 +42,6 @@ public class TimerCommands implements CommandExecutor {
                     case ("pause") -> timer.pause();
                     case ("start"), ("resume") -> timer.resume();
 
-//                    case("var"):
-//                        sender.sendMessage("EndTime: "+timer.getEndTime().toString());
-//                        sender.sendMessage("State: "+timer.getState().toString());
-//                        sender.sendMessage("MaxDuration: "+timer.getMaxDuration().toString());
-//                        sender.sendMessage("MaxDuration Long: "+timer.getMaxDuration().getTime());
-//                        sender.sendMessage("TimeLeft: "+timer.getTimeLeft().toString());
-//                        sender.sendMessage("TimeLeft Long: "+timer.getTimeLeft().getTime());
                 }
             }
         }

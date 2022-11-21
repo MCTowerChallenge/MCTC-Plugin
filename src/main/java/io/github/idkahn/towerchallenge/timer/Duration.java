@@ -15,16 +15,6 @@ public class Duration implements Comparable<Duration> {
     private long seconds;
     private long nanos;
 
-    public Duration () {
-        this.years = 0;
-        this.months = 0;
-        this.days = 0;
-        this.hours = 0;
-        this.minutes = 0;
-        this.seconds = 0;
-        this.nanos = 0;
-    }
-
     public Duration (long years, long months, long days, long hours, long minutes, long seconds, long nanos) {
         this.years = years;
         this.months = months;
@@ -101,61 +91,30 @@ public class Duration implements Comparable<Duration> {
         return endDateTime;
     }
 
-    public void setDuration (long years, long months, long days, long hours, long minutes, long seconds) {
-        this.years = years;
-        this.months = months;
-        this.days = days;
-        this.hours = hours;
-        this.minutes = minutes;
-        this.seconds = seconds;
-    }
-
-    public void setYears(long years) {
-        this.years = years;
-    }
-
     public long getYears() {
         return years;
     }
 
-    public void setMonths(long months) {
-        this.months = months;
-    }
     public long getMonths() {
         return months;
     }
 
-    public void setDays(long days) {
-        this.days = days;
-    }
     public long getDays() {
         return days;
     }
 
-    public void setHours(long hours) {
-        this.hours = hours;
-    }
     public long getHours() {
         return hours;
     }
 
-    public void setMinutes(long minutes) {
-        this.minutes = minutes;
-    }
     public long getMinutes() {
         return minutes;
     }
 
-    public void setSeconds(long seconds) {
-        this.seconds = seconds;
-    }
     public long getSeconds() {
         return seconds;
     }
 
-    public void setNanos(long nanos) {
-        this.nanos = nanos;
-    }
     public long getNanos() {
         return nanos;
     }

@@ -3,13 +3,13 @@ package io.github.idkahn.towerchallenge.messaging;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.GodTeam;
-import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -23,7 +23,7 @@ import java.util.*;
 
 public class MessageCommands implements CommandExecutor {
 
-    private EventManager eventManager;
+    private final EventManager eventManager;
 
     public MessageCommands(EventManager eventManager) {
         this.eventManager = eventManager;
@@ -145,7 +145,7 @@ public class MessageCommands implements CommandExecutor {
 
     private Component formatPlayers(Set<Player> players) {
 
-        ComponentBuilder output = Component.text();
+        ComponentBuilder<TextComponent, TextComponent.Builder> output = Component.text();
 
         Player[] playersArr = new Player[0];
         playersArr = players.toArray(playersArr);
@@ -184,7 +184,7 @@ public class MessageCommands implements CommandExecutor {
     }
 
     private Component formatFromToMessage(Player sender, Set<Player> recipients, String[] body) {
-        ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
+        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
         message.append(formatPlayer(sender))
                 .append(Component.text(" whispers to "))
@@ -199,7 +199,7 @@ public class MessageCommands implements CommandExecutor {
     }
 
     private Component formatToMessage(Set<Player> recipients, String[] body) {
-        ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
+        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
         message.append(Component.text("You whisper to "))
                 .append(formatPlayers(recipients))
@@ -213,7 +213,7 @@ public class MessageCommands implements CommandExecutor {
     }
 
     private Component formatFromMessage(Player sender, String[] body) {
-        ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
+        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
         message.append(formatPlayer(sender))
                 .append(Component.text(" whispers to your team: "));
@@ -226,7 +226,7 @@ public class MessageCommands implements CommandExecutor {
     }
 
     private Component formatFromToGods(Player sender, String[] body) {
-        ComponentBuilder message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
+        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
         message.append(formatPlayer(sender))
                 .append(Component.text(" whispers to the Gods: "));

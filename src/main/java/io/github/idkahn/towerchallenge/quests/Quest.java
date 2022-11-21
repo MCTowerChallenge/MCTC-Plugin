@@ -236,8 +236,6 @@ public class Quest implements Listener {
                             config.set("Quests."+questName+".completed", teamName);
                             config.save(TowerChallenge.questConfigFile);
                             player.sendMessage(name.append(Component.text(" set to complete by ")).append(Component.text(teamName)).append(Component.text(".")));
-//                            Title title = Title.title(Component.text("Quest Completed!").color(NamedTextColor.WHITE), Component.text(questName).color(NamedTextColor.GRAY));
-//                            Bukkit.getServer().showTitle(title);
                             Bukkit.getServer().sendMessage(
                                     Component.text(questName, NamedTextColor.AQUA)
                                             .clickEvent(ClickEvent.runCommand("/qb quest "+questName))

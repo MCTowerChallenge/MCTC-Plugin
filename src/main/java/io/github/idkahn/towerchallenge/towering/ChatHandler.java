@@ -4,8 +4,8 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -13,11 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Random;
-
 public class ChatHandler implements Listener {
-
-    public static final Random RANDOM = new Random();
 
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
@@ -35,7 +31,7 @@ public class ChatHandler implements Listener {
                 .replaceText(TextReplacementConfig.builder().match(":LaFlameda:").replacement("\uE103").build())
                 .replaceText(TextReplacementConfig.builder().match(":eyes:").replacement("\uE104").build());
 
-        if (playerTeam != null && playerTeam.prefix() != null) {
+        if (playerTeam != null) {
             prefix = playerTeam.prefix();
         }
 
@@ -44,9 +40,6 @@ public class ChatHandler implements Listener {
 
         String stringBody = PlainTextComponentSerializer.plainText().serialize(body);
         String[] splitBody = stringBody.toLowerCase().split(" ");
-//        for (String string : splitBody) {
-//            Bukkit.getLogger().info(string);
-//        }
         switch(splitBody[0]) {
             case("teehee"):
                 dayBotMessage = Component.text("teehee");
@@ -74,7 +67,7 @@ public class ChatHandler implements Listener {
                 }
                 break;
             case("rip"):
-                ComponentBuilder text = Component.text().append(Component.text("o7"));
+                ComponentBuilder<TextComponent, TextComponent.Builder> text = Component.text().append(Component.text("o7"));
                 if (splitBody.length > 1) {
                     text.append(Component.text(stringBody.substring(stringBody.indexOf(' '))));
                 }
@@ -147,7 +140,7 @@ public class ChatHandler implements Listener {
                     }
                     audience.sendMessage(Component.text()
                             .append(Component.text("["))
-                            .append(Component.text("God").color(TextColor.fromHexString("#F7E983")))
+                            .append(Component.text("God").color(TextColor.fromHexString(GodTeam.GOD_COLOR)))
                             .append(Component.text("] "))
                             .append(Component.text("<Daybot> "))
                             .append(finalDayBotMessage));

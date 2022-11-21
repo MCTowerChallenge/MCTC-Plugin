@@ -17,10 +17,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SpawnArea implements Listener {
 
     private final ProtectedRegion region;
-    private EventManager manager;
 
     public SpawnArea(EventManager manager, ProtectedRegion region) {
-        this.manager = manager;
         JavaPlugin plugin = manager.getPlugin();
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         this.region = region;
@@ -52,7 +50,7 @@ public class SpawnArea implements Listener {
             if (isMember(event.getPlayer())) {
                 event.setRespawnLocation(getSpawnpoint());
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
 
         }
     }

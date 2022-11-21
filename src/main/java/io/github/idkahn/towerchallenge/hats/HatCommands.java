@@ -91,21 +91,19 @@ public class HatCommands implements CommandExecutor {
                     hatMeta.setColor(color);
                     hat.setItemMeta(hatMeta);
                     player.getInventory().addItem(hat);
-                    return true;
                 } else {
                     player.sendMessage(TowerCommands.PERMISSION_WARN);
-                    return true;
                 }
+                return true;
             }
             if (args[0].equalsIgnoreCase("hand")) {
                 if (player.hasPermission("towerchallenge.hat.hand")) {
                     PlayerInventory inventory = player.getInventory();
                     inventory.setHelmet(inventory.getItemInMainHand());
-                    return true;
                 } else {
                     player.sendMessage(TowerCommands.PERMISSION_WARN);
-                    return true;
                 }
+                return true;
             }
             if (args[0].equalsIgnoreCase("color")) {
                 if (player.hasPermission("towerchallenge.hat.color")) {

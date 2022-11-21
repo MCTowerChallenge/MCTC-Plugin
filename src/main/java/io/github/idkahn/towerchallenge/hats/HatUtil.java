@@ -28,8 +28,8 @@ public class HatUtil {
 
     /**
      * Checks if an itemstack is a hat
-     * @param itemStack
-     * @return
+     * @param itemStack item to check
+     * @return whether the item is a hat
      */
     public static Boolean isHat(ItemStack itemStack) {
         return NBTUtils.boolState(NBT_TAG, itemStack);

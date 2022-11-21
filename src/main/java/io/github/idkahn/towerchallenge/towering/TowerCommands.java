@@ -98,32 +98,10 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                         break;
-//                    case ("wand"):
-//                        if (!(sender instanceof Player)) {
-//                            sender.sendMessage(Component.text("You must be a player to run this command.").color(NamedTextColor.DARK_RED));
-//                            break;
-//                        }
-//                        if (!(((Player) sender).hasPermission("towerchallenge.tower.wand"))) {
-//                            sender.sendMessage(PERMISSION_WARN);
-//                            break;
-//                        }
-//                        if (args[1] == null) {
-//                            sender.sendMessage(Component.text("Please enter a wand ID!").color(NamedTextColor.DARK_RED));
-//                            break;
-//                        }
-//                        try {
-//                            int id = Integer.parseInt(args[1]);
-//                            WandGUI.getWand((Player) sender, id);
-//                        } catch (NumberFormatException e) {
-//                            sender.sendMessage(Component.text("Please enter a valid ID!").color(NamedTextColor.DARK_RED));
-//                        }
-//                        break;
                     case ("reloadconfig"):
                         sender.sendMessage(Component.text("Reloading Config"));
                         towerListener.loadConfig();
                         break;
-//                    case ("openendportal"):
-//                        manager.openEndPortal();
                     case ("resetendportal"):
                         manager.resetEndPortal();
                         break;
