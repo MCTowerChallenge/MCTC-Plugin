@@ -140,7 +140,7 @@ public class ChatHandler implements Listener {
                     }
                     audience.sendMessage(Component.text()
                             .append(Component.text("["))
-                            .append(Component.text("God").color(TextColor.fromHexString(GodTeam.GOD_COLOR)))
+                            .append(Component.text("God").color(TextColor.fromHexString("#F7E983")))
                             .append(Component.text("] "))
                             .append(Component.text("<Daybot> "))
                             .append(finalDayBotMessage));
