@@ -11,13 +11,17 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GodTeam extends TowerTeam {
+public class GodTeam extends ParticipantTeam {
 
     private final Map<String, String> playerHatColors = new HashMap<>();
     private final Map<String, HatGUI> hatColorGUIS = new HashMap<>();
 
-    public GodTeam(EventManager manager, String displayName, String color, String dye) {
-        super(manager, displayName, color, dye);
+    public static String GOD_NAME = "God";
+    public static String GOD_COLOR = "#F7E983";
+    public static String GOD_DYE = "yellow";
+
+    public GodTeam(EventManager manager) {
+        super(manager, GOD_NAME, GOD_COLOR, GOD_DYE);
         hatColorGUIS.put(getColor(), getHatGUI());
     }
 
@@ -80,13 +84,12 @@ public class GodTeam extends TowerTeam {
     }
 
     @Override
-    public void addPlayer(OfflinePlayer player, Boolean addToConfig) {
+    public void addPlayer(OfflinePlayer player) {
         try {
             getTeam().addPlayer(player);
         } catch (IllegalArgumentException e) {
             getPlugin().getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");
         }
-
     }
 
 

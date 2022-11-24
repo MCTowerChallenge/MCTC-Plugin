@@ -3,7 +3,8 @@ package io.github.idkahn.towerchallenge.halloween.candy;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.GodTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -85,7 +86,7 @@ public class Candy implements Listener {
         player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.amethyst_cluster.place"), Sound.Source.MASTER, 100, 1));
         player.sendActionBar(Component.text("You found a candy!"));
         armorStands.add(armorStand.getUniqueId().toString());
-        TowerTeam team = manager.getTowerListener().getPlayerTeam(player);
+        ParticipantTeam team = manager.getTowerListener().getPlayerTeam(player);
         if (team != null) {
             config.set(team.getTeam().getName(), armorStands);
             try {
@@ -123,7 +124,7 @@ public class Candy implements Listener {
             ItemStack helmet = armorStand.getItem(EquipmentSlot.HEAD);
             if (helmet.getType().equals(Material.APPLE) && helmet.getItemMeta().hasCustomModelData()) {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.candyConfigFile);
-                TowerTeam team = manager.getTowerListener().getPlayerTeam(player);
+                ParticipantTeam team = manager.getTowerListener().getPlayerTeam(player);
                 if (team == null) {
                     player.sendActionBar(CommandUtils.errorMessage("You are not on a team!"));
                     return;
@@ -168,11 +169,11 @@ public class Candy implements Listener {
     private boolean shouldCancelEvent(Player player, ItemStack itemStack) {
         boolean isLock = CandyUtils.isCandy(itemStack) || CandyUtils.isBundle(itemStack);
         String itemTeam = CandyUtils.getTeam(itemStack);
-        TowerTeam team = manager.getTowerListener().getPlayerTeam(player);
+        ParticipantTeam team = manager.getTowerListener().getPlayerTeam(player);
 
         if (isLock) {
             if (team != null) {
-                return !team.getTeam().getName().equals(itemTeam);
+                return !team.getTeam().getName().equals(itemTeam) || !(team instanceof GodTeam);
             }
         }
         return false;

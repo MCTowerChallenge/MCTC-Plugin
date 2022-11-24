@@ -1,22 +1,17 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
-import io.github.idkahn.towerchallenge.quests.BlockVoucher;
 import io.github.idkahn.towerchallenge.quests.QuestUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +20,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +39,7 @@ public class WinnerGUI implements Listener {
     }
 
     public void initWinnerUI() {
-        HashMap<String, TowerTeam> teams = eventManager.getTowerListener().getTeams();
+        HashMap<String, ParticipantTeam> teams = eventManager.getTowerListener().getTeams();
         winnerUI = Bukkit.createInventory(null, HatGUI.getInventorySize(teams.size()+2), Component.text("Pick the Winning Team! "));
 
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
@@ -55,8 +49,8 @@ public class WinnerGUI implements Listener {
         exit.setItemMeta(exitMeta);
         winnerUI.setItem(winnerUI.getSize()-1, exit);
 
-        for (Map.Entry<String, TowerTeam> entry : teams.entrySet()) {
-            TowerTeam team = entry.getValue();
+        for (Map.Entry<String, ParticipantTeam> entry : teams.entrySet()) {
+            ParticipantTeam team = entry.getValue();
             ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(team.getDye()+"_CONCRETE")));
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.displayName(team.getDisplayName().decoration(TextDecoration.ITALIC, false));
@@ -87,7 +81,7 @@ public class WinnerGUI implements Listener {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(eventManager.getPlugin(), player::closeInventory, 1);
                 } else {
                     String teamName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item.getItemMeta().displayName()));
-                    TowerTeam team = eventManager.getTowerListener().getTeam(teamName);
+                    ParticipantTeam team = eventManager.getTowerListener().getTeam(teamName);
                     player.sendMessage(team.getDisplayName().append(Component.text(" set to the Winners!")));
                     for (String uuid : team.getHatGUI().getWinners()) {
                         player.sendMessage("Checking " + uuid);

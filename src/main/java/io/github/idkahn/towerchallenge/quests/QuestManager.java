@@ -3,7 +3,7 @@ package io.github.idkahn.towerchallenge.quests;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -240,7 +240,7 @@ public class QuestManager implements Listener {
                 configItemGroup(quest, reward);
             }
 
-            TowerTeam completedTeam = eventManager.getTowerListener().getTeams().get(configCompleted);
+            ParticipantTeam completedTeam = eventManager.getTowerListener().getTeams().get(configCompleted);
 
             Quest newQuest = new Quest(this, name, description, criteria, reward, completedTeam);
             quests.put(configName, newQuest);

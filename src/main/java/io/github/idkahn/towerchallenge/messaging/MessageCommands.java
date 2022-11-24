@@ -3,7 +3,7 @@ package io.github.idkahn.towerchallenge.messaging;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.GodTeam;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -47,7 +47,7 @@ public class MessageCommands implements CommandExecutor {
 
             String[] body = Arrays.copyOfRange(args, 1, args.length);
 
-            TowerTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
+            ParticipantTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
                 sendFrom = senderTeam.getAudience();
@@ -91,7 +91,7 @@ public class MessageCommands implements CommandExecutor {
                         return true;
                     }
                 }
-                TowerTeam targetTeam = eventManager.getTowerListener().getPlayerTeam(target);
+                ParticipantTeam targetTeam = eventManager.getTowerListener().getPlayerTeam(target);
                 if (checkTeam(targetTeam)) {
                     send(targetTeam.getAudience(), formatFromMessage(player, body));
                     sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
@@ -112,7 +112,7 @@ public class MessageCommands implements CommandExecutor {
                 return true;
             }
 
-            TowerTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
+            ParticipantTeam senderTeam = eventManager.getTowerListener().getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
                 sendFrom = senderTeam.getAudience();
@@ -124,7 +124,7 @@ public class MessageCommands implements CommandExecutor {
                 }
             }
 
-            TowerTeam targetTeam = eventManager.getTowerListener().getGodTeam();
+            ParticipantTeam targetTeam = eventManager.getTowerListener().getGodTeam();
 
             send(targetTeam.getAudience(), formatFromToGods(player, args));
             sendFrom.sendMessage(formatFromToGods(player, args));
@@ -139,7 +139,7 @@ public class MessageCommands implements CommandExecutor {
         audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 100, 1.5f));
     }
 
-    private boolean checkTeam(TowerTeam team) {
+    private boolean checkTeam(ParticipantTeam team) {
         return team != null && !(team instanceof GodTeam);
     }
 
@@ -152,7 +152,7 @@ public class MessageCommands implements CommandExecutor {
 
         for (int i = 0; i < playersArr.length; i++) {
             Player recipient = playersArr[i];
-            TowerTeam team = eventManager.getTowerListener().getPlayerTeam(recipient);
+            ParticipantTeam team = eventManager.getTowerListener().getPlayerTeam(recipient);
             Component prefix;
 
 

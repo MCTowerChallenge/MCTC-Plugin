@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge.halloween.candy;
 
 import io.github.idkahn.towerchallenge.NBTUtils;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import org.bukkit.inventory.ItemStack;
 
 public class CandyUtils {
@@ -33,7 +33,7 @@ public class CandyUtils {
         return NBTUtils.boolState(IS_BUNDLE, itemStack);
     }
 
-    public static ItemStack setTeam(ItemStack itemStack, TowerTeam team) {
+    public static ItemStack setTeam(ItemStack itemStack, ParticipantTeam team) {
         return NBTUtils.setTeam(itemStack, team);
     }
 

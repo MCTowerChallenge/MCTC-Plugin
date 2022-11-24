@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge;
 
 import de.tr7zw.nbtapi.NBTItem;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -61,7 +61,7 @@ public class NBTUtils {
         return nbtItem.getBoolean(tag);
     }
 
-    public static ItemStack setString(String tag, ItemStack itemStack, TowerTeam team) {
+    public static ItemStack setString(String tag, ItemStack itemStack, ParticipantTeam team) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setString(tag, team.getTeam().getName());
         return nbtItem.getItem();
@@ -75,7 +75,7 @@ public class NBTUtils {
         return nbtItem.getString(tag);
     }
 
-    public static ItemStack setTeam(ItemStack itemStack, TowerTeam team) {
+    public static ItemStack setTeam(ItemStack itemStack, ParticipantTeam team) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setString(TEAM, team.getTeam().getName());
         return nbtItem.getItem();

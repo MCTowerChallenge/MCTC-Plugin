@@ -2,7 +2,7 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -27,7 +27,7 @@ public class SteveCommands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("dialogue")) {
                 if (sender.hasPermission("towerchallenge.steve.dialog")) {
                     if (sender instanceof Player player) {
-                        TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+                        ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
                         if (team != null) {
                             steveManager.playDialogue(player);
                         } else {
@@ -51,7 +51,7 @@ public class SteveCommands implements CommandExecutor {
                     if (args.length > 1) {
                         Player target = Bukkit.getPlayer(args[1]);
                         if (target != null) {
-                            TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(target);
+                            ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(target);
                             if (team != null) {
                                 if (args.length > 2) {
                                     try {
@@ -79,10 +79,6 @@ public class SteveCommands implements CommandExecutor {
                     }
                 } else {
                     sender.sendMessage(TowerCommands.PERMISSION_WARN);
-                }
-            } else if (args[0].equalsIgnoreCase("map")) {
-                if (sender instanceof Player player) {
-                    player.getInventory().addItem(steveManager.getMap());
                 }
             }
         }

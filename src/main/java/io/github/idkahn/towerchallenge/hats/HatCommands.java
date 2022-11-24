@@ -4,7 +4,7 @@ import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.GodTeam;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -41,7 +41,7 @@ public class HatCommands implements CommandExecutor {
         }
         assert sender instanceof Player;
         Player player = (Player) sender;
-        TowerTeam team = towerListener.getPlayerTeam(player);
+        ParticipantTeam team = towerListener.getPlayerTeam(player);
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("getItem")) {
                 if (player.hasPermission("towerchallenge.hat.getitem")) {

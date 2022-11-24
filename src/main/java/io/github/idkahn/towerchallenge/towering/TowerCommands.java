@@ -151,7 +151,7 @@ public class TowerCommands implements CommandExecutor {
                         } else {
                             Player player = Bukkit.getPlayer(args[1]);
                             if (player != null) {
-                                TowerTeam team = towerListener.getPlayerTeam(player);
+                                ParticipantTeam team = towerListener.getPlayerTeam(player);
                                 if (team != null) {
                                     if (args.length < 3) {
                                         sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to add."));
@@ -183,7 +183,7 @@ public class TowerCommands implements CommandExecutor {
                         } else {
                             Player player = Bukkit.getPlayer(args[1]);
                             if (player != null) {
-                                TowerTeam team = towerListener.getPlayerTeam(player);
+                                ParticipantTeam team = towerListener.getPlayerTeam(player);
                                 if (team != null) {
                                     if (args.length < 3) {
                                         sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to remove."));

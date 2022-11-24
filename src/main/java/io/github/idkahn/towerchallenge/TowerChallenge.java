@@ -30,6 +30,7 @@ import java.io.IOException;
 
 public final class TowerChallenge extends JavaPlugin {
 
+    public static File teamConfigFile;
     public static File regionConfigFile;
     public static File questConfigFile;
     public static File penelopeConfigFile;
@@ -55,6 +56,10 @@ public final class TowerChallenge extends JavaPlugin {
         // Plugin startup logic
 
         this.saveDefaultConfig();
+
+        teamConfigFile = new File(getDataFolder(), "teams.yml");
+        saveResource("teams.yml", false);
+        YamlConfiguration teamConfig = YamlConfiguration.loadConfiguration(teamConfigFile);
 
         regionConfigFile = new File(getDataFolder(), "regions.yml");
         saveResource("regions.yml", false);
@@ -90,6 +95,7 @@ public final class TowerChallenge extends JavaPlugin {
         YamlConfiguration teamScoreConfig = YamlConfiguration.loadConfiguration(teamScoreConfigFile);
 
         try {
+            teamConfig.save(teamConfigFile);
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
             penelopeConfig.save(penelopeConfigFile);

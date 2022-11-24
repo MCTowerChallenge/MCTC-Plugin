@@ -2,7 +2,7 @@ package io.github.idkahn.towerchallenge.quests;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -41,11 +41,11 @@ public class Quest implements Listener {
     private final ArrayList<Component> description;
     private final ArrayList<ItemStack> criteria;
     private final ArrayList<ItemStack> reward;
-    private final TowerTeam completed;
+    private final ParticipantTeam completed;
     private Inventory inventory;
     private Inventory completeUI;
 
-    public Quest(QuestManager questManager, Component name, ArrayList<Component> description, ArrayList<ItemStack> criteria, ArrayList<ItemStack> reward, TowerTeam completed) {
+    public Quest(QuestManager questManager, Component name, ArrayList<Component> description, ArrayList<ItemStack> criteria, ArrayList<ItemStack> reward, ParticipantTeam completed) {
         this.questManager = questManager;
         this.name = name;
         this.description = description;
@@ -118,7 +118,7 @@ public class Quest implements Listener {
     }
 
     public void initCompleteUI() {
-        HashMap<String, TowerTeam> teams = questManager.getEventManager().getTowerListener().getTeams();
+        HashMap<String, ParticipantTeam> teams = questManager.getEventManager().getTowerListener().getTeams();
         completeUI = Bukkit.createInventory(null, HatGUI.getInventorySize(teams.size()+2), Component.text("Completed By: "));
 
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
@@ -128,8 +128,8 @@ public class Quest implements Listener {
         exit.setItemMeta(exitMeta);
         completeUI.setItem(completeUI.getSize()-1, exit);
 
-        for (Map.Entry<String, TowerTeam> entry : teams.entrySet()) {
-            TowerTeam team = entry.getValue();
+        for (Map.Entry<String, ParticipantTeam> entry : teams.entrySet()) {
+            ParticipantTeam team = entry.getValue();
             ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(team.getDye()+"_CONCRETE")));
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.displayName(team.getDisplayName().decoration(TextDecoration.ITALIC, false));
@@ -232,7 +232,7 @@ public class Quest implements Listener {
                         } else {
                             String questName = PlainTextComponentSerializer.plainText().serialize(name);
                             String teamName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item.getItemMeta().displayName()));
-                            TowerTeam team = questManager.getEventManager().getTowerListener().getTeam(teamName);
+                            ParticipantTeam team = questManager.getEventManager().getTowerListener().getTeam(teamName);
                             config.set("Quests."+questName+".completed", teamName);
                             config.save(TowerChallenge.questConfigFile);
                             player.sendMessage(name.append(Component.text(" set to complete by ")).append(Component.text(teamName)).append(Component.text(".")));

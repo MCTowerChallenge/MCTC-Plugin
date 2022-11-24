@@ -2,6 +2,7 @@ name: TowerChallenge
 version: '${project.version}'
 main: io.github.idkahn.towerchallenge.TowerChallenge
 api-version: 1.19
+prefix: TowerChallenge
 depend:
   - WorldGuard
   - WorldEdit
