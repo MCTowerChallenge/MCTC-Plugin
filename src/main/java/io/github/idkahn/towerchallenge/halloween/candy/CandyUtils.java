@@ -1,6 +1,7 @@
 package io.github.idkahn.towerchallenge.halloween.candy;
 
 import io.github.idkahn.towerchallenge.NBTUtils;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import org.bukkit.inventory.ItemStack;
 

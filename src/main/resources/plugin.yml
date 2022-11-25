@@ -2,6 +2,7 @@ name: TowerChallenge
 version: '${project.version}'
 main: io.github.idkahn.towerchallenge.TowerChallenge
 api-version: 1.19
+prefix: TowerChallenge
 depend:
   - WorldGuard
   - WorldEdit
@@ -70,3 +71,9 @@ commands:
     usage: /godhelp <Message>
     aliases:
       - gh
+  resourcepack:
+    description: Utilities for the Resource Pack
+    usage: /resourcepack
+    aliases:
+      - rp
+      - pack

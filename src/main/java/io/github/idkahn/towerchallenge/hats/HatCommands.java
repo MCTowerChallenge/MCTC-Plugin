@@ -1,10 +1,7 @@
 package io.github.idkahn.towerchallenge.hats;
 
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
-import io.github.idkahn.towerchallenge.towering.GodTeam;
-import io.github.idkahn.towerchallenge.towering.TowerCommands;
-import io.github.idkahn.towerchallenge.towering.TowerListener;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -107,7 +104,7 @@ public class HatCommands implements CommandExecutor {
             }
             if (args[0].equalsIgnoreCase("color")) {
                 if (player.hasPermission("towerchallenge.hat.color")) {
-                    if (PlainTextComponentSerializer.plainText().serialize(team.getDisplayName()).equals("God")) {
+                    if (team instanceof GodTeam godTeam) {
                         String color = null;
                         try {
                             color = args[1];
@@ -116,7 +113,7 @@ public class HatCommands implements CommandExecutor {
                             sender.sendMessage("No color given, setting default...");
                         }
         //                Bukkit.getLogger().info("Setting player color to " + color);
-                        ((GodTeam) team).setPlayerHatColor((Player) sender, color);
+                        godTeam.setPlayerHatColor((Player) sender, color);
                     }
                 } else {
                     player.sendMessage(TowerCommands.PERMISSION_WARN);

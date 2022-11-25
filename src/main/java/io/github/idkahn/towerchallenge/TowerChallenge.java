@@ -1,11 +1,8 @@
 package io.github.idkahn.towerchallenge;
 
-import io.github.idkahn.towerchallenge.commands.BroadcastCommand;
+import io.github.idkahn.towerchallenge.commands.*;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyCommands;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyTabComplete;
-import io.github.idkahn.towerchallenge.commands.EnderChestCommand;
-import io.github.idkahn.towerchallenge.commands.GodCommand;
-import io.github.idkahn.towerchallenge.commands.InvseeCommand;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
 import io.github.idkahn.towerchallenge.hats.HatTabComplete;
 import io.github.idkahn.towerchallenge.messaging.MessageCommands;
@@ -30,6 +27,7 @@ import java.io.IOException;
 
 public final class TowerChallenge extends JavaPlugin {
 
+    public static File teamConfigFile;
     public static File regionConfigFile;
     public static File questConfigFile;
     public static File penelopeConfigFile;
@@ -55,6 +53,10 @@ public final class TowerChallenge extends JavaPlugin {
         // Plugin startup logic
 
         this.saveDefaultConfig();
+
+        teamConfigFile = new File(getDataFolder(), "teams.yml");
+        saveResource("teams.yml", false);
+        YamlConfiguration teamConfig = YamlConfiguration.loadConfiguration(teamConfigFile);
 
         regionConfigFile = new File(getDataFolder(), "regions.yml");
         saveResource("regions.yml", false);
@@ -90,6 +92,7 @@ public final class TowerChallenge extends JavaPlugin {
         YamlConfiguration teamScoreConfig = YamlConfiguration.loadConfiguration(teamScoreConfigFile);
 
         try {
+            teamConfig.save(teamConfigFile);
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
             penelopeConfig.save(penelopeConfigFile);
@@ -149,6 +152,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
+
+        ResourcePack resourcePack = new ResourcePack();
+        this.getCommand("resourcepack").setExecutor(resourcePack);
 
         BroadcastCommand broadcastCommand = new BroadcastCommand(manager);
         this.getCommand("broadcast").setExecutor(broadcastCommand);

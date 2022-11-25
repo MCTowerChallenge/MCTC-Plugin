@@ -1,6 +1,7 @@
 package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -79,10 +80,6 @@ public class SteveCommands implements CommandExecutor {
                     }
                 } else {
                     sender.sendMessage(TowerCommands.PERMISSION_WARN);
-                }
-            } else if (args[0].equalsIgnoreCase("map")) {
-                if (sender instanceof Player player) {
-                    player.getInventory().addItem(steveManager.getMap());
                 }
             }
         }

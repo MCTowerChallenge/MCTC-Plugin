@@ -35,10 +35,10 @@ public class TowerArea implements Listener {
 
     private final ProtectedRegion region;
     private final EventManager manager;
-    private final TowerTeam team;
+    private final ParticipantTeam team;
     private final Score score;
 
-    public TowerArea(TowerTeam team, EventManager manager, ProtectedRegion region, String name) {
+    public TowerArea(ParticipantTeam team, EventManager manager, ProtectedRegion region, String name) {
         this.team = team;
         this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
@@ -93,7 +93,7 @@ public class TowerArea implements Listener {
     private boolean exclude(BlockState block) {
         if (block instanceof ShulkerBox box) {
             Component boxName = box.customName();
-            return boxName != null && PlainTextComponentSerializer.plainText().serialize(boxName).equals(TowerTeam.SHULKER_NAME);
+            return boxName != null && PlainTextComponentSerializer.plainText().serialize(boxName).equals(ParticipantTeam.SHULKER_NAME);
         }
         return false;
     }

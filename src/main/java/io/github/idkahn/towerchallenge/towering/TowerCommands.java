@@ -2,6 +2,9 @@ package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.gui.Element;
+import io.github.idkahn.towerchallenge.gui.Gui;
+import io.github.idkahn.towerchallenge.gui.ListGui;
 import io.github.idkahn.towerchallenge.quests.BlockVoucher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -11,9 +14,14 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -152,19 +160,19 @@ public class TowerCommands implements CommandExecutor {
                             Player player = Bukkit.getPlayer(args[1]);
                             if (player != null) {
                                 TowerTeam team = towerListener.getPlayerTeam(player);
-                                if (team != null) {
+                                if (team instanceof ParticipantTeam participantTeam) {
                                     if (args.length < 3) {
                                         sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to add."));
                                     } else {
                                         try {
                                             int number = Integer.parseInt(args[2]);
-                                            team.addExtraScore(number);
+                                            participantTeam.addExtraScore(number);
                                             sender.sendMessage(Component.text("Added ")
                                                     .append(Component.text(number))
                                                     .append(Component.text(", score for "))
-                                                    .append(team.getDisplayName())
+                                                    .append(participantTeam.getDisplayName())
                                                     .append(Component.text(" is now "))
-                                                    .append(Component.text(team.getScore())));
+                                                    .append(Component.text(participantTeam.getScore())));
                                         } catch (NumberFormatException e) {
                                             sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to add."));
                                         }
@@ -184,19 +192,19 @@ public class TowerCommands implements CommandExecutor {
                             Player player = Bukkit.getPlayer(args[1]);
                             if (player != null) {
                                 TowerTeam team = towerListener.getPlayerTeam(player);
-                                if (team != null) {
+                                if (team instanceof ParticipantTeam participantTeam) {
                                     if (args.length < 3) {
                                         sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to remove."));
                                     } else {
                                         try {
                                             int number = Integer.parseInt(args[2]);
-                                            team.removeExtraScore(number);
+                                            participantTeam.removeExtraScore(number);
                                             sender.sendMessage(Component.text("Removed ")
                                                     .append(Component.text(number))
                                                     .append(Component.text(", score for "))
-                                                    .append(team.getDisplayName())
+                                                    .append(participantTeam.getDisplayName())
                                                     .append(Component.text(" is now "))
-                                                    .append(Component.text(team.getScore())));
+                                                    .append(Component.text(participantTeam.getScore())));
                                         } catch (NumberFormatException e) {
                                             sender.sendMessage(CommandUtils.errorMessage("Please enter a valid score to remove."));
                                         }
@@ -239,6 +247,19 @@ public class TowerCommands implements CommandExecutor {
                         } else if (manager.getEventPhase().equals(EventManager.Phase.SETUP)) {
                             manager.setEventPhase(EventManager.Phase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
+                        }
+                        break;
+                    case ("gui"):
+                        List<Element> elements = new ArrayList<>();
+                        elements.add(new Element(new ItemStack(Material.STICK), player -> {
+                            player.sendMessage(Component.text("Stick!"));
+                        }));
+                        elements.add(new Element(new ItemStack(Material.PAPER), player -> {
+                            player.getWorld().spawnEntity(player.getLocation(), EntityType.COW);
+                        }));
+                        ListGui gui = new ListGui(manager, Component.text("Boop"), elements, new Element(new ItemStack(Material.REDSTONE_BLOCK), HumanEntity::closeInventory));
+                        if (sender instanceof Player player) {
+                            gui.openInventory(player);
                         }
                         break;
                     default:

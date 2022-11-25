@@ -3,6 +3,8 @@ package io.github.idkahn.towerchallenge.messaging;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.GodTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -124,7 +126,7 @@ public class MessageCommands implements CommandExecutor {
                 }
             }
 
-            TowerTeam targetTeam = eventManager.getTowerListener().getGodTeam();
+            GodTeam targetTeam = eventManager.getTowerListener().getGodTeam();
 
             send(targetTeam.getAudience(), formatFromToGods(player, args));
             sendFrom.sendMessage(formatFromToGods(player, args));

@@ -4,7 +4,7 @@ import io.github.idkahn.towerchallenge.halloween.candy.Candy;
 import io.github.idkahn.towerchallenge.quests.QuestManager;
 import io.github.idkahn.towerchallenge.halloween.steve.SteveManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
-import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.WinnerGUI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -50,6 +50,10 @@ public class EventManager {
         return output.toString();
     }
 
+    public static void Log(String text) {
+        Bukkit.getLogger().info(text);
+    }
+
     // Instance Variables
     private final TowerChallenge plugin;
     private Phase eventPhase;
@@ -60,7 +64,7 @@ public class EventManager {
     private final EndPortal endPortal;
     private final WinnerGUI winnerGUI;
 
-    private final HashMap<String, TowerTeam> teams;
+    private final HashMap<String, ParticipantTeam> teams;
 
     // Constructor
     public EventManager(TowerChallenge plugin) {
@@ -105,14 +109,14 @@ public class EventManager {
     }
 
     public void showTowerScores(Audience audience) {
-        ArrayList<TowerTeam> sortedTeams = new ArrayList<>(towerListener.getTeams().values());
+        ArrayList<ParticipantTeam> sortedTeams = new ArrayList<>(towerListener.getTeams().values());
         sortedTeams.sort((o1, o2) -> {
             Score score1 = towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(o1.getDisplayName()));
             Score score2 = towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(o2.getDisplayName()));
             return Integer.compare(score2.getScore(), score1.getScore());
         });
 
-        for (TowerTeam team : sortedTeams) {
+        for (ParticipantTeam team : sortedTeams) {
             if (team.getEntries().size() > 0) {
                 audience.sendMessage(team.getDisplayName().color(team.getTextColor())
                         .append(Component.text(" has ").color(NamedTextColor.WHITE)
@@ -132,13 +136,13 @@ public class EventManager {
         return winnerGUI;
     }
 
-    public HashMap<String, TowerTeam> getTeams() {
+    public HashMap<String, ParticipantTeam> getTeams() {
         return teams;
     }
 
     public int getCompletedPortalFrames() {
         int count = 0;
-        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+        for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
             if (entry.getValue().hasEye()) {
                 count++;
             }
@@ -149,7 +153,7 @@ public class EventManager {
     public void resetEndPortal() {
         Bukkit.getLogger().info("Resetting End Portal");
         endPortal.resetPortal();
-        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+        for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
             if (entry.getValue().getTeam().getName().equalsIgnoreCase("Lime") ||
                     entry.getValue().getTeam().getName().equalsIgnoreCase("Purple") ||
                     entry.getValue().getTeam().getName().equalsIgnoreCase("Magenta") ||
@@ -163,17 +167,17 @@ public class EventManager {
     }
 
     public void resetTeams() {
-        for (Map.Entry<String, TowerTeam> entry : towerListener.getTeams().entrySet()) {
-
-            TowerTeam team = entry.getValue();
+        for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
+            ParticipantTeam team = entry.getValue();
             team.clear();
-
         }
+        towerListener.getGodTeam().clear();
+        towerListener.loadTeams();
     }
 
     public void openEndPortal() {
         Bukkit.getLogger().info("Opening End Portal");
-        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
+        for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
             Bukkit.getLogger().info("Setting frame for " + entry.getKey());
             entry.getValue().placeEye();
         }
@@ -190,8 +194,8 @@ public class EventManager {
 
     public void dealItems() {
         Bukkit.getLogger().info("Dealing items...");
-        for (Map.Entry<String,TowerTeam> entry : towerListener.getTeams().entrySet()) {
-            TowerTeam team = entry.getValue();
+        for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
+            ParticipantTeam team = entry.getValue();
             for (Player player : team.getOnlinePlayers()) {
                 dealPlayerItems(player);
             }
