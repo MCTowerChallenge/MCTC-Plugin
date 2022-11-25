@@ -32,29 +32,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
 
-public class ParticipantTeam {
+public class ParticipantTeam extends TowerTeam {
 
     public static final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 
-    // Server's scoreboard
-    public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
-    public static String SHULKER_NAME = "Starting Shulker Box";
-    public static String BUNDLE_NAME = "Candy Basket";
-
-    private static final SecureRandom RANDOM = new SecureRandom();
-
-    private final Team team;
-    private final JavaPlugin plugin;
-    private final EventManager manager;
-    private final String displayName;
-    private final String color;
-    private final String dye;
-    private final HatGUI hatGUI;
 
     private int extraScore;
     private SpawnArea spawnArea;
@@ -63,67 +50,52 @@ public class ParticipantTeam {
     private Location frameLocation;
 
     public ParticipantTeam(EventManager manager, String displayName, String color, String dye) {
-        this.manager = manager;
-        this.plugin = manager.getPlugin();
-        this.displayName = displayName;
-        String name = displayName.replaceAll("\\s", "");
-        this.color = color;
-        this.dye = dye.toUpperCase();
+        super(manager, displayName, color, dye);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore = config.getInt(displayName);
-        Team team = scoreboard.getTeam(name);
-        if (team != null) {
-            this.team = team;
-        } else {
-            this.team = scoreboard.registerNewTeam(name);
-            this.team.displayName(Component.text(displayName));
-        }
-        this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
-        this.hatGUI = new HatGUI(manager, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
         this.loadRegions();
         this.loadPortal();
     }
 
     public void loadRegions() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.regionConfigFile);
-        List maps = config.getMapList(displayName);
-        List<Map> regions = (List<Map>) maps;
+        YamlConfiguration config = getConfig();
+        List<Map<?, ?>> regions = config.getMapList(getName());
 
         if (regions.size() >= 2) {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(manager, container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(this, manager, container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(tower.get("name")), displayName);
+            this.spawnArea = new SpawnArea(getManager(), container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(spawn.get("name")));
+            this.towerArea = new TowerArea(this, getManager(), container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(tower.get("name")), getName());
         }
     }
 
     public void loadPortal() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
-        if (config.isString(displayName+".world")) {
-            this.frameLocation = new Location(Bukkit.getWorld(config.getString(displayName+".world")), config.getInt(displayName+".x"), config.getInt(displayName+".y"), config.getInt(displayName+".z"));
+        if (config.isString(getName()+".world")) {
+            this.frameLocation = new Location(Bukkit.getWorld(config.getString(getName()+".world")), config.getInt(getName()+".x"), config.getInt(getName()+".y"), config.getInt(getName()+".z"));
             Block block = this.frameLocation.getBlock();
             block.setType(Material.END_PORTAL_FRAME);
             EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
-            if (config.isString(displayName+".facing")) {
-                blockData.setFacing(BlockFace.valueOf((config.getString(displayName+".facing")).toUpperCase()));
+            if (config.isString(getName()+".facing")) {
+                blockData.setFacing(BlockFace.valueOf((config.getString(getName()+".facing")).toUpperCase()));
             }
-            if (config.isBoolean(displayName+".completed")) {
-                blockData.setEye(config.getBoolean(displayName+".completed"));
+            if (config.isBoolean(getName()+".completed")) {
+                blockData.setEye(config.getBoolean(getName()+".completed"));
                 block.setBlockData(blockData);
             }
-            Bukkit.getLogger().info("Loaded portal frame for " + displayName + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+            Bukkit.getLogger().info("Loaded portal frame for " + getName() + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
         }
     }
 
     public int getScore() {
-        int score = manager.getObjective().getScore(PlainTextComponentSerializer.plainText().serialize(getDisplayName())).getScore();
+        int score = getManager().getObjective().getScore(PlainTextComponentSerializer.plainText().serialize(getDisplayName())).getScore();
         return score+extraScore;
     }
 
     public int addExtraScore(int score) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore += score;
-        config.set(displayName, extraScore);
+        config.set(getName(), extraScore);
         try {
             config.save(TowerChallenge.teamScoreConfigFile);
         } catch (IOException e) {
@@ -135,7 +107,7 @@ public class ParticipantTeam {
     public int removeExtraScore(int score) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore -= score;
-        config.set(displayName, extraScore);
+        config.set(getName(), extraScore);
         try {
             config.save(TowerChallenge.teamScoreConfigFile);
         } catch (IOException e) {
@@ -152,77 +124,16 @@ public class ParticipantTeam {
         this.extraScore = extraScore;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public EventManager getManager() {
-        return manager;
-    }
-
-    public TextColor getTextColor() {
-        return TextColor.fromHexString(color);
-    }
-    public Color getBukkitColor() {
-        return Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16));
-    }
-
-    public String getDye() {
-        return dye;
-    }
-
-    public Audience getAudience() {
-        return Audience.audience(getOnlinePlayers());
-    }
-
-    public Set<Player> getOnlinePlayers() {
-        Set<Player> players = new HashSet<>();
-        for (String name : team.getEntries()) {
-            Player player = Bukkit.getPlayer(name);
-            if (player != null && player.isOnline()) {
-                players.add(player);
-            }
-        }
-        return players;
-    }
-
-    public void destroyTeam() {
-        team.unregister();
-    }
-
-    public void setArea(ProtectedRegion teamArea) {
-    }
-
-    public void addPlayer(OfflinePlayer player) {
-        try {
-            team.addPlayer(player);
-            if (!displayName.equals("God")) {
-                if (spawnArea != null) {
-                    spawnArea.addPlayer(player);
-                }
-                if (towerArea != null) {
-                    towerArea.addPlayer(player);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");
-//            return;
-        }
-    }
-
+    @Override
     public void addPlayerConfig(OfflinePlayer player) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamConfigFile);
-        List<String> players = config.getStringList("Teams."+displayName+".players");
+        List<String> players = config.getStringList("Teams."+getName()+".players");
         players.add(player.getUniqueId().toString());
         try {
             config.save(TowerChallenge.teamConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Team getTeam() {
-        return team;
     }
 
     public Location getSpawnpoint() {
@@ -234,7 +145,10 @@ public class ParticipantTeam {
     }
 
     public boolean hasEye() {
-        return ((EndPortalFrame) frameLocation.getBlock().getBlockData()).hasEye();
+        if (frameLocation.getBlock().getBlockData() instanceof EndPortalFrame frame) {
+            return frame.hasEye();
+        }
+        return false;
     }
 
     public void placeEye() {
@@ -242,7 +156,7 @@ public class ParticipantTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
-        config.set(displayName+".completed", true);
+        config.set(getName()+".completed", true);
         try {
             config.save(TowerChallenge.endPortalConfigFile);
         } catch (IOException e) {
@@ -250,7 +164,7 @@ public class ParticipantTeam {
         }
         frame.setBlockData(frameData);
 
-        int remainingEyes = manager.getTowerListener().getTeams().size()-manager.getCompletedPortalFrames();
+        int remainingEyes = getManager().getTowerListener().getTeams().size()-getManager().getCompletedPortalFrames();
 
 //        final Component mainTitle = getDisplayName().color(getTextColor());
 ////        final Component subtitle = Component.text("There are ", NamedTextColor.DARK_GRAY)
@@ -271,7 +185,7 @@ public class ParticipantTeam {
         Bukkit.getServer().sendMessage(chatMessage);
 
         if (remainingEyes <= 0) {
-            manager.getEndPortal().openPortal();
+            getManager().getEndPortal().openPortal();
         }
 
     }
@@ -281,32 +195,19 @@ public class ParticipantTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
-        config.set(displayName+".completed", false);
+        config.set(getName() + ".completed", false);
         try {
             config.save(TowerChallenge.endPortalConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         frame.setBlockData(frameData);
-        Bukkit.getLogger().info("Reset frame for "+displayName);
+        Bukkit.getLogger().info("Reset frame for " + getName());
     }
 
-    public void removePlayer(OfflinePlayer player) {
-        team.removePlayer(player);
-    }
-
-    public Boolean hasPlayer(OfflinePlayer player) {
-
-        return team.hasPlayer(player);
-
-    }
-
-    public Set<String> getEntries() {
-        return team.getEntries();
-    }
-
+    @Override
     public void clear() {
-        team.removeEntries(team.getEntries());
+        getTeam().removeEntries(getTeam().getEntries());
         if (towerArea != null) {
             towerArea.clearPlayers();
         }
@@ -315,127 +216,4 @@ public class ParticipantTeam {
         }
     }
 
-    public Component getDisplayName() {
-        return team.displayName();
-    }
-
-    public void openHatGUI(Player player) {
-        hatGUI.openInventory(player);
-    }
-    public HatGUI getHatGUI() {
-        return hatGUI;
-    }
-
-    public JavaPlugin getPlugin() {
-        return plugin;
-    }
-
-    public void giveShulker(Player player, int number) {
-
-        ItemStack shulker = new ItemStack(Material.valueOf(dye.toUpperCase()+"_SHULKER_BOX"));
-        ItemMeta shulkerMeta = shulker.getItemMeta();
-        shulkerMeta.displayName(Component.text(SHULKER_NAME).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA));
-        shulker.setItemMeta(shulkerMeta);
-        for (int i = 0; i < number; i++) {
-            player.getInventory().addItem(shulker);
-        }
-
-    }
-
-    public void giveBundle(Player player, int candies, int customModelID) {
-        ItemStack bundle = CandyUtils.setBundle(CandyUtils.setTeam(new ItemStack(Material.BUNDLE), this));
-        BundleMeta bundleMeta = (BundleMeta) bundle.getItemMeta();
-        bundleMeta.displayName(Component.text(BUNDLE_NAME).decoration(TextDecoration.ITALIC, false));
-        bundleMeta.setCustomModelData(customModelID);
-        ItemStack[] candyItems = new ItemStack[candies];
-        Arrays.fill(candyItems, Candy.randomCandy());
-        bundleMeta.setItems(Arrays.stream(candyItems).toList());
-        bundle.setItemMeta(bundleMeta);
-        player.getInventory().addItem(bundle);
-    }
-
-    public void giveBundle(Player player, int candies) {
-        giveBundle(player, candies, RANDOM.nextInt(3));
-    }
-
-    public void giveBundle(Player player) {
-        giveBundle(player, 0, RANDOM.nextInt(3));
-    }
-
-    public void dealItems(Player player) {
-        PlayerInventory inventory = player.getInventory();
-        ItemStack hat = inventory.getHelmet();
-        if (hat == null || hat.getType().isAir()) {
-            hat = new ItemStack(Material.DIAMOND_HELMET);
-            ItemMeta hatMeta = hat.getItemMeta();
-            hatMeta.setUnbreakable(true);
-            hat.setItemMeta(hatMeta);
-        }
-        inventory.clear();
-
-        ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-        ItemMeta chestplateMeta = chestplate.getItemMeta();
-        chestplateMeta.setUnbreakable(true);
-        chestplate.setItemMeta(chestplateMeta);
-
-        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
-        ItemMeta leggingsMeta = leggings.getItemMeta();
-        leggingsMeta.setUnbreakable(true);
-        leggings.setItemMeta(leggingsMeta);
-
-        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
-        ItemMeta bootsMeta = boots.getItemMeta();
-        bootsMeta.setUnbreakable(true);
-        bootsMeta.addEnchant(Enchantment.DEPTH_STRIDER, 3, false);
-        boots.setItemMeta(bootsMeta);
-
-        ItemStack pickaxe = new ItemStack(Material.NETHERITE_PICKAXE);
-        if (player.getName().equals("ScaredArti")) {
-            pickaxe.lore(new ArrayList<>() {{
-                add(Component.text("Look what you made me do...").color(TowerChallenge.SECONDARY_COLOR));
-            }});
-        }
-
-        ItemMeta pickaxeMeta = pickaxe.getItemMeta();
-        pickaxeMeta.setUnbreakable(true);
-
-        pickaxeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
-        pickaxeMeta.addEnchant(Enchantment.SILK_TOUCH, 1, false);
-        pickaxe.setItemMeta(pickaxeMeta);
-
-        ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
-        ItemMeta axeMeta = axe.getItemMeta();
-        axeMeta.setUnbreakable(true);
-        axeMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
-        axe.setItemMeta(axeMeta);
-
-        ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL);
-        ItemMeta shovelMeta = shovel.getItemMeta();
-        shovelMeta.setUnbreakable(true);
-        shovelMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
-        shovel.setItemMeta(shovelMeta);
-
-        ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-
-        ItemStack torches = new ItemStack(Material.TORCH, 64);
-
-        inventory.setHelmet(hat);
-        inventory.setChestplate(chestplate);
-        inventory.setLeggings(leggings);
-        inventory.setBoots(boots);
-
-        inventory.setItem(0, axe);
-        inventory.setItem(1, pickaxe);
-        inventory.setItem(2, shovel);
-        inventory.setItem(3, manager.getQuestManager().getBook());
-        giveBundle(player);
-        inventory.setItem(5, steak);
-        inventory.setItem(6, torches);
-        SpawnCompass.giveCompass(player);
-        giveShulker(player, 3);
-
-        inventory.setItem(32, steak);
-        inventory.setItem(33, torches);
-
-    }
 }

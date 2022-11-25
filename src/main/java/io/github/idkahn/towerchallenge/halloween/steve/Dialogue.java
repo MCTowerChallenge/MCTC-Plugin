@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -55,7 +56,7 @@ public class Dialogue {
     }
 
     public void play(Player player) {
-        ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+        TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
         if (team == null) {
             return;
         }

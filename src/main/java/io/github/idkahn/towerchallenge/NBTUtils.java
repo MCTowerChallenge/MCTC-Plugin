@@ -2,6 +2,8 @@ package io.github.idkahn.towerchallenge;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -9,6 +11,7 @@ import java.util.UUID;
 public class NBTUtils {
 
     public static final String TEAM = "item_team";
+    public static final String UNIQUE_ID = "unique_id";
 
     /**
      * Sets a random UUID to the "id" tag of the item.
@@ -22,6 +25,30 @@ public class NBTUtils {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setUUID("id", UUID.randomUUID());
         return nbtItem.getItem();
+    }
+
+    public static ItemStack setUniqueID(ItemStack itemStack, UUID uuid) {
+        if (itemStack == null || itemStack.getType().isAir())
+            return itemStack;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setUUID(UNIQUE_ID, uuid);
+        return nbtItem.getItem();
+    }
+
+    public static boolean hasUniqueID(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return false;
+        }
+        NBTItem nbtItem = new NBTItem(itemStack);
+        return nbtItem.hasKey(UNIQUE_ID);
+    }
+
+    public static UUID getUniqueID(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return null;
+        }
+        NBTItem nbtItem = new NBTItem(itemStack);
+        return nbtItem.getUUID(UNIQUE_ID);
     }
 
     /**
@@ -61,9 +88,9 @@ public class NBTUtils {
         return nbtItem.getBoolean(tag);
     }
 
-    public static ItemStack setString(String tag, ItemStack itemStack, ParticipantTeam team) {
+    public static ItemStack setString(String tag, ItemStack itemStack, String string) {
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setString(tag, team.getTeam().getName());
+        nbtItem.setString(tag, string);
         return nbtItem.getItem();
     }
 
@@ -75,7 +102,7 @@ public class NBTUtils {
         return nbtItem.getString(tag);
     }
 
-    public static ItemStack setTeam(ItemStack itemStack, ParticipantTeam team) {
+    public static ItemStack setTeam(ItemStack itemStack, TowerTeam team) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setString(TEAM, team.getTeam().getName());
         return nbtItem.getItem();

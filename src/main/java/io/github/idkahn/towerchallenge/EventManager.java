@@ -50,6 +50,10 @@ public class EventManager {
         return output.toString();
     }
 
+    public static void Log(String text) {
+        Bukkit.getLogger().info(text);
+    }
+
     // Instance Variables
     private final TowerChallenge plugin;
     private Phase eventPhase;
@@ -164,11 +168,11 @@ public class EventManager {
 
     public void resetTeams() {
         for (Map.Entry<String, ParticipantTeam> entry : towerListener.getTeams().entrySet()) {
-
             ParticipantTeam team = entry.getValue();
             team.clear();
-
         }
+        towerListener.getGodTeam().clear();
+        towerListener.loadTeams();
     }
 
     public void openEndPortal() {

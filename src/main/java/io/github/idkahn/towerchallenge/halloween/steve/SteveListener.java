@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -54,7 +55,7 @@ public class SteveListener implements Listener {
         notEnoughCandy.setNext(new Dialogue(steveManager, Component.text("What do you mean “...32?” ??? Yes! Get to trick or treating already!").color(NamedTextColor.GRAY), 3))
                 .setNext(new Dialogue(steveManager, Component.text("Now where was I? Oh yeah, maybe over here?").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true), 0))
                 .setCallback((player) -> {
-                    ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+                    TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
                     if (team != null) {
                         steveManager.setTeamStage(team, 2);
                     }
@@ -64,7 +65,7 @@ public class SteveListener implements Listener {
         enoughCandy.setNext(new Dialogue(steveManager, Component.text("Oh don't worry about carrying all that candy around I’ll just take those :)").color(NamedTextColor.GRAY), 3))
                 .setNext(new Dialogue(steveManager, Component.text("Happy Halloween! and have fun at MCTC… I guess").color(NamedTextColor.GRAY), 3))
                 .setCallback((player) -> {
-                    ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+                    TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
                     if (team != null) {
                         steveManager.setTeamStage(team, 3);
                     }
@@ -81,7 +82,7 @@ public class SteveListener implements Listener {
         if (event.isCancelled())
             return;
         Player player = event.getPlayer();
-        ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+        TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
         if (steveManager.getEventManager().getQuestManager().getStage() == 2) {
             if (team != null) {
                 if (steveHouse != null) {
@@ -112,7 +113,7 @@ public class SteveListener implements Listener {
 
         if (isSteve(event.getRightClicked())) {
             Player player = event.getPlayer();
-            ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+            TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
             if (event.getHand().equals(EquipmentSlot.HAND)) {
                 if (team != null) {
                     if (steveManager.getTeamStage(team) == 2) {

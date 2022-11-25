@@ -3,6 +3,7 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -27,7 +28,7 @@ public class SteveCommands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("dialogue")) {
                 if (sender.hasPermission("towerchallenge.steve.dialog")) {
                     if (sender instanceof Player player) {
-                        ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
+                        TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(player);
                         if (team != null) {
                             steveManager.playDialogue(player);
                         } else {
@@ -51,7 +52,7 @@ public class SteveCommands implements CommandExecutor {
                     if (args.length > 1) {
                         Player target = Bukkit.getPlayer(args[1]);
                         if (target != null) {
-                            ParticipantTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(target);
+                            TowerTeam team = steveManager.getEventManager().getTowerListener().getPlayerTeam(target);
                             if (team != null) {
                                 if (args.length > 2) {
                                     try {

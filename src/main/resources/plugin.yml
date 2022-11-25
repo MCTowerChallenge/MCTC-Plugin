@@ -71,3 +71,9 @@ commands:
     usage: /godhelp <Message>
     aliases:
       - gh
+  resourcepack:
+    description: Utilities for the Resource Pack
+    usage: /resourcepack
+    aliases:
+      - rp
+      - pack

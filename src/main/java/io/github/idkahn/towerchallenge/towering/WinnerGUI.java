@@ -93,7 +93,7 @@ public class WinnerGUI implements Listener {
                     }
                     for (Player teamPlayer : team.getOnlinePlayers()) {
                         team.getHatGUI().addWinner(teamPlayer);
-                        player.getInventory().setHelmet(team.getHatGUI().getHat("Winner's Crown", Material.LEATHER_HORSE_ARMOR, "apple270", null, 8));
+                        teamPlayer.getInventory().setHelmet(team.getHatGUI().getHat("Winner's Crown", Material.LEATHER_HORSE_ARMOR, "apple270", null, 8));
                     }
                     Title title = Title.title(team.getDisplayName().color(team.getTextColor()).append(Component.text(" is the winner!").color(NamedTextColor.WHITE)), Component.empty());
                     Bukkit.getServer().showTitle(title);

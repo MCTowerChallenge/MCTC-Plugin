@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge;
 
 import io.github.idkahn.towerchallenge.towering.GodTeam;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -59,15 +60,16 @@ public class EndPortal implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
-            ParticipantTeam team = eventManager.getTowerListener().getPlayerTeam(player);
+            TowerTeam team = eventManager.getTowerListener().getPlayerTeam(player);
             assert block != null;
             if (block.getType().equals(Material.END_PORTAL_FRAME)) {
                 if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
                     if (event.getItem().getType().equals(Material.ENDER_EYE)) {
                         event.setCancelled(true);
-                        if (block.getLocation().equals(team.getFrameLocation())) {
+                        if (team instanceof ParticipantTeam participantTeam
+                                && block.getLocation().equals(participantTeam.getFrameLocation())) {
                             player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
-                            team.placeEye();
+                            participantTeam.placeEye();
                         } else if (team instanceof GodTeam) {
                             eventManager.getTowerListener().getTeams().forEach((key, checkTeam) -> {
                                 if (block.getLocation().equals(checkTeam.getFrameLocation())) {

@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge.quests;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.gui.ListGui;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
@@ -39,6 +40,7 @@ public class QuestManager implements Listener {
     private final EventManager eventManager;
 
     private Inventory questPicker;
+    private ListGui questGui;
     private Inventory completePicker;
     private int stage;
 
@@ -99,6 +101,7 @@ public class QuestManager implements Listener {
         ItemStack book = QuestUtil.setQuestbook(new ItemStack(Material.BOOK));
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("Quest Book").decoration(TextDecoration.ITALIC, false));
+        bookMeta.setCustomModelData(2);
         bookMeta.addEnchant(Enchantment.MENDING, 0, true);
         bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         bookMeta.lore(new ArrayList<Component>(){{

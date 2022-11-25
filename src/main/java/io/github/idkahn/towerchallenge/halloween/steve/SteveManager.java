@@ -3,6 +3,7 @@ package io.github.idkahn.towerchallenge.halloween.steve;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -26,7 +27,7 @@ public class SteveManager {
 
     public SteveManager(EventManager eventManager) {
         this.eventManager = eventManager;
-        new SteveListener(this);
+//        new SteveListener(this);
         SteveCommands steveCommands = new SteveCommands(this);
         eventManager.getPlugin().getCommand("steve").setExecutor(steveCommands);
         loadSteve();
@@ -65,7 +66,7 @@ public class SteveManager {
         }
         if (previousDialogue != null) {
             previousDialogue.setCallback((player) -> {
-                ParticipantTeam team = getEventManager().getTowerListener().getPlayerTeam(player);
+                TowerTeam team = getEventManager().getTowerListener().getPlayerTeam(player);
                 if (team != null) {
                     setTeamStage(team, 2);
                 }
@@ -78,7 +79,7 @@ public class SteveManager {
         firstDialogue.play(player);
     }
 
-    public int getTeamStage(ParticipantTeam team) {
+    public int getTeamStage(TowerTeam team) {
         return config.getInt("HasFound."+team.getTeam().getName());
     }
 
@@ -103,7 +104,7 @@ public class SteveManager {
         return book;
     }
 
-    public void setTeamStage(ParticipantTeam team, int value) {
+    public void setTeamStage(TowerTeam team, int value) {
         config.set("HasFound."+team.getTeam().getName(), value);
         try {
             config.save(TowerChallenge.steveConfigFile);
