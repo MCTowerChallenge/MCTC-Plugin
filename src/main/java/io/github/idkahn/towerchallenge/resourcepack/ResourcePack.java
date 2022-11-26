@@ -1,6 +1,7 @@
-package io.github.idkahn.towerchallenge.commands;
+package io.github.idkahn.towerchallenge.resourcepack;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.commands.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import net.kyori.adventure.text.Component;

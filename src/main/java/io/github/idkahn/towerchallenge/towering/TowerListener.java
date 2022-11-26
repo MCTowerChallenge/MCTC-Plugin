@@ -3,7 +3,6 @@ package io.github.idkahn.towerchallenge.towering;
 import io.github.idkahn.towerchallenge.BlockSets;
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.commands.ResourcePack;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.hats.HatUtil;
 import net.kyori.adventure.text.Component;
@@ -233,14 +232,6 @@ public class TowerListener implements Listener {
 
         Player player = event.getPlayer();
         loadTeams();
-        player.sendMessage(
-                Component.text("If the resource pack doesn't load properly, use ")
-                        .append(Component.text("/resourcepack").color(TowerChallenge.PRIMARY_COLOR))
-                        .append(Component.text(" or "))
-                        .append(Component.text("/rp").color(TowerChallenge.PRIMARY_COLOR))
-                        .append(Component.text(" to retry!"))
-                        .color(NamedTextColor.DARK_RED)
-                        .decoration(TextDecoration.BOLD, true));
 
         if (!player.hasPlayedBefore()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

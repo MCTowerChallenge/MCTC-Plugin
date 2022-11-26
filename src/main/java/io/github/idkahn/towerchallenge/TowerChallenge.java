@@ -8,6 +8,8 @@ import io.github.idkahn.towerchallenge.hats.HatTabComplete;
 import io.github.idkahn.towerchallenge.messaging.MessageCommands;
 import io.github.idkahn.towerchallenge.penelope.PenelopeCommands;
 import io.github.idkahn.towerchallenge.penelope.PenelopeTabComplete;
+import io.github.idkahn.towerchallenge.resourcepack.ResourcePack;
+import io.github.idkahn.towerchallenge.resourcepack.ResourcePackListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
@@ -155,6 +157,7 @@ public final class TowerChallenge extends JavaPlugin {
 
         ResourcePack resourcePack = new ResourcePack();
         this.getCommand("resourcepack").setExecutor(resourcePack);
+        new ResourcePackListener(manager);
 
         BroadcastCommand broadcastCommand = new BroadcastCommand(manager);
         this.getCommand("broadcast").setExecutor(broadcastCommand);
