@@ -169,6 +169,8 @@ public final class TowerChallenge extends JavaPlugin {
         new EnderChestCommand(this);
         new InvseeCommand(this);
         new MessageCommands(manager);
+        new AnvilCommand(this);
+        new RenameCommand(this);
 
     }
 

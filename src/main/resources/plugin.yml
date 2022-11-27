@@ -46,6 +46,16 @@ commands:
     permission: towerchallenge.enderchest
     aliases:
       - ec
+  anvil:
+    description: Opens an anvil inventory
+    usage: /anvil
+    permission: towerchallenge.anvil
+    aliases:
+      - av
+  rename:
+    description: Renames an item
+    usage: /rename <Name>
+    permission: towerchallenge.rename
   inventorysee:
     description: Views a player's inventory
     usage: /<command> [Player Name]
