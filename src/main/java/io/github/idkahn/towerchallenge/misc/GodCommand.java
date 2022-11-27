@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.commands;
+package io.github.idkahn.towerchallenge.misc;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;

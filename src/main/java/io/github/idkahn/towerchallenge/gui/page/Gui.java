@@ -1,10 +1,12 @@
-package io.github.idkahn.towerchallenge.gui;
+package io.github.idkahn.towerchallenge.gui.page;
 
-import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.NBTUtils;
+import io.github.idkahn.towerchallenge.gui.element.Clickable;
+import io.github.idkahn.towerchallenge.gui.element.Element;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,10 +24,11 @@ public abstract class Gui implements Listener {
     private Inventory inventory;
     private HashMap<UUID, Element> elements;
 
-    public Gui(EventManager manager, Component name, int customTextureWidth, Character customTexture) {
+    public Gui(Component name, int customTextureWidth, Character customTexture) {
         TextComponent.Builder titleBuilder = Component.text();
         if (customTexture != null) {
-            titleBuilder.append(Component.text(customTexture));
+            titleBuilder.append(Component.translatable("space.-8"));
+            titleBuilder.append(Component.text(customTexture).color(NamedTextColor.WHITE));
         }
         if (customTextureWidth != 0) {
             titleBuilder.append(Component.translatable(String.format("space.%d", -customTextureWidth)));
@@ -35,7 +38,7 @@ public abstract class Gui implements Listener {
         elements = new HashMap<>();
     }
 
-    public Gui(EventManager manager, Component name) {
+    public Gui(Component name) {
         inventoryTitle = name;
         elements = new HashMap<>();
     }
@@ -56,10 +59,14 @@ public abstract class Gui implements Listener {
         return elements;
     }
 
+    public void putElement(UUID uuid, Element element) {
+        elements.put(uuid, element);
+    }
+
     public abstract void loadInventory();
 
-    public void openInventory(Player player) {
-        player.openInventory(inventory);
+    public void openInventory(HumanEntity humanEntity) {
+        humanEntity.openInventory(inventory);
     }
 
     @EventHandler
@@ -84,7 +91,9 @@ public abstract class Gui implements Listener {
             return;
 
         Element element = elements.get(itemId);
-        element.use(player);
+        if (element instanceof Clickable clickElement) {
+            clickElement.use(player);
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.commands;
+package io.github.idkahn.towerchallenge.misc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class InvseeCommand implements CommandExecutor {
+public class EnderChestCommand implements CommandExecutor {
 
-    public InvseeCommand(JavaPlugin plugin) {
-        plugin.getCommand("inventorysee").setExecutor(this);
+    public EnderChestCommand(JavaPlugin plugin) {
+        plugin.getCommand("enderchest").setExecutor(this);
     }
 
     @Override
@@ -19,11 +19,11 @@ public class InvseeCommand implements CommandExecutor {
 
         if (sender instanceof Player player) {
             if (args.length == 0) {
-                sender.sendMessage(CommandUtils.errorMessage("You must select a player to view!"));
+                player.openInventory(player.getEnderChest());
             } else {
                 Player otherPlayer = Bukkit.getPlayer(args[0]);
                 if (otherPlayer != null) {
-                    player.openInventory(otherPlayer.getInventory());
+                    player.openInventory(otherPlayer.getEnderChest());
                 } else {
                     sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                 }

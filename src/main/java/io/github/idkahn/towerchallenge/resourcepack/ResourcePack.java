@@ -1,9 +1,8 @@
 package io.github.idkahn.towerchallenge.resourcepack;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
-import io.github.idkahn.towerchallenge.towering.TowerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
@@ -11,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourcePack implements CommandExecutor {

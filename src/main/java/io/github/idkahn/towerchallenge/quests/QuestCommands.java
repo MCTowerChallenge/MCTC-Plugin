@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge.quests;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -79,19 +79,8 @@ public class QuestCommands implements CommandExecutor {
                     }
                 }
             }
-
-            if (args[0].equalsIgnoreCase("complete")) {
-                if (sender instanceof Player player) {
-                    if (player.hasPermission("towerchallenge.questbook.complete")) {
-                        questManager.openCompletePicker(player);
-                    } else {
-                        player.sendMessage(TowerCommands.PERMISSION_WARN);
-                    }
-                } else {
-                    sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
-                }
-            }
         }
+        
         return true;
     }
 }

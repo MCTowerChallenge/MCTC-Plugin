@@ -1,26 +1,21 @@
-package io.github.idkahn.towerchallenge.gui;
+package io.github.idkahn.towerchallenge.gui.element;
 
 import io.github.idkahn.towerchallenge.NBTUtils;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class Element {
 
     private UUID uuid;
     private ItemStack item;
-    private Consumer<Player> consumer;
 
     public static Element empty() {
-        return new Element(new ItemStack(Material.AIR), null);
+        return new Element(new ItemStack(Material.AIR));
     }
 
-    public Element(ItemStack item, Consumer<Player> consumer) {
+    public Element(ItemStack item) {
         this.item = item;
-        this.consumer = consumer;
         setUUID(UUID.randomUUID());
     }
 
@@ -39,12 +34,6 @@ public class Element {
 
     public boolean isAir() {
         return item.getType().isAir();
-    }
-
-    public void use(Player player) {
-        if (consumer != null) {
-            consumer.accept(player);
-        }
     }
 
 }

@@ -57,8 +57,12 @@ public class ResourcePackListener implements Listener {
                             .color(NamedTextColor.RED));
         } else if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED)) {
             player.sendMessage(
-                    Component.text("Resource pack successfully loaded!")
-                            .color(NamedTextColor.DARK_GREEN));
+                    Component.text("If you have issues with the resource pack, manually reload with ")
+                            .append(Component.text("/resourcepack").color(TowerChallenge.PRIMARY_COLOR))
+                            .append(Component.text(" or "))
+                            .append(Component.text("/rp").color(TowerChallenge.PRIMARY_COLOR))
+                            .append(Component.text(" or try relogging."))
+                            .color(NamedTextColor.DARK_RED));
         }
     }
 

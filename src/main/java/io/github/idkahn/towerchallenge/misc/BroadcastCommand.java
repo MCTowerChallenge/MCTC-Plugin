@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.commands;
+package io.github.idkahn.towerchallenge.misc;
 
 import io.github.idkahn.towerchallenge.DefaultFontInfo;
 import io.github.idkahn.towerchallenge.EventManager;

@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge;
 
-import io.github.idkahn.towerchallenge.commands.*;
+import io.github.idkahn.towerchallenge.misc.*;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyCommands;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyTabComplete;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
@@ -50,9 +50,13 @@ public final class TowerChallenge extends JavaPlugin {
     public static World NETHER = Bukkit.getWorld(WORLD_NAME+"_nether");
     public static World END = Bukkit.getWorld(WORLD_NAME+"_the_end");
 
+    public static TowerChallenge me;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        me = this;
 
         this.saveDefaultConfig();
 

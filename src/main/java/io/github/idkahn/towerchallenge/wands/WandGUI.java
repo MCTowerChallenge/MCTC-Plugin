@@ -20,7 +20,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class WandGUI implements Listener {
 
@@ -76,7 +75,7 @@ public class WandGUI implements Listener {
     public void randomIds() {
         ItemStack[] items = inventory.getContents();
         for (int i = 0; i < items.length; i++) {
-            ItemStack item = NBTUtils.randomUUID(items[i]);
+            ItemStack item = NBTUtils.noStack(items[i]);
             inventory.setItem(i, item);
         }
     }

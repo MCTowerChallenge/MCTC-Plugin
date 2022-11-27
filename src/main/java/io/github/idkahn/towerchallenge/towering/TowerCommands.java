@@ -1,16 +1,21 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
-import io.github.idkahn.towerchallenge.gui.Element;
-import io.github.idkahn.towerchallenge.gui.Gui;
-import io.github.idkahn.towerchallenge.gui.ListGui;
+import io.github.idkahn.towerchallenge.gui.element.Element;
+import io.github.idkahn.towerchallenge.gui.page.PlayerGui;
+import io.github.idkahn.towerchallenge.misc.CommandUtils;
+import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
+import io.github.idkahn.towerchallenge.gui.GuiHeldItem;
+import io.github.idkahn.towerchallenge.gui.page.ListGui;
 import io.github.idkahn.towerchallenge.quests.BlockVoucher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,10 +23,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -250,14 +258,28 @@ public class TowerCommands implements CommandExecutor {
                         }
                         break;
                     case ("gui"):
-                        List<Element> elements = new ArrayList<>();
-                        elements.add(new Element(new ItemStack(Material.STICK), player -> {
-                            player.sendMessage(Component.text("Stick!"));
-                        }));
-                        elements.add(new Element(new ItemStack(Material.PAPER), player -> {
-                            player.getWorld().spawnEntity(player.getLocation(), EntityType.COW);
-                        }));
-                        ListGui gui = new ListGui(manager, Component.text("Boop"), elements, new Element(new ItemStack(Material.REDSTONE_BLOCK), HumanEntity::closeInventory));
+                        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+                        SkullMeta meta = (SkullMeta) skull.getItemMeta();
+                        meta.lore(new ArrayList<>(){{
+                            add(Component.text("Ayo the pizza here"));
+                        }});
+                        skull.setItemMeta(meta);
+                        ItemStack back = new ItemStack(Material.REDSTONE_BLOCK);
+                        ItemMeta backMeta = back.getItemMeta();
+                        backMeta.setCustomModelData(1);
+                        back.setItemMeta(backMeta);
+                        ButtonElement backElement = new ButtonElement(back, HumanEntity::closeInventory);
+                        PlayerGui gui = new PlayerGui(manager, Component.text("teehee"), skull, player -> new ArrayList<>(){{
+                           add(Component.text(player.getStatistic(Statistic.JUMP)).decoration(TextDecoration.ITALIC, false));
+                        }}, Bukkit.getOnlinePlayers().stream().map(player -> (OfflinePlayer) player).collect(Collectors.toList()), (usePlayer, targetPlayer) -> {
+                            if (targetPlayer.isOnline()) {
+                                Player targetOnline = targetPlayer.getPlayer();
+                                if (targetOnline == null) {
+                                    return;
+                                }
+                                targetOnline.getInventory().addItem(new ItemStack(Material.BOOK));
+                            }
+                        }, backElement);
                         if (sender instanceof Player player) {
                             gui.openInventory(player);
                         }

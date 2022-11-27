@@ -1,9 +1,7 @@
 package io.github.idkahn.towerchallenge;
 
 import de.tr7zw.nbtapi.NBTItem;
-import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -12,18 +10,13 @@ public class NBTUtils {
 
     public static final String TEAM = "item_team";
     public static final String UNIQUE_ID = "unique_id";
+    public static final String NO_STACK = "no_stack";
 
-    /**
-     * Sets a random UUID to the "id" tag of the item.
-     * Essentially makes the item not stack with any others
-     * @param itemStack item to set
-     * @return the item with the set uuid
-     */
-    public static ItemStack randomUUID(ItemStack itemStack) {
+    public static ItemStack noStack(ItemStack itemStack) {
         if (itemStack == null || itemStack.getType().isAir())
             return itemStack;
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setUUID("id", UUID.randomUUID());
+        nbtItem.setUUID(NO_STACK, UUID.randomUUID());
         return nbtItem.getItem();
     }
 

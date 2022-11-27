@@ -2,9 +2,8 @@ package io.github.idkahn.towerchallenge.halloween.candy;
 
 import io.github.idkahn.towerchallenge.EventManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.GodTeam;
-import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;

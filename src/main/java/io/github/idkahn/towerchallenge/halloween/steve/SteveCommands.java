@@ -1,8 +1,7 @@
 package io.github.idkahn.towerchallenge.halloween.steve;
 
-import io.github.idkahn.towerchallenge.commands.CommandUtils;
+import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;
-import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;

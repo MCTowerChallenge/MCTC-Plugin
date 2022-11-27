@@ -1,6 +1,9 @@
 package io.github.idkahn.towerchallenge.quests;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
+import io.github.idkahn.towerchallenge.gui.element.Element;
+import io.github.idkahn.towerchallenge.gui.page.PresetGui;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.key.Key;
@@ -42,7 +45,7 @@ public class Quest implements Listener {
     private final ArrayList<ItemStack> criteria;
     private final ArrayList<ItemStack> reward;
     private final ParticipantTeam completed;
-    private Inventory inventory;
+    private PresetGui gui;
     private Inventory completeUI;
 
     public Quest(QuestManager questManager, Component name, ArrayList<Component> description, ArrayList<ItemStack> criteria, ArrayList<ItemStack> reward, ParticipantTeam completed) {
@@ -58,14 +61,15 @@ public class Quest implements Listener {
     }
 
     private void initInventory() {
-        inventory = Bukkit.createInventory(null, 54, Component.text("\uF808\uE002\uF80C\uF80A\uF808\uF802").color(NamedTextColor.WHITE).append(name.color(NamedTextColor.BLACK)));
+        gui = new PresetGui(name.color(NamedTextColor.BLACK), 170, '\uE002', 6);
 
-        ItemStack backButton = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
+        ItemStack backButton = new ItemStack(Material.REDSTONE_BLOCK);
         ItemMeta backButtonMeta = backButton.getItemMeta();
         backButtonMeta.displayName(Component.text("Back").decoration(TextDecoration.ITALIC, false));
         backButtonMeta.setCustomModelData(1);
         backButton.setItemMeta(backButtonMeta);
-        inventory.setItem(36, backButton);
+        ButtonElement backElement = new ButtonElement(backButton, questManager::openQuestPicker);
+        gui.putElement(1, 5, backElement);
 
         ItemStack descriptionItem = new ItemStack(Material.PAPER);
         ItemMeta descriptionMeta = descriptionItem.getItemMeta();
@@ -74,8 +78,8 @@ public class Quest implements Listener {
         lore.add(Component.empty());
         descriptionMeta.lore(lore);
         descriptionItem.setItemMeta(descriptionMeta);
-
-        inventory.setItem(9, descriptionItem);
+        Element descriptionElement = new Element(descriptionItem);
+        gui.putElement(1, 2, descriptionElement);
 
         ItemStack completedItem;
         if (completed != null) {
@@ -90,14 +94,28 @@ public class Quest implements Listener {
             completedMeta.displayName(Component.text("Not Completed Yet").decoration(TextDecoration.ITALIC, false));
             completedItem.setItemMeta(completedMeta);
         }
-        inventory.setItem(17, QuestUtil.setButton(completedItem));
+        ButtonElement completedElement = new ButtonElement(completedItem, player -> {
+            if (player.hasPermission("towerchallenge.quest.complete")) {
+                openCompleteUI(player);
+            }
+        });
+        gui.putElement(9, 2, completedElement);
 
         for (int i = 0; i < criteria.size(); i++) {
             ItemStack item = criteria.get(i);
+            ButtonElement element = new ButtonElement(item, player -> {
+                if (player.hasPermission("towerchallenge.quest.getreward")) {
+                    if (QuestUtil.isVoucher(item)) {
+                        player.getInventory().addItem(BlockVoucher.getVouchers(2));
+                    } else {
+                        player.getInventory().addItem(item);
+                    }
+                }
+            });
             if (i < 3) {
-                inventory.setItem(28+i, item);
+                gui.putElement(2+i, 4, element);
             } else if (i < 6) {
-                inventory.setItem(37+i-3, item);
+                gui.putElement(2+i-3, 5, element);
             } else {
                 Bukkit.getLogger().info("Quest "+getTextName()+" has too many criteria items. Maximum of 6.");
             }
@@ -105,10 +123,19 @@ public class Quest implements Listener {
 
         for (int i = 0; i < reward.size(); i++) {
             ItemStack item = QuestUtil.setButton(reward.get(i));
+            ButtonElement element = new ButtonElement(item, player -> {
+                if (player.hasPermission("towerchallenge.quest.getreward")) {
+                    if (QuestUtil.isVoucher(item)) {
+                        player.getInventory().addItem(BlockVoucher.getVouchers(2));
+                    } else {
+                        player.getInventory().addItem(item);
+                    }
+                }
+            });
             if (i < 3) {
-                inventory.setItem(32+i, item);
+                gui.putElement(6+i, 4, element);
             } else if (i < 6) {
-                inventory.setItem(41+i-3, item);
+                gui.putElement(6+i-3, 5, element);
             } else {
                 Bukkit.getLogger().info("Quest "+getTextName()+" has too many reward items. Maximum of 6.");
             }
@@ -146,8 +173,12 @@ public class Quest implements Listener {
     }
 
     public void closeInventories() {
-        inventory.close();
+        gui.getInventory().close();
         completeUI.close();
+    }
+
+    public PresetGui getGui() {
+        return gui;
     }
 
     public String getTextName() {
@@ -155,7 +186,7 @@ public class Quest implements Listener {
     }
     public List<Player> getViewers() {
         ArrayList<HumanEntity> players = new ArrayList<>();
-        players.addAll(inventory.getViewers());
+        players.addAll(gui.getInventory().getViewers());
         players.addAll(completeUI.getViewers());
         return players.stream().map((entity) -> (Player) entity).collect(Collectors.toList());
     }
@@ -177,7 +208,7 @@ public class Quest implements Listener {
     }
 
     public void openInventory(Player player) {
-        player.openInventory(inventory);
+        player.openInventory(gui.getInventory());
     }
     public void openCompleteUI(Player player) {
         player.openInventory(completeUI);
@@ -189,30 +220,7 @@ public class Quest implements Listener {
             return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir())
             return;
-        if (event.getInventory().equals(inventory)) {
-            event.setCancelled(true);
-
-            Player player = (Player) event.getWhoClicked();
-
-            ItemStack item = event.getCurrentItem();
-            if (QuestUtil.isButton(item)) {
-                if (item.getType().equals(Material.REDSTONE_BLOCK)) {
-                    questManager.openQuestPicker(player);
-                } else if (event.getSlot() == 17) {
-                    if (player.hasPermission("towerchallenge.quest.complete")) {
-                        openCompleteUI(player);
-                    }
-                } else {
-                    if (player.hasPermission("towerchallenge.quest.getreward")) {
-                        if (QuestUtil.isVoucher(item)) {
-                            player.getInventory().addItem(BlockVoucher.getVouchers(2));
-                        } else {
-                            player.getInventory().addItem(item);
-                        }
-                    }
-                }
-            }
-        } else if (event.getInventory().equals(completeUI)) {
+        if (event.getInventory().equals(completeUI)) {
             event.setCancelled(true);
 
             Player player = (Player) event.getWhoClicked();
