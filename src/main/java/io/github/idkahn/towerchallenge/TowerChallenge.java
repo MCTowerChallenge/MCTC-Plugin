@@ -114,7 +114,6 @@ public final class TowerChallenge extends JavaPlugin {
 
         EventManager manager = new EventManager(this);
 
-
         TowerCommands towerCommands = new TowerCommands(manager);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
 
@@ -126,6 +125,7 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("hat").setExecutor(hatCommands);
         this.getCommand("hat").setTabCompleter(hatTabComplete);
 
+        new SitEventHandler();
 
         // Teams
         ChatHandler chatHandler = new ChatHandler();
