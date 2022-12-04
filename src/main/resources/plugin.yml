@@ -82,6 +82,16 @@ commands:
     usage: /godhelp <Message>
     aliases:
       - gh
+  godmenu:
+    description: Gets the god menu book
+    usage: /godmenu
+    permission: towerchallenge.godmenu
+    aliases:
+      - gm
+  back:
+    description: Teleports you to your last location
+    usage: /back
+    permission: towerchallenge.back
   resourcepack:
     description: Utilities for the Resource Pack
     usage: /resourcepack

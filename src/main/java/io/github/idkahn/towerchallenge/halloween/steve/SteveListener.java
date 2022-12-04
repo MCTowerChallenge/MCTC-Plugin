@@ -4,9 +4,9 @@ import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
-import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -36,7 +36,7 @@ public class SteveListener implements Listener {
 
     public final static String STEVE_NAME = "steve skellington";
     public final static String STEVE_REGION_NAME = "steve";
-    public final static World STEVE_WORLD = TowerChallenge.WORLD;
+    public final static World STEVE_WORLD = TowerChallenge.WORLD();
 
     private ProtectedRegion steveHouse;
     private final SteveManager steveManager;
@@ -47,7 +47,7 @@ public class SteveListener implements Listener {
     public SteveListener(SteveManager steveManager) {
         this.steveManager = steveManager;
         Bukkit.getServer().getPluginManager().registerEvents(this, steveManager.getEventManager().getPlugin());
-        RegionManager regionManager = ParticipantTeam.container.get(BukkitAdapter.adapt(STEVE_WORLD));
+        RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(STEVE_WORLD));
         if (regionManager != null && regionManager.hasRegion(STEVE_REGION_NAME)) {
             steveHouse = regionManager.getRegion(STEVE_REGION_NAME);
         }

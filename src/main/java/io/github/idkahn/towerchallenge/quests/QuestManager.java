@@ -1,11 +1,13 @@
 package io.github.idkahn.towerchallenge.quests;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.gui.*;
 import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
 import io.github.idkahn.towerchallenge.gui.element.Element;
+import io.github.idkahn.towerchallenge.gui.page.Gui;
 import io.github.idkahn.towerchallenge.gui.page.ListGui;
+import io.github.idkahn.towerchallenge.gui.page.Openable;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
@@ -31,48 +33,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QuestManager {
+public class QuestManager implements Openable {
 
     public static final String UI_NAME = "Quests:";
+    public static final String GUI_ID = "questgui";
 
     private final HashMap<String, Quest> quests;
-    private final EventManager eventManager;
+    private final ChallengeManager challengeManager;
 
     private Inventory questPicker;
     private ListGui questGui;
-    ItemStack bookItem;
+    GuiHeldItem questBook;
     private int stage;
 
-    public QuestManager(EventManager eventManager) {
-        this.eventManager = eventManager;
+    public QuestManager(ChallengeManager challengeManager) {
+        this.challengeManager = challengeManager;
 
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("Quest Book").decoration(TextDecoration.ITALIC, false));
         bookMeta.setCustomModelData(2);
-        bookMeta.addEnchant(Enchantment.MENDING, 0, true);
-        bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+//        bookMeta.addEnchant(Enchantment.MENDING, 0, true);
+//        bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         bookMeta.lore(new ArrayList<>(){{
             add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
             add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
         }});
         book.setItemMeta(bookMeta);
-        bookItem = book;
+        questBook = new GuiHeldItem(GUI_ID, book, this);
 
         QuestListener listener = new QuestListener(this);
         QuestCommands commands = new QuestCommands(this);
         this.quests = new HashMap<>();
-        eventManager.getPlugin().getCommand("questbook").setExecutor(commands);
+        challengeManager.getPlugin().getCommand("questbook").setExecutor(commands);
         loadQuests();
     }
 
-    public EventManager getEventManager() {
-        return eventManager;
+    public ChallengeManager getEventManager() {
+        return challengeManager;
     }
 
     public ItemStack getBook() {
-        GuiHeldItem guiBook = new GuiHeldItem(bookItem, questGui);
-        return guiBook.getItem();
+        return questBook.getItem();
     }
 
     private void configItemGroup(HashMap<String, Object> map, ArrayList<ItemStack> list) {
@@ -150,7 +152,7 @@ public class QuestManager {
         for (Map.Entry<String, Quest> entry : quests.entrySet()) {
             Quest quest = entry.getValue();
             playersOpenInventories.put(quest.getTextName(), quest.getViewers());
-            quest.closeInventories();
+//            quest.closeInventories();
         }
         quests.clear();
 
@@ -206,7 +208,7 @@ public class QuestManager {
                 configItemGroup(quest, reward);
             }
 
-            ParticipantTeam completedTeam = eventManager.getTowerListener().getTeams().get(configCompleted);
+            ParticipantTeam completedTeam = challengeManager.getTowerListener().getTeams().get(configCompleted);
 
             Quest newQuest = new Quest(this, name, description, criteria, reward, completedTeam);
             quests.put(configName, newQuest);
@@ -217,12 +219,15 @@ public class QuestManager {
 
         ButtonElement exitElement = new ButtonElement(exit, HumanEntity::closeInventory);
 
-        questGui = new ListGui(getEventManager(), Component.text(UI_NAME), elements, exitElement);
+        questGui = new ListGui(Component.text(UI_NAME), elements, exitElement);
 
         for (Map.Entry<String, List<Player>> entry : playersOpenInventories.entrySet()) {
             Quest quest = quests.get(entry.getKey());
             for (Player player : entry.getValue()) {
-                quest.openInventory(player);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> {
+                    quest.openInventory(player);
+                }, 1);
+//                player.closeInventory();
             }
         }
 
@@ -240,4 +245,8 @@ public class QuestManager {
         player.openInventory(questGui.getInventory());
     }
 
+    @Override
+    public Gui getGui() {
+        return questGui;
+    }
 }

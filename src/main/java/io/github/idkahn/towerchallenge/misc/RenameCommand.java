@@ -2,6 +2,7 @@ package io.github.idkahn.towerchallenge.misc;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public class RenameCommand implements CommandExecutor {
             if (i != 0) {
                 nameBuilder.append(Component.space());
             }
-            nameBuilder.append(Component.text(args[i]));
+            nameBuilder.append(Component.text(args[i]).decoration(TextDecoration.ITALIC, false));
         }
         meta.displayName(nameBuilder.build());
         item.setItemMeta(meta);

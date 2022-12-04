@@ -1,10 +1,9 @@
-package io.github.idkahn.towerchallenge.resourcepack;
+package io.github.idkahn.towerchallenge.misc.resourcepack;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -21,7 +20,7 @@ public class ResourcePackListener implements Listener {
 
     private Map<UUID, Integer> attempts;
 
-    public ResourcePackListener(EventManager manager) {
+    public ResourcePackListener(ChallengeManager manager) {
         Bukkit.getPluginManager().registerEvents(this, manager.getPlugin());
         attempts = new HashMap<>();
     }

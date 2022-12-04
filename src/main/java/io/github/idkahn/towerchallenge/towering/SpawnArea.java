@@ -4,7 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +18,7 @@ public class SpawnArea implements Listener {
 
     private final ProtectedRegion region;
 
-    public SpawnArea(EventManager manager, ProtectedRegion region) {
+    public SpawnArea(ChallengeManager manager, ProtectedRegion region) {
         JavaPlugin plugin = manager.getPlugin();
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         this.region = region;

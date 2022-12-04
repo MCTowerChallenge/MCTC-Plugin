@@ -1,9 +1,9 @@
 package io.github.idkahn.towerchallenge.halloween.candy;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;
-import io.github.idkahn.towerchallenge.towering.GodTeam;
+import io.github.idkahn.towerchallenge.gods.GodTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -74,9 +74,9 @@ public class Candy implements Listener {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private final EventManager manager;
+    private final ChallengeManager manager;
 
-    public Candy(EventManager manager) {
+    public Candy(ChallengeManager manager) {
         this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
     }

@@ -1,21 +1,13 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.halloween.candy.Candy;
-import io.github.idkahn.towerchallenge.halloween.candy.CandyUtils;
-import io.github.idkahn.towerchallenge.hats.HatGUI;
-import io.github.idkahn.towerchallenge.spawncompass.SpawnCompass;
-import net.kyori.adventure.audience.Audience;
+import io.github.idkahn.towerchallenge.quests.QuestUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
@@ -23,25 +15,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.*;
 
 public class ParticipantTeam extends TowerTeam {
-
-    public static final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-
 
     private int extraScore;
     private SpawnArea spawnArea;
@@ -49,7 +29,7 @@ public class ParticipantTeam extends TowerTeam {
 
     private Location frameLocation;
 
-    public ParticipantTeam(EventManager manager, String displayName, String color, String dye) {
+    public ParticipantTeam(ChallengeManager manager, String displayName, String color, String dye) {
         super(manager, displayName, color, dye);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore = config.getInt(displayName);
@@ -59,31 +39,31 @@ public class ParticipantTeam extends TowerTeam {
 
     public void loadRegions() {
         YamlConfiguration config = getConfig();
-        List<Map<?, ?>> regions = config.getMapList(getName());
+        List<Map<?, ?>> regions = config.getMapList(getTextName());
 
         if (regions.size() >= 2) {
             HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
             HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(getManager(), container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(this, getManager(), container.get(BukkitAdapter.adapt(TowerChallenge.WORLD)).getRegion(tower.get("name")), getName());
+            this.spawnArea = new SpawnArea(getManager(), ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD())).getRegion(spawn.get("name")));
+            this.towerArea = new TowerArea(this, getManager(), ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD())).getRegion(tower.get("name")), getTextName());
         }
     }
 
     public void loadPortal() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
-        if (config.isString(getName()+".world")) {
-            this.frameLocation = new Location(Bukkit.getWorld(config.getString(getName()+".world")), config.getInt(getName()+".x"), config.getInt(getName()+".y"), config.getInt(getName()+".z"));
+        if (config.isString(getTextName()+".world")) {
+            this.frameLocation = new Location(Bukkit.getWorld(config.getString(getTextName()+".world")), config.getInt(getTextName()+".x"), config.getInt(getTextName()+".y"), config.getInt(getTextName()+".z"));
             Block block = this.frameLocation.getBlock();
             block.setType(Material.END_PORTAL_FRAME);
             EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
-            if (config.isString(getName()+".facing")) {
-                blockData.setFacing(BlockFace.valueOf((config.getString(getName()+".facing")).toUpperCase()));
+            if (config.isString(getTextName()+".facing")) {
+                blockData.setFacing(BlockFace.valueOf((config.getString(getTextName()+".facing")).toUpperCase()));
             }
-            if (config.isBoolean(getName()+".completed")) {
-                blockData.setEye(config.getBoolean(getName()+".completed"));
+            if (config.isBoolean(getTextName()+".completed")) {
+                blockData.setEye(config.getBoolean(getTextName()+".completed"));
                 block.setBlockData(blockData);
             }
-            Bukkit.getLogger().info("Loaded portal frame for " + getName() + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+            Bukkit.getLogger().info("Loaded portal frame for " + getTextName() + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
         }
     }
 
@@ -95,7 +75,7 @@ public class ParticipantTeam extends TowerTeam {
     public int addExtraScore(int score) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore += score;
-        config.set(getName(), extraScore);
+        config.set(getTextName(), extraScore);
         try {
             config.save(TowerChallenge.teamScoreConfigFile);
         } catch (IOException e) {
@@ -107,7 +87,7 @@ public class ParticipantTeam extends TowerTeam {
     public int removeExtraScore(int score) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
         extraScore -= score;
-        config.set(getName(), extraScore);
+        config.set(getTextName(), extraScore);
         try {
             config.save(TowerChallenge.teamScoreConfigFile);
         } catch (IOException e) {
@@ -127,7 +107,7 @@ public class ParticipantTeam extends TowerTeam {
     @Override
     public void addPlayerConfig(OfflinePlayer player) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamConfigFile);
-        List<String> players = config.getStringList("Teams."+getName()+".players");
+        List<String> players = config.getStringList("Teams."+ getTextName()+".players");
         players.add(player.getUniqueId().toString());
         try {
             config.save(TowerChallenge.teamConfigFile);
@@ -144,6 +124,15 @@ public class ParticipantTeam extends TowerTeam {
         return frameLocation;
     }
 
+    public ItemStack getItem() {
+        ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(getDye()+"_CONCRETE")));
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.displayName(getDisplayName().decoration(TextDecoration.ITALIC, false));
+        itemMeta.setCustomModelData(1);
+        item.setItemMeta(itemMeta);
+        return item;
+    }
+
     public boolean hasEye() {
         if (frameLocation.getBlock().getBlockData() instanceof EndPortalFrame frame) {
             return frame.hasEye();
@@ -156,7 +145,7 @@ public class ParticipantTeam extends TowerTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
-        config.set(getName()+".completed", true);
+        config.set(getTextName()+".completed", true);
         try {
             config.save(TowerChallenge.endPortalConfigFile);
         } catch (IOException e) {
@@ -195,14 +184,14 @@ public class ParticipantTeam extends TowerTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
-        config.set(getName() + ".completed", false);
+        config.set(getTextName() + ".completed", false);
         try {
             config.save(TowerChallenge.endPortalConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         frame.setBlockData(frameData);
-        Bukkit.getLogger().info("Reset frame for " + getName());
+        Bukkit.getLogger().info("Reset frame for " + getTextName());
     }
 
     @Override

@@ -1,8 +1,8 @@
 package io.github.idkahn.towerchallenge.hats;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.towering.GodTeam;
+import io.github.idkahn.towerchallenge.gods.GodTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ import java.util.*;
 public class HatGUI implements Listener {
 
     public static final String UI_NAME = "Select a Hat!";
-    private final EventManager eventManager;
+    private final ChallengeManager challengeManager;
     private final Plugin plugin;
     private final Color color;
     private final Map<UUID, Inventory> inventories;
@@ -39,17 +39,17 @@ public class HatGUI implements Listener {
         return 9*(((NumberOfItems-1)/9)+1);
     }
 
-    public HatGUI(EventManager eventManager, Color color) {
-        this.plugin = eventManager.getPlugin();
-        this.eventManager = eventManager;
+    public HatGUI(ChallengeManager challengeManager, Color color) {
+        this.plugin = challengeManager.getPlugin();
+        this.challengeManager = challengeManager;
         this.inventories = new HashMap<>();
         this.winners = new ArrayList<>();
         this.color = color;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public HatGUI(EventManager eventManager, String hexColor) {
-        this(eventManager, Color.fromRGB(Integer.parseInt(hexColor.replaceAll("#", ""), 16)));
+    public HatGUI(ChallengeManager challengeManager, String hexColor) {
+        this(challengeManager, Color.fromRGB(Integer.parseInt(hexColor.replaceAll("#", ""), 16)));
     }
 
     @EventHandler
@@ -122,7 +122,7 @@ public class HatGUI implements Listener {
         // gets Normal Hats
         hats.addAll((List<HashMap>) config.getList("Hats"));
         // gets God hats, if applicable
-        if (eventManager.getTowerListener().getPlayerTeam(player) instanceof GodTeam) {
+        if (challengeManager.getTowerListener().getPlayerTeam(player) instanceof GodTeam) {
             hats.addAll((List<HashMap>) config.getList("GodHats"));
         }
         // gets Player's hats, if applicable

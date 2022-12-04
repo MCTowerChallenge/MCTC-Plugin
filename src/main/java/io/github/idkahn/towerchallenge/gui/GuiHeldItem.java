@@ -3,6 +3,7 @@ package io.github.idkahn.towerchallenge.gui;
 import io.github.idkahn.towerchallenge.NBTUtils;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.gui.page.Gui;
+import io.github.idkahn.towerchallenge.gui.page.Openable;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,27 +15,23 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
-
 public class GuiHeldItem implements Listener {
 
-    public static final String GUI_ITEM = "is_gui_item";
+    public static final String GUI_ID = "gui_id";
 
-    private UUID itemId;
     private ItemStack item;
-    private Gui gui;
+    private Openable openable;
+    private String guiId;
 
-    public GuiHeldItem(ItemStack item, Gui gui) {
-        this.itemId = UUID.randomUUID();
-        this.item = NBTUtils.noStack(
-                NBTUtils.setUniqueID(
-                        NBTUtils.setBool(GUI_ITEM, item), itemId));
-        this.gui = gui;
+    public GuiHeldItem(String guiId, ItemStack item, Openable openable) {
+        this.guiId = guiId;
+        this.item = NBTUtils.noStack(NBTUtils.setString(GUI_ID, item, this.guiId));
+        this.openable = openable;
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
     }
 
     public Gui getGui() {
-        return gui;
+        return openable.getGui();
     }
 
     public ItemStack getItem() {
@@ -42,7 +39,7 @@ public class GuiHeldItem implements Listener {
     }
 
     public boolean matchItem(ItemStack item) {
-        return NBTUtils.getUniqueID(item).equals(itemId);
+        return NBTUtils.getString(GUI_ID, item).equals(guiId);
     }
 
     @EventHandler
@@ -69,7 +66,7 @@ public class GuiHeldItem implements Listener {
                 || item == null)
             return;
         if (matchItem(item)) {
-            gui.openInventory(player);
+            openable.getGui().openInventory(player);
         }
     }
 

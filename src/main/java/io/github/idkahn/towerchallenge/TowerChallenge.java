@@ -6,10 +6,10 @@ import io.github.idkahn.towerchallenge.halloween.candy.CandyTabComplete;
 import io.github.idkahn.towerchallenge.hats.HatCommands;
 import io.github.idkahn.towerchallenge.hats.HatTabComplete;
 import io.github.idkahn.towerchallenge.messaging.MessageCommands;
-import io.github.idkahn.towerchallenge.penelope.PenelopeCommands;
-import io.github.idkahn.towerchallenge.penelope.PenelopeTabComplete;
-import io.github.idkahn.towerchallenge.resourcepack.ResourcePack;
-import io.github.idkahn.towerchallenge.resourcepack.ResourcePackListener;
+import io.github.idkahn.towerchallenge.halloween.penelope.PenelopeCommands;
+import io.github.idkahn.towerchallenge.halloween.penelope.PenelopeTabComplete;
+import io.github.idkahn.towerchallenge.misc.resourcepack.ResourcePack;
+import io.github.idkahn.towerchallenge.misc.resourcepack.ResourcePackListener;
 import io.github.idkahn.towerchallenge.timer.Timer;
 import io.github.idkahn.towerchallenge.timer.TimerCommands;
 import io.github.idkahn.towerchallenge.timer.TimerTabComplete;
@@ -18,6 +18,7 @@ import io.github.idkahn.towerchallenge.towering.TowerCommands;
 import io.github.idkahn.towerchallenge.towering.TowerTabComplete;
 import io.github.idkahn.towerchallenge.wands.WandCommands;
 import io.github.idkahn.towerchallenge.wands.WandListener;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -42,13 +43,22 @@ public final class TowerChallenge extends JavaPlugin {
 
     public static TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
     public static TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
+    public static TextColor NEGATIVE_COLOR = NamedTextColor.DARK_RED;
     //d0608c
     //124f49
 
     public static String WORLD_NAME = "December MCTC";
-    public static World WORLD = Bukkit.getWorld(WORLD_NAME);
-    public static World NETHER = Bukkit.getWorld(WORLD_NAME+"_nether");
-    public static World END = Bukkit.getWorld(WORLD_NAME+"_the_end");
+    public static String NETHER_NAME = WORLD_NAME+"_nether";
+    public static String THE_END_NAME = WORLD_NAME+"_the_end";
+    public static World WORLD() {
+        return Bukkit.getWorld(WORLD_NAME);
+    };
+    public static World NETHER() {
+        return Bukkit.getWorld(NETHER_NAME);
+    };
+    public static World THE_END() {
+        return Bukkit.getWorld(THE_END_NAME);
+    }
 
     public static TowerChallenge me;
 
@@ -112,7 +122,7 @@ public final class TowerChallenge extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        EventManager manager = new EventManager(this);
+        ChallengeManager manager = new ChallengeManager(this);
 
         TowerCommands towerCommands = new TowerCommands(manager);
         TowerTabComplete towerTabComplete = new TowerTabComplete();
@@ -177,5 +187,6 @@ public final class TowerChallenge extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        Bukkit.getScheduler().cancelTasks(this);
     }
 }

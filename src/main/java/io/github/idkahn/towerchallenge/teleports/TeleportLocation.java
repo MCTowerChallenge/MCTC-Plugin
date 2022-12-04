@@ -1,0 +1,82 @@
+package io.github.idkahn.towerchallenge.teleports;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class TeleportLocation extends Location {
+
+    // Death = Red Mushroom Custom Model 8
+    // Teleport = Ender Pearl
+
+    public enum Reason {
+        DEATH(deathItem()),
+        TELEPORT(teleportItem()),
+        PORTAL(portalItem()),
+        PEARL(pearlItem());
+
+        private static ItemStack deathItem() {
+            ItemStack item = new ItemStack(Material.RED_MUSHROOM);
+            ItemMeta meta = item.getItemMeta();
+            meta.setCustomModelData(8);
+            meta.displayName(Component.text("Death").decoration(TextDecoration.ITALIC, false));
+            item.setItemMeta(meta);
+            return item;
+        }
+        private static ItemStack teleportItem() {
+            ItemStack item = new ItemStack(Material.ENDER_PEARL);
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(Component.text("Teleport").decoration(TextDecoration.ITALIC, false));
+            meta.addEnchant(Enchantment.MENDING, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
+            return item;
+        }
+        private static ItemStack portalItem() {
+            ItemStack item = new ItemStack(Material.ENDER_EYE);
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(Component.text("Portal").decoration(TextDecoration.ITALIC, false));
+            item.setItemMeta(meta);
+            return item;
+        }
+        private static ItemStack pearlItem() {
+            ItemStack item = new ItemStack(Material.ENDER_PEARL);
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(Component.text("Enderpearl").decoration(TextDecoration.ITALIC, false));
+            item.setItemMeta(meta);
+            return item;
+        }
+
+        private final ItemStack item;
+
+        Reason(ItemStack item) {
+            this.item = item;
+        }
+
+        public ItemStack getItem() {
+            return new ItemStack(item);
+        }
+    }
+
+    private final Reason reason;
+
+    public TeleportLocation(Location location, Reason reason) {
+        super(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        this.reason = reason;
+    }
+
+    public Biome getBiome() {
+        return getWorld().getBiome(this);
+    }
+
+    public Reason getReason() {
+        return reason;
+    }
+}

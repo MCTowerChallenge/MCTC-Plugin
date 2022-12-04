@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.penelope;
+package io.github.idkahn.towerchallenge.halloween.penelope;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.towering.TowerCommands;

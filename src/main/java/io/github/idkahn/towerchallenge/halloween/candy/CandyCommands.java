@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge.halloween.candy;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import org.bukkit.Bukkit;
@@ -20,10 +20,10 @@ import java.io.IOException;
 
 public class CandyCommands implements CommandExecutor {
 
-    private final EventManager eventManager;
+    private final ChallengeManager challengeManager;
 
-    public CandyCommands(EventManager eventManager) {
-        this.eventManager = eventManager;
+    public CandyCommands(ChallengeManager challengeManager) {
+        this.challengeManager = challengeManager;
     }
 
     @Override
@@ -61,11 +61,11 @@ public class CandyCommands implements CommandExecutor {
                     Player player = Bukkit.getPlayer(args[1]);
                     if (player != null) {
                         if (args.length < 3) {
-                            eventManager.getTowerListener().getPlayerTeam(player).giveBundle(player);
+                            challengeManager.getTowerListener().getPlayerTeam(player).giveBundle(player);
                         } else {
                             try {
                                 int number = Integer.parseInt(args[2]);
-                                eventManager.getTowerListener().getPlayerTeam(player).giveBundle(player, number);
+                                challengeManager.getTowerListener().getPlayerTeam(player).giveBundle(player, number);
                             } catch (NumberFormatException e) {
                                 sender.sendMessage(CommandUtils.errorMessage("Please enter a valid number of candies."));
                             }

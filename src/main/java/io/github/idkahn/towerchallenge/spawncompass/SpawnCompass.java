@@ -1,16 +1,118 @@
 package io.github.idkahn.towerchallenge.spawncompass;
 
+import io.github.idkahn.towerchallenge.TowerChallenge;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 
-public class SpawnCompass {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-    public static void giveCompass(Player player) {
-        player.setCompassTarget(new Location(player.getWorld(), -1330.0d, 68.0d, -1249.0d));
-        ItemStack compass = new ItemStack(Material.COMPASS);
-        player.getInventory().addItem(compass);
+public class SpawnCompass implements Listener {
+
+    public static final Location OVERWORLD_LOCATION = new Location(TowerChallenge.WORLD(), -1331.0d, 58.0d, -1249.0d);
+    public static final Location NETHER_LOCATION = new Location(TowerChallenge.NETHER(), -102.05d, 73.00d, -100.95d);
+    public static final Location THE_END_LOCATION = new Location(TowerChallenge.THE_END(), 0.0d, 0.0d, 0.0d);
+
+    public static ItemStack refreshPlayerDestination(Player player, ItemStack compass) {
+        String playerWorldName = player.getLocation().getWorld().getName();
+        if (playerWorldName.equals(TowerChallenge.NETHER_NAME)) {
+            if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
+                compassMeta.setLodestone(NETHER_LOCATION);
+                compassMeta.setLodestoneTracked(false);
+                compass.setItemMeta(compassMeta);
+            }
+            player.setCompassTarget(NETHER_LOCATION);
+        } else if (playerWorldName.equals(TowerChallenge.THE_END_NAME)) {
+            if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
+                compassMeta.setLodestone(THE_END_LOCATION);
+                compassMeta.setLodestoneTracked(false);
+                compass.setItemMeta(compassMeta);
+            }
+            player.setCompassTarget(THE_END_LOCATION);
+        } else {
+            if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
+                compassMeta.setLodestone(null);
+                compassMeta.setLodestoneTracked(false);
+                compass.setItemMeta(compassMeta);
+            }
+            player.setCompassTarget(OVERWORLD_LOCATION);
+        }
+        return compass;
+    }
+
+    public static ItemStack refreshPlayerDestination(Player player, ItemStack compass, EquipmentSlot slot) {
+        ItemStack newCompass = refreshPlayerDestination(player, compass);
+        player.getInventory().setItem(slot, newCompass);
+        return newCompass;
+    }
+
+    public static void refreshAllPlayer(Player player) {
+        HashMap<Integer, ? extends ItemStack> compasses = player.getInventory().all(Material.COMPASS);
+
+        for (Map.Entry<Integer, ? extends ItemStack> entry : compasses.entrySet()) {
+            player.getInventory().setItem(entry.getKey(), refreshPlayerDestination(player, entry.getValue()));
+        }
+
+    }
+
+    public static ItemStack getCompass() {
+        ItemStack item = new ItemStack(Material.COMPASS);
+        CompassMeta meta = (CompassMeta) item.getItemMeta();
+        meta.displayName(Component.text("home home"));
+        meta.lore(new ArrayList<>(){{
+            add(Component.keybind("key.use")
+                    .append(Component.text(" to point home :)"))
+                    .color(TowerChallenge.PRIMARY_COLOR).decoration(TextDecoration.ITALIC, false)
+            );
+        }});
+        meta.addEnchant(Enchantment.MENDING, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static ItemStack getCompass(Player player) {
+        return refreshPlayerDestination(player, getCompass());
+    }
+
+    public SpawnCompass() {
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (event.getAction() == Action.PHYSICAL
+                || event.getAction() == Action.LEFT_CLICK_AIR
+                || event.getAction() == Action.LEFT_CLICK_BLOCK
+                || item == null)
+            return;
+        if (item.getType().equals(Material.COMPASS)) {
+            refreshAllPlayer(player);
+        }
+    }
+
+    @EventHandler
+    public void onDimensionChange(PlayerPortalEvent event) {
+        refreshAllPlayer(event.getPlayer());
     }
 
 }

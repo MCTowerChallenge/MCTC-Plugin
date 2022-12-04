@@ -1,8 +1,7 @@
 package io.github.idkahn.towerchallenge.halloween.steve;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -21,15 +20,15 @@ import java.util.Map;
 
 public class SteveManager {
 
-    private final EventManager eventManager;
+    private final ChallengeManager challengeManager;
     private YamlConfiguration config;
     private Dialogue firstDialogue;
 
-    public SteveManager(EventManager eventManager) {
-        this.eventManager = eventManager;
+    public SteveManager(ChallengeManager challengeManager) {
+        this.challengeManager = challengeManager;
 //        new SteveListener(this);
         SteveCommands steveCommands = new SteveCommands(this);
-        eventManager.getPlugin().getCommand("steve").setExecutor(steveCommands);
+        challengeManager.getPlugin().getCommand("steve").setExecutor(steveCommands);
         loadSteve();
     }
 
@@ -114,7 +113,7 @@ public class SteveManager {
         loadSteve();
     }
 
-    public EventManager getEventManager() {
-        return eventManager;
+    public ChallengeManager getEventManager() {
+        return challengeManager;
     }
 }

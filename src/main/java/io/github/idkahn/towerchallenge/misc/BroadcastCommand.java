@@ -1,7 +1,7 @@
 package io.github.idkahn.towerchallenge.misc;
 
 import io.github.idkahn.towerchallenge.DefaultFontInfo;
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BroadcastCommand implements CommandExecutor {
 
-    private final EventManager manager;
+    private final ChallengeManager manager;
 
-    public BroadcastCommand(EventManager manager) {
+    public BroadcastCommand(ChallengeManager manager) {
         this.manager = manager;
     }
 

@@ -1,5 +1,6 @@
 package io.github.idkahn.towerchallenge.hats;
 
+import io.github.idkahn.towerchallenge.gods.GodTeam;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.towering.*;
 import net.kyori.adventure.text.Component;

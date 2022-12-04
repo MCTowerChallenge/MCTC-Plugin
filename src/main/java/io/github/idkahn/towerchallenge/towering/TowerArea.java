@@ -4,7 +4,7 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
@@ -34,11 +34,11 @@ public class TowerArea implements Listener {
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
 
     private final ProtectedRegion region;
-    private final EventManager manager;
+    private final ChallengeManager manager;
     private final ParticipantTeam team;
     private final Score score;
 
-    public TowerArea(ParticipantTeam team, EventManager manager, ProtectedRegion region, String name) {
+    public TowerArea(ParticipantTeam team, ChallengeManager manager, ProtectedRegion region, String name) {
         this.team = team;
         this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
@@ -54,7 +54,7 @@ public class TowerArea implements Listener {
         for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
             for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
                 for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
-                    Block block = TowerChallenge.WORLD.getBlockAt(x, y, z);
+                    Block block = TowerChallenge.WORLD().getBlockAt(x, y, z);
                     if (!block.getType().isAir()) {
                         addBlock(null, block.getState());
                     }
@@ -118,7 +118,7 @@ public class TowerArea implements Listener {
         } else {
             // block is already in tower
             if (audience != null) {
-                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
             }
             return true;
         }
@@ -170,7 +170,7 @@ public class TowerArea implements Listener {
                     boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
                     event.setCancelled(cancelEvent);
                 } else {
-                    event.getPlayer().sendActionBar(Component.text(EventManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
+                    event.getPlayer().sendActionBar(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
                             .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
                     event.setCancelled(true);
                 }

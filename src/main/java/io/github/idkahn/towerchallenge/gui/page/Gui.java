@@ -24,14 +24,16 @@ public abstract class Gui implements Listener {
     private Inventory inventory;
     private HashMap<UUID, Element> elements;
 
-    public Gui(Component name, int customTextureWidth, Character customTexture) {
+    public Gui(Component name, int textureAdjust, Character customTexture, int titleAdjust) {
         TextComponent.Builder titleBuilder = Component.text();
+        if (textureAdjust != 0) {
+            titleBuilder.append(Component.translatable(String.format("space.%d", textureAdjust)));
+        }
         if (customTexture != null) {
-            titleBuilder.append(Component.translatable("space.-8"));
             titleBuilder.append(Component.text(customTexture).color(NamedTextColor.WHITE));
         }
-        if (customTextureWidth != 0) {
-            titleBuilder.append(Component.translatable(String.format("space.%d", -customTextureWidth)));
+        if (titleAdjust != 0) {
+            titleBuilder.append(Component.translatable(String.format("space.%d", titleAdjust)));
         }
         titleBuilder.append(name);
         inventoryTitle = titleBuilder.build();

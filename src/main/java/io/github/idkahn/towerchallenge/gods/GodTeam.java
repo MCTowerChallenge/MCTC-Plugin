@@ -1,7 +1,8 @@
-package io.github.idkahn.towerchallenge.towering;
+package io.github.idkahn.towerchallenge.gods;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.OfflinePlayer;
@@ -19,7 +20,7 @@ public class GodTeam extends TowerTeam {
     public static String GOD_COLOR = "#F7E983";
     public static String GOD_DYE = "yellow";
 
-    public GodTeam(EventManager manager) {
+    public GodTeam(ChallengeManager manager) {
         super(manager, GOD_NAME, GOD_COLOR, GOD_DYE);
         hatColorGUIS.put(getColor(), getHatGUI());
     }

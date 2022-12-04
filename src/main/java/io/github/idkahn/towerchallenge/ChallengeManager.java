@@ -1,8 +1,15 @@
 package io.github.idkahn.towerchallenge;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import io.github.idkahn.towerchallenge.gods.GodManager;
 import io.github.idkahn.towerchallenge.halloween.candy.Candy;
+import io.github.idkahn.towerchallenge.misc.fasttravel.FastTravelListener;
+import io.github.idkahn.towerchallenge.misc.waterspouts.SpoutManager;
 import io.github.idkahn.towerchallenge.quests.QuestManager;
 import io.github.idkahn.towerchallenge.halloween.steve.SteveManager;
+import io.github.idkahn.towerchallenge.spawncompass.SpawnCompass;
+import io.github.idkahn.towerchallenge.teleports.TeleportHistoryManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.github.idkahn.towerchallenge.towering.WinnerGUI;
@@ -22,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventManager {
+public class ChallengeManager {
 
     /**
      * The phases of the event
@@ -34,6 +41,10 @@ public class EventManager {
         SECONDHALF,
         TOWERING,
         PAUSED
+    }
+
+    public static RegionContainer regionContainer() {
+        return WorldGuard.getInstance().getPlatform().getRegionContainer();
     }
 
     // Constants
@@ -63,11 +74,12 @@ public class EventManager {
     private final TowerListener towerListener;
     private final EndPortal endPortal;
     private final WinnerGUI winnerGUI;
+    private final TeleportHistoryManager teleportHistoryManager;
 
     private final HashMap<String, ParticipantTeam> teams;
 
     // Constructor
-    public EventManager(TowerChallenge plugin) {
+    public ChallengeManager(TowerChallenge plugin) {
         this.plugin = plugin;
         this.teams = new HashMap<>();
         eventPhase = Phase.SETUP;
@@ -83,6 +95,11 @@ public class EventManager {
         winnerGUI = new WinnerGUI(this);
         new Candy(this);
         new SteveManager(this);
+        GodManager godManager = new GodManager(this);
+        teleportHistoryManager = new TeleportHistoryManager(godManager);
+        new SpawnCompass();
+        new SpoutManager();
+        new FastTravelListener();
     }
 
     // Accessors and Mutators
@@ -130,6 +147,10 @@ public class EventManager {
 
     public TowerChallenge getPlugin() {
         return plugin;
+    }
+
+    public TeleportHistoryManager getTeleportHistoryManager() {
+        return teleportHistoryManager;
     }
 
     public WinnerGUI getWinnerGUI() {
@@ -220,7 +241,7 @@ public class EventManager {
      * @return State of the towering phase
      */
     public boolean isTowering() {
-        return this.getEventPhase().equals(EventManager.Phase.TOWERING);
+        return this.getEventPhase().equals(ChallengeManager.Phase.TOWERING);
     }
 
     public boolean isFullBlock(Material material) {

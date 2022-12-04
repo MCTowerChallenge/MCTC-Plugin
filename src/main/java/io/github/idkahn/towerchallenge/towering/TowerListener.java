@@ -1,8 +1,9 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import io.github.idkahn.towerchallenge.BlockSets;
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.gods.GodTeam;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.hats.HatUtil;
 import net.kyori.adventure.text.Component;
@@ -20,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.PortalCreateEvent;
@@ -41,12 +41,12 @@ public class TowerListener implements Listener {
     private HashMap<String, ParticipantTeam> teams;
     BlockSets blockSets;
 
-    private final EventManager manager;
+    private final ChallengeManager manager;
     private final JavaPlugin plugin;
 
     public static HatGUI defaultHats;
 
-    public TowerListener(EventManager manager) {
+    public TowerListener(ChallengeManager manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
         this.blockSets = new BlockSets();

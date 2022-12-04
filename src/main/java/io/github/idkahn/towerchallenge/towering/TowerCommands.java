@@ -1,12 +1,9 @@
 package io.github.idkahn.towerchallenge.towering;
 
-import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.gui.element.Element;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.gui.page.PlayerGui;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
-import io.github.idkahn.towerchallenge.gui.GuiHeldItem;
-import io.github.idkahn.towerchallenge.gui.page.ListGui;
 import io.github.idkahn.towerchallenge.quests.BlockVoucher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -19,7 +16,6 @@ import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,16 +24,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class TowerCommands implements CommandExecutor {
 
     public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
     private final TowerListener towerListener;
-    private final EventManager manager;
+    private final ChallengeManager manager;
 
-    public TowerCommands(EventManager manager) {
+    public TowerCommands(ChallengeManager manager) {
         this.manager = manager;
         this.towerListener = manager.getTowerListener();
     }
@@ -58,7 +53,7 @@ public class TowerCommands implements CommandExecutor {
                                 } else {
                                     try {
                                         manager.addFullBlock(item.getType());
-                                        player.sendMessage(Component.text(EventManager.formatBlockType(item.getType())).append(Component.text("added as a full block.")));
+                                        player.sendMessage(Component.text(ChallengeManager.formatBlockType(item.getType())).append(Component.text("added as a full block.")));
                                     } catch (IllegalArgumentException e) {
                                         player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
                                         player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -73,7 +68,7 @@ public class TowerCommands implements CommandExecutor {
                             try {
                                 Material type = Material.valueOf(args[1].toUpperCase());
                                 manager.addFullBlock(type);
-                                sender.sendMessage(Component.text(EventManager.formatBlockType(type)).append(Component.text("added as a full block.")));
+                                sender.sendMessage(Component.text(ChallengeManager.formatBlockType(type)).append(Component.text("added as a full block.")));
                             } catch (IllegalArgumentException e) {
                                 sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
                                 sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -91,7 +86,7 @@ public class TowerCommands implements CommandExecutor {
                                 } else {
                                     try {
                                         manager.removeFullBlock(item.getType());
-                                        player.sendMessage(Component.text(EventManager.formatBlockType(item.getType())).append(Component.text("is no longer a full block.")));
+                                        player.sendMessage(Component.text(ChallengeManager.formatBlockType(item.getType())).append(Component.text("is no longer a full block.")));
                                     } catch (IllegalArgumentException e) {
                                         player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
                                         player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -106,7 +101,7 @@ public class TowerCommands implements CommandExecutor {
                             try {
                                 Material type = Material.valueOf(args[1].toUpperCase());
                                 manager.removeFullBlock(type);
-                                sender.sendMessage(Component.text(EventManager.formatBlockType(type)).append(Component.text("is no longer a full block.")));
+                                sender.sendMessage(Component.text(ChallengeManager.formatBlockType(type)).append(Component.text("is no longer a full block.")));
                             } catch (IllegalArgumentException e) {
                                 sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
                                 sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -249,11 +244,11 @@ public class TowerCommands implements CommandExecutor {
                         }
                         break;
                     case ("toggletower"):
-                        if (manager.getEventPhase().equals(EventManager.Phase.TOWERING)) {
-                            manager.setEventPhase(EventManager.Phase.SETUP);
+                        if (manager.getEventPhase().equals(ChallengeManager.Phase.TOWERING)) {
+                            manager.setEventPhase(ChallengeManager.Phase.SETUP);
                             sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));
-                        } else if (manager.getEventPhase().equals(EventManager.Phase.SETUP)) {
-                            manager.setEventPhase(EventManager.Phase.TOWERING);
+                        } else if (manager.getEventPhase().equals(ChallengeManager.Phase.SETUP)) {
+                            manager.setEventPhase(ChallengeManager.Phase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
                         break;
@@ -269,7 +264,7 @@ public class TowerCommands implements CommandExecutor {
                         backMeta.setCustomModelData(1);
                         back.setItemMeta(backMeta);
                         ButtonElement backElement = new ButtonElement(back, HumanEntity::closeInventory);
-                        PlayerGui gui = new PlayerGui(manager, Component.text("teehee"), skull, player -> new ArrayList<>(){{
+                        PlayerGui gui = new PlayerGui(Component.text("teehee"), skull, player -> new ArrayList<>(){{
                            add(Component.text(player.getStatistic(Statistic.JUMP)).decoration(TextDecoration.ITALIC, false));
                         }}, Bukkit.getOnlinePlayers().stream().map(player -> (OfflinePlayer) player).collect(Collectors.toList()), (usePlayer, targetPlayer) -> {
                             if (targetPlayer.isOnline()) {

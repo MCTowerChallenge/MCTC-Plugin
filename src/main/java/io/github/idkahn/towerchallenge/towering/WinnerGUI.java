@@ -1,6 +1,6 @@
 package io.github.idkahn.towerchallenge.towering;
 
-import io.github.idkahn.towerchallenge.EventManager;
+import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.hats.HatGUI;
 import io.github.idkahn.towerchallenge.quests.QuestUtil;
 import net.kyori.adventure.key.Key;
@@ -27,19 +27,19 @@ import java.util.UUID;
 
 public class WinnerGUI implements Listener {
 
-    private EventManager eventManager;
+    private ChallengeManager challengeManager;
     private Inventory winnerUI;
 
-    public WinnerGUI(EventManager eventManager) {
+    public WinnerGUI(ChallengeManager challengeManager) {
 
-        this.eventManager = eventManager;
-        eventManager.getPlugin().getServer().getPluginManager().registerEvents(this, eventManager.getPlugin());
+        this.challengeManager = challengeManager;
+        challengeManager.getPlugin().getServer().getPluginManager().registerEvents(this, challengeManager.getPlugin());
         initWinnerUI();
 
     }
 
     public void initWinnerUI() {
-        HashMap<String, ParticipantTeam> teams = eventManager.getTowerListener().getTeams();
+        HashMap<String, ParticipantTeam> teams = challengeManager.getTowerListener().getTeams();
         winnerUI = Bukkit.createInventory(null, HatGUI.getInventorySize(teams.size()+2), Component.text("Pick the Winning Team! "));
 
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
@@ -78,10 +78,10 @@ public class WinnerGUI implements Listener {
             ItemStack item = event.getCurrentItem();
             if (QuestUtil.isButton(item)) {
                 if (event.getSlot() == winnerUI.getSize()-1) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(eventManager.getPlugin(), player::closeInventory, 1);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(challengeManager.getPlugin(), player::closeInventory, 1);
                 } else {
                     String teamName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item.getItemMeta().displayName()));
-                    ParticipantTeam team = eventManager.getTowerListener().getTeam(teamName);
+                    ParticipantTeam team = challengeManager.getTowerListener().getTeam(teamName);
                     player.sendMessage(team.getDisplayName().append(Component.text(" set to the Winners!")));
                     for (String uuid : team.getHatGUI().getWinners()) {
                         player.sendMessage("Checking " + uuid);
@@ -98,7 +98,7 @@ public class WinnerGUI implements Listener {
                     Title title = Title.title(team.getDisplayName().color(team.getTextColor()).append(Component.text(" is the winner!").color(NamedTextColor.WHITE)), Component.empty());
                     Bukkit.getServer().showTitle(title);
                     Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "ui.toast.challenge_complete"), Sound.Source.MASTER, 100, 1));
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(eventManager.getPlugin(), player::closeInventory, 1);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(challengeManager.getPlugin(), player::closeInventory, 1);
                 }
             }
 

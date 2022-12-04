@@ -1,4 +1,4 @@
-package io.github.idkahn.towerchallenge.resourcepack;
+package io.github.idkahn.towerchallenge.misc.resourcepack;
 
 import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;

@@ -1,7 +1,6 @@
 package io.github.idkahn.towerchallenge.gui.page;
 
-import io.github.idkahn.towerchallenge.EventManager;
-import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
+import io.github.idkahn.towerchallenge.TowerChallenge;
 import io.github.idkahn.towerchallenge.gui.element.Element;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -20,16 +19,16 @@ public class ListGui extends Gui {
     private final Element lastElement;
     private List<Element> elementList;
 
-    public ListGui(EventManager manager, Component name, List<Element> elementList, Element lastElement) {
+    public ListGui(Component name, List<Element> elementList, Element lastElement) {
         super(name);
         this.elementList = elementList;
         this.lastElement = lastElement;
         loadInventory();
-        Bukkit.getPluginManager().registerEvents(this, manager.getPlugin());
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
     }
 
-    public ListGui(EventManager manager, Component name, Element lastElement) {
-        this(manager, name, new ArrayList<>(), lastElement);
+    public ListGui(Component name, Element lastElement) {
+        this(name, new ArrayList<>(), lastElement);
     }
 
     public void setElementList(List<Element> elementList) {
@@ -43,11 +42,8 @@ public class ListGui extends Gui {
 
     public void addElement(Element element) {
         this.elementList.add(element);
-        List<HumanEntity> viewers = getInventory().getViewers();
+
         loadInventory();
-        for (HumanEntity viewer : viewers) {
-            openInventory(viewer);
-        }
     }
 
     @Override
@@ -68,8 +64,18 @@ public class ListGui extends Gui {
             putElement(lastElement.getUUID(), lastElement);
             inventory.setItem(inventory.getSize()-1, lastElement.getItem());
         }
+
+        List<HumanEntity> viewers = new ArrayList<>();
+
+        if (getInventory() != null) {
+            viewers.addAll(getInventory().getViewers());
+        }
+
         setInventory(inventory);
 
+        for (HumanEntity viewer : viewers) {
+            openInventory(viewer);
+        }
     }
 
 }
