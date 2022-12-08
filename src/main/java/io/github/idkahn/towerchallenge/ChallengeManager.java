@@ -12,6 +12,7 @@ import io.github.idkahn.towerchallenge.spawncompass.SpawnCompass;
 import io.github.idkahn.towerchallenge.teleports.TeleportHistoryManager;
 import io.github.idkahn.towerchallenge.towering.TowerListener;
 import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
+import io.github.idkahn.towerchallenge.towering.TowerTeam;
 import io.github.idkahn.towerchallenge.towering.WinnerGUI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -21,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -34,7 +36,7 @@ public class ChallengeManager {
     /**
      * The phases of the event
      */
-    public enum Phase {
+    public enum ChallengePhase {
         SETUP,
         FIRSTHALF,
         INTERMISSION,
@@ -61,13 +63,13 @@ public class ChallengeManager {
         return output.toString();
     }
 
-    public static void Log(String text) {
+    public static void log(String text) {
         Bukkit.getLogger().info(text);
     }
 
     // Instance Variables
     private final TowerChallenge plugin;
-    private Phase eventPhase;
+    private ChallengePhase challengePhase;
     private final BlockSets blockSets;
     private final QuestManager questManager;
     private Objective towerHeight;
@@ -82,7 +84,7 @@ public class ChallengeManager {
     public ChallengeManager(TowerChallenge plugin) {
         this.plugin = plugin;
         this.teams = new HashMap<>();
-        eventPhase = Phase.SETUP;
+        challengePhase = ChallengePhase.SETUP;
         blockSets = new BlockSets();
         towerHeight = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(OBJECTIVE_NAME);
         if (towerHeight == null) {
@@ -95,19 +97,22 @@ public class ChallengeManager {
         winnerGUI = new WinnerGUI(this);
         new Candy(this);
         new SteveManager(this);
-        GodManager godManager = new GodManager(this);
+        GodManager godManager = new GodManager(this, towerListener);
         teleportHistoryManager = new TeleportHistoryManager(godManager);
         new SpawnCompass();
         new SpoutManager();
         new FastTravelListener();
+//        new BottleManager();
     }
 
     // Accessors and Mutators
-    public Phase getEventPhase() {
-        return eventPhase;
+    public ChallengePhase getChallengePhase() {
+        return challengePhase;
     }
-    public void setEventPhase(Phase eventPhase) {
-        this.eventPhase = eventPhase;
+    public void setChallengePhase(ChallengePhase challengePhase) {
+        ChallengePhaseChangeEvent event = new ChallengePhaseChangeEvent(challengePhase);
+        Bukkit.getPluginManager().callEvent(event);
+        this.challengePhase = event.getChallengePhase();
     }
 
     public void addFullBlock(Material material) {
@@ -231,6 +236,10 @@ public class ChallengeManager {
         return towerListener;
     }
 
+    public TowerTeam getPlayerTeam(OfflinePlayer player) {
+        return towerListener.getPlayerTeam(player);
+    }
+
     public QuestManager getQuestManager() {
         return questManager;
     }
@@ -241,7 +250,7 @@ public class ChallengeManager {
      * @return State of the towering phase
      */
     public boolean isTowering() {
-        return this.getEventPhase().equals(ChallengeManager.Phase.TOWERING);
+        return this.getChallengePhase().equals(ChallengePhase.TOWERING);
     }
 
     public boolean isFullBlock(Material material) {

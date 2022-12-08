@@ -20,12 +20,16 @@ public class NBTUtils {
         return nbtItem.getItem();
     }
 
-    public static ItemStack setUniqueID(ItemStack itemStack, UUID uuid) {
+    public static ItemStack setUniqueID(String tag, ItemStack itemStack, UUID uuid) {
         if (itemStack == null || itemStack.getType().isAir())
             return itemStack;
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setUUID(UNIQUE_ID, uuid);
+        nbtItem.setUUID(tag, uuid);
         return nbtItem.getItem();
+    }
+
+    public static ItemStack setUniqueID(ItemStack itemStack, UUID uuid) {
+        return setUniqueID(UNIQUE_ID, itemStack, uuid);
     }
 
     public static boolean hasUniqueID(ItemStack itemStack) {
@@ -36,12 +40,16 @@ public class NBTUtils {
         return nbtItem.hasKey(UNIQUE_ID);
     }
 
-    public static UUID getUniqueID(ItemStack itemStack) {
+    public static UUID getUniqueID(String tag, ItemStack itemStack) {
         if (itemStack == null || itemStack.getType().isAir()) {
             return null;
         }
         NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getUUID(UNIQUE_ID);
+        return nbtItem.getUUID(tag);
+    }
+
+    public static UUID getUniqueID(ItemStack itemStack) {
+        return getUniqueID(UNIQUE_ID, itemStack);
     }
 
     /**

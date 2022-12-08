@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -96,38 +97,41 @@ public class TowerListener implements Listener {
             godTeam.addPlayer(player);
         }
         // Get team configs
-        List<String> teamNames = config.getStringList("TeamNames");
+//        List<String> teamNames = config.getStringList("TeamNames");
         HashMap<String, ParticipantTeam> newTeams = new HashMap<>();
-        for (String name : teamNames) {
-            // retrieve all config values
-            String teamPath = "Teams."+name;
-            Bukkit.getLogger().info("Checking Team: " + name);
-            boolean disabled = config.getBoolean(teamPath+".disabled");
-            if (disabled) {
-                Bukkit.getLogger().info(String.format("Team %s is disabled, skipping.", name));
-                continue;
-            }
-            String color = config.getString(teamPath+".color");
-            String configDye = config.getString(teamPath+".dye");
-            String dye = (configDye != null) ? configDye : "white";
-            List<String> players = config.getStringList(teamPath+".players");
+        if (config.isConfigurationSection("Teams")) {
+            for (String name : config.getConfigurationSection("Teams").getKeys(false)) {
+                ConfigurationSection teamConfig = config.getConfigurationSection("Teams."+name);
+                // retrieve all config values
+//                String teamPath = "Teams."+name;
+                Bukkit.getLogger().info("Checking Team: " + name);
+                boolean disabled = teamConfig.getBoolean("disabled");
+                if (disabled) {
+                    Bukkit.getLogger().info(String.format("Team %s is disabled, skipping.", name));
+                    continue;
+                }
+                String color = teamConfig.getString("color");
+                String dye = teamConfig.isString("dye") ? teamConfig.getString("dye") : "white";
+                List<String> players = teamConfig.getStringList("players");
+                // Create new Team
+                if (teams.get(name) != null) {
+                    this.teams.get(name).loadPortal();
+                    newTeams.put(name, this.teams.get(name));
+                } else {
+                    newTeams.put(name, new ParticipantTeam(manager, name, color, dye));
+                }
 
-            // Create new Team
-            if (teams.get(name) != null) {
-                this.teams.get(name).loadPortal();
-                newTeams.put(name, this.teams.get(name));
-            } else {
-                newTeams.put(name, new ParticipantTeam(manager, name, color, dye));
-            }
-
-            if (!players.isEmpty()) {
-                for (String uuid : players) {
-                    // add each player to team, if able
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-                    plugin.getLogger().info(String.format("Adding %s to team %s...", player.getName(), name));
-                    newTeams.get(name).addPlayer(player);
+                if (!players.isEmpty()) {
+                    for (String uuid : players) {
+                        // add each player to team, if able
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+                        plugin.getLogger().info(String.format("Adding %s to team %s...", player.getName(), name));
+                        newTeams.get(name).addPlayer(player);
+                    }
                 }
             }
+        } else {
+            Bukkit.getLogger().warning("Team config is not valid!");
         }
 
         this.teams = newTeams;

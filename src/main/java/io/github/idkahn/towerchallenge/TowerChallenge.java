@@ -40,6 +40,7 @@ public final class TowerChallenge extends JavaPlugin {
     public static File hatConfigFile;
     public static File steveConfigFile;
     public static File teamScoreConfigFile;
+    public static File teamDataConfigFile;
 
     public static TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
     public static TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
@@ -107,6 +108,9 @@ public final class TowerChallenge extends JavaPlugin {
         teamScoreConfigFile = new File(getDataFolder(), "teamscores.yml");
         YamlConfiguration teamScoreConfig = YamlConfiguration.loadConfiguration(teamScoreConfigFile);
 
+        teamDataConfigFile = new File(getDataFolder(), "teamdata.yml");
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(teamDataConfigFile);
+
         try {
             teamConfig.save(teamConfigFile);
             regionConfig.save(regionConfigFile);
@@ -118,6 +122,7 @@ public final class TowerChallenge extends JavaPlugin {
             hatConfig.save(hatConfigFile);
             steveConfig.save(steveConfigFile);
             teamScoreConfig.save(teamScoreConfigFile);
+            teamDataConfig.save(teamDataConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

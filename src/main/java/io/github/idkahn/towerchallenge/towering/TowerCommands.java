@@ -5,6 +5,8 @@ import io.github.idkahn.towerchallenge.gui.page.PlayerGui;
 import io.github.idkahn.towerchallenge.misc.CommandUtils;
 import io.github.idkahn.towerchallenge.gui.element.ButtonElement;
 import io.github.idkahn.towerchallenge.quests.BlockVoucher;
+import io.github.idkahn.towerchallenge.quests.ItemEntityHandler;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,9 +34,13 @@ public class TowerCommands implements CommandExecutor {
     private final TowerListener towerListener;
     private final ChallengeManager manager;
 
+    private static ItemEntityHandler handler;
+
     public TowerCommands(ChallengeManager manager) {
         this.manager = manager;
         this.towerListener = manager.getTowerListener();
+        this.handler = new ItemEntityHandler(manager, "test", new ItemStack(Material.WHITE_WOOL));
+        handler.setSoundKey(Key.key(Key.MINECRAFT_NAMESPACE, "item.armor.equip_netherite"));
     }
 
     @Override
@@ -244,39 +250,17 @@ public class TowerCommands implements CommandExecutor {
                         }
                         break;
                     case ("toggletower"):
-                        if (manager.getEventPhase().equals(ChallengeManager.Phase.TOWERING)) {
-                            manager.setEventPhase(ChallengeManager.Phase.SETUP);
+                        if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.TOWERING)) {
+                            manager.setChallengePhase(ChallengeManager.ChallengePhase.SETUP);
                             sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));
-                        } else if (manager.getEventPhase().equals(ChallengeManager.Phase.SETUP)) {
-                            manager.setEventPhase(ChallengeManager.Phase.TOWERING);
+                        } else if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.SETUP)) {
+                            manager.setChallengePhase(ChallengeManager.ChallengePhase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
                         break;
-                    case ("gui"):
-                        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-                        SkullMeta meta = (SkullMeta) skull.getItemMeta();
-                        meta.lore(new ArrayList<>(){{
-                            add(Component.text("Ayo the pizza here"));
-                        }});
-                        skull.setItemMeta(meta);
-                        ItemStack back = new ItemStack(Material.REDSTONE_BLOCK);
-                        ItemMeta backMeta = back.getItemMeta();
-                        backMeta.setCustomModelData(1);
-                        back.setItemMeta(backMeta);
-                        ButtonElement backElement = new ButtonElement(back, HumanEntity::closeInventory);
-                        PlayerGui gui = new PlayerGui(Component.text("teehee"), skull, player -> new ArrayList<>(){{
-                           add(Component.text(player.getStatistic(Statistic.JUMP)).decoration(TextDecoration.ITALIC, false));
-                        }}, Bukkit.getOnlinePlayers().stream().map(player -> (OfflinePlayer) player).collect(Collectors.toList()), (usePlayer, targetPlayer) -> {
-                            if (targetPlayer.isOnline()) {
-                                Player targetOnline = targetPlayer.getPlayer();
-                                if (targetOnline == null) {
-                                    return;
-                                }
-                                targetOnline.getInventory().addItem(new ItemStack(Material.BOOK));
-                            }
-                        }, backElement);
+                    case ("as"):
                         if (sender instanceof Player player) {
-                            gui.openInventory(player);
+                            handler.summonArmorStand(player);
                         }
                         break;
                     default:

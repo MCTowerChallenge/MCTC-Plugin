@@ -1,25 +1,23 @@
-package io.github.idkahn.towerchallenge.towering;
+package io.github.idkahn.towerchallenge.towering.regions;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.idkahn.towerchallenge.ChallengeManager;
+import io.github.idkahn.towerchallenge.ChallengePhaseChangeEvent;
 import io.github.idkahn.towerchallenge.TowerChallenge;
+import io.github.idkahn.towerchallenge.towering.ParticipantTeam;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -29,28 +27,22 @@ import org.bukkit.scoreboard.Score;
 
 import java.util.EnumMap;
 
-public class TowerArea implements Listener {
+public class TowerRegion extends EventRegion implements Listener {
 
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
-
-    private final ProtectedRegion region;
-    private final ChallengeManager manager;
-    private final ParticipantTeam team;
     private final Score score;
 
-    public TowerArea(ParticipantTeam team, ChallengeManager manager, ProtectedRegion region, String name) {
-        this.team = team;
-        this.manager = manager;
+    public TowerRegion(ParticipantTeam team, ChallengeManager manager, ProtectedRegion region, String name) {
+        super(team, manager, region);
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
-        this.region = region;
         score = manager.getObjective().getScore(name);
         score.setScore(blocks.size());
         scanBlocks();
     }
 
     public void scanBlocks() {
-        BlockVector3 minPoint = region.getMinimumPoint();
-        BlockVector3 maxPoint = region.getMaximumPoint();
+        BlockVector3 minPoint = getRegion().getMinimumPoint();
+        BlockVector3 maxPoint = getRegion().getMaximumPoint();
         for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
             for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
                 for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
@@ -64,27 +56,15 @@ public class TowerArea implements Listener {
 
     }
 
-    public void addPlayer(OfflinePlayer player) {
-        region.getMembers().addPlayer(player.getUniqueId());
-    }
-
-    public void removePlayer(Player player) {
-        region.getMembers().removePlayer(player.getUniqueId());
-    }
-
-    public void clearPlayers() {
-        region.getMembers().clear();
-    }
-
     public void sendBlockCount(Audience audience) {
         if (blocks.size() == 1) {
             audience.sendMessage(
-                    team.getDisplayName().color(team.getTextColor()).append(Component.text(" Tower"))
+                    getTeam().getDisplayName().color(getTeam().getTextColor()).append(Component.text(" Tower"))
                             .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
             );
         } else {
             audience.sendMessage(
-                    team.getDisplayName().color(team.getTextColor()).append(Component.text(" Tower"))
+                    getTeam().getDisplayName().color(getTeam().getTextColor()).append(Component.text(" Tower"))
                             .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
             );
         }
@@ -145,18 +125,20 @@ public class TowerArea implements Listener {
      * @param block block to check
      * @return true, if the block is in the region
      */
-    private boolean checkInRegion(BlockState block) {
-        return region.contains(BukkitAdapter.adapt(block.getLocation()).toVector().toBlockPoint());
-    }
-    private boolean checkInRegion(Location location) {
-        return region.contains(BukkitAdapter.adapt(location).toVector().toBlockPoint());
-    }
-    private boolean checkInRegion(Entity entity) {
-        return region.contains(BukkitAdapter.adapt(entity.getLocation()).toVector().toBlockPoint());
-    }
+
 
     private boolean checkFullBlock(BlockState block) {
-        return manager.isFullBlock(block.getType());
+        return getManager().isFullBlock(block.getType());
+    }
+
+    @EventHandler
+    public void onChallengePhaseChange(ChallengePhaseChangeEvent event) {
+        ChallengeManager.ChallengePhase phase = event.getChallengePhase();
+        if (phase == ChallengeManager.ChallengePhase.TOWERING) {
+            addPlayers(getTeam().getPlayers());
+        } else {
+            clearPlayers();
+        }
     }
 
     @EventHandler
@@ -165,7 +147,7 @@ public class TowerArea implements Listener {
             return;
         BlockState block = event.getBlockPlaced().getState();
         if (checkInRegion(block)) {
-            if (manager.isTowering()) {
+            if (getManager().isTowering()) {
                 if (checkFullBlock(block)) {
                     boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
                     event.setCancelled(cancelEvent);
@@ -174,10 +156,11 @@ public class TowerArea implements Listener {
                             .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
                     event.setCancelled(true);
                 }
-            } else {
-                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
-                event.setCancelled(true);
             }
+//            else {
+//                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
+//                event.setCancelled(true);
+//            }
         }
     }
 
@@ -187,12 +170,13 @@ public class TowerArea implements Listener {
             return;
         BlockState block = event.getBlock().getState();
         if (checkInRegion(block)) {
-            if (manager.isTowering()) {
+            if (getManager().isTowering()) {
                 removeBlock(event.getBlock().getState());
-            } else {
-                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
-                event.setCancelled(true);
             }
+//            else {
+//                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
+//                event.setCancelled(true);
+//            }
         }
     }
 
@@ -227,7 +211,7 @@ public class TowerArea implements Listener {
     public void onEntityExplode(final EntityExplodeEvent event) {
         if (event.isCancelled())
             return;
-        if (region.contains(BukkitAdapter.adapt(event.getLocation()).toVector().toBlockPoint())) {
+        if (checkInRegion(event.getEntity())) {
             event.setCancelled(true);
         }
     }

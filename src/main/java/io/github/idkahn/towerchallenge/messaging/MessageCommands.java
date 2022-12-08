@@ -143,7 +143,7 @@ public class MessageCommands implements CommandExecutor {
         return team != null && !(team instanceof GodTeam);
     }
 
-    private Component formatPlayers(Set<Player> players) {
+    private Component formatPlayers(Collection<Player> players) {
 
         ComponentBuilder<TextComponent, TextComponent.Builder> output = Component.text();
 
@@ -183,7 +183,7 @@ public class MessageCommands implements CommandExecutor {
         return formatPlayers(new HashSet<>(){{add(player);}});
     }
 
-    private Component formatFromToMessage(Player sender, Set<Player> recipients, String[] body) {
+    private Component formatFromToMessage(Player sender, Collection<Player> recipients, String[] body) {
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
         message.append(formatPlayer(sender))

@@ -149,11 +149,7 @@ public class Quest implements Listener {
 
         for (Map.Entry<String, ParticipantTeam> entry : teams.entrySet()) {
             ParticipantTeam team = entry.getValue();
-            ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(team.getDye()+"_CONCRETE")));
-            ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.displayName(team.getDisplayName().decoration(TextDecoration.ITALIC, false));
-            itemMeta.setCustomModelData(1);
-            item.setItemMeta(itemMeta);
+            ItemStack item = QuestUtil.setButton(team.getItem());
             ButtonElement teamElement = new ButtonElement(item, player -> {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.questConfigFile);
                 try {

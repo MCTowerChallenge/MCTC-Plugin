@@ -102,7 +102,16 @@ public abstract class TowerTeam {
         return Audience.audience(getOnlinePlayers());
     }
 
-    public Set<Player> getOnlinePlayers() {
+    public Collection<OfflinePlayer> getPlayers() {
+        Set<OfflinePlayer> players = new HashSet<>();
+        for (String name : team.getEntries()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(name);
+            players.add(player);
+        }
+        return players;
+    }
+
+    public Collection<Player> getOnlinePlayers() {
         Set<Player> players = new HashSet<>();
         for (String name : team.getEntries()) {
             Player player = Bukkit.getPlayer(name);

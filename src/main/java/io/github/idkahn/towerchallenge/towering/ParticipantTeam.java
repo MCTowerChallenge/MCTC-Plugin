@@ -1,9 +1,12 @@
 package io.github.idkahn.towerchallenge.towering;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import io.github.idkahn.towerchallenge.ChallengeManager;
 import io.github.idkahn.towerchallenge.TowerChallenge;
-import io.github.idkahn.towerchallenge.quests.QuestUtil;
+import io.github.idkahn.towerchallenge.towering.regions.GingerbreadRegion;
+import io.github.idkahn.towerchallenge.towering.regions.SpawnRegion;
+import io.github.idkahn.towerchallenge.towering.regions.TowerRegion;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -23,10 +26,20 @@ import java.util.*;
 
 public class ParticipantTeam extends TowerTeam {
 
-    private int extraScore;
-    private SpawnArea spawnArea;
-    private TowerArea towerArea;
+    public static World getSpawnWorld() {
+        return TowerChallenge.WORLD();
+    }
+    public static World getTowerWorld() {
+        return TowerChallenge.WORLD();
+    }
+    public static World getGingerbreadWorld() {
+        return TowerChallenge.WORLD();
+    }
 
+    private int extraScore;
+    private SpawnRegion spawnRegion;
+    private TowerRegion towerRegion;
+    private GingerbreadRegion gingerbreadRegion;
     private Location frameLocation;
 
     public ParticipantTeam(ChallengeManager manager, String displayName, String color, String dye) {
@@ -38,15 +51,38 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public void loadRegions() {
-        YamlConfiguration config = getConfig();
-        List<Map<?, ?>> regions = config.getMapList(getTextName());
 
-        if (regions.size() >= 2) {
-            HashMap<String, String> spawn = (HashMap<String, String>) regions.get(0);
-            HashMap<String, String> tower = (HashMap<String, String>) regions.get(1);
-            this.spawnArea = new SpawnArea(getManager(), ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD())).getRegion(spawn.get("name")));
-            this.towerArea = new TowerArea(this, getManager(), ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD())).getRegion(tower.get("name")), getTextName());
+        RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+
+        if (worldContainer != null) {
+            if (worldContainer.hasRegion(getSpawnName())) {
+                this.spawnRegion = new SpawnRegion(this, getManager(), worldContainer.getRegion(getSpawnName()));
+            } else {
+                ChallengeManager.log("No Spawn Region for "+getTextName());
+            }
+            if (worldContainer.hasRegion(getTowerName())) {
+                this.towerRegion = new TowerRegion(this, getManager(), worldContainer.getRegion(getTowerName()), getTextName());
+            } else {
+                ChallengeManager.log("No Tower Region for "+getTextName());
+            }
+            if (worldContainer.hasRegion(getGingerbreadName())) {
+                this.gingerbreadRegion = new GingerbreadRegion(this, getManager(), worldContainer.getRegion(getGingerbreadName()));
+            } else {
+                ChallengeManager.log("No Gingerbread Region for "+getTextName());
+            }
         }
+    }
+
+    public String getSpawnName() {
+        return String.format("%s_spawn", getDye().toLowerCase());
+    }
+
+    public String getTowerName() {
+        return String.format("%s_tower", getDye().toLowerCase());
+    }
+
+    public String getGingerbreadName() {
+        return String.format("%s_gingerbread", getDye().toLowerCase());
     }
 
     public void loadPortal() {
@@ -64,6 +100,33 @@ public class ParticipantTeam extends TowerTeam {
                 block.setBlockData(blockData);
             }
             Bukkit.getLogger().info("Loaded portal frame for " + getTextName() + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+        }
+    }
+
+    public TowerRegion getTowerRegion() {
+        return towerRegion;
+    }
+
+    public SpawnRegion getSpawnRegion() {
+        return spawnRegion;
+    }
+
+    public GingerbreadRegion getGingerbreadRegion() {
+        return gingerbreadRegion;
+    }
+
+    public void centerRegions(double y) {
+        if (towerRegion != null) {
+            towerRegion.setSpawnCenter(y);
+            towerRegion.setTeleportCenter(y);
+        }
+        if (spawnRegion != null) {
+            spawnRegion.setSpawnCenter(y);
+            spawnRegion.setTeleportCenter(y);
+        }
+        if (gingerbreadRegion != null) {
+            gingerbreadRegion.setSpawnCenter(y);
+            gingerbreadRegion.setTeleportCenter(y);
         }
     }
 
@@ -105,6 +168,21 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     @Override
+    public void addPlayer(OfflinePlayer player) {
+        try {
+            getTeam().addPlayer(player);
+            if (spawnRegion != null)
+                spawnRegion.addPlayer(player);
+//            if (towerRegion != null)
+//                towerRegion.addPlayer(player);
+            if (gingerbreadRegion != null)
+                gingerbreadRegion.addPlayer(player);
+        } catch (IllegalArgumentException e) {
+            getPlugin().getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");
+        }
+    }
+
+    @Override
     public void addPlayerConfig(OfflinePlayer player) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamConfigFile);
         List<String> players = config.getStringList("Teams."+ getTextName()+".players");
@@ -117,7 +195,7 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public Location getSpawnpoint() {
-        return spawnArea.getSpawnpoint();
+        return spawnRegion.getSpawnpoint();
     }
 
     public Location getFrameLocation() {
@@ -125,7 +203,7 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public ItemStack getItem() {
-        ItemStack item = QuestUtil.setButton(new ItemStack(Material.valueOf(getDye()+"_CONCRETE")));
+        ItemStack item = new ItemStack(Material.valueOf(getDye()+"_CONCRETE"));
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(getDisplayName().decoration(TextDecoration.ITALIC, false));
         itemMeta.setCustomModelData(1);
@@ -197,11 +275,14 @@ public class ParticipantTeam extends TowerTeam {
     @Override
     public void clear() {
         getTeam().removeEntries(getTeam().getEntries());
-        if (towerArea != null) {
-            towerArea.clearPlayers();
+        if (towerRegion != null) {
+            towerRegion.clearPlayers();
         }
-        if (spawnArea != null) {
-            spawnArea.clearPlayers();
+        if (spawnRegion != null) {
+            spawnRegion.clearPlayers();
+        }
+        if (gingerbreadRegion != null) {
+            gingerbreadRegion.clearPlayers();
         }
     }
 

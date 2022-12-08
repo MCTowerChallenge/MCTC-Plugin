@@ -33,5 +33,4 @@ public class PlayerGui extends ListGui {
         this(name, skullTemplate, player -> lore, playerList, biConsumer, lastElement);
     }
 
-
-    }
+}
