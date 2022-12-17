@@ -1,6 +1,6 @@
 name: TowerChallenge
 version: '${project.version}'
-main: io.github.idkahn.towerchallenge.TowerChallenge
+main: io.github.mystievous.towerchallenge.TowerChallenge
 api-version: 1.19
 prefix: TowerChallenge
 depend:
@@ -53,6 +53,10 @@ commands:
     permission: towerchallenge.anvil
     aliases:
       - av
+  craft:
+    description: Opens a crafting inventory
+    usage: /craft
+    permission: towerchallenge.craft
   rename:
     description: Renames an item
     usage: /rename <Name>
