@@ -1,8 +1,11 @@
 package io.github.mystievous.towerchallenge.hats;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.magic.GoatHat;
+import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -15,10 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
@@ -65,7 +65,12 @@ public class HatGUI implements Listener {
         Player player = (Player) event.getWhoClicked();
 
         if (HatUtil.isHat(event.getCurrentItem())) {
-            player.getInventory().setHelmet(event.getCurrentItem());
+            PlayerInventory inventory = player.getInventory();
+            if (NBTUtils.boolState(GoatHat.GOAT_HAT_2, inventory.getHelmet())) {
+                player.sendMessage(CommandUtils.errorMessage("Please unequip the goat horns first!"));
+            } else {
+                inventory.setHelmet(event.getCurrentItem());
+            }
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, player::closeInventory, 1);
         }
     }

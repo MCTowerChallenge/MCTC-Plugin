@@ -1,0 +1,59 @@
+package io.github.mystievous.towerchallenge.magic;
+
+import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Goat;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+
+import java.security.SecureRandom;
+
+public class GoatHat implements Listener {
+
+//    public static final String GOAT_HAT_1 = "goat-hat-1";
+    public static final String GOAT_HAT_2 = "goat-hat-2";
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    public GoatHat() {
+//        Bukkit.getScheduler().runTaskTimer(TowerChallenge.me, () -> {
+//            for (Player player : Bukkit.getOnlinePlayers()) {
+//                if (NBTUtils.boolState(GOAT_HAT_1, player.getEquipment().getHelmet())) {
+//                    if (player.isSneaking()) {
+//                        createGoat(player.getLocation().toBlockLocation());
+//                    }
+//                }
+//            }
+//        }, 0, 3);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+    }
+
+    public void createGoat(Location location) {
+        // 3 blocks out each direction, spawn 8-10 blocks up
+        Location goatLocation = location.add(RANDOM.nextInt(6)-3, 10, RANDOM.nextInt(6)-3);
+        Goat goat = (Goat) location.getWorld().spawnEntity(location, EntityType.GOAT);
+        goat.clearLootTable();
+        goat.setInvulnerable(true);
+        goat.setScreaming(true);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> {
+            goat.setHealth(0.0d);
+        }, 100);
+    }
+
+    @EventHandler
+    public void onPlayerToggleSneak(final PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) {
+            if (NBTUtils.boolState(GOAT_HAT_2, event.getPlayer().getEquipment().getHelmet())) {
+                createGoat(event.getPlayer().getLocation());
+            }
+        }
+    }
+
+
+
+}

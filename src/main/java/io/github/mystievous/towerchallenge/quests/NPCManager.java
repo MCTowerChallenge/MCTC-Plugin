@@ -436,7 +436,10 @@ public class NPCManager {
                             if (quest.isFulfilled()) {
                                 // the items being turned in completed the quest
                                 setInDialogue(clickPlayer, true);
-                                clickPlayer.getInventory().addItem(MagicItems.speedBoots);
+                                ItemStack goatHorns = MagicItems.goatHat2.getItem();
+                                LeatherArmorMeta meta = (LeatherArmorMeta) goatHorns.getItemMeta();
+                                meta.setColor(team.getBukkitColor());
+                                clickPlayer.getInventory().addItem();
                                 clickPlayer.getInventory().addItem(BlockVoucher.getVouchers(3));
                                 spiritPresentsComplete.play(clickPlayer, player -> {
                                     QuestManager.setTeamQuest(team, QuestManager.NO_QUEST);

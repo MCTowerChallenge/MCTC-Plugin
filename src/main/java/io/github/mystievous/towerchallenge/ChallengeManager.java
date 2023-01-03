@@ -2,8 +2,10 @@ package io.github.mystievous.towerchallenge;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import io.github.mystievous.towerchallenge.decoration.sweetsburg.MarketStalls;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.halloween.candy.Candy;
+import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
@@ -99,9 +101,11 @@ public class ChallengeManager {
         GodManager godManager = new GodManager(this, towerListener);
         teleportHistoryManager = new TeleportHistoryManager(godManager);
         new SpawnCompass();
+        new MarketStalls();
         new SpoutManager(this);
         new FastTravelListener();
         new TeamItemListener();
+        new GoatHat();
 //        new BottleManager();
     }
 

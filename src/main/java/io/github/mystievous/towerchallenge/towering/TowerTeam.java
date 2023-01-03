@@ -270,17 +270,15 @@ public abstract class TowerTeam {
         shovel.setItemMeta(shovelMeta);
         items.put(2, shovel);
 
-        items.put(3, getManager().getLegacyQuestManager().getBook());
-
-        items.put(4, getBundle());
+        items.put(3, getManager().getQuestManager().getQuestBook().getItem());
 
         ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-        items.put(5, steak);
-        items.put(32, steak);
+        items.put(4, steak);
+        items.put(31, steak);
 
         ItemStack torches = new ItemStack(Material.TORCH, 64);
+        items.put(5, torches);
         items.put(6, torches);
-        items.put(33, torches);
 
         items.put(7, SpawnCompass.getCompass());
 

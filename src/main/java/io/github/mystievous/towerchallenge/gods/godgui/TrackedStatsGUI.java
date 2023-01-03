@@ -1,7 +1,9 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
 import io.github.mystievous.towerchallenge.TextUtil;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
+import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
@@ -48,7 +50,9 @@ public class TrackedStatsGUI extends ListGui {
         ButtonElement jumpsElement = new ButtonElement(jumpsItem, player -> {
             PlayerGui gui = new PlayerGui(Component.text("Number of Jumps:"), new ItemStack(Material.PLAYER_HEAD), player1 -> {
                 return TextUtil.formatTexts(Component.text("Jumps: ").append(Component.text(player1.getStatistic(Statistic.JUMP))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.JUMP)).reversed()).collect(Collectors.toList()),
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.JUMP)).reversed()).collect(Collectors.toList()),
                     (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
             gui.openInventory(player);
         });
@@ -65,7 +69,9 @@ public class TrackedStatsGUI extends ListGui {
                     distance += player1.getStatistic(statistic);
                 }
                 return TextUtil.formatTexts(Component.text("Distance: ").append(Component.text(String.format("%.2fm", ((double) distance)/100))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingInt(value -> {
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingInt(value -> {
                 int distance = 0;
                 for (Statistic statistic : distanceStats) {
                     distance += ((OfflinePlayer) value).getStatistic(statistic);
@@ -84,7 +90,9 @@ public class TrackedStatsGUI extends ListGui {
         ButtonElement bellsElement = new ButtonElement(bellsItem, player -> {
             PlayerGui gui = new PlayerGui(Component.text("Bells Rung:"), new ItemStack(Material.PLAYER_HEAD), player1 -> {
                 return TextUtil.formatTexts(Component.text("Bells Rung: ").append(Component.text(player1.getStatistic(Statistic.BELL_RING))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.BELL_RING)).reversed()).collect(Collectors.toList()),
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.BELL_RING)).reversed()).collect(Collectors.toList()),
                     (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
             gui.openInventory(player);
         });
@@ -97,7 +105,9 @@ public class TrackedStatsGUI extends ListGui {
         ButtonElement snowballElement = new ButtonElement(snowballItem, player -> {
             PlayerGui gui = new PlayerGui(Component.text("Snowballs Picked Up:"), new ItemStack(Material.PLAYER_HEAD), player1 -> {
                 return TextUtil.formatTexts(Component.text("Snowballs: ").append(Component.text(player1.getStatistic(Statistic.PICKUP, Material.SNOWBALL))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.PICKUP, Material.SNOWBALL)).reversed()).collect(Collectors.toList()),
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingInt(value -> ((OfflinePlayer) value).getStatistic(Statistic.PICKUP, Material.SNOWBALL)).reversed()).collect(Collectors.toList()),
                     (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
             gui.openInventory(player);
         });
@@ -110,7 +120,9 @@ public class TrackedStatsGUI extends ListGui {
         ButtonElement waterElement = new ButtonElement(waterItem, player -> {
             PlayerGui gui = new PlayerGui(Component.text("Splash Time:"), new ItemStack(Material.PLAYER_HEAD), player1 -> {
                 return TextUtil.formatTexts(Component.text("Time: ").append(Component.text(SpoutManager.getRegionTime(player1).toSeconds()).append(Component.text(" seconds"))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingLong(value -> (SpoutManager.getRegionTime(((OfflinePlayer) value)).toSeconds())).reversed()).collect(Collectors.toList()),
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingLong(value -> (SpoutManager.getRegionTime(((OfflinePlayer) value)).toSeconds())).reversed()).collect(Collectors.toList()),
                     (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
             gui.openInventory(player);
         });
@@ -123,7 +135,9 @@ public class TrackedStatsGUI extends ListGui {
         ButtonElement cookieElement = new ButtonElement(cookieItem, player -> {
             PlayerGui gui = new PlayerGui(Component.text("Cookies Eaten:"), new ItemStack(Material.PLAYER_HEAD), player1 -> {
                 return TextUtil.formatTexts(Component.text("Cookies: ").append(Component.text(FastTravelListener.getTeleportCount(player1))));
-            }, Arrays.stream(Bukkit.getOfflinePlayers()).sorted(Comparator.comparingInt(value -> FastTravelListener.getTeleportCount(((OfflinePlayer) value))).reversed()).collect(Collectors.toList()),
+            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
+                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+            }).sorted(Comparator.comparingInt(value -> FastTravelListener.getTeleportCount(((OfflinePlayer) value))).reversed()).collect(Collectors.toList()),
                     (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
             gui.openInventory(player);
         });

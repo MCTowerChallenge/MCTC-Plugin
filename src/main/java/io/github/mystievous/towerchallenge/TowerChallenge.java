@@ -50,7 +50,7 @@ public final class TowerChallenge extends JavaPlugin {
 
     public static final String MCTC_NAMESPACE = "mctc";
 
-    public static String WORLD_NAME = "December MCTC";
+    public static String WORLD_NAME = "world";
     public static String NETHER_NAME = WORLD_NAME+"_nether";
     public static String THE_END_NAME = WORLD_NAME+"_the_end";
     public static World WORLD() {

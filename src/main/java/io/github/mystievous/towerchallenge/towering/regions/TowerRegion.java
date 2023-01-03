@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
@@ -17,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -24,7 +26,10 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.scoreboard.Score;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TowerRegion extends EventRegion implements Listener {
 
@@ -36,7 +41,7 @@ public class TowerRegion extends EventRegion implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
         score = manager.getObjective().getScore(name);
         score.setScore(blocks.size());
-        scanBlocks();
+//        scanBlocks();
     }
 
     public void scanBlocks() {
@@ -89,17 +94,27 @@ public class TowerRegion extends EventRegion implements Listener {
             return false;
         }
 
-        if (blocks.get(material) == null) {
-            blocks.put(material, block);
-//            sendBlockCount(audience);
-            score.setScore(blocks.size());
-            return false;
-        } else {
-            // block is already in tower
-            if (audience != null) {
-                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+        List<Player> godPlayers = new ArrayList<>();
+        audience.forEachAudience(audience1 -> {
+            if (audience1 instanceof Player player) {
+                if (getManager().getPlayerTeam(player) instanceof GodTeam) {
+                    godPlayers.add(player);
+                }
             }
-            return true;
+        });
+        // block is already in tower
+        if (godPlayers.size() == 0) {
+            if (blocks.get(material) == null) {
+                blocks.put(material, block);
+//            sendBlockCount(audience);
+                score.setScore(blocks.size());
+                return false;
+            } else {
+                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 

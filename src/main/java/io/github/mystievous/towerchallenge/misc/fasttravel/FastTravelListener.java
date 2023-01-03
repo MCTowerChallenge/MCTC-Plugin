@@ -34,7 +34,7 @@ public class FastTravelListener implements Listener {
 
     public static Integer getTeleportCount(UUID uuid) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        return teamDataConfig.getInt("Individual."+uuid.toString()+COOKIE_CONFIG_KEY, 0);
+        return teamDataConfig.getInt("Individual."+uuid.toString()+"."+COOKIE_CONFIG_KEY, 0);
     }
 
     public static Integer getTeleportCount(OfflinePlayer player) {
@@ -43,7 +43,7 @@ public class FastTravelListener implements Listener {
 
     public static void addTeleportCount(UUID uuid) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        teamDataConfig.set("Individual."+uuid.toString()+COOKIE_CONFIG_KEY, getTeleportCount(uuid)+1);
+        teamDataConfig.set("Individual."+uuid.toString()+"."+COOKIE_CONFIG_KEY, getTeleportCount(uuid)+1);
         try {
             teamDataConfig.save(TowerChallenge.teamDataConfigFile);
         } catch (IOException e) {
