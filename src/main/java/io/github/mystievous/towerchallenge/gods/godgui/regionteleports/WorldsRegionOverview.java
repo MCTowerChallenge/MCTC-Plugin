@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
@@ -30,9 +31,9 @@ public class WorldsRegionOverview implements Openable {
     public Gui getGui(Player player) {
         PresetGui gui = new PresetGui(Component.text(GUI_NAME), 3);
 
-        RegionManager overworldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
-        RegionManager netherManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.NETHER()));
-        RegionManager theEndManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.THE_END()));
+        RegionManager overworldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.WORLD()));
+        RegionManager netherManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.NETHER()));
+        RegionManager theEndManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.THE_END()));
 
         ItemStack overworldItem = new ItemStack(Material.GRASS_BLOCK);
         ItemMeta overworldMeta = overworldItem.getItemMeta();
@@ -45,7 +46,7 @@ public class WorldsRegionOverview implements Openable {
             );
         }});
         overworldItem.setItemMeta(overworldMeta);
-        ButtonElement overworldElement = new ButtonElement(overworldItem, player1 -> (new WorldIndividualGui(TowerChallenge.WORLD(), overworldManager, Component.text("Overworld regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
+        ButtonElement overworldElement = new ButtonElement(overworldItem, player1 -> (new WorldIndividualGui(Worlds.WORLD(), overworldManager, Component.text("Overworld regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
         gui.placeElement(3, 2, overworldElement);
 
         ItemStack netherItem = new ItemStack(Material.NETHERRACK);
@@ -59,7 +60,7 @@ public class WorldsRegionOverview implements Openable {
             );
         }});
         netherItem.setItemMeta(netherMeta);
-        Element netherElement = new ButtonElement(netherItem, player1 -> (new WorldIndividualGui(TowerChallenge.NETHER(), netherManager, Component.text("Nether regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
+        Element netherElement = new ButtonElement(netherItem, player1 -> (new WorldIndividualGui(Worlds.NETHER(), netherManager, Component.text("Nether regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
         gui.placeElement(5, 2, netherElement);
 
         ItemStack endItem = new ItemStack(Material.END_STONE);

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BackCommand implements CommandExecutor {
 
-    private TeleportHistoryManager teleportHistoryManager;
+    private final TeleportHistoryManager teleportHistoryManager;
 
     public BackCommand(TeleportHistoryManager teleportHistoryManager) {
         this.teleportHistoryManager = teleportHistoryManager;

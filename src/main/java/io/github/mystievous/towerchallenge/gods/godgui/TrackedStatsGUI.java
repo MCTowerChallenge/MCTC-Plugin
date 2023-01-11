@@ -17,7 +17,9 @@ import org.bukkit.Statistic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 public class TrackedStatsGUI extends ListGui {

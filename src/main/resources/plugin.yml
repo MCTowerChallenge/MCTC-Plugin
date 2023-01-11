@@ -8,6 +8,8 @@ depend:
   - WorldEdit
   - NBTAPI
   - GSit
+  - Multiverse-Core
+  - Multiverse-Portals
 commands:
   tower:
     description: Commands relating to the towers

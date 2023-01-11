@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class WandCommands implements CommandExecutor {
 
-    private WandGUI gui;
+    private final WandGUI gui;
 
     public WandCommands(Plugin plugin) {
         this.gui = new WandGUI(plugin);

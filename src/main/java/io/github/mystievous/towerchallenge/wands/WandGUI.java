@@ -41,14 +41,6 @@ public class WandGUI implements Listener {
         this.loadWands();
     }
 
-//    public static void getWand(Player player, int id) {
-//        ItemStack stick = WandUtil.setMagic(new ItemStack(Material.STICK), id);
-//        ItemMeta stickMeta = stick.getItemMeta();
-//        stickMeta.displayName(Component.text("Wand").decoration(TextDecoration.ITALIC, false));
-//        stick.setItemMeta(stickMeta);
-//        player.getInventory().addItem(stick);
-//    }
-
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled())

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GodMenuCommand implements CommandExecutor {
 
-    private GodManager godManager;
+    private final GodManager godManager;
 
     public GodMenuCommand(GodManager godManager) {
         this.godManager = godManager;

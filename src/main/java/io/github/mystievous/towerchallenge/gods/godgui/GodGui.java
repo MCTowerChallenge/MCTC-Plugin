@@ -30,8 +30,8 @@ public class GodGui extends PresetGui implements Openable {
     public static final Component COMPONENT_NAME = Component.text(TEXT_NAME);
     private static final int ROWS = 6;
 
-    private GuiHeldItem guiBook;
-    private WorldsRegionOverview worldsRegionOverview;
+    private final GuiHeldItem guiBook;
+    private final WorldsRegionOverview worldsRegionOverview;
 
     public GodGui(ChallengeManager challengeManager, GodManager godManager, TowerListener towerListener) {
         super(COMPONENT_NAME, ROWS);
@@ -81,12 +81,6 @@ public class GodGui extends PresetGui implements Openable {
 //        regionSetupItem.setItemMeta(regionSetupMeta);
 //        ButtonElement regionSetupElement = new ButtonElement(regionSetupItem, player -> regionListGui.getGui(player).openInventory(player));
 //        placeElement(1, 6, regionSetupElement);
-
-//        ItemStack bottle = BottleManager.getEmpty();
-//        ButtonElement bottleElement = new ButtonElement(bottle, player -> {
-//            player.getInventory().addItem(BottleManager.getEmpty());
-//        });
-//        placeElement(4, 1, bottleElement);
 
         PresetGui magicGui = MagicItems.getGui();
         ItemStack magicItem = new ItemStack(Material.AMETHYST_SHARD);

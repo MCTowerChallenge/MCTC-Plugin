@@ -5,6 +5,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -28,23 +29,18 @@ public class SpoutManager {
         String playerPath = "Individual."+player.getUniqueId()+".WaterSpouts";
         String totalTimePath = playerPath + ".TotalTime";
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        Duration totalTime = Duration.ofMillis(config.getLong(totalTimePath));
-        return totalTime;
+        return Duration.ofMillis(config.getLong(totalTimePath));
     }
 
-    private ChallengeManager challengeManager;
-
-    public SpoutManager(ChallengeManager challengeManager) {
-
-        this.challengeManager = challengeManager;
+    public SpoutManager() {
 
         List<Spout> spouts = new ArrayList<>();
 
-        spouts.add(new Spout(this, new Location(TowerChallenge.WORLD(), (-824)+0.5, 68, (-808)+0.5))); // 1
-        spouts.add(new Spout(this, new Location(TowerChallenge.WORLD(), (-824)+0.5, 68, (-801)+0.5))); // 4
-        spouts.add(new Spout(this, new Location(TowerChallenge.WORLD(), (-825)+0.5, 68, (-806)+0.5))); // 2
-        spouts.add(new Spout(this, new Location(TowerChallenge.WORLD(), (-826)+0.5, 68, (-800)+0.5))); // 5
-        spouts.add(new Spout(this, new Location(TowerChallenge.WORLD(), (-823)+0.5, 68, (-803)+0.5))); // 3
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824)+0.5, 68, (-808)+0.5))); // 1
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824)+0.5, 68, (-801)+0.5))); // 4
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-825)+0.5, 68, (-806)+0.5))); // 2
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-826)+0.5, 68, (-800)+0.5))); // 5
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-823)+0.5, 68, (-803)+0.5))); // 3
 
         int count = 0;
 
@@ -54,7 +50,7 @@ public class SpoutManager {
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(TowerChallenge.me, bukkitTask -> {
-            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.Dec2022()));
             if (regionManager != null && regionManager.hasRegion(REGION_NAME)) {
                 ProtectedRegion region = regionManager.getRegion(REGION_NAME);
                 assert region != null;

@@ -58,8 +58,6 @@ public class NPCManager {
         return SpiritText(Component.text(text));
     }
 
-    public static final Key PENELOPE_SOUND = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.ambient");
-
     public static final String STEVE_TAG = "steve";
     public static final String PENELOPE_TAG = "penelope";
     public static final String BUTT_STALLION = "buttstallion";
@@ -96,23 +94,13 @@ public class NPCManager {
         return getInDialogue(TowerChallenge.me.getChallengeManager().getPlayerTeam(player));
     }
 
-    private QuestManager questManager;
-    private GodMountNPC penelope;
-    private ItemEntityHandler penelopeArmor;
-    private GodMountNPC buttStallion;
-    private NPC steve;
-    private ItemEntityHandler steveList;
-    private NPC spirit;
-    private PresentEntityHandler presentEntityHandler;
-    private NPC hankMarvin;
-    private List<Dialogue> dialogues = new ArrayList<>();
-    private Dialogue meltDialogue;
-    private Dialogue spiritFinaleDialogue;
+    private final List<Dialogue> dialogues = new ArrayList<>();
+    private final Dialogue meltDialogue;
+    private final Dialogue spiritFinaleDialogue;
 
     public NPCManager(QuestManager questManager) {
-        this.questManager = questManager;
 
-        penelope = new GodMountNPC(PENELOPE_TAG);
+        GodMountNPC penelope = new GodMountNPC(PENELOPE_TAG);
         penelope.addAllowedRegion("penelope-.*");
 
         ItemStack penelopeArmorItem = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
@@ -120,21 +108,21 @@ public class NPCManager {
         armorMeta.displayName(TextUtil.noItalic("Penelope's Armor"));
         penelopeArmorItem.setItemMeta(armorMeta);
 
-        penelopeArmor = new ItemEntityHandler(questManager.getChallengeManager(), QuestManager.PENELOPE_ARMOR, QuestManager.PENELOPE_ARMOR, penelopeArmorItem);
+        new ItemEntityHandler(questManager.getChallengeManager(), QuestManager.PENELOPE_ARMOR, QuestManager.PENELOPE_ARMOR, penelopeArmorItem);
 
-        buttStallion = new GodMountNPC(BUTT_STALLION);
+        new GodMountNPC(BUTT_STALLION);
 
-        steve = new NPC(STEVE_TAG);
+        NPC steve = new NPC(STEVE_TAG);
         steve.addAllowedRegion("steve-.*");
 
-        steveList = new ItemEntityHandler(questManager.getChallengeManager(), QuestManager.STEVE_LIST, QuestManager.STEVE_LIST, questManager.getSteveListItem());
+        ItemEntityHandler steveList = new ItemEntityHandler(questManager.getChallengeManager(), QuestManager.STEVE_LIST, QuestManager.STEVE_LIST, questManager.getSteveListItem());
 
-        spirit = new NPC(SPIRIT_TAG);
+        NPC spirit = new NPC(SPIRIT_TAG);
         spirit.addDisallowedRegion(".*");
 
-        presentEntityHandler = new PresentEntityHandler(questManager.getChallengeManager());
+        new PresentEntityHandler(questManager.getChallengeManager());
 
-        hankMarvin = new NPC(HANK_MARVIN_TAG);
+        NPC hankMarvin = new NPC(HANK_MARVIN_TAG);
         hankMarvin.addAllowedRegion("candy-village-inner");
         hankMarvin.addDisallowedRegion(".*_gingerbread");
 
@@ -268,7 +256,6 @@ public class NPCManager {
         steve.addQuestHandler(QuestManager.STEVE_START, clickEvent -> {
             if (!getInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
-                ItemStack item = clickPlayer.getInventory().getItem(clickEvent.getHand());
                 TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(clickPlayer);
                 Quest quest = questManager.getQuest(team, QuestManager.PENELOPE_ARMOR);
                 if (quest != null) {
@@ -359,10 +346,6 @@ public class NPCManager {
                                     QuestManager.setTeamQuest(team, QuestManager.SPIRIT_START);
                                     setInDialogue(player, false);
                                 });
-    //                            penelopeArmorCompleteDialogue.play(clickPlayer, player -> {
-    //                                QuestManager.setTeamQuest(team, QuestManager.SPIRIT_START);
-    //                                setInDialogue(player, false);
-    //                            });
                             } else {
                                 // the items being turned in did not complete the quest
                                 if (!requirement.isFulfilled()) {
@@ -436,7 +419,7 @@ public class NPCManager {
                             if (quest.isFulfilled()) {
                                 // the items being turned in completed the quest
                                 setInDialogue(clickPlayer, true);
-                                ItemStack goatHorns = MagicItems.goatHat2.getItem();
+                                ItemStack goatHorns = MagicItems.goatHat.getItem();
                                 LeatherArmorMeta meta = (LeatherArmorMeta) goatHorns.getItemMeta();
                                 meta.setColor(team.getBukkitColor());
                                 clickPlayer.getInventory().addItem();

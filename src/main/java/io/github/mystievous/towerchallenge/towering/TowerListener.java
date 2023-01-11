@@ -41,7 +41,6 @@ public class TowerListener implements Listener {
     private GodTeam godTeam;
 
     private HashMap<String, ParticipantTeam> teams;
-    BlockSets blockSets;
 
     private final ChallengeManager manager;
     private final JavaPlugin plugin;
@@ -51,7 +50,6 @@ public class TowerListener implements Listener {
     public TowerListener(ChallengeManager manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        this.blockSets = new BlockSets();
         this.teams = manager.getTeams();
         loadTeams();
         defaultHats = new HatGUI(manager, Color.RED);
@@ -138,14 +136,6 @@ public class TowerListener implements Listener {
         this.teams = newTeams;
         Bukkit.getLogger().info("Team Config Loaded!");
     }
-
-//    @EventHandler
-//    public void onPlayerInteractEntityInteract(final PlayerInteractEntityEvent event) {
-//        Player player = event.getPlayer();
-//        ItemStack item = player.getInventory().getItem(event.getHand());
-//        Entity entity = event.getRightClicked();
-//
-//    }
 
     @EventHandler
     public void onPortalCreate(final PortalCreateEvent event) {

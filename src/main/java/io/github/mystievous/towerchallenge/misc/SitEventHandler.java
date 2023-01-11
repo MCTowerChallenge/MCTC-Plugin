@@ -6,20 +6,21 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dev.geco.gsit.api.event.PreEntitySitEvent;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class SitEventHandler implements Listener {
-    public static String REGION_NAME = "interview-stage";
-    public static String HOT_TUB_NAME = "hot-tub";
+    public static final String REGION_NAME = "interview-stage";
+    public static final String HOT_TUB_NAME = "hot-tub";
 
     private ProtectedRegion region;
     private ProtectedRegion hotTub;
 
     public SitEventHandler() {
         try {
-            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.Dec2022()));
             if (regionManager != null) {
                 if (regionManager.hasRegion(REGION_NAME)) {
                     region = regionManager.getRegion(REGION_NAME);
@@ -39,7 +40,7 @@ public class SitEventHandler implements Listener {
         if (event.isCancelled())
             return;
         try {
-            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.Dec2022()));
             if (regionManager != null) {
                 if (regionManager.hasRegion(REGION_NAME)) {
                     region = regionManager.getRegion(REGION_NAME);

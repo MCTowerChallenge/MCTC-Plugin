@@ -19,7 +19,7 @@ public class TeleportHistoryManager implements Listener, Openable {
 
     private final Map<UUID, List<TeleportLocation>> teleports;
 
-    private GodManager godManager;
+    private final GodManager godManager;
 
     public TeleportHistoryManager(GodManager godManager) {
         this.godManager = godManager;
@@ -54,11 +54,6 @@ public class TeleportHistoryManager implements Listener, Openable {
         }
         teleportLocations.add(location);
         teleports.put(player.getUniqueId(), teleportLocations);
-//        Bukkit.getLogger().info("Player " + player.getName() + " was teleported!");
-//        Bukkit.getLogger().info("New teleports: ");
-//        for (TeleportLocation location1 : get(player)) {
-//            Bukkit.getLogger().info(location1.getX() + " " + location1.getY() + " " + location1.getZ());
-//        }
     }
 
     @EventHandler

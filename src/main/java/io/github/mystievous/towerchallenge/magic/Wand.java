@@ -19,7 +19,7 @@ public class Wand implements Listener {
 
     private final String tag;
     private ItemStack template;
-    private Consumer<PlayerInteractEvent> consumer;
+    private final Consumer<PlayerInteractEvent> consumer;
 
     public Wand(String tag, Consumer<PlayerInteractEvent> consumer) {
         this.tag = tag;

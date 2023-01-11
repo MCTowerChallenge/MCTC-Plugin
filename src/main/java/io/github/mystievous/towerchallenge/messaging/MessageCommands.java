@@ -1,8 +1,8 @@
 package io.github.mystievous.towerchallenge.messaging;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -19,7 +19,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MessageCommands implements CommandExecutor {
 
@@ -58,10 +61,10 @@ public class MessageCommands implements CommandExecutor {
 
                     Set<Player> mystiApple = new HashSet<>();
 
-                    if (mysti != null) {
+                    if (mysti != null && mysti.isOnline()) {
                         mystiApple.add(mysti);
                     }
-                    if (apple != null) {
+                    if (apple != null && apple.isOnline()) {
                         mystiApple.add(apple);
                     }
 

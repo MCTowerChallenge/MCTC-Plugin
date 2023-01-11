@@ -13,8 +13,8 @@ import java.util.function.Function;
 
 public class PlayerGui extends ListGui {
 
-    List<OfflinePlayer> playerList;
-    ItemStack skullTemplate;
+    private final List<OfflinePlayer> playerList;
+    private final ItemStack skullTemplate;
 
     public PlayerGui(Component name, ItemStack skullTemplate, Function<OfflinePlayer, List<Component>> loreBuilder, List<OfflinePlayer> playerList, BiConsumer<Player, OfflinePlayer> biConsumer, ButtonElement lastElement) {
         super(name, lastElement);

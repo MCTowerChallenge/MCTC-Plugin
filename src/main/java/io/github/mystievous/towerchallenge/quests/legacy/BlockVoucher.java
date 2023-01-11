@@ -23,23 +23,4 @@ public class BlockVoucher extends ItemStack {
         return vouchers;
     }
     
-    ItemStack voucherItem;
-
-    public BlockVoucher(String name, int vouchers) {
-        super(Material.PAPER);
-        ItemMeta itemMeta = getItemMeta();
-        if (name != null) {
-            itemMeta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false));
-        } else {
-            itemMeta.displayName(VOUCHER_NAME);
-        }
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        itemMeta.addEnchant(Enchantment.MENDING, 1, false);
-        setItemMeta(itemMeta);
-        voucherItem = getVouchers(vouchers);
-    }
-
-    public ItemStack getVoucherItem() {
-        return voucherItem;
-    }
 }

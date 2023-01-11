@@ -3,7 +3,10 @@ package io.github.mystievous.towerchallenge.wands;
 import de.tr7zw.nbtapi.NBTEntity;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -81,21 +84,6 @@ public class WandListener implements Listener {
         fireworkMeta.addEffect(FireworkEffect.builder()
                 .with(FireworkEffect.Type.BALL).withColor(Color.RED).withFade(Color.RED)
                 .build());
-//        fireworkMeta.addEffect(FireworkEffect.builder()
-//                .with(FireworkEffect.Type.BALL).withColor(Color.ORANGE).withFade(Color.ORANGE)
-//                .build());
-//        fireworkMeta.addEffect(FireworkEffect.builder()
-//                .with(FireworkEffect.Type.BALL).withColor(Color.YELLOW).withFade(Color.YELLOW)
-//                .build());
-//        fireworkMeta.addEffect(FireworkEffect.builder()
-//                .with(FireworkEffect.Type.BALL).withColor(Color.GREEN).withFade(Color.GREEN)
-//                .build());
-//        fireworkMeta.addEffect(FireworkEffect.builder()
-//                .with(FireworkEffect.Type.BALL).withColor(Color.BLUE).withFade(Color.BLUE)
-//                .build());
-//        fireworkMeta.addEffect(FireworkEffect.builder()
-//                .with(FireworkEffect.Type.BALL).withColor(Color.PURPLE).withFade(Color.PURPLE)
-//                .build());
         firework.setFireworkMeta(fireworkMeta);
         firework.setShotAtAngle(true);
         firework.setVelocity(player.getEyeLocation().getDirection().multiply(1));

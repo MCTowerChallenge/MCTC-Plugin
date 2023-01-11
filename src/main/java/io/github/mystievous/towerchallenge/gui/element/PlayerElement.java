@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 
 public class PlayerElement extends Element implements Clickable {
 
-    private OfflinePlayer player;
+    private final OfflinePlayer player;
     private final BiConsumer<Player, OfflinePlayer> consumer;
 
     public PlayerElement(ItemStack item, OfflinePlayer player, List<Component> lore, BiConsumer<Player, OfflinePlayer> biConsumer) {

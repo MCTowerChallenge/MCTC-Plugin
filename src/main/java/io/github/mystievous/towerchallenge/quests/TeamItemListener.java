@@ -20,13 +20,10 @@ public class TeamItemListener implements Listener {
     }
 
     public static boolean teamCanInteract(Player player, ItemStack itemStack) {
-        String itemTeam = NBTUtils.getTeam(itemStack);
         TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
 
         if (NBTUtils.hasTeam(itemStack)) {
-            if (team == null || (!NBTUtils.matchTeam(itemStack, team) && !(team instanceof GodTeam))) {
-                return false;
-            }
+            return team != null && (NBTUtils.matchTeam(itemStack, team) || team instanceof GodTeam);
         }
 
         return true;

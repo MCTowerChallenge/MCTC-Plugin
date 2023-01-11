@@ -4,7 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.towering.regions.GingerbreadRegion;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
 import net.kyori.adventure.key.Key;
@@ -22,24 +22,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 public class ParticipantTeam extends TowerTeam {
 
     public static World getSpawnWorld() {
-        return TowerChallenge.WORLD();
+        return Worlds.WORLD();
     }
     public static World getTowerWorld() {
-        return TowerChallenge.WORLD();
-    }
-    public static World getGingerbreadWorld() {
-        return TowerChallenge.WORLD();
+        return Worlds.WORLD();
     }
 
     private int extraScore;
     private SpawnRegion spawnRegion;
     private TowerRegion towerRegion;
-    private GingerbreadRegion gingerbreadRegion;
     private Location frameLocation;
 
     public ParticipantTeam(ChallengeManager manager, String displayName, String color, String dye) {
@@ -52,7 +48,7 @@ public class ParticipantTeam extends TowerTeam {
 
     public void loadRegions() {
 
-        RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+        RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.WORLD()));
 
         if (worldContainer != null) {
             if (worldContainer.hasRegion(getSpawnName())) {
@@ -65,11 +61,6 @@ public class ParticipantTeam extends TowerTeam {
             } else {
                 ChallengeManager.log("No Tower Region for "+getTextName());
             }
-            if (worldContainer.hasRegion(getGingerbreadName())) {
-                this.gingerbreadRegion = new GingerbreadRegion(this, getManager(), worldContainer.getRegion(getGingerbreadName()));
-            } else {
-                ChallengeManager.log("No Gingerbread Region for "+getTextName());
-            }
         }
     }
 
@@ -81,14 +72,10 @@ public class ParticipantTeam extends TowerTeam {
         return String.format("%s_tower", getDye().toLowerCase());
     }
 
-    public String getGingerbreadName() {
-        return String.format("%s_gingerbread", getDye().toLowerCase());
-    }
-
     public void loadPortal() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
         if (config.isString(getTextName()+".world")) {
-            this.frameLocation = new Location(TowerChallenge.WORLD(), config.getInt(getTextName()+".x"), config.getInt(getTextName()+".y"), config.getInt(getTextName()+".z"));
+            this.frameLocation = new Location(Worlds.WORLD(), config.getInt(getTextName()+".x"), config.getInt(getTextName()+".y"), config.getInt(getTextName()+".z"));
             Block block = this.frameLocation.getBlock();
             block.setType(Material.END_PORTAL_FRAME);
             EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
@@ -111,10 +98,6 @@ public class ParticipantTeam extends TowerTeam {
         return spawnRegion;
     }
 
-    public GingerbreadRegion getGingerbreadRegion() {
-        return gingerbreadRegion;
-    }
-
     public void centerRegions(double y) {
         if (towerRegion != null) {
             towerRegion.setSpawnCenter(y);
@@ -123,10 +106,6 @@ public class ParticipantTeam extends TowerTeam {
         if (spawnRegion != null) {
             spawnRegion.setSpawnCenter(y);
             spawnRegion.setTeleportCenter(y);
-        }
-        if (gingerbreadRegion != null) {
-            gingerbreadRegion.setSpawnCenter(y);
-            gingerbreadRegion.setTeleportCenter(y);
         }
     }
 
@@ -173,10 +152,6 @@ public class ParticipantTeam extends TowerTeam {
             getTeam().addPlayer(player);
             if (spawnRegion != null)
                 spawnRegion.addPlayer(player);
-//            if (towerRegion != null)
-//                towerRegion.addPlayer(player);
-            if (gingerbreadRegion != null)
-                gingerbreadRegion.addPlayer(player);
         } catch (IllegalArgumentException e) {
             getPlugin().getLogger().warning(player.getUniqueId() + "; Player has not joined the server, unable to add to team.");
         }
@@ -233,21 +208,11 @@ public class ParticipantTeam extends TowerTeam {
 
         int remainingEyes = getManager().getTowerListener().getTeams().size()-getManager().getCompletedPortalFrames();
 
-//        final Component mainTitle = getDisplayName().color(getTextColor());
-////        final Component subtitle = Component.text("There are ", NamedTextColor.DARK_GRAY)
-////                .append(Component.text(16-manager.getCompletedPortalFrames(), NamedTextColor.DARK_RED))
-////                .append(Component.text(" remaining.", NamedTextColor.DARK_GRAY));
-//        final Component subtitle = Component.text("has contributed to the End Portal!").color(NamedTextColor.WHITE);
-
         final Component chatMessage = getDisplayName().color(getTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
                 .append(Component.text(remainingEyes+" remain... ").color(TowerChallenge.PRIMARY_COLOR));
 
-        // Creates a simple title with the default values for fade-in, stay on screen and fade-out durations
-//        final Title title = Title.title(mainTitle, subtitle);
-
         // Send the title to your audience
-//        Bukkit.getServer().showTitle(title);
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
         Bukkit.getServer().sendMessage(chatMessage);
 
@@ -280,9 +245,6 @@ public class ParticipantTeam extends TowerTeam {
         }
         if (spawnRegion != null) {
             spawnRegion.clearPlayers();
-        }
-        if (gingerbreadRegion != null) {
-            gingerbreadRegion.clearPlayers();
         }
     }
 

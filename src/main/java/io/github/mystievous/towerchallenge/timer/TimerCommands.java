@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class TimerCommands implements CommandExecutor {
 
-    Timer timer;
+    private final Timer timer;
 
     public TimerCommands(Timer timer) {
         this.timer = timer;

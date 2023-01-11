@@ -3,18 +3,16 @@ package io.github.mystievous.towerchallenge;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.mystievous.towerchallenge.decoration.sweetsburg.MarketStalls;
+import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
-import io.github.mystievous.towerchallenge.halloween.candy.Candy;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
-import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.quests.TeamItemListener;
-import io.github.mystievous.towerchallenge.quests.legacy.LegacyQuestManager;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.towering.TowerListener;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import io.github.mystievous.towerchallenge.towering.WinnerGUI;
 import net.kyori.adventure.audience.Audience;
@@ -40,12 +38,8 @@ public class ChallengeManager {
      * The phases of the event
      */
     public enum ChallengePhase {
-        SETUP,
-        FIRSTHALF,
-        INTERMISSION,
-        SECONDHALF,
+        IN_PROGRESS,
         TOWERING,
-        PAUSED
     }
 
     public static RegionContainer regionContainer() {
@@ -71,7 +65,6 @@ public class ChallengeManager {
     private final TowerChallenge plugin;
     private ChallengePhase challengePhase;
     private final BlockSets blockSets;
-    private final LegacyQuestManager legacyQuestManager;
     private final QuestManager questManager;
     private Objective towerHeight;
     private final TowerListener towerListener;
@@ -85,7 +78,7 @@ public class ChallengeManager {
     public ChallengeManager(TowerChallenge plugin) {
         this.plugin = plugin;
         this.teams = new HashMap<>();
-        challengePhase = ChallengePhase.SETUP;
+        challengePhase = ChallengePhase.IN_PROGRESS;
         blockSets = new BlockSets();
         towerHeight = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(OBJECTIVE_NAME);
         if (towerHeight == null) {
@@ -93,16 +86,14 @@ public class ChallengeManager {
         }
         towerListener = new TowerListener(this);
         questManager = new QuestManager(this);
-        legacyQuestManager = new LegacyQuestManager(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         endPortal = new EndPortal(this);
         winnerGUI = new WinnerGUI(this);
-        new Candy(this);
         GodManager godManager = new GodManager(this, towerListener);
         teleportHistoryManager = new TeleportHistoryManager(godManager);
         new SpawnCompass();
         new MarketStalls();
-        new SpoutManager(this);
+        new SpoutManager();
         new FastTravelListener();
         new TeamItemListener();
         new GoatHat();
@@ -237,10 +228,6 @@ public class ChallengeManager {
 
     public @Nullable TowerTeam getPlayerTeam(OfflinePlayer player) {
         return towerListener.getPlayerTeam(player);
-    }
-
-    public LegacyQuestManager getLegacyQuestManager() {
-        return legacyQuestManager;
     }
 
     public QuestManager getQuestManager() {

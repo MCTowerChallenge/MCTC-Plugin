@@ -9,10 +9,15 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.AbstractHorseInventory;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
@@ -115,13 +120,6 @@ public class PresentEntityHandler extends ItemEntityHandler {
 
     @Override
     public ItemStack getItem(TowerTeam team, Entity entity) {
-//        if (entity instanceof LivingEntity livingEntity) {
-//
-//            EntityEquipment equipment = livingEntity.getEquipment();
-//            if (equipment != null) {
-//                return equipment.getHelmet();
-//            }
-//        }
         return getPresentItem();
     }
 

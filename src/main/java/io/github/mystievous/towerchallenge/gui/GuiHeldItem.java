@@ -19,9 +19,9 @@ public class GuiHeldItem implements Listener {
 
     public static final String GUI_ID = "gui_id";
 
-    private ItemStack item;
-    private Openable openable;
-    private String guiId;
+    private final ItemStack item;
+    private final Openable openable;
+    private final String guiId;
 
     public GuiHeldItem(String guiId, ItemStack item, Openable openable) {
         this.guiId = guiId;

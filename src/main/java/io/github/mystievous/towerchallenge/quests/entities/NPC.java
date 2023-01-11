@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import org.bukkit.Bukkit;
@@ -29,16 +30,13 @@ import java.util.function.Consumer;
 
 public class NPC implements Listener {
 
-    private String tag;
-    private Map<String, Consumer<PlayerInteractAtEntityEvent>> questHandlers;
+    private final String tag;
+    private final Map<String, Consumer<PlayerInteractAtEntityEvent>> questHandlers;
     private Set<String> allowedRegions = new HashSet<>();
     private Set<String> disallowedRegions = new HashSet<>();
 
-    private boolean isPassive;
-
     public NPC(String tag) {
         this.tag = tag;
-        this.isPassive = true;
         this.questHandlers = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
     }
@@ -47,32 +45,12 @@ public class NPC implements Listener {
         questHandlers.put(quest, handler);
     }
 
-    public void setPassive(boolean passive) {
-        isPassive = passive;
-    }
-
-    public Set<String> getAllowedRegions() {
-        return allowedRegions;
-    }
-
-    public void setAllowedRegions(Set<String> pathRegions) {
-        this.allowedRegions = pathRegions;
-    }
-
     public void addAllowedRegion(String regionName) {
         allowedRegions.add(regionName);
     }
 
-    public Set<String> getDisallowedRegions() {
-        return disallowedRegions;
-    }
-
     public String getTag() {
         return tag;
-    }
-
-    public void setDisallowedRegions(Set<String> disallowedRegions) {
-        this.disallowedRegions = disallowedRegions;
     }
 
     public void addDisallowedRegion(String regionName) {
@@ -114,7 +92,7 @@ public class NPC implements Listener {
 
         if (hasTag(entity) && !allowedRegions.isEmpty()) {
             event.setCancelled(true);
-            RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+            RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.WORLD()));
             if (worldContainer != null) {
                 ApplicableRegionSet regionSet = worldContainer.getApplicableRegions(BukkitAdapter.adapt(location).toVector().toBlockPoint());
                 for (ProtectedRegion region : regionSet.getRegions()) {
@@ -135,8 +113,6 @@ public class NPC implements Listener {
                 }
             }
         }
-
-
     }
 
     @EventHandler
@@ -147,7 +123,7 @@ public class NPC implements Listener {
         Entity entity = event.getEntity();
         Entity target = event.getTarget();
 
-        if (isPassive && hasTag(entity) && target instanceof HumanEntity) {
+        if (hasTag(entity) && target instanceof HumanEntity) {
             event.setCancelled(true);
         }
     }

@@ -51,7 +51,6 @@ public class Timer extends BukkitRunnable {
     public void run() {
 
         if (this.state == TimerState.PAUSED) {
-//            Bukkit.getServer().sendMessage(Component.text("Timer Paused"));
             return;
         }
 
@@ -68,7 +67,6 @@ public class Timer extends BukkitRunnable {
             }
         }
         if (this.timeLeft.getTime() <= 0) {
-//            Bukkit.getServer().sendMessage(Component.text(this.timeLeft.getTime() + " Timer Ended"));
             if (this.state != TimerState.ENDED) {
                 Title title = Title.title(Component.text("Time is up!").color(NamedTextColor.WHITE), Component.text("No more crafting!").color(NamedTextColor.BLUE));
                 Bukkit.getServer().showTitle(title);
@@ -92,7 +90,6 @@ public class Timer extends BukkitRunnable {
             .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE));
         bossBar.name(newName);
         float progress = this.timeLeft.getTime().floatValue()/this.maxDuration.getTime().floatValue();
-//        Bukkit.getServer().sendMessage(Component.text(progress));
         if (0 < progress && progress < 1) {
             bossBar.progress(progress);
         } else if (progress <= 0) {
@@ -100,17 +97,12 @@ public class Timer extends BukkitRunnable {
         } else if (1 <= progress) {
             bossBar.progress(1);
         }
-//        Bukkit.getServer().sendMessage(Component.text(this.maxDuration.getTime() +" "+this.timeLeft.getTime() +" "+ this.timeLeft.getTime().floatValue()/this.maxDuration.getTime().floatValue()));
     }
 
     public void setDuration(Duration input) {
         this.hadIntermission = input.compareTo(intermission) <= 0;
         LocalDateTime now = LocalDateTime.now();
         this.endTime = input.getDateTime(now);
-//        this.maxDuration = new Duration(input);
-//        Bukkit.getServer().sendMessage(Component.text(now.toString()));
-//        Bukkit.getServer().sendMessage(Component.text(this.endTime.toString()));
-//        Bukkit.getServer().sendMessage(Component.text(input.toString()));
         this.timeLeft = new Duration(input);
         this.lastPause = now;
         this.state = TimerState.PAUSED;
@@ -171,15 +163,10 @@ public class Timer extends BukkitRunnable {
 
     public void showBossBar() {
         bossBarShown = true;
-//        this.timeLeft.setFromDateTime(LocalDateTime.now(), this.time);
-//        Component newName = Component.text("Time Left: ")
-//                .append(Component.text(timeLeft.getFormattedTime(), NamedTextColor.BLUE));
-//        bossBar.name(newName);
         Bukkit.getServer().showBossBar(bossBar);
     }
 
     public void removeBossBar() {
-//        this.cancel();
         bossBarShown = false;
         Bukkit.getServer().hideBossBar(bossBar);
     }

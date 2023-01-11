@@ -2,8 +2,6 @@ package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.halloween.candy.Candy;
-import io.github.mystievous.towerchallenge.halloween.candy.CandyUtils;
 import io.github.mystievous.towerchallenge.hats.HatGUI;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
@@ -22,28 +20,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 public abstract class TowerTeam {
 
     // Server's scoreboard
-    public static Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
-    public static String BUNDLE_NAME = "Candy Basket";
-    public static String SHULKER_NAME = "Starting Shulker Box";
-    private static final SecureRandom RANDOM = new SecureRandom();
-
+    public static final Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+    public static final String SHULKER_NAME = "Starting Shulker Box";
 
     private final Team team;
     private final JavaPlugin plugin;
     private final ChallengeManager manager;
-    private final String displayName;
     private final String color;
     private final String dye;
     private final HatGUI hatGUI;
@@ -55,7 +47,6 @@ public abstract class TowerTeam {
     public TowerTeam(ChallengeManager manager, String displayName, String color, String dye) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        this.displayName = displayName;
         String name = displayName.replaceAll("\\s", "");
         this.color = color;
         this.dye = dye.toUpperCase();
@@ -165,38 +156,6 @@ public abstract class TowerTeam {
 
     public void clear() {
         getTeam().removeEntries(getTeam().getEntries());
-    }
-
-    public ItemStack getBundle(int candies, int customModelID) {
-        ItemStack bundle = CandyUtils.setBundle(CandyUtils.setTeam(new ItemStack(Material.BUNDLE), this));
-        BundleMeta bundleMeta = (BundleMeta) bundle.getItemMeta();
-        bundleMeta.displayName(Component.text(BUNDLE_NAME).decoration(TextDecoration.ITALIC, false));
-        bundleMeta.setCustomModelData(customModelID);
-        ItemStack[] candyItems = new ItemStack[candies];
-        Arrays.fill(candyItems, Candy.randomCandy());
-        bundleMeta.setItems(Arrays.stream(candyItems).toList());
-        bundle.setItemMeta(bundleMeta);
-        return bundle;
-    }
-
-    public ItemStack getBundle(int candies) {
-        return getBundle(candies, RANDOM.nextInt(3));
-    }
-
-    public ItemStack getBundle() {
-        return getBundle(0, RANDOM.nextInt(3));
-    }
-
-    public void giveBundle(Player player, int candies, int customModelID) {
-        player.getInventory().addItem(getBundle(candies, customModelID));
-    }
-
-    public void giveBundle(Player player, int candies) {
-        giveBundle(player, candies, RANDOM.nextInt(3));
-    }
-
-    public void giveBundle(Player player) {
-        giveBundle(player, 0, RANDOM.nextInt(3));
     }
 
     public ItemStack getShulker() {

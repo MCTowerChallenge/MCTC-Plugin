@@ -13,7 +13,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -77,13 +76,7 @@ public class MagicItems {
         PresentEntityHandler.summonPresent(playerInteractEvent.getPlayer());
     });
 
-//    public static final ItemStack goatHat1 = NBTUtils.setBool(GoatHat.GOAT_HAT_1, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
-//        ItemMeta meta = getItemMeta();
-//        meta.displayName(TextUtil.noItalic("Goat Hat 1"));
-//        setItemMeta(meta);
-//    }});
-
-    public static final Wand goatHat2 = new Wand(GoatHat.GOAT_HAT_2, NBTUtils.setBool(GoatHat.GOAT_HAT_2, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
+    public static final Wand goatHat = new Wand(GoatHat.GOAT_HAT, NBTUtils.setBool(GoatHat.GOAT_HAT, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
         LeatherArmorMeta meta = (LeatherArmorMeta) getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_DYE);
         meta.setCustomModelData(804);
@@ -142,11 +135,8 @@ public class MagicItems {
         gui.placeElement(2, 3, new ButtonElement(greaterSpeedBoots, player -> {
             player.getInventory().addItem(greaterSpeedBoots);
         }));
-//        gui.placeElement(3, 3, new ButtonElement(goatHat1, player -> {
-//            player.getInventory().addItem(goatHat1);
-//        }));
-        gui.placeElement(4, 3, new ButtonElement(goatHat2.getItem(), player -> {
-            player.getInventory().addItem(goatHat2.getItem());
+        gui.placeElement(4, 3, new ButtonElement(goatHat.getItem(), player -> {
+            player.getInventory().addItem(goatHat.getItem());
         }));
 
         gui.placeElement(9,3, new ButtonElement(portalReplaceWand.getItem(), player -> {

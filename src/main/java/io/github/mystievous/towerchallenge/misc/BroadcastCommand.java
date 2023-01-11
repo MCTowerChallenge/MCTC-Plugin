@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.misc;
 
-import io.github.mystievous.towerchallenge.DefaultFontInfo;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.DefaultFontInfo;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;

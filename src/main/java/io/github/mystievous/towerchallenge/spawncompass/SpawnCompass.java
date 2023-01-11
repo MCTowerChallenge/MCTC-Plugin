@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.spawncompass;
 
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -25,20 +26,20 @@ import java.util.Map;
 
 public class SpawnCompass implements Listener {
 
-    public static final Location OVERWORLD_LOCATION = new Location(TowerChallenge.WORLD(), -1331.0d, 58.0d, -1249.0d);
-    public static final Location NETHER_LOCATION = new Location(TowerChallenge.NETHER(), -177, 67d, -146d);
-    public static final Location THE_END_LOCATION = new Location(TowerChallenge.THE_END(), 0.0d, 0.0d, 0.0d);
+    public static final Location OVERWORLD_LOCATION = new Location(Worlds.WORLD(), -1331.0d, 58.0d, -1249.0d);
+    public static final Location NETHER_LOCATION = new Location(Worlds.NETHER(), -177, 67d, -146d);
+    public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
     public static ItemStack refreshPlayerDestination(Player player, ItemStack compass) {
         String playerWorldName = player.getLocation().getWorld().getName();
-        if (playerWorldName.equals(TowerChallenge.NETHER_NAME)) {
+        if (playerWorldName.equals(Worlds.NETHER().getName())) {
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
                 compassMeta.setLodestone(NETHER_LOCATION);
                 compassMeta.setLodestoneTracked(false);
                 compass.setItemMeta(compassMeta);
             }
             player.setCompassTarget(NETHER_LOCATION);
-        } else if (playerWorldName.equals(TowerChallenge.THE_END_NAME)) {
+        } else if (playerWorldName.equals(Worlds.THE_END().getName())) {
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
                 compassMeta.setLodestone(THE_END_LOCATION);
                 compassMeta.setLodestoneTracked(false);

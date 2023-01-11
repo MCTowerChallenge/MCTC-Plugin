@@ -12,10 +12,9 @@ import io.github.mystievous.towerchallenge.gui.page.Openable;
 import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.regions.GingerbreadRegion;
+import io.github.mystievous.towerchallenge.towering.TowerListener;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,8 +26,8 @@ import java.util.List;
 
 public class RegionListGui implements Openable {
 
-    private GodManager godManager;
-    private TowerListener towerListener;
+    private final GodManager godManager;
+    private final TowerListener towerListener;
 
     public RegionListGui(GodManager godManager, TowerListener towerListener) {
         this.godManager = godManager;
@@ -37,16 +36,14 @@ public class RegionListGui implements Openable {
 
     @Override
     public Gui getGui(Player player) {
-        TeamGui regionGui = new TeamGui(Component.text("Team to set:"), participantTeam -> {
+        return new TeamGui(Component.text("Team to set:"), participantTeam -> {
             TowerRegion towerRegion = participantTeam.getTowerRegion();
             SpawnRegion spawnRegion = participantTeam.getSpawnRegion();
-            GingerbreadRegion gingerbreadRegion = participantTeam.getGingerbreadRegion();
 
             List<Component> lore = new ArrayList<>(
                     TextUtil.formatTexts(
                             String.format("Tower: %s", towerRegion == null ? "No Region" : towerRegion.getId()),
-                            String.format("Spawn: %s", spawnRegion == null ? "No Region" : spawnRegion.getId()),
-                            String.format("Gingerbread: %s", gingerbreadRegion == null ? "No Region" : gingerbreadRegion.getId())
+                            String.format("Spawn: %s", spawnRegion == null ? "No Region" : spawnRegion.getId())
                     )
             );
 
@@ -123,49 +120,12 @@ public class RegionListGui implements Openable {
                 player2.closeInventory();
                 player2.performCommand(String.format("rg info -w \"%s\" %s", ParticipantTeam.getTowerWorld().getName(), participantTeam.getTowerName()));
             });
-            gui.placeElement(5, 2, towerElement);
-
-            RegionManager gingerbreadWorldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(ParticipantTeam.getGingerbreadWorld()));
-            ItemStack gingerbreadItem = new ItemStack(Material.SCUTE);
-            ItemMeta gingerbreadMeta = gingerbreadItem.getItemMeta();
-            gingerbreadMeta.setCustomModelData(2);
-            gingerbreadMeta.displayName(Component.text("Gingerbread Region"));
-            gingerbreadMeta.lore(new ArrayList<>(){{
-                add(TextUtil.formatText(participantTeam.getGingerbreadRegion() != null ? "Redefine Region" : "Define Region"));
-            }});
-            gingerbreadItem.setItemMeta(gingerbreadMeta);
-            ButtonElement gingerbreadElement = new ButtonElement(gingerbreadItem, player2 -> {
-                if (gingerbreadWorldManager.hasRegion(participantTeam.getGingerbreadName())) {
-//                    player1.sendMessage(String.format("rg redefine -w \"%s\" %s", ParticipantTeam.getSpawnWorld().getName(), participantTeam.getSpawnName()));
-                    player2.performCommand(String.format("rg redefine -w \"%s\" %s", ParticipantTeam.getGingerbreadWorld().getName(), participantTeam.getGingerbreadName()));
-                } else {
-//                    player1.sendMessage(String.format("rg define -w \"%s\" %s", ParticipantTeam.getSpawnWorld().getName(), participantTeam.getSpawnName()));
-                    player2.performCommand(String.format("rg define -w \"%s\" %s", ParticipantTeam.getGingerbreadWorld().getName(), participantTeam.getGingerbreadName()));
-                }
-                if (gingerbreadWorldManager.hasRegion(participantTeam.getGingerbreadName())) {
-                    if (gingerbreadWorldManager.hasRegion("candy-village")) {
-                        try {
-                            gingerbreadWorldManager.getRegion(participantTeam.getGingerbreadName()).setParent(gingerbreadWorldManager.getRegion("candy-village"));
-                        } catch (ProtectedRegion.CircularInheritanceException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } else {
-                    player2.sendMessage(Component.text("Error creating region, "+participantTeam.getGingerbreadName()));
-                }
-                player2.performCommand(String.format("rg setpriority -w \"%s\" %s 1", ParticipantTeam.getGingerbreadWorld().getName(), participantTeam.getGingerbreadName()));
-                participantTeam.loadRegions();
-                participantTeam.getGingerbreadRegion().setTeleportCenter(player2.getLocation().getY());
-                player2.closeInventory();
-                player2.performCommand(String.format("rg info -w \"%s\" %s", ParticipantTeam.getGingerbreadWorld().getName(), participantTeam.getGingerbreadName()));
-            });
-            gui.placeElement(7, 2, gingerbreadElement);
+            gui.placeElement(7, 2, towerElement);
 
             gui.openInventory(player1);
 
         }, new ButtonElement(ButtonElement.backItem(), player1 -> {
             godManager.getGodGui().openInventory(player1);
         }));
-        return regionGui;
     }
 }

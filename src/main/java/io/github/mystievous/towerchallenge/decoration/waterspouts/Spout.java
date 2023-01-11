@@ -6,16 +6,12 @@ import org.bukkit.World;
 
 public class Spout {
 
-    private SpoutManager spoutManager;
-    private Location location;
-    private boolean spraying;
-    private World world;
+    private final Location location;
+    private final World world;
 
-    public Spout(SpoutManager spoutManager, Location location) {
-        this.spoutManager = spoutManager;
+    public Spout(Location location) {
         this.location = location;
         world = location.getWorld();
-        this.spraying = false;
     }
 
 

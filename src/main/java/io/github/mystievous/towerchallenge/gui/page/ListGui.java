@@ -17,7 +17,7 @@ public class ListGui extends Gui {
     }
 
     private final Element lastElement;
-    private List<Element> elementList;
+    private final List<Element> elementList;
 
     public ListGui(Component name, List<Element> elementList, Element lastElement) {
         super(name);

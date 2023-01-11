@@ -19,14 +19,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Quest implements Openable {
 
     private final String id;
     private final String friendlyName;
-    private List<QuestRequirement> requirements;
-    private List<QuestReward> rewards;
+    private final List<QuestRequirement> requirements;
+    private final List<QuestReward> rewards;
     private @Nullable List<Component> description;
 
     private Quest next;

@@ -3,6 +3,7 @@ package io.github.mystievous.towerchallenge.gui.element;
 import io.github.mystievous.towerchallenge.NBTUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.UUID;
 
 public class Element {

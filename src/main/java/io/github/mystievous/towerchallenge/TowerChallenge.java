@@ -1,12 +1,8 @@
 package io.github.mystievous.towerchallenge;
 
-import io.github.mystievous.towerchallenge.halloween.candy.CandyCommands;
-import io.github.mystievous.towerchallenge.halloween.candy.CandyTabComplete;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
-import io.github.mystievous.towerchallenge.halloween.penelope.PenelopeCommands;
-import io.github.mystievous.towerchallenge.halloween.penelope.PenelopeTabComplete;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePackListener;
@@ -21,7 +17,6 @@ import io.github.mystievous.towerchallenge.wands.WandListener;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,7 +28,6 @@ public final class TowerChallenge extends JavaPlugin {
     public static File teamConfigFile;
     public static File regionConfigFile;
     public static File questConfigFile;
-    public static File penelopeConfigFile;
     public static File wandConfigFile;
     public static File endPortalConfigFile;
     public static File candyConfigFile;
@@ -42,26 +36,13 @@ public final class TowerChallenge extends JavaPlugin {
     public static File teamScoreConfigFile;
     public static File teamDataConfigFile;
 
-    public static TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
-    public static TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
-    public static TextColor NEGATIVE_COLOR = NamedTextColor.DARK_RED;
+    public static final TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
+    public static final TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
+    public static final TextColor NEGATIVE_COLOR = NamedTextColor.DARK_RED;
     //d0608c
     //124f49
 
     public static final String MCTC_NAMESPACE = "mctc";
-
-    public static String WORLD_NAME = "world";
-    public static String NETHER_NAME = WORLD_NAME+"_nether";
-    public static String THE_END_NAME = WORLD_NAME+"_the_end";
-    public static World WORLD() {
-        return Bukkit.getWorld(WORLD_NAME);
-    };
-    public static World NETHER() {
-        return Bukkit.getWorld(NETHER_NAME);
-    };
-    public static World THE_END() {
-        return Bukkit.getWorld(THE_END_NAME);
-    }
 
     public static TowerChallenge me;
 
@@ -86,9 +67,6 @@ public final class TowerChallenge extends JavaPlugin {
         questConfigFile = new File(getDataFolder(), "quests.yml");
         saveResource("quests.yml", false);
         YamlConfiguration questConfig = YamlConfiguration.loadConfiguration(questConfigFile);
-
-        penelopeConfigFile = new File(getDataFolder(), "penelope.yml");
-        YamlConfiguration penelopeConfig = YamlConfiguration.loadConfiguration(penelopeConfigFile);
 
         wandConfigFile = new File(getDataFolder(), "wands.yml");
         saveResource("wands.yml", false);
@@ -119,7 +97,6 @@ public final class TowerChallenge extends JavaPlugin {
             teamConfig.save(teamConfigFile);
             regionConfig.save(regionConfigFile);
             questConfig.save(questConfigFile);
-            penelopeConfig.save(penelopeConfigFile);
             wandConfig.save(wandConfigFile);
             endPortalConfig.save(endPortalConfigFile);
             candyConfig.save(candyConfigFile);
@@ -165,16 +142,6 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
         // Other Commands
-        PenelopeCommands penelopeCommands = new PenelopeCommands();
-        this.getCommand("penelope").setExecutor(penelopeCommands);
-        PenelopeTabComplete penelopeTabComplete = new PenelopeTabComplete();
-        this.getCommand("penelope").setTabCompleter(penelopeTabComplete);
-
-        CandyCommands candyCommands = new CandyCommands(challengeManager);
-        this.getCommand("candy").setExecutor(candyCommands);
-        CandyTabComplete candyTabComplete = new CandyTabComplete();
-        this.getCommand("candy").setTabCompleter(candyTabComplete);
-
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
 

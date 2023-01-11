@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 
 public class TeamElement extends Element implements Clickable {
 
-    private ParticipantTeam team;
+    private final ParticipantTeam team;
     private final BiConsumer<Player, ParticipantTeam> consumer;
 
     public TeamElement(ParticipantTeam team, List<Component> lore, BiConsumer<Player, ParticipantTeam> biConsumer) {

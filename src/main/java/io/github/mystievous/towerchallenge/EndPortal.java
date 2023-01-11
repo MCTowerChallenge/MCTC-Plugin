@@ -24,8 +24,8 @@ public class EndPortal implements Listener {
 
     private final ChallengeManager challengeManager;
 
-    public static final Location PORTAL_MIN = new Location(TowerChallenge.WORLD(), -1334, 49, -1270);
-    public static final Location PORTAL_MAX = new Location(TowerChallenge.WORLD(), -1331, 49, -1267);
+    public static final Location PORTAL_MIN = new Location(Worlds.Dec2022(), -1334, 49, -1270);
+    public static final Location PORTAL_MAX = new Location(Worlds.Dec2022(), -1331, 49, -1267);
 
     public EndPortal(ChallengeManager challengeManager) {
         this.challengeManager = challengeManager;
@@ -39,9 +39,6 @@ public class EndPortal implements Listener {
                 block.getBlock().setType(Material.END_PORTAL);
             }
         }
-//        Bukkit.getServer().sendMessage(Component.text("<", NamedTextColor.WHITE)
-//                .append(Component.text("Herobrine", NamedTextColor.DARK_RED))
-//                .append(Component.text("> You don't know what you did....", NamedTextColor.WHITE)));
         Bukkit.getServer().sendMessage(Component.text("End Portal ").color(TextColor.fromHexString("#f0ffd0"))
                 .append(Component.text("has been opened!").color(NamedTextColor.WHITE)));
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.end_portal.spawn"), Sound.Source.MASTER, 100, 1));

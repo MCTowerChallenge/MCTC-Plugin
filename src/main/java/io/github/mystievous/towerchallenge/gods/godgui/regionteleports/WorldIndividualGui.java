@@ -108,28 +108,6 @@ public class WorldIndividualGui extends ListGui {
             }
         }
 
-//        for (Map.Entry<String, ProtectedRegion> entry : regionManager.getPathRegions().entrySet()) {
-//            if (items.get(entry.getKey()) == null) {
-//                ProtectedRegion region = entry.getValue();
-//                ItemStack item = new ItemStack(Material.GRASS_BLOCK);
-//                ItemMeta meta = item.getItemMeta();
-//                meta.displayName(Component.text(region.getId()));
-//                item.setItemMeta(meta);
-//                this.addElement(new ButtonElement(item, player -> {
-//                    com.sk89q.worldedit.util.Location teleLoc = region.getFlag(Flags.TELE_LOC);
-//                    if (teleLoc != null) {
-//                        Location location = BukkitAdapter.adapt(teleLoc);
-//                        player.teleport(location);
-//                    } else {
-//                        BlockVector3 blockVector3 = region.getMaximumPoint().subtract(region.getMinimumPoint()).divide(2).add(region.getMinimumPoint());
-//                        Location location = new Location(world, blockVector3.getX(), blockVector3.getY(), blockVector3.getZ());
-//                        player.setGameMode(GameMode.SPECTATOR);
-//                        player.teleport(location);
-//                    }
-//                }));
-//            }
-//        }
-
     }
 
     public WorldIndividualGui(World world, RegionManager regionManager, Component name, Element lastElement) {

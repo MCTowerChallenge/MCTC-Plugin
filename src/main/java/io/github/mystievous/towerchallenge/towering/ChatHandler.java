@@ -79,9 +79,6 @@ public class ChatHandler implements Listener {
             case("daybot"):
                 dayBotMessage = Component.text("you talking about me?");
                 break;
-//            case("mothman"):
-//                dayBotMessage = Component.text("https://clips.twitch.tv/SpinelessWonderfulCucumberDuDudu-wjwpYRPlgEY2Scpd").clickEvent(ClickEvent.openUrl("https://clips.twitch.tv/SpinelessWonderfulCucumberDuDudu-wjwpYRPlgEY2Scpd"));
-//                break;
             case("l"):
                 dayBotMessage = Component.text("that sucks man");
                 break;

@@ -125,12 +125,12 @@ public class QuestManager implements Openable {
         return teamDataConfig.isString(team.getTextName()+".CurrentQuest");
     }
 
-    private List<Quest> quests;
-    private Map<String, List<Quest>> teamQuests;
-    private GuiHeldItem questBook;
-    private ItemStack steveListItem;
-    private ChallengeManager challengeManager;
-    private NPCManager npcManager;
+    private final List<Quest> quests;
+    private final Map<String, List<Quest>> teamQuests;
+    private final GuiHeldItem questBook;
+    private final ItemStack steveListItem;
+    private final ChallengeManager challengeManager;
+    private final NPCManager npcManager;
 
     public QuestManager(ChallengeManager challengeManager) {
         this.challengeManager = challengeManager;
@@ -257,9 +257,10 @@ public class QuestManager implements Openable {
         quests.add(spiritPresents);
         spiritStart.setNext(spiritPresents);
 
-
-
         npcManager = new NPCManager(this);
+
+        QuestCommands commands = new QuestCommands(this);
+        challengeManager.getPlugin().getCommand("questbook").setExecutor(commands);
     }
 
     public ChallengeManager getChallengeManager() {

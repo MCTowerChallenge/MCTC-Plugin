@@ -5,7 +5,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
@@ -29,7 +29,6 @@ import org.bukkit.scoreboard.Score;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TowerRegion extends EventRegion implements Listener {
 
@@ -42,22 +41,6 @@ public class TowerRegion extends EventRegion implements Listener {
         score = manager.getObjective().getScore(name);
         score.setScore(blocks.size());
 //        scanBlocks();
-    }
-
-    public void scanBlocks() {
-        BlockVector3 minPoint = getRegion().getMinimumPoint();
-        BlockVector3 maxPoint = getRegion().getMaximumPoint();
-        for (int y = minPoint.getBlockY(); y <= maxPoint.getBlockY(); y++) {
-            for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
-                for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
-                    Block block = TowerChallenge.WORLD().getBlockAt(x, y, z);
-                    if (!block.getType().isAir()) {
-                        addBlock(null, block.getState());
-                    }
-                }
-            }
-        }
-
     }
 
     public void sendBlockCount(Audience audience) {
@@ -171,10 +154,6 @@ public class TowerRegion extends EventRegion implements Listener {
                     event.setCancelled(true);
                 }
             }
-//            else {
-//                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
-//                event.setCancelled(true);
-//            }
         }
     }
 
@@ -187,10 +166,6 @@ public class TowerRegion extends EventRegion implements Listener {
             if (getManager().isTowering()) {
                 removeBlock(event.getBlock().getState());
             }
-//            else {
-//                event.getPlayer().sendActionBar(Component.text("You cannot build in the tower areas yet!"));
-//                event.setCancelled(true);
-//            }
         }
     }
 

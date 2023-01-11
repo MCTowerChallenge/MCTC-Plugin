@@ -14,11 +14,8 @@ import java.util.function.Function;
 
 public class TeamGui extends ListGui {
 
-    Collection<ParticipantTeam> teamList;
-
     public TeamGui(Component name, Function<ParticipantTeam, List<Component>> loreBuilder, Collection<ParticipantTeam> teamList, BiConsumer<Player, ParticipantTeam> biConsumer, ButtonElement lastElement) {
         super(TextUtil.noItalic(name), lastElement);
-        this.teamList = teamList;
         for (ParticipantTeam team : teamList) {
             if (team != null) {
                 TeamElement element = new TeamElement(team, loreBuilder.apply(team), biConsumer);

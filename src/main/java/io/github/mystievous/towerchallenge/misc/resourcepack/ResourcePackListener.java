@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class ResourcePackListener implements Listener {
 
-    private Map<UUID, Integer> attempts;
+    private final Map<UUID, Integer> attempts;
 
     public ResourcePackListener(ChallengeManager manager) {
         Bukkit.getPluginManager().registerEvents(this, manager.getPlugin());

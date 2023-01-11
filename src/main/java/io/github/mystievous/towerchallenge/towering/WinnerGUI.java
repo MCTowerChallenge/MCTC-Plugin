@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class WinnerGUI implements Listener {
 
-    private ChallengeManager challengeManager;
+    private final ChallengeManager challengeManager;
     private Inventory winnerUI;
 
     public WinnerGUI(ChallengeManager challengeManager) {

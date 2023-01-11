@@ -8,7 +8,10 @@ import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -31,10 +34,10 @@ public class ItemEntityHandler implements Listener {
 
     private final ChallengeManager challengeManager;
     private final String tag;
-    private ItemStack itemStack;
+    private final ItemStack itemStack;
     private double yOffset;
     private Key soundKey;
-    private String requiredQuest;
+    private final String requiredQuest;
     private Consumer<Player> eventHandler;
 
     public ItemEntityHandler(ChallengeManager challengeManager, String tag, @Nullable String requiredQuest, ItemStack itemStack) {
@@ -150,8 +153,6 @@ public class ItemEntityHandler implements Listener {
                     Bukkit.getLogger().info("Failed to save Team Data Config");
                 }
             }
-//            ConfigurationSection entitySection = config.getConfigurationSection(tag+"."+entity.getUniqueId());
-//            if (entitySection.contains(challengeManager.getPlayerTeam(player).getTextName()));
         }
     }
 

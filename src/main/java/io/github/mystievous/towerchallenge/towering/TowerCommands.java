@@ -26,8 +26,6 @@ public class TowerCommands implements CommandExecutor {
     public TowerCommands(ChallengeManager manager) {
         this.manager = manager;
         this.towerListener = manager.getTowerListener();
-//        this.handler = new ItemEntityHandler(manager, "test", "penelope-armor", new ItemStack(Material.WHITE_WOOL));
-//        handler.setSoundKey(Key.key(Key.MINECRAFT_NAMESPACE, "item.armor.equip_netherite"));
     }
 
     @Override
@@ -238,18 +236,13 @@ public class TowerCommands implements CommandExecutor {
                         break;
                     case ("toggletower"):
                         if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.TOWERING)) {
-                            manager.setChallengePhase(ChallengeManager.ChallengePhase.SETUP);
+                            manager.setChallengePhase(ChallengeManager.ChallengePhase.IN_PROGRESS);
                             sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));
-                        } else if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.SETUP)) {
+                        } else if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.IN_PROGRESS)) {
                             manager.setChallengePhase(ChallengeManager.ChallengePhase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
                         break;
-//                    case ("as"):
-//                        if (sender instanceof Player player) {
-//                            handler.summonArmorStand(player);
-//                        }
-//                        break;
                     default:
                         sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));
                 }

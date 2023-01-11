@@ -5,10 +5,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.NBTUtils;
-import io.github.mystievous.towerchallenge.TextUtil;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -106,7 +103,7 @@ public class FastTravelListener implements Listener {
     public void onPlayerEat(final FoodLevelChangeEvent event) {
         Entity entity = event.getEntity();
         ItemStack item = event.getItem();
-        RegionManager overworldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(TowerChallenge.WORLD()));
+        RegionManager overworldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.Dec2022()));
         if (event.isCancelled())
             return;
         if (!(entity instanceof Player player))

@@ -4,6 +4,6 @@ import org.bukkit.entity.Player;
 
 public interface Openable {
 
-    public Gui getGui(Player player);
+    Gui getGui(Player player);
 
 }

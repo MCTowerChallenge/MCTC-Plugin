@@ -66,7 +66,7 @@ public class HatGUI implements Listener {
 
         if (HatUtil.isHat(event.getCurrentItem())) {
             PlayerInventory inventory = player.getInventory();
-            if (NBTUtils.boolState(GoatHat.GOAT_HAT_2, inventory.getHelmet())) {
+            if (NBTUtils.boolState(GoatHat.GOAT_HAT, inventory.getHelmet())) {
                 player.sendMessage(CommandUtils.errorMessage("Please unequip the goat horns first!"));
             } else {
                 inventory.setHelmet(event.getCurrentItem());

@@ -19,10 +19,10 @@ import java.util.UUID;
 
 public abstract class Gui implements Listener {
 
-    private Component inventoryTitle;
+    private final Component inventoryTitle;
 
     private Inventory inventory;
-    private HashMap<UUID, Element> elements;
+    private final HashMap<UUID, Element> elements;
 
     /**
      * Initializes a new GUI

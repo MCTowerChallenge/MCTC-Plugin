@@ -16,9 +16,9 @@ public class GodTeam extends TowerTeam {
     private final Map<String, String> playerHatColors = new HashMap<>();
     private final Map<String, HatGUI> hatColorGUIS = new HashMap<>();
 
-    public static String GOD_NAME = "God";
-    public static String GOD_COLOR = "#F7E983";
-    public static String GOD_DYE = "yellow";
+    public static final String GOD_NAME = "God";
+    public static final String GOD_COLOR = "#F7E983";
+    public static final String GOD_DYE = "yellow";
 
     public GodTeam(ChallengeManager manager) {
         super(manager, GOD_NAME, GOD_COLOR, GOD_DYE);
