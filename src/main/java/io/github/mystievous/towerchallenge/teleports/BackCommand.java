@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.teleports;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -31,7 +31,7 @@ public class BackCommand implements CommandExecutor {
             return true;
         }
         player.teleport(location);
-        player.sendMessage(Component.text("Teleported back to last location.").color(TowerChallenge.PRIMARY_COLOR));
+        player.sendMessage(Component.text("Teleported back to last location.").color(Palette.PRIMARY.getTextColor()));
         return true;
     }
 }

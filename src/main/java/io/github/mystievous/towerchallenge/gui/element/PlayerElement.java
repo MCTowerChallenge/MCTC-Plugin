@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.gui.element;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,13 +11,19 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Element representing an OfflinePlayer
+ */
 public class PlayerElement extends Element implements Clickable {
 
     private final OfflinePlayer player;
     private final BiConsumer<Player, OfflinePlayer> consumer;
 
-    public PlayerElement(ItemStack item, OfflinePlayer player, List<Component> lore, BiConsumer<Player, OfflinePlayer> biConsumer) {
-        super(item);
+    /**
+     * Element representing an OfflinePlayer
+     */
+    public PlayerElement(OfflinePlayer player, List<Component> lore, BiConsumer<Player, OfflinePlayer> biConsumer) {
+        super(new ItemStack(Material.PLAYER_HEAD));
         ItemStack skull = getItem();
         if (!(skull.getItemMeta() instanceof SkullMeta skullMeta)) {
             throw new IllegalArgumentException("Template item must be a skull!");

@@ -1,7 +1,8 @@
 package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.hats.HatGUI;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
@@ -39,10 +40,7 @@ public abstract class TowerTeam {
     private final String color;
     private final String dye;
     private final HatGUI hatGUI;
-
-    public static YamlConfiguration getConfig() {
-        return YamlConfiguration.loadConfiguration(TowerChallenge.regionConfigFile);
-    }
+    private boolean inDialogue;
 
     public TowerTeam(ChallengeManager manager, String displayName, String color, String dye) {
         this.manager = manager;
@@ -59,6 +57,15 @@ public abstract class TowerTeam {
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
         this.hatGUI = new HatGUI(manager, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
+        this.inDialogue = false;
+    }
+
+    public void setInDialogue(boolean inDialogue) {
+        this.inDialogue = inDialogue;
+    }
+
+    public boolean isInDialogue() {
+        return inDialogue;
     }
 
     public Team getTeam() {
@@ -82,6 +89,10 @@ public abstract class TowerTeam {
     }
     public Color getBukkitColor() {
         return Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16));
+    }
+
+    public ItemStack getItem() {
+        return new ItemStack(Material.PAPER);
     }
 
     public String getDye() {
@@ -132,7 +143,7 @@ public abstract class TowerTeam {
         team.unregister();
     }
 
-    public void addPlayer(OfflinePlayer player) {
+    public void addTeamPlayer(OfflinePlayer player) {
         try {
             getTeam().addPlayer(player);
         } catch (IllegalArgumentException e) {
@@ -140,7 +151,7 @@ public abstract class TowerTeam {
         }
     }
 
-    public abstract void addPlayerConfig(OfflinePlayer player);
+    public abstract void registerConfigPlayer(OfflinePlayer player);
 
     public void removePlayer(OfflinePlayer player) {
         getTeam().removePlayer(player);
@@ -271,7 +282,7 @@ public abstract class TowerTeam {
 
             if (item.getType().equals(Material.NETHERITE_PICKAXE) && player.getName().equals("ScaredArti")) {
                 item.lore(new ArrayList<>() {{
-                    add(Component.text("Look what you made me do...").color(TowerChallenge.SECONDARY_COLOR));
+                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.getTextColor()));
                 }});
             }
 

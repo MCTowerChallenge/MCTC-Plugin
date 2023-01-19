@@ -21,7 +21,6 @@ public class TeleportHistoryOverviewGui extends PlayerGui {
 
     public TeleportHistoryOverviewGui(TeleportHistoryManager historyManager, Gui exitGui) {
         super(Component.text(TITLE),
-                new ItemStack(Material.PLAYER_HEAD),
                 player -> new ArrayList<>(){{
                     add(Component.text(historyManager.get(player).size())
                             .append(Component.text(" teleports"))

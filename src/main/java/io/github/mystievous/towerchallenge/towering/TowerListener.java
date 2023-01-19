@@ -1,8 +1,11 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import io.github.mystievous.towerchallenge.BlockSets;
+import com.onarandombox.MultiverseNetherPortals.MultiverseNetherPortals;
+import com.onarandombox.MultiverseNetherPortals.utils.MVEventRecord;
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.hats.HatGUI;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
@@ -15,23 +18,31 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -55,8 +66,12 @@ public class TowerListener implements Listener {
         defaultHats = new HatGUI(manager, Color.RED);
     }
 
-    public ParticipantTeam getTeam(String name) {
-        return this.teams.get(name);
+    public @Nullable TowerTeam getTeam(@NotNull String name) {
+        if (!name.equalsIgnoreCase("God")) {
+            return this.teams.get(name);
+        } else {
+            return getGodTeam();
+        }
     }
 
     public HashMap<String, ParticipantTeam> getTeams() {
@@ -87,16 +102,15 @@ public class TowerListener implements Listener {
     public void loadTeams() {
         Bukkit.getLogger().info("Loading Team Config...");
 //        plugin.reloadConfig();
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamConfigFile);
         godTeam = new GodTeam(manager);
         List<String> godPlayers = config.getStringList("Gods");
         for (String uuid : godPlayers) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
             plugin.getLogger().info(String.format("Adding %s to team %s...", player.getName(), godTeam.getTeam().getName()));
-            godTeam.addPlayer(player);
+            godTeam.addTeamPlayer(player);
         }
         // Get team configs
-//        List<String> teamNames = config.getStringList("TeamNames");
         HashMap<String, ParticipantTeam> newTeams = new HashMap<>();
         if (config.isConfigurationSection("Teams")) {
             for (String name : config.getConfigurationSection("Teams").getKeys(false)) {
@@ -125,7 +139,7 @@ public class TowerListener implements Listener {
                         // add each player to team, if able
                         OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
                         plugin.getLogger().info(String.format("Adding %s to team %s...", player.getName(), name));
-                        newTeams.get(name).addPlayer(player);
+                        newTeams.get(name).addTeamPlayer(player);
                     }
                 }
             }
@@ -151,7 +165,7 @@ public class TowerListener implements Listener {
                     || !(getPlayerTeam(player) instanceof GodTeam || player.isOp())) {
                 event.setCancelled(true);
                 Location location = event.getBlocks().get(0).getLocation();
-                ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().decoration(TextDecoration.ITALIC, true).color(TowerChallenge.PRIMARY_COLOR);
+                ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().decoration(TextDecoration.ITALIC, true).color(Palette.PRIMARY.getTextColor());
                 message.append(Component.text("A portal was attempted to be opened at ")
                         .append(Component.text("X: "+location.getBlockX()))
                         .append(Component.text(", Y: "+location.getBlockY()))
@@ -209,27 +223,48 @@ public class TowerListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onEntityPortal(final EntityPortalEvent event) {
-//        if (event.isCancelled())
-//            return;
-//        if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC_nether"))) {
-//            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
-//        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC"))) {
-//            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
-//        }
-//    }
+    private final Location overworldPortalLocation = new Location(Worlds.Feb2023(), 97.5, 66, -2114.5);
+    private final Location netherPortalLocation = new Location(Worlds.Feb2023_nether(), -23.5, 41, -388.5);
 
-//    @EventHandler
-//    public void onPlayerPortal(final PlayerPortalEvent event) {
-//        if (event.isCancelled())
-//            return;
-//        if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC_nether"))) {
-//            event.setTo(EventManager.NETHER_PORTAL_LOCATION);
-//        } else if (event.getTo().getWorld().equals(Bukkit.getWorld("December MCTC"))) {
-//            event.setTo(EventManager.OVERWORLD_PORTAL_LOCATION);
-//        }
-//    }
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onEntityPortal(final EntityPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        if (event.getTo().getWorld().equals(Worlds.Feb2023_nether())) {
+            event.setCancelled(true);
+            event.getEntity().teleport(netherPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+//                event.setTo(netherPortalLocation);
+        } else if (event.getTo().getWorld().equals(Worlds.Feb2023())) {
+            event.setCancelled(true);
+            event.setTo(overworldPortalLocation);
+            event.getEntity().teleport(overworldPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPlayerPortal(final PlayerPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        Player player = event.getPlayer();
+        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
+            if (event.getTo().getWorld().equals(Worlds.Feb2023_nether())) {
+                event.setCancelled(true);
+                player.teleport(netherPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                Advancement enterNetherAdvancement = this.plugin.getServer().getAdvancement(NamespacedKey.minecraft("story/enter_the_nether"));
+                if (enterNetherAdvancement != null) {
+                    String enterNetherCriteria = "entered_nether";
+                    AdvancementProgress advancementProgress = player.getAdvancementProgress(enterNetherAdvancement);
+                    if (!advancementProgress.isDone()) {
+                        advancementProgress.awardCriteria(enterNetherCriteria);
+                    }
+                }
+            } else if (event.getTo().getWorld().equals(Worlds.Feb2023())) {
+                event.setCancelled(true);
+                event.setTo(overworldPortalLocation);
+                player.teleport(overworldPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {

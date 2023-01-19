@@ -14,6 +14,7 @@ import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class WorldIndividualGui extends ListGui {
 
-    private static ItemStack candyItem() {
+    private static @NotNull ItemStack candyItem() {
         ItemStack candy = new ItemStack(Material.SCUTE);
         ItemMeta meta = candy.getItemMeta();
         meta.setCustomModelData(2);
@@ -31,7 +32,7 @@ public class WorldIndividualGui extends ListGui {
         return candy;
     }
 
-    private static ItemStack spawnItem() {
+    private static @NotNull ItemStack spawnItem() {
         ItemStack ice = new ItemStack(Material.PACKED_ICE);
         ItemMeta meta = ice.getItemMeta();
         meta.displayName(Component.text("Spawn").decoration(TextDecoration.ITALIC, false));
@@ -39,7 +40,7 @@ public class WorldIndividualGui extends ListGui {
         return ice;
     }
 
-    private static ItemStack steveItem() {
+    private static @NotNull ItemStack steveItem() {
         ItemStack skull = new ItemStack(Material.SKELETON_SKULL);
         ItemMeta meta = skull.getItemMeta();
         meta.setCustomModelData(1);
@@ -48,7 +49,7 @@ public class WorldIndividualGui extends ListGui {
         return skull;
     }
 
-    private static ItemStack pixieItem() {
+    private static @NotNull ItemStack pixieItem() {
         ItemStack hat = new ItemStack(Material.LEATHER_HORSE_ARMOR);
         LeatherArmorMeta meta = (LeatherArmorMeta) hat.getItemMeta();
         meta.setCustomModelData(1);
@@ -58,7 +59,7 @@ public class WorldIndividualGui extends ListGui {
         return hat;
     }
 
-    private static ItemStack netherPortalItem() {
+    private static @NotNull ItemStack netherPortalItem() {
         ItemStack obsidian = new ItemStack(Material.CRYING_OBSIDIAN);
         ItemMeta meta = obsidian.getItemMeta();
         meta.setCustomModelData(0);
@@ -67,7 +68,7 @@ public class WorldIndividualGui extends ListGui {
         return obsidian;
     }
 
-    private static ItemStack commandBlockItem() {
+    private static @NotNull ItemStack commandBlockItem() {
         ItemStack commandBlock = new ItemStack(Material.COMMAND_BLOCK);
         ItemMeta meta = commandBlock.getItemMeta();
         meta.displayName(Component.text("Command Blocks/Particles").decoration(TextDecoration.ITALIC, false));
@@ -75,7 +76,10 @@ public class WorldIndividualGui extends ListGui {
         return commandBlock;
     }
 
-    private static final Map<String, ItemStack> items = new HashMap<>(){{
+    /**
+     * All items that represent world regions
+     */
+    private static final Map<String, ItemStack> items = new HashMap<>() {{
         put("spawn", spawnItem());
         put("steve", steveItem());
         put("candy-village", candyItem());
@@ -84,8 +88,16 @@ public class WorldIndividualGui extends ListGui {
         put("nether-portal", netherPortalItem());
     }};
 
-    public WorldIndividualGui(World world, RegionManager regionManager, Component name, List<Element> elementList, Element lastElement) {
-        super(name, elementList, lastElement);
+    /**
+     * Shows preset regions for a specific world
+     *
+     * @param world         The world to show
+     * @param regionManager The region manager of the world
+     * @param name          Name for the GUI
+     * @param exitElement   Element to use for exiting the GUI
+     */
+    public WorldIndividualGui(World world, RegionManager regionManager, Component name, Element exitElement) {
+        super(name, new ArrayList<>(), exitElement);
 
         for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
             String key = entry.getKey();
@@ -108,9 +120,5 @@ public class WorldIndividualGui extends ListGui {
             }
         }
 
-    }
-
-    public WorldIndividualGui(World world, RegionManager regionManager, Component name, Element lastElement) {
-        this(world, regionManager, name, new ArrayList<>(), lastElement);
     }
 }

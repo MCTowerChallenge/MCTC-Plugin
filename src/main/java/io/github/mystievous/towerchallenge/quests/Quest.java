@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.quests;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
@@ -51,6 +52,7 @@ public class Quest implements Openable {
 
     /**
      * Searches this quest for a requirement matching the given item
+     *
      * @param itemStack the item to search for
      * @return the corresponding requirement, or null if there is none
      */
@@ -84,6 +86,7 @@ public class Quest implements Openable {
 
     /**
      * Checks the entire quest for completion
+     *
      * @return true, if all requirements are fulfilled
      */
     public boolean isFulfilled() {
@@ -96,10 +99,10 @@ public class Quest implements Openable {
     }
 
     public Gui getGui(@NotNull TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        String questPath = team.getTextName()+".QuestProgress."+getId();
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
+        String questPath = team.getTextName() + ".QuestProgress." + getId();
         for (QuestRequirement requirement : requirements) {
-            String requirementPath = questPath+"."+requirement.getType().toString();
+            String requirementPath = questPath + "." + requirement.getType().toString();
             int requirementAmount = teamDataConfig.getInt(requirementPath, 0);
             requirement.setCurrentAmount(requirementAmount);
         }
@@ -125,9 +128,9 @@ public class Quest implements Openable {
             QuestRequirement requirement = requirements.get(i);
             Element element = requirement.getRepresentation();
             if (i < 7) {
-                gui.placeElement(i+2, 2, element);
+                gui.placeElement(i + 2, 2, element);
             } else if (i < 14) {
-                gui.placeElement(i-7+2, 3, element);
+                gui.placeElement(i - 7 + 2, 3, element);
             } else {
                 ChallengeManager.log("Quest has too many requirements");
             }
@@ -137,7 +140,7 @@ public class Quest implements Openable {
             QuestReward reward = rewards.get(i);
             Element element = reward.getRepresentation();
             if (i < 7) {
-                gui.placeElement(i+2, 5, element);
+                gui.placeElement(i + 2, 5, element);
             } else {
                 ChallengeManager.log("Quest has too many rewards");
             }
@@ -148,7 +151,7 @@ public class Quest implements Openable {
 
     @Override
     public Gui getGui(Player player) {
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (team == null) {
             return QuestManager.NO_QUEST_GUI;
         }

@@ -14,12 +14,15 @@ public class GodMountNPC extends NPC {
         super(tag);
     }
 
+    /**
+     * Stops non-gods from mounting a god mount
+     */
     @EventHandler
     public void onEntityMount(final EntityMountEvent event) {
 
         if (event.getEntity() instanceof Player player) {
             if (event.getMount().getScoreboardTags().contains(getTag())) {
-                if (!(TowerChallenge.me.getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }
@@ -27,12 +30,15 @@ public class GodMountNPC extends NPC {
 
     }
 
+    /**
+     * Stops non-gods from opening the inventory of a god mount
+     */
     @EventHandler
     public void onInventoryOpen(final InventoryOpenEvent event) {
         if (event.getInventory().getHolder() instanceof Entity entity &&
                 event.getPlayer() instanceof Player player) {
             if (entity.getScoreboardTags().contains(getTag())) {
-                if (!(TowerChallenge.me.getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }

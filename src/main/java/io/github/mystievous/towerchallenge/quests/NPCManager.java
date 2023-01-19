@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.quests;
 import io.github.mystievous.towerchallenge.NBTUtils;
 import io.github.mystievous.towerchallenge.TextUtil;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.decoration.presents.PresentEntityHandler;
+import io.github.mystievous.towerchallenge.eventspecific.winter.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.quests.entities.GodMountNPC;
@@ -19,7 +19,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -30,7 +29,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
-import java.io.IOException;
 import java.util.*;
 
 public class NPCManager {
@@ -64,34 +62,26 @@ public class NPCManager {
     public static final String SPIRIT_TAG = "holiday-spirit";
     public static final String HANK_MARVIN_TAG = "golem";
 
-    public static final String DIALOGUE_KEY = "InDialogue";
-
     public static void setInDialogue(TowerTeam team, boolean value) {
         if (team != null) {
-            YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-            teamDataConfig.set(team.getTextName()+"."+DIALOGUE_KEY, value);
-            try {
-                teamDataConfig.save(TowerChallenge.teamDataConfigFile);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            team.setInDialogue(value);
         }
     }
 
     public static void setInDialogue(Player player, boolean value) {
-        setInDialogue(TowerChallenge.me.getChallengeManager().getPlayerTeam(player), value);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+        setInDialogue(team, value);
     }
 
-    public static boolean getInDialogue(TowerTeam team) {
+    public static boolean isInDialogue(TowerTeam team) {
         if (team != null) {
-            YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-            return teamDataConfig.getBoolean(team.getTextName()+"."+DIALOGUE_KEY);
+            return team.isInDialogue();
         }
         return false;
     }
 
-    public static boolean getInDialogue(Player player) {
-        return getInDialogue(TowerChallenge.me.getChallengeManager().getPlayerTeam(player));
+    public static boolean isInDialogue(Player player) {
+        return isInDialogue(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player));
     }
 
     private final List<Dialogue> dialogues = new ArrayList<>();
@@ -142,12 +132,11 @@ public class NPCManager {
 //                                                .setSoundKey(PENELOPE_SOUND)
                                                 .setNext(new Dialogue(PenelopeText("I believe there's a way up on the north-west side."), 3.5))))));
 //                                                .setSoundKey(PENELOPE_SOUND)
-
         penelopeStartDialogue.setFriendlyName("Penelope Start");
         dialogues.add(penelopeStartDialogue);
 
         penelope.addQuestHandler(QuestManager.PENELOPE_START, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 setInDialogue(clickPlayer, true);
                 penelopeStartDialogue.play(clickPlayer, player -> {
@@ -171,16 +160,16 @@ public class NPCManager {
         dialogues.add(penelopeArmorCompleteDialogue);
 
         penelope.addQuestHandler(QuestManager.PENELOPE_ARMOR, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 ItemStack item = clickPlayer.getInventory().getItem(clickEvent.getHand());
-                TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(clickPlayer);
+                TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(clickPlayer);
                 Quest quest = questManager.getQuest(team, QuestManager.PENELOPE_ARMOR);
                 if (quest != null) {
                     QuestRequirement requirement = quest.getRequirement(item);
                     if (requirement != null) {
                         int amount = item.getAmount();
-                        item.setAmount(amount-requirement.turnIn(team, amount));
+                        item.setAmount(amount - requirement.turnIn(team, amount));
                     }
                     if (quest.isFulfilled()) {
                         setInDialogue(clickPlayer, true);
@@ -200,10 +189,10 @@ public class NPCManager {
         });
 
         Dialogue penelopeSteveStartDialogue = new Dialogue(PenelopeText("If you have some time, stop by steve's house to the south-west of here!"), 5)
-                        .setNext(new Dialogue(PenelopeText("He might need some help setting up for the party."), 2.5));
+                .setNext(new Dialogue(PenelopeText("He might need some help setting up for the party."), 2.5));
 
         penelope.addQuestHandler(QuestManager.STEVE_START, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 setInDialogue(clickPlayer, true);
                 penelopeSteveStartDialogue.play(clickPlayer, player -> {
@@ -213,50 +202,50 @@ public class NPCManager {
         });
 
         Dialogue steveStartDialogue = new Dialogue(SteveText("Oh! Hello there friend!"), 3)
-            .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly1"))
+                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly1"))
 
-            .setNext(new Dialogue(SteveText("Penelope told me that you were just helping her get ready for our party."), 4.75)
-                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly2"))
+                .setNext(new Dialogue(SteveText("Penelope told me that you were just helping her get ready for our party."), 4.75)
+                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly2"))
 
-                .setNext(new Dialogue(SteveText("How very nice of you to do!"), 3.5)
-                    .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly3")))
+                        .setNext(new Dialogue(SteveText("How very nice of you to do!"), 3.5)
+                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly3")))
 
-                    .setNext(new Dialogue(SteveText("Now I just hope I have everything ready in time..."), 5)
-                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly4"))
+                        .setNext(new Dialogue(SteveText("Now I just hope I have everything ready in time..."), 5)
+                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly4"))
 
-                            .setNext(new Dialogue(SteveText("Could you do me a big favor?"), 5.5)
-                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly5"))
+                                .setNext(new Dialogue(SteveText("Could you do me a big favor?"), 5.5)
+                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly5"))
 
-                                    .setNext(new Dialogue(SteveText("Awesome, thank you so much!"), 3.5)
-                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly6"))
+                                        .setNext(new Dialogue(SteveText("Awesome, thank you so much!"), 3.5)
+                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly6"))
 
-                                        .setNext(new Dialogue(SteveText("There are quite a few things I still need to gather for this party."), 5.5)
-                                            .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly7"))
+                                                .setNext(new Dialogue(SteveText("There are quite a few things I still need to gather for this party."), 5.5)
+                                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly7"))
 
-                                            .setNext(new Dialogue(SteveText("I wrote it all down on a list..."), 7.5)
-                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly8"))
+                                                        .setNext(new Dialogue(SteveText("I wrote it all down on a list..."), 7.5)
+                                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly8"))
 
-                                                .setNext(new Dialogue(SteveText("Now where did I put it?"), 4)
-                                                    .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly9"))
+                                                                .setNext(new Dialogue(SteveText("Now where did I put it?"), 4)
+                                                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly9"))
 
-                                                    .setNext(new Dialogue(SteveText("I think I left it upstairs. Can you go look for me and if you find it get those things for me?"), 9)
-                                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly10"))
+                                                                        .setNext(new Dialogue(SteveText("I think I left it upstairs. Can you go look for me and if you find it get those things for me?"), 9)
+                                                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly10"))
 
-                                                        .setNext(new Dialogue(SteveText(Component.text("Again, I would ")
-                                                                .append(Component.text("greatly")
-                                                                    .decoration(TextDecoration.ITALIC, true))
-                                                                .append(Component.text(" appreciate it!")
-                                                                    .decoration(TextDecoration.ITALIC, false))), 5)
-                                                            .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly11"))
-                                                            )))))))));
+                                                                                .setNext(new Dialogue(SteveText(Component.text("Again, I would ")
+                                                                                        .append(Component.text("greatly")
+                                                                                                .decoration(TextDecoration.ITALIC, true))
+                                                                                        .append(Component.text(" appreciate it!")
+                                                                                                .decoration(TextDecoration.ITALIC, false))), 5)
+                                                                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly11"))
+                                                                                )))))))));
 
         steveStartDialogue.setFriendlyName("Steve Start");
         dialogues.add(steveStartDialogue);
 
         steve.addQuestHandler(QuestManager.STEVE_START, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
-                TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(clickPlayer);
+                TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(clickPlayer);
                 Quest quest = questManager.getQuest(team, QuestManager.PENELOPE_ARMOR);
                 if (quest != null) {
                     setInDialogue(clickPlayer, true);
@@ -279,25 +268,25 @@ public class NPCManager {
         dialogues.add(steveItemsIdleDialogue);
 
         Dialogue steveItemsCompleteDialogue = new Dialogue(SteveText(Component.text("Thank you ")
-            .append(Component.text("so").decoration(TextDecoration.ITALIC, true)).append(Component.text(" much for your help!"))), 3)
-            .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly12"))
-            .setNext(
-                new Dialogue(SteveText("I hope it wasn't too much of a hassle."), 4)
-                    .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly13"))
-                    .setNext(
-                        new Dialogue(SteveText("Now why don't you take a break from this silly MCTC and relax in my hot tub or lay on the beach with a coconut drink!"), 10)
-                            .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly14"))
-                            .setNext(
-                                new Dialogue(SteveText(Component.text("Man, I really should get a gardener to take care of those overgrown shrubs on the side of my house before the party. Those noises I keep hearing behind it is driving me crazy...")), 12.5)
-                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly15"))
-                                    .setNext(new Dialogue(SpiritText("Down the rabbit hole you go, on the west side of the hovel."), 5.5)
-                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.find_me"))
-                                        .setNext(new Dialogue(SpiritText(Component.text("Come find me. It will be worth your trouble...")), 5.5)
-                                        )
-                                    )
-                            )
-                    )
-            );
+                .append(Component.text("so").decoration(TextDecoration.ITALIC, true)).append(Component.text(" much for your help!"))), 3)
+                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly12"))
+                .setNext(
+                        new Dialogue(SteveText("I hope it wasn't too much of a hassle."), 4)
+                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly13"))
+                                .setNext(
+                                        new Dialogue(SteveText("Now why don't you take a break from this silly MCTC and relax in my hot tub or lay on the beach with a coconut drink!"), 10)
+                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly14"))
+                                                .setNext(
+                                                        new Dialogue(SteveText(Component.text("Man, I really should get a gardener to take care of those overgrown shrubs on the side of my house before the party. Those noises I keep hearing behind it is driving me crazy...")), 12.5)
+                                                                .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.skelly15"))
+                                                                .setNext(new Dialogue(SpiritText("Down the rabbit hole you go, on the west side of the hovel."), 5.5)
+                                                                        .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.find_me"))
+                                                                        .setNext(new Dialogue(SpiritText(Component.text("Come find me. It will be worth your trouble...")), 5.5)
+                                                                        )
+                                                                )
+                                                )
+                                )
+                );
 
         steveItemsCompleteDialogue.setFriendlyName("Steve Items Complete");
         dialogues.add(steveItemsCompleteDialogue);
@@ -314,10 +303,10 @@ public class NPCManager {
         steveItemRewards.put(Material.FIREWORK_ROCKET, new ItemStack(Material.IRON_INGOT, 8));
 
         steve.addQuestHandler(QuestManager.STEVE_ITEMS, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 ItemStack item = clickPlayer.getInventory().getItem(clickEvent.getHand());
-                TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(clickPlayer);
+                TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(clickPlayer);
                 Quest quest = questManager.getQuest(team, QuestManager.STEVE_ITEMS);
                 if (quest != null) {
                     QuestRequirement requirement = quest.getRequirement(item);
@@ -337,7 +326,7 @@ public class NPCManager {
                         }
                         if (!stop) {
                             int amount = item.getAmount();
-                            item.setAmount(amount-requirement.turnIn(team, amount));
+                            item.setAmount(amount - requirement.turnIn(team, amount));
                             if (quest.isFulfilled()) {
                                 // the items being turned in completed the quest
                                 setInDialogue(clickPlayer, true);
@@ -376,7 +365,7 @@ public class NPCManager {
             }
         });
 
-        Dialogue spiritStartDialogue = new Dialogue(SpiritText("24 presents, spread across the earth..."), 4.5)
+        Dialogue spiritStartDialogue = new Dialogue(SpiritText("24 PRESENTS, spread across the earth..."), 4.5)
                 .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.presents_start"))
                 .setNext(new Dialogue(SpiritText("Bring them all to me, and you will find your mirth."), 4.5));
 
@@ -384,7 +373,7 @@ public class NPCManager {
         dialogues.add(spiritStartDialogue);
 
         spirit.addQuestHandler(QuestManager.SPIRIT_START, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 setInDialogue(clickPlayer, true);
                 spiritStartDialogue.play(clickPlayer, player -> {
@@ -394,7 +383,7 @@ public class NPCManager {
             }
         });
 
-        Dialogue spiritPresentsComplete = new Dialogue(SpiritText("24 presents, in my hands..."), 4)
+        Dialogue spiritPresentsComplete = new Dialogue(SpiritText("24 PRESENTS, in my hands..."), 4)
                 .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.presents_complete"))
                 .setNext(new Dialogue(SpiritText("Now go out, have fun, and await my plans."), 5));
 
@@ -402,10 +391,10 @@ public class NPCManager {
         dialogues.add(spiritPresentsComplete);
 
         spirit.addQuestHandler(QuestManager.SPIRIT_PRESENTS, clickEvent -> {
-            if (!getInDialogue(clickEvent.getPlayer())) {
+            if (!isInDialogue(clickEvent.getPlayer())) {
                 Player clickPlayer = clickEvent.getPlayer();
                 ItemStack item = clickPlayer.getInventory().getItem(clickEvent.getHand());
-                TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(clickPlayer);
+                TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(clickPlayer);
                 assert team != null;
                 Quest quest = questManager.getQuest(team, QuestManager.SPIRIT_PRESENTS);
                 if (quest != null) {
@@ -415,7 +404,7 @@ public class NPCManager {
                         boolean stop = false;
                         if (!stop) {
                             int amount = item.getAmount();
-                            item.setAmount(amount-requirement.turnIn(team, amount));
+                            item.setAmount(amount - requirement.turnIn(team, amount));
                             if (quest.isFulfilled()) {
                                 // the items being turned in completed the quest
                                 setInDialogue(clickPlayer, true);
@@ -461,7 +450,7 @@ public class NPCManager {
                                         .setNext(new Dialogue(SpiritText("But where is he now? Does he frolic and flout?"), 4)
                                                 .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.frolic"))
                                                 .setNext(new Dialogue(SpiritText("Well that is something you will later find out."), 4)
-                                                        .setNext(new Dialogue(SpiritText("For now, my friends, you were a means to an end."),4.25)
+                                                        .setNext(new Dialogue(SpiritText("For now, my friends, you were a means to an end."), 4.25)
                                                                 .setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.return_the_sea"))
                                                                 .setNext(new Dialogue(SpiritText("But now that I'm free, I must return the sea."), 5.5))))))));
         meltDialogue.setFriendlyName("Spirit Melt");

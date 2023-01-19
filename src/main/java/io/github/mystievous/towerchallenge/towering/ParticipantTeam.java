@@ -2,9 +2,8 @@ package io.github.mystievous.towerchallenge.towering;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
 import net.kyori.adventure.key.Key;
@@ -23,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class ParticipantTeam extends TowerTeam {
 
@@ -40,7 +40,7 @@ public class ParticipantTeam extends TowerTeam {
 
     public ParticipantTeam(ChallengeManager manager, String displayName, String color, String dye) {
         super(manager, displayName, color, dye);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
         extraScore = config.getInt(displayName);
         this.loadRegions();
         this.loadPortal();
@@ -73,7 +73,7 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public void loadPortal() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
         if (config.isString(getTextName()+".world")) {
             this.frameLocation = new Location(Worlds.WORLD(), config.getInt(getTextName()+".x"), config.getInt(getTextName()+".y"), config.getInt(getTextName()+".z"));
             Block block = this.frameLocation.getBlock();
@@ -115,11 +115,11 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public int addExtraScore(int score) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
         extraScore += score;
         config.set(getTextName(), extraScore);
         try {
-            config.save(TowerChallenge.teamScoreConfigFile);
+            config.save(Config.teamScoreConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -127,11 +127,11 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public int removeExtraScore(int score) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamScoreConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
         extraScore -= score;
         config.set(getTextName(), extraScore);
         try {
-            config.save(TowerChallenge.teamScoreConfigFile);
+            config.save(Config.teamScoreConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -147,7 +147,7 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     @Override
-    public void addPlayer(OfflinePlayer player) {
+    public void addTeamPlayer(OfflinePlayer player) {
         try {
             getTeam().addPlayer(player);
             if (spawnRegion != null)
@@ -158,12 +158,29 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     @Override
-    public void addPlayerConfig(OfflinePlayer player) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamConfigFile);
-        List<String> players = config.getStringList("Teams."+ getTextName()+".players");
+    public void registerConfigPlayer(OfflinePlayer player) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamConfigFile);
+        for (Map.Entry<String, ParticipantTeam> entry : getManager().getTowerListener().getTeams().entrySet()) {
+            ParticipantTeam team = entry.getValue();
+            if (team.hasPlayer(player)) {
+                String path = "Teams."+team.getTextName()+".players";
+                List<String> players = config.getStringList(path);
+                players.remove(player.getUniqueId().toString());
+                config.set(path, players);
+            }
+        }
+        if (getManager().getTowerListener().getGodTeam().hasPlayer(player)) {
+            String path = "Gods";
+            List<String> players = config.getStringList(path);
+            players.remove(player.getUniqueId().toString());
+            config.set(path, players);
+        }
+        String path = "Teams."+ getTextName()+".players";
+        List<String> players = config.getStringList(path);
         players.add(player.getUniqueId().toString());
+        config.set(path, players);
         try {
-            config.save(TowerChallenge.teamConfigFile);
+            config.save(Config.teamConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -194,13 +211,13 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public void placeEye() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
         config.set(getTextName()+".completed", true);
         try {
-            config.save(TowerChallenge.endPortalConfigFile);
+            config.save(Config.endPortalConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -210,7 +227,7 @@ public class ParticipantTeam extends TowerTeam {
 
         final Component chatMessage = getDisplayName().color(getTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes+" remain... ").color(TowerChallenge.PRIMARY_COLOR));
+                .append(Component.text(remainingEyes+" remain... ").color(Palette.PRIMARY.getTextColor()));
 
         // Send the title to your audience
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
@@ -223,13 +240,13 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public void resetFrame() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.endPortalConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
         config.set(getTextName() + ".completed", false);
         try {
-            config.save(TowerChallenge.endPortalConfigFile);
+            config.save(Config.endPortalConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

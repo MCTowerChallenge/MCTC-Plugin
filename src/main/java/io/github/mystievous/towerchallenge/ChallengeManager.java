@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.mystievous.towerchallenge.decoration.sweetsburg.MarketStalls;
+import io.github.mystievous.towerchallenge.eventspecific.winter.sweetsburg.MarketStalls;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChallengeManager {
+
+    public static final boolean DEBUG = true;
 
     /**
      * The phases of the event
@@ -70,6 +72,7 @@ public class ChallengeManager {
     private final TowerListener towerListener;
     private final EndPortal endPortal;
     private final WinnerGUI winnerGUI;
+    private final GodManager godManager;
     private final TeleportHistoryManager teleportHistoryManager;
 
     private final HashMap<String, ParticipantTeam> teams;
@@ -89,14 +92,14 @@ public class ChallengeManager {
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         endPortal = new EndPortal(this);
         winnerGUI = new WinnerGUI(this);
-        GodManager godManager = new GodManager(this, towerListener);
+        this.godManager = new GodManager(this, towerListener);
         teleportHistoryManager = new TeleportHistoryManager(godManager);
         new SpawnCompass();
-        new MarketStalls();
-        new SpoutManager();
+//        new MarketStalls();
         new FastTravelListener();
         new TeamItemListener();
         new GoatHat();
+        SpoutManager.runSpouts();
 //        new BottleManager();
     }
 
@@ -138,7 +141,7 @@ public class ChallengeManager {
                 audience.sendMessage(team.getDisplayName().color(team.getTextColor())
                         .append(Component.text(" has ").color(NamedTextColor.WHITE)
                                 .append(Component.text(towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(team.getDisplayName())).getScore()+team.getExtraScore())
-                                        .color(TowerChallenge.PRIMARY_COLOR))
+                                        .color(Palette.PRIMARY.getTextColor()))
                                 .append(Component.text(" blocks"))));
             }
         }
@@ -147,6 +150,10 @@ public class ChallengeManager {
 
     public TowerChallenge getPlugin() {
         return plugin;
+    }
+
+    public GodManager getGodManager() {
+        return godManager;
     }
 
     public TeleportHistoryManager getTeleportHistoryManager() {

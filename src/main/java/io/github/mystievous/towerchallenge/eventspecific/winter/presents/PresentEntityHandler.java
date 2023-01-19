@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.decoration.presents;
+package io.github.mystievous.towerchallenge.eventspecific.winter.presents;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.NBTUtils;
@@ -20,6 +20,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -29,7 +31,10 @@ public class PresentEntityHandler extends ItemEntityHandler {
 
     public static final String PRESENT_TAG = "present";
 
-    public static final List<ItemStack> presents = new ArrayList<>(){{
+    /**
+     * Presets of present types
+     */
+    public static final List<ItemStack> PRESENTS = new ArrayList<>() {{
         // tall
         add(NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             ItemMeta meta = getItemMeta();
@@ -61,7 +66,12 @@ public class PresentEntityHandler extends ItemEntityHandler {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    public static ItemStack getPresentItem() {
+    /**
+     * Gets a present to put in a player's inventory.
+     *
+     * @return The present item
+     */
+    public static @NotNull ItemStack getPresentItem() {
         ItemStack present = NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.SCUTE));
         ItemMeta meta = present.getItemMeta();
         meta.setCustomModelData(10);
@@ -70,7 +80,16 @@ public class PresentEntityHandler extends ItemEntityHandler {
         return present;
     }
 
-    public static ItemStack getPresent(ItemStack present, Color color) {
+    /**
+     * Gets a horse armor present to
+     * put on an armor stand
+     *
+     * @param present The present preset of the model you want.
+     * @param color   The color of the resulting present.
+     * @return The present.
+     */
+    @Contract("_, _ -> param1")
+    public static @NotNull ItemStack getPresent(@NotNull ItemStack present, Color color) {
         LeatherArmorMeta meta = (LeatherArmorMeta) present.getItemMeta();
         meta.setColor(color);
         meta.displayName(TextUtil.noItalic("Present"));
@@ -78,14 +97,28 @@ public class PresentEntityHandler extends ItemEntityHandler {
         return present;
     }
 
-    public static ItemStack getPresent() {
-        int index = RANDOM.nextInt(presents.size()-1);
-        ItemStack present = presents.get(index).clone();
+    /**
+     * Gets a horse armor present with
+     * a random type and color to put
+     * on an armor stand.
+     *
+     * @return The present
+     */
+    public static @NotNull ItemStack getPresent() {
+        int index = RANDOM.nextInt(PRESENTS.size() - 1);
+        ItemStack present = PRESENTS.get(index).clone();
         Color color = Color.fromRGB(RANDOM.nextInt(255), RANDOM.nextInt(255), RANDOM.nextInt(255));
         return getPresent(present, color);
     }
 
-    public static ArmorStand summonPresent(Location location) {
+    /**
+     * Summons an armor stand with a random present
+     * on its head, and sets it as a usable
+     *
+     * @param location The location to summon the armor stand.
+     * @return The summoned armor stand.
+     */
+    public static @NotNull ArmorStand summonPresent(@NotNull Location location) {
         World world = location.getWorld();
         ArmorStand armorStand = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND, false);
         armorStand.setItem(EquipmentSlot.HEAD, getPresent());
@@ -97,35 +130,53 @@ public class PresentEntityHandler extends ItemEntityHandler {
         return armorStand;
     }
 
-    public static ArmorStand summonPresent(Player player) {
+    /**
+     * Summons a present armor stand at the player's
+     * feet with a random present on it's head, and
+     * sets it as a usable.
+     *
+     * @param player The player at which to summon the armor stand.
+     * @return The summoned armor stand.
+     */
+    public static @NotNull ArmorStand summonPresent(@NotNull Player player) {
         return summonPresent(player.getLocation().add(0, -1.38, 0));
     }
 
     public PresentEntityHandler(ChallengeManager challengeManager) {
-        super(challengeManager, PRESENT_TAG, null, getPresent());
+        super(challengeManager, PRESENT_TAG, null, getPresentItem());
     }
 
+    /**
+     * Summons an armor stand with a random present
+     * on its head, and sets it as a usable
+     *
+     * @param location The location to summon the armor stand.
+     * @return The summoned armor stand.
+     */
     @Override
-    public ArmorStand summonArmorStand(Location location) {
-        ArmorStand armorStand = super.summonArmorStand(location);
-        armorStand.setItem(EquipmentSlot.HEAD, getPresent());
-        return armorStand;
+    public @NotNull ArmorStand summonArmorStand(@NotNull Location location) {
+        return summonPresent(location);
     }
 
+    /**
+     * Summons a present armor stand at the player's
+     * feet with a random present on it's head, and
+     * sets it as a usable.
+     *
+     * @param player The player at which to summon the armor stand.
+     * @return The summoned armor stand.
+     */
     @Override
-    public ArmorStand summonArmorStand(Player player) {
-        Location location = player.getLocation().add(0, 1.25, 0);
-        return summonArmorStand(location);
+    public @NotNull ArmorStand summonArmorStand(@NotNull Player player) {
+        return summonPresent(player);
     }
 
-    @Override
-    public ItemStack getItem(TowerTeam team, Entity entity) {
-        return getPresentItem();
-    }
-
+    /**
+     * Disallows PRESENTS from being interacted
+     * with in a horse's inventory
+     */
     @EventHandler
-    public void clickInInventory(final InventoryClickEvent event) {
-
+    public void clickInInventory(final @NotNull InventoryClickEvent event) {
         if (event.isCancelled())
             return;
         if (event.getView().getTopInventory() instanceof AbstractHorseInventory) {

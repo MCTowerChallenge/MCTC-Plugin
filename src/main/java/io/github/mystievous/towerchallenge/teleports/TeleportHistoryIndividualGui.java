@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.teleports;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
@@ -38,7 +38,7 @@ public class TeleportHistoryIndividualGui extends ListGui implements Openable {
                         .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 );
 
-                add(Component.text("Click to teleport!").color(TowerChallenge.PRIMARY_COLOR));
+                add(Component.text("Click to teleport!").color(Palette.PRIMARY.getTextColor()));
             }});
             item.setItemMeta(meta);
             addElement(new ButtonElement(item, clickingPlayer -> {

@@ -24,7 +24,7 @@ public class TeleportHistoryManager implements Listener, Openable {
     public TeleportHistoryManager(GodManager godManager) {
         this.godManager = godManager;
         teleports = new HashMap<>();
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
         new BackCommand(this);
     }
 
@@ -49,9 +49,9 @@ public class TeleportHistoryManager implements Listener, Openable {
 
     private void addTeleport(Player player, TeleportLocation location) {
         List<TeleportLocation> teleportLocations = teleports.getOrDefault(player.getUniqueId(), new ArrayList<>());
-        if (teleportLocations.size() >= 56) {
-            teleportLocations.remove(teleportLocations.size()-1);
-        }
+//        if (teleportLocations.size() >= 56) {
+//            teleportLocations.remove(teleportLocations.size()-1);
+//        }
         teleportLocations.add(location);
         teleports.put(player.getUniqueId(), teleportLocations);
     }

@@ -1,8 +1,7 @@
 package io.github.mystievous.towerchallenge.hats;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.NBTUtils;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
@@ -26,6 +25,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.IOException;
 import java.util.*;
 
+@Deprecated
 public class HatGUI implements Listener {
 
     public static final String UI_NAME = "Select a Hat!";
@@ -76,7 +76,7 @@ public class HatGUI implements Listener {
     }
 
     public List<String> getWinners() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.hatConfigFile);
         winners = config.getStringList("Winners");
         return winners;
     }
@@ -86,24 +86,24 @@ public class HatGUI implements Listener {
     }
 
     public void addWinner(String uuid) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.hatConfigFile);
         winners = config.getStringList("Winners");
         winners.add(uuid);
         config.set("Winners", winners);
         try {
-            config.save(TowerChallenge.hatConfigFile);
+            config.save(Config.hatConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void removeWinner(String uuid) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.hatConfigFile);
         winners = config.getStringList("Winners");
         winners.remove(uuid);
         config.set("Winners", winners);
         try {
-            config.save(TowerChallenge.hatConfigFile);
+            config.save(Config.hatConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -122,7 +122,7 @@ public class HatGUI implements Listener {
     }
 
     public Inventory createInventory(Player player) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.hatConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.hatConfigFile);
         List<HashMap> hats = new ArrayList<>();
         // gets Normal Hats
         hats.addAll((List<HashMap>) config.getList("Hats"));
@@ -183,10 +183,10 @@ public class HatGUI implements Listener {
         hatMeta.setCustomModelData(customModelData);
         List<Component> lore = new ArrayList<>();
         if (author != null) {
-            lore.add(Component.text("Model by " + author + "").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
+            lore.add(Component.text("Model by " + author + "").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
         }
         if (inspired != null) {
-            lore.add(Component.text("Inspired by " + inspired + "").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
+            lore.add(Component.text("Inspired by " + inspired + "").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
         }
         hatMeta.lore(lore);
         hatMeta.addAttributeModifier(

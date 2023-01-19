@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.misc.resourcepack;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import net.kyori.adventure.text.Component;
@@ -26,7 +26,7 @@ public class ResourcePack implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Sending resource pack...").color(TowerChallenge.PRIMARY_COLOR));
+            sender.sendMessage(Component.text("Sending resource pack...").color(Palette.PRIMARY.getTextColor()));
             sendResourcePack(player);
             return true;
         } else {
@@ -41,7 +41,7 @@ public class ResourcePack implements CommandExecutor {
                         sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                         return true;
                     }
-                    sender.sendMessage(Component.text("Sending resource pack to "+targetPlayer.getName()+"...").color(TowerChallenge.PRIMARY_COLOR));
+                    sender.sendMessage(Component.text("Sending resource pack to "+targetPlayer.getName()+"...").color(Palette.PRIMARY.getTextColor()));
                     sendResourcePack(targetPlayer);
                 } else {
                     sender.sendMessage(CommandUtils.errorMessage("Please specify a player to send the resource pack"));
@@ -55,7 +55,7 @@ public class ResourcePack implements CommandExecutor {
                 for (Player targetPlayer : Bukkit.getServer().getOnlinePlayers()) {
                     sender.sendMessage(Component.text(String.format("[RP] %s: %s", targetPlayer.getName(), targetPlayer.getResourcePackStatus()))
                             .append(Component.text(" [Send Reload]")
-                                    .color(TowerChallenge.PRIMARY_COLOR)
+                                    .color(Palette.PRIMARY.getTextColor())
                                     .clickEvent(ClickEvent.runCommand("/resourcepack reload "+targetPlayer.getName()))
                                     .hoverEvent(Component.text("Click to Send"))));
                 }
@@ -72,7 +72,7 @@ public class ResourcePack implements CommandExecutor {
 
                 sender.sendMessage(Component.text(String.format("%s's resource pack status is: %s;", targetPlayer.getName(), targetPlayer.getResourcePackStatus()))
                         .append(Component.text(" [Send Reload]")
-                                .color(TowerChallenge.PRIMARY_COLOR)
+                                .color(Palette.PRIMARY.getTextColor())
                                 .clickEvent(ClickEvent.runCommand("/resourcepack reload "+targetPlayer.getName()))
                                 .hoverEvent(Component.text("Click to Send"))));
             }

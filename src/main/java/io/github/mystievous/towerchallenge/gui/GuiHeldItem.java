@@ -27,7 +27,7 @@ public class GuiHeldItem implements Listener {
         this.guiId = guiId;
         this.item = NBTUtils.noStack(NBTUtils.setString(GUI_ID, item, this.guiId));
         this.openable = openable;
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     /**
@@ -44,6 +44,7 @@ public class GuiHeldItem implements Listener {
 
     /**
      * Checks if an items matches the criteria to open the gui
+     *
      * @param item item to check
      * @return true, if the item has the proper tag for the gui
      */
@@ -57,6 +58,7 @@ public class GuiHeldItem implements Listener {
 
     /**
      * Disallows players to craft using the item
+     *
      * @param event
      */
     @EventHandler

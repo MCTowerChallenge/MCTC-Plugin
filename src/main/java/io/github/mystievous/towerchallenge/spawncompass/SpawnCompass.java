@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.spawncompass;
 
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import net.kyori.adventure.text.Component;
@@ -79,7 +80,7 @@ public class SpawnCompass implements Listener {
         meta.lore(new ArrayList<>(){{
             add(Component.keybind("key.use")
                     .append(Component.text(" to point home :)"))
-                    .color(TowerChallenge.PRIMARY_COLOR).decoration(TextDecoration.ITALIC, false)
+                    .color(Palette.PRIMARY.getTextColor()).decoration(TextDecoration.ITALIC, false)
             );
         }});
         meta.addEnchant(Enchantment.MENDING, 1, true);
@@ -93,7 +94,7 @@ public class SpawnCompass implements Listener {
     }
 
     public SpawnCompass() {
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

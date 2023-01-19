@@ -11,6 +11,11 @@ public class Element {
     private UUID uuid;
     private ItemStack item;
 
+    /**
+     * Empty/air element
+     *
+     * @return The element
+     */
     public static Element empty() {
         return new Element(new ItemStack(Material.AIR));
     }
@@ -24,7 +29,7 @@ public class Element {
         return uuid;
     }
 
-    public void setUUID(UUID uuid) {
+    private void setUUID(UUID uuid) {
         this.item = NBTUtils.setUniqueID(item, uuid);
         this.uuid = uuid;
     }

@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
@@ -38,7 +39,7 @@ public class NPC implements Listener {
     public NPC(String tag) {
         this.tag = tag;
         this.questHandlers = new HashMap<>();
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     public void addQuestHandler(String quest, Consumer<PlayerInteractAtEntityEvent> handler) {
@@ -68,14 +69,14 @@ public class NPC implements Listener {
         }
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (entity.getScoreboardTags().contains(tag)) {
             if (team == null) {
                 player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
                 return;
             }
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-            Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(config.getString(team.getTextName()+".CurrentQuest"));
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
+            Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(config.getString(team.getTextName() + ".CurrentQuest"));
             if (consumer != null) {
                 consumer.accept(event);
             }

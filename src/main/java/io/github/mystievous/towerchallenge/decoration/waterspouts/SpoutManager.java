@@ -1,124 +1,42 @@
 package io.github.mystievous.towerchallenge.decoration.waterspouts;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SpoutManager {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    /**
+     * Run all configured water spouts
+     */
+    public static void runSpouts() {
 
-    public static final String REGION_NAME = "water-fountains";
-
-    public static Duration getRegionTime(OfflinePlayer player) {
-        String playerPath = "Individual."+player.getUniqueId()+".WaterSpouts";
-        String totalTimePath = playerPath + ".TotalTime";
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        return Duration.ofMillis(config.getLong(totalTimePath));
-    }
-
-    public SpoutManager() {
-
+        // Dec2022
         List<Spout> spouts = new ArrayList<>();
-
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824)+0.5, 68, (-808)+0.5))); // 1
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824)+0.5, 68, (-801)+0.5))); // 4
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-825)+0.5, 68, (-806)+0.5))); // 2
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-826)+0.5, 68, (-800)+0.5))); // 5
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-823)+0.5, 68, (-803)+0.5))); // 3
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-808) + 0.5))); // 1
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-801) + 0.5))); // 4
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-825) + 0.5, 67, (-806) + 0.5))); // 2
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-826) + 0.5, 67, (-800) + 0.5))); // 5
+        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-823) + 0.5, 67, (-803) + 0.5))); // 3
 
         int count = 0;
-
         for (Spout spout : spouts) {
             count++;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> runSpout(spout), count*20L*5);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), spout::runSpout, count * 20L * 5);
         }
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(TowerChallenge.me, bukkitTask -> {
-            RegionManager regionManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.Dec2022()));
-            if (regionManager != null && regionManager.hasRegion(REGION_NAME)) {
-                ProtectedRegion region = regionManager.getRegion(REGION_NAME);
-                assert region != null;
-                for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    String playerPath = "Individual."+player.getUniqueId()+".WaterSpouts";
-                    if (region.contains(BukkitAdapter.adapt(player.getLocation()).toVector().toBlockPoint())) {
-                        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-                        String inRegionPath = playerPath + ".InRegion";
-                        String enterTimePath = playerPath + ".EnterTime";
-                        if (!config.getBoolean(inRegionPath)) {
-                            config.set(enterTimePath, Instant.now().toEpochMilli());
-                            config.set(inRegionPath, true);
-                            try {
-                                config.save(TowerChallenge.teamDataConfigFile);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    } else {
-                        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-                        String inRegionPath = playerPath + ".InRegion";
-                        String enterTimePath = playerPath + ".EnterTime";
-                        String totalTimePath = playerPath + ".TotalTime";
-                        if (config.getBoolean(inRegionPath)) {
-                            Instant enterTime = Instant.ofEpochMilli(config.getLong(enterTimePath));
-                            Duration totalTime = Duration.between(enterTime, Instant.now());
-                            Duration previousTotalTime = Duration.ofMillis(config.getLong(totalTimePath));
-                            Duration newTotalTime = previousTotalTime.plus(totalTime);
-                            config.set(totalTimePath, newTotalTime.toMillis());
-                            config.set(inRegionPath, false);
-                            try {
-                                config.save(TowerChallenge.teamDataConfigFile);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            }
-        }, 0, 10);
+        // Feb2023
+        final double height = 1.0d;
+        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2110.5), height).runSpout();
+        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2110.5), height).runSpout();
+        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2118.5), height).runSpout();
+        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2118.5), height).runSpout();
 
-    }
 
-    public static final int SECONDS_RAMP = 3;
-    private void runSpout(Spout spout) {
-        long delaySeconds = RANDOM.nextInt(10)+7;
-        Instant start = Instant.now().plusSeconds(delaySeconds);
-        Instant end = start.plusSeconds(RANDOM.nextInt(10)+(SECONDS_RAMP*2+5));
-        Bukkit.getScheduler().runTaskTimerAsynchronously(TowerChallenge.me, bukkitTask -> {
-            Instant now = Instant.now();
-            if (now.isBefore(end)) {
-                double height = (RANDOM.nextDouble()*0.5d)+1.0d;
-//                double height = 0.1d;
-                Duration fromStart = Duration.between(start, now);
-                Duration fromEnd = Duration.between(now, end);
-                if (fromStart.compareTo(Duration.ofSeconds(SECONDS_RAMP)) < 0) {
-                    // three seconds or less from start
-                    height *= ((double) fromStart.toMillis() /((double) (1000*SECONDS_RAMP)));
-                } else if (fromEnd.compareTo(Duration.ofSeconds(SECONDS_RAMP)) < 0) {
-                    // three seconds or less from end
-                    height *= ((double) fromEnd.toMillis() /((double) (1000*SECONDS_RAMP)));
-                }
-                spout.spray(height);
-            } else {
-                bukkitTask.cancel();
-                runSpout(spout);
-            }
-        }, delaySeconds*20, 1);
     }
 
 }

@@ -81,7 +81,7 @@ public class WinnerGUI implements Listener {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(challengeManager.getPlugin(), player::closeInventory, 1);
                 } else {
                     String teamName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item.getItemMeta().displayName()));
-                    ParticipantTeam team = challengeManager.getTowerListener().getTeam(teamName);
+                    TowerTeam team = challengeManager.getTowerListener().getTeam(teamName);
                     player.sendMessage(team.getDisplayName().append(Component.text(" set to the Winners!")));
                     for (String uuid : team.getHatGUI().getWinners()) {
                         player.sendMessage("Checking " + uuid);

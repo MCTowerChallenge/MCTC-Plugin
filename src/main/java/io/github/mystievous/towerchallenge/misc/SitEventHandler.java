@@ -32,7 +32,7 @@ public class SitEventHandler implements Listener {
         } catch (NullPointerException e) {
             Bukkit.getLogger().warning("Unable to get Sitting World Guard Region");
         }
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     @EventHandler

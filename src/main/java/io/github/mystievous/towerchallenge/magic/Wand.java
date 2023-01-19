@@ -25,15 +25,11 @@ public class Wand implements Listener {
         this.tag = tag;
         this.consumer = consumer;
         this.template = new ItemStack(Material.STICK);
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     public Wand(String tag, ItemStack template, Consumer<PlayerInteractEvent> consumer) {
         this(tag, consumer);
-        this.template = template;
-    }
-
-    public void setTemplate(ItemStack template) {
         this.template = template;
     }
 
@@ -45,7 +41,7 @@ public class Wand implements Listener {
         return NBTUtils.setString(TYPE_LABEL, this.template.clone(), tag);
     }
 
-    public boolean matchItem(ItemStack item) {
+    private boolean matchItem(ItemStack item) {
         String type = NBTUtils.getString(TYPE_LABEL, item);
         return tag.equals(type);
     }

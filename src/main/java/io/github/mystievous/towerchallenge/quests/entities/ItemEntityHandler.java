@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -47,10 +49,8 @@ public class ItemEntityHandler implements Listener {
         this.itemStack = itemStack;
         this.yOffset = -1.5;
         this.soundKey = Key.key(Key.MINECRAFT_NAMESPACE, "block.amethyst_cluster.place");
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
-
-
 
     public ItemEntityHandler(ChallengeManager challengeManager, String tag, @Nullable String requiredQuest, ItemStack itemStack, double yOffset) {
         this(challengeManager, tag, requiredQuest, itemStack);
@@ -69,7 +69,7 @@ public class ItemEntityHandler implements Listener {
         this.soundKey = soundKey;
     }
 
-    public ArmorStand summonArmorStand(Location location) {
+    public @NotNull ArmorStand summonArmorStand(@NotNull Location location) {
         World world = location.getWorld();
         ArmorStand armorStand = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND, false);
         armorStand.setItem(EquipmentSlot.HEAD, itemStack);
@@ -81,12 +81,12 @@ public class ItemEntityHandler implements Listener {
         return armorStand;
     }
 
-    public ArmorStand summonArmorStand(Player player) {
+    public @NotNull ArmorStand summonArmorStand(@NotNull Player player) {
         Location location = player.getLocation().add(0, yOffset, 0);
         return summonArmorStand(location);
     }
 
-    public ItemStack getItem(TowerTeam team, Entity entity) {
+    public ItemStack getItem(@NotNull TowerTeam team, Entity entity) {
         return NBTUtils.setTeam(itemStack, team);
     }
 
@@ -116,15 +116,15 @@ public class ItemEntityHandler implements Listener {
         }
 
         if (entity instanceof LivingEntity livingEntity && livingEntity.getScoreboardTags().contains(tag)) {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-            String questPath = team.getTextName()+".CurrentQuest";
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
+            String questPath = team.getTextName() + ".CurrentQuest";
             if (requiredQuest != null) {
                 if (!config.isString(questPath) || !config.getString(questPath).equals(requiredQuest)) {
                     player.sendActionBar(CommandUtils.errorMessage("You do not have the quest for this item!"));
                     return;
                 }
             }
-            String tagPath = team.getTextName()+"."+CONFIG_LABEL+"."+tag;
+            String tagPath = team.getTextName() + "." + CONFIG_LABEL + "." + tag;
             if (config.isList(tagPath)) {
                 List<String> tagConfig = config.getStringList(tagPath);
                 if (tagConfig.contains(livingEntity.getUniqueId().toString())) {
@@ -141,14 +141,14 @@ public class ItemEntityHandler implements Listener {
                 if (eventHandler != null) {
                     eventHandler.accept(player);
                 }
-                config = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+                config = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
                 player.spawnParticle(Particle.COMPOSTER, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225);
                 player.playSound(Sound.sound(soundKey, Sound.Source.MASTER, 100, 1));
                 List<String> tagConfig = config.getStringList(tagPath);
                 tagConfig.add(livingEntity.getUniqueId().toString());
                 config.set(tagPath, tagConfig);
                 try {
-                    config.save(TowerChallenge.teamDataConfigFile);
+                    config.save(Config.teamDataConfigFile);
                 } catch (IOException e) {
                     Bukkit.getLogger().info("Failed to save Team Data Config");
                 }

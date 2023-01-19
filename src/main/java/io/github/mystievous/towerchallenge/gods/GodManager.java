@@ -9,6 +9,12 @@ public class GodManager {
 
     private final GodGui godGui;
 
+    /**
+     * Manager for everything pertaining to Gods
+     *
+     * @param challengeManager Challenge Manager for the event
+     * @param towerListener    Tower Listener for the event
+     */
     public GodManager(ChallengeManager challengeManager, TowerListener towerListener) {
         godGui = new GodGui(challengeManager, this, towerListener);
 
@@ -16,6 +22,11 @@ public class GodManager {
         Bukkit.getPluginCommand("godmenu").setExecutor(command);
     }
 
+    /**
+     * Gets the God Utility GUI
+     *
+     * @return the GUI
+     */
     public GodGui getGodGui() {
         return godGui;
     }

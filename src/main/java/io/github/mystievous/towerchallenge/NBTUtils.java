@@ -3,6 +3,7 @@ package io.github.mystievous.towerchallenge;
 import de.tr7zw.nbtapi.NBTItem;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -112,7 +113,7 @@ public class NBTUtils {
         return nbtItem.hasKey(TEAM);
     }
 
-    public static ItemStack setTeam(ItemStack itemStack, TowerTeam team) {
+    public static ItemStack setTeam(ItemStack itemStack, @NotNull TowerTeam team) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setString(TEAM, team.getTextName());
         return nbtItem.getItem();

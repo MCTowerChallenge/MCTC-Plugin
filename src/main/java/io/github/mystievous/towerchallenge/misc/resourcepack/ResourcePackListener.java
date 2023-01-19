@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.misc.resourcepack;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -37,9 +37,9 @@ public class ResourcePackListener implements Listener {
             if (playerAttempts > 3) {
                 player.sendMessage(
                         Component.text("[ERROR] Unable to load resource pack! Manually reload with ")
-                                .append(Component.text("/resourcepack").color(TowerChallenge.PRIMARY_COLOR))
+                                .append(Component.text("/resourcepack").color(Palette.PRIMARY.getTextColor()))
                                 .append(Component.text(" or "))
-                                .append(Component.text("/rp").color(TowerChallenge.PRIMARY_COLOR))
+                                .append(Component.text("/rp").color(Palette.PRIMARY.getTextColor()))
                                 .append(Component.text(" or try relogging."))
                                 .color(NamedTextColor.DARK_RED));
             } else {
@@ -57,9 +57,9 @@ public class ResourcePackListener implements Listener {
         } else if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED)) {
             player.sendMessage(
                     Component.text("If you have issues with the resource pack, manually reload with ")
-                            .append(Component.text("/resourcepack").color(TowerChallenge.PRIMARY_COLOR))
+                            .append(Component.text("/resourcepack").color(Palette.PRIMARY.getTextColor()))
                             .append(Component.text(" or "))
-                            .append(Component.text("/rp").color(TowerChallenge.PRIMARY_COLOR))
+                            .append(Component.text("/rp").color(Palette.PRIMARY.getTextColor()))
                             .append(Component.text(" or try relogging."))
                             .color(NamedTextColor.DARK_RED));
         }

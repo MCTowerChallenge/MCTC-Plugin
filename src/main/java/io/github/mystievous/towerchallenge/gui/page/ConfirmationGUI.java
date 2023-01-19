@@ -11,8 +11,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.function.Consumer;
 
+/**
+ * Gui to confirm an action
+ */
 public class ConfirmationGUI extends PresetGui {
 
+    /**
+     * Gui to confirm an action
+     *
+     * @param title   Title of the window
+     * @param confirm Action to perform when it's confirmed
+     * @param cancel  Action to perform when it's canceled
+     */
     public ConfirmationGUI(Component title, Consumer<Player> confirm, Consumer<Player> cancel) {
         super(title, 3);
 

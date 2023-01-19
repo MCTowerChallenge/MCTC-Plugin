@@ -38,7 +38,6 @@ public class QuestCommands implements CommandExecutor {
                 sender.sendMessage(Component.text("You must be a player to use this command."));
             }
         } else {
-
             if (args[0].equalsIgnoreCase("reset")) {
                 if (sender.hasPermission("towerchallenge.questbook.reset")) {
                     if (sender instanceof Player player) {

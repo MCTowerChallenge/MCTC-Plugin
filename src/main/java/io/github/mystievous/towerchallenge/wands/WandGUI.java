@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.wands;
 
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.NBTUtils;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.hats.HatGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -31,7 +31,7 @@ public class WandGUI implements Listener {
     public WandGUI(Plugin plugin) {
         this.plugin = plugin;
         this.wands = new ArrayList<>();
-        List wands = YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile).getList("Wands");
+        List wands = YamlConfiguration.loadConfiguration(Config.wandConfigFile).getList("Wands");
         int numHats = 0;
         if (wands != null) {
             numHats = wands.size();
@@ -73,7 +73,7 @@ public class WandGUI implements Listener {
     }
 
     public void loadWands() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(TowerChallenge.wandConfigFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.wandConfigFile);
         List<HashMap> configWands = (List<HashMap>) config.getList("Wands");
         if (configWands == null)
             return;

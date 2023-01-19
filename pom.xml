@@ -110,6 +110,10 @@
             <id>OnARandomBox</id>
             <url>https://repo.onarandombox.com/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>mysql</id>
+            <url>https://mvnrepository.com/artifact/com.mysql/mysql-connector-j</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -143,6 +147,17 @@
             <artifactId>Multiverse-Portals</artifactId> <!--Multiverse-[MODULE]-->
             <version>4.2.1</version> <!--[VERSION]-->
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.onarandombox.multiversenetherportals</groupId> <!--com.onarandombox.multiverse[MODULE (in lowercase)]-->
+            <artifactId>Multiverse-NetherPortals</artifactId> <!--Multiverse-[MODULE]-->
+            <version>4.2.1</version> <!--[VERSION]-->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.0.31</version>
         </dependency>
     </dependencies>
 </project>

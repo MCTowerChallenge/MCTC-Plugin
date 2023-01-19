@@ -48,7 +48,7 @@ public class Dialogue {
         if (soundKey != null) {
             audience.playSound(Sound.sound(soundKey, Sound.Source.RECORD, 1f ,1f));
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
             if (next != null) {
                 next.play(audience, callback);
             } else {
@@ -60,7 +60,7 @@ public class Dialogue {
     }
 
     public void play(Player player, Consumer<Player> callback) {
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (team == null) {
             return;
         }
@@ -69,7 +69,7 @@ public class Dialogue {
         if (soundKey != null) {
             audience.playSound(Sound.sound(soundKey, Sound.Source.RECORD, 1f ,1f));
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
             if (next != null) {
                 next.play(player, callback);
             } else {

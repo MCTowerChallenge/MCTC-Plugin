@@ -1,9 +1,8 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TextUtil;
-import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.decoration.presents.PresentEntityHandler;
+import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.eventspecific.winter.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
@@ -44,7 +43,7 @@ public class QuestManager implements Openable {
     public static final String STEVE_LIST = "steve-list";
     public static final String STEVE_ITEMS = "steve-items";
     public static final String SPIRIT_START = "spirit-start";
-    public static final String SPIRIT_PRESENTS = "spirit-presents";
+    public static final String SPIRIT_PRESENTS = "spirit-PRESENTS";
 
     public static final PresetGui NO_QUEST_GUI = new PresetGui(Component.text("No quests!"), 3){{
         Element element = new Element(new ItemStack(Material.PAPER){{
@@ -58,11 +57,11 @@ public class QuestManager implements Openable {
     }};
 
     public static void resetTeamQuests(TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String teamPath = team.getTextName()+".QuestProgress";
         teamDataConfig.set(teamPath, null);
         try {
-            teamDataConfig.save(TowerChallenge.teamDataConfigFile);
+            teamDataConfig.save(Config.teamDataConfigFile);
 //            team.getAudience().sendMessage(Component.text("Setting Quest: "+questId));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -70,11 +69,11 @@ public class QuestManager implements Openable {
     }
 
     public static void resetTeamItems(TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String itemsPath = team.getTextName()+".CollectedItems";
         teamDataConfig.set(itemsPath, null);
         try {
-            teamDataConfig.save(TowerChallenge.teamDataConfigFile);
+            teamDataConfig.save(Config.teamDataConfigFile);
 //            team.getAudience().sendMessage(Component.text("Setting Quest: "+questId));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -82,10 +81,10 @@ public class QuestManager implements Openable {
     }
 
     public static void setTeamQuest(TowerTeam team, String questId) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         teamDataConfig.set(team.getTextName()+".CurrentQuest", questId);
         try {
-            teamDataConfig.save(TowerChallenge.teamDataConfigFile);
+            teamDataConfig.save(Config.teamDataConfigFile);
 //            team.getAudience().sendMessage(Component.text("Setting Quest: "+questId));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -94,7 +93,7 @@ public class QuestManager implements Openable {
     }
 
     public static void setTeamQuest(Player player, String questId) {
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (team != null) {
             setTeamQuest(team, questId);
         } else {
@@ -103,7 +102,7 @@ public class QuestManager implements Openable {
     }
 
     public static String getTeamQuest(TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         if (!hasTeamQuest(team)) {
             setTeamQuest(team, "no-quest");
         }
@@ -111,7 +110,7 @@ public class QuestManager implements Openable {
     }
 
     public static String getTeamQuest(Player player) {
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (team != null) {
             return getTeamQuest(team);
         }
@@ -121,7 +120,7 @@ public class QuestManager implements Openable {
     public static boolean hasTeamQuest(TowerTeam team) {
         if (team == null)
             return false;
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         return teamDataConfig.isString(team.getTextName()+".CurrentQuest");
     }
 
@@ -142,8 +141,8 @@ public class QuestManager implements Openable {
         bookMeta.displayName(Component.text("Better Quest Book").decoration(TextDecoration.ITALIC, false));
         bookMeta.setCustomModelData(2);
         bookMeta.lore(new ArrayList<>(){{
-            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
-            add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
+            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
+            add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
         }});
         book.setItemMeta(bookMeta);
         questBook = new GuiHeldItem(GUI_ID, book, this);
@@ -154,7 +153,7 @@ public class QuestManager implements Openable {
         //Stage 4: “Find Steve’s List”
         //Stage 5: “Find the items on the list, and bring them to steve”
         //Stage 6: “Find the ritual”
-        //Stage 7: “Bring presents to the ritual”
+        //Stage 7: “Bring PRESENTS to the ritual”
 
         Quest penelopeStart;
         Quest penelopeArmor;
@@ -250,8 +249,8 @@ public class QuestManager implements Openable {
         quests.add(spiritStart);
         steveItems.setNext(spiritStart);
 
-        spiritPresents = new Quest(SPIRIT_PRESENTS, "Collect presents for the spirit");
-        spiritPresents.setDescription(TextUtil.formatTexts("Collect all ## presents", "around the challenge", "areas and bring", "them to the spirit", "behind steve's house!"));
+        spiritPresents = new Quest(SPIRIT_PRESENTS, "Collect PRESENTS for the spirit");
+        spiritPresents.setDescription(TextUtil.formatTexts("Collect all ## PRESENTS", "around the challenge", "areas and bring", "them to the spirit", "behind steve's house!"));
         spiritPresents.getRequirements().add(new QuestRequirement(spiritPresents, PresentEntityHandler.getPresentItem(), 24));
         spiritPresents.getRewards().addAll(spiritRewards);
         quests.add(spiritPresents);
@@ -289,8 +288,8 @@ public class QuestManager implements Openable {
 
     @Override
     public Gui getGui(Player player) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
         if (team != null) {
             String currentQuestPath = team.getTextName()+".CurrentQuest";
             String currentQuestId = teamDataConfig.getString(currentQuestPath, "");
@@ -299,7 +298,7 @@ public class QuestManager implements Openable {
                 return currentQuest.getGui(player);
             }
             try {
-                teamDataConfig.save(TowerChallenge.teamDataConfigFile);
+                teamDataConfig.save(Config.teamDataConfigFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

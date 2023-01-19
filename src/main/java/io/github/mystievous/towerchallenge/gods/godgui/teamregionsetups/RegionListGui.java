@@ -24,11 +24,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * GUI for initial setup of the team regions
+ */
 public class RegionListGui implements Openable {
 
     private final GodManager godManager;
     private final TowerListener towerListener;
 
+    /**
+     * GUI for initial setup of the team regions
+     */
     public RegionListGui(GodManager godManager, TowerListener towerListener) {
         this.godManager = godManager;
         this.towerListener = towerListener;
@@ -56,7 +62,7 @@ public class RegionListGui implements Openable {
             ItemStack spawnItem = new ItemStack(Material.GRASS_BLOCK);
             ItemMeta spawnMeta = spawnItem.getItemMeta();
             spawnMeta.displayName(Component.text("Spawn Region"));
-            spawnMeta.lore(new ArrayList<>(){{
+            spawnMeta.lore(new ArrayList<>() {{
                 add(TextUtil.formatText(participantTeam.getSpawnRegion() != null ? "Redefine Region" : "Define Region"));
             }});
             spawnItem.setItemMeta(spawnMeta);
@@ -77,7 +83,7 @@ public class RegionListGui implements Openable {
                         }
                     }
                 } else {
-                    player2.sendMessage(Component.text("Error creating region, "+participantTeam.getSpawnName()));
+                    player2.sendMessage(Component.text("Error creating region, " + participantTeam.getSpawnName()));
                 }
                 player2.performCommand(String.format("rg setpriority -w \"%s\" %s 1", ParticipantTeam.getSpawnWorld().getName(), participantTeam.getSpawnName()));
                 participantTeam.loadRegions();
@@ -91,7 +97,7 @@ public class RegionListGui implements Openable {
             ItemStack towerItem = new ItemStack(Material.BRICKS);
             ItemMeta towerMeta = towerItem.getItemMeta();
             towerMeta.displayName(Component.text("Tower Region"));
-            towerMeta.lore(new ArrayList<>(){{
+            towerMeta.lore(new ArrayList<>() {{
                 add(TextUtil.formatText(participantTeam.getTowerRegion() != null ? "Redefine Region" : "Define Region"));
             }});
             towerItem.setItemMeta(towerMeta);
@@ -112,7 +118,7 @@ public class RegionListGui implements Openable {
                         }
                     }
                 } else {
-                    player2.sendMessage(Component.text("Error creating region, "+participantTeam.getTowerName()));
+                    player2.sendMessage(Component.text("Error creating region, " + participantTeam.getTowerName()));
                 }
                 player2.performCommand(String.format("rg setpriority -w \"%s\" %s 1", ParticipantTeam.getTowerWorld().getName(), participantTeam.getTowerName()));
                 participantTeam.loadRegions();

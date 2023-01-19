@@ -7,13 +7,24 @@ import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+/**
+ * A Gui that shows all the starting
+ * items from a specified team.
+ */
 public class StartingItemsGui extends PresetGui {
 
-    public StartingItemsGui(ParticipantTeam team) {
-        super(Component.text("Starting Items for "+team.getTextName()), 5);
+    /**
+     * A Gui that shows all the starting
+     * items from the specified team.
+     *
+     * @param team The team to show the items from.
+     */
+    public StartingItemsGui(@NotNull ParticipantTeam team) {
+        super(Component.text("Starting Items for " + team.getTextName()), 5);
         Map<Integer, ItemStack> startingItems = team.getStartingItems();
         Map<EquipmentSlot, ItemStack> startingEquipment = team.getStartingEquipment();
 
@@ -24,7 +35,7 @@ public class StartingItemsGui extends PresetGui {
             Element element = new ButtonElement(item, player -> player.getInventory().addItem(item));
 
             if (index < 9) {
-                placeElement(index+1, 4, element);
+                placeElement(index + 1, 4, element);
             } else {
                 placeElement(indexToCol(index), indexToRow(index), element);
             }

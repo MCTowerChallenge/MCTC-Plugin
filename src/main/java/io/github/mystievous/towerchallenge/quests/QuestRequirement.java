@@ -1,7 +1,8 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.ItemUtil;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.Palette;
+import io.github.mystievous.towerchallenge.TextUtil;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
@@ -69,7 +70,7 @@ public class QuestRequirement implements Representable {
     }
 
     public int getTeamAmount(TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String questPath = team.getTextName()+".QuestProgress."+quest.getId();
         String requirementPath = questPath+"."+getType().toString();
         int amount = teamDataConfig.getInt(requirementPath, 0);
@@ -83,12 +84,12 @@ public class QuestRequirement implements Representable {
 
     public void setTeamAmount(TowerTeam team, int amount) {
         setCurrentAmount(amount);
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
+        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String questPath = team.getTextName()+".QuestProgress."+quest.getId();
         String requirementPath = questPath+"."+getType().toString();
         teamDataConfig.set(requirementPath, getCurrentAmount());
         try {
-            teamDataConfig.save(TowerChallenge.teamDataConfigFile);
+            teamDataConfig.save(Config.teamDataConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -104,7 +105,7 @@ public class QuestRequirement implements Representable {
      */
     public Element getRepresentation() {
         ItemStack item = this.item.clone();
-        Component itemName = ItemUtil.getItemName(item);
+        Component itemName = TextUtil.getItemName(item);
         if (isFulfilled()) {
             item = new ItemStack(Material.PAPER);
             ItemMeta paperMeta = item.getItemMeta();
@@ -112,7 +113,7 @@ public class QuestRequirement implements Representable {
             item.setItemMeta(paperMeta);
         }
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(itemName.append(Component.text(String.format(" (%d/%d)", currentAmount, requiredAmount)).color(TowerChallenge.PRIMARY_COLOR)).decoration(TextDecoration.ITALIC, false));
+        meta.displayName(itemName.append(Component.text(String.format(" (%d/%d)", currentAmount, requiredAmount)).color(Palette.PRIMARY.getTextColor())).decoration(TextDecoration.ITALIC, false));
         item.setItemMeta(meta);
         item.setAmount(Math.max(requiredAmount-currentAmount, 1));
         return new Element(item);

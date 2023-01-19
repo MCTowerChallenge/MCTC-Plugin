@@ -1,5 +1,7 @@
 package io.github.mystievous.towerchallenge;
 
+import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.eventspecific.valentines.FerrisWheel;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
@@ -14,39 +16,26 @@ import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
 import io.github.mystievous.towerchallenge.wands.WandCommands;
 import io.github.mystievous.towerchallenge.wands.WandListener;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
 
 public final class TowerChallenge extends JavaPlugin {
 
-    public static File teamConfigFile;
-    public static File regionConfigFile;
-    public static File questConfigFile;
-    public static File wandConfigFile;
-    public static File endPortalConfigFile;
-    public static File candyConfigFile;
-    public static File hatConfigFile;
-    public static File steveConfigFile;
-    public static File teamScoreConfigFile;
-    public static File teamDataConfigFile;
-
-    public static final TextColor PRIMARY_COLOR = TextColor.fromHexString("#44b9ad");
-    public static final TextColor SECONDARY_COLOR = TextColor.fromHexString("#6c8784");
-    public static final TextColor NEGATIVE_COLOR = NamedTextColor.DARK_RED;
     //d0608c
     //124f49
 
     public static final String MCTC_NAMESPACE = "mctc";
 
-    public static TowerChallenge me;
+    private static TowerChallenge me;
+    public static TowerChallenge getInstance() {
+        return me;
+    }
 
+    private Config config;
     private ChallengeManager challengeManager;
+    private Database database;
+
+    private FerrisWheel ferrisWheel;
 
     @Override
     public void onEnable() {
@@ -54,64 +43,14 @@ public final class TowerChallenge extends JavaPlugin {
 
         me = this;
 
-        this.saveDefaultConfig();
+        this.config = new Config(this);
 
-        teamConfigFile = new File(getDataFolder(), "teams.yml");
-        saveResource("teams.yml", false);
-        YamlConfiguration teamConfig = YamlConfiguration.loadConfiguration(teamConfigFile);
+        this.challengeManager = new ChallengeManager(this);
 
-        regionConfigFile = new File(getDataFolder(), "regions.yml");
-        saveResource("regions.yml", false);
-        YamlConfiguration regionConfig = YamlConfiguration.loadConfiguration(regionConfigFile);
-
-        questConfigFile = new File(getDataFolder(), "quests.yml");
-        saveResource("quests.yml", false);
-        YamlConfiguration questConfig = YamlConfiguration.loadConfiguration(questConfigFile);
-
-        wandConfigFile = new File(getDataFolder(), "wands.yml");
-        saveResource("wands.yml", false);
-        YamlConfiguration wandConfig = YamlConfiguration.loadConfiguration(wandConfigFile);
-
-        endPortalConfigFile = new File(getDataFolder(), "portalframes.yml");
-        saveResource("portalframes.yml", false);
-        YamlConfiguration endPortalConfig = YamlConfiguration.loadConfiguration(endPortalConfigFile);
-
-        candyConfigFile = new File(getDataFolder(), "candy.yml");
-        YamlConfiguration candyConfig = YamlConfiguration.loadConfiguration(candyConfigFile);
-
-        hatConfigFile = new File(getDataFolder(), "hat.yml");
-        saveResource("hat.yml", false);
-        YamlConfiguration hatConfig = YamlConfiguration.loadConfiguration(hatConfigFile);
-
-        steveConfigFile = new File(getDataFolder(), "steve.yml");
-        saveResource("steve.yml", false);
-        YamlConfiguration steveConfig = YamlConfiguration.loadConfiguration(steveConfigFile);
-
-        teamScoreConfigFile = new File(getDataFolder(), "teamscores.yml");
-        YamlConfiguration teamScoreConfig = YamlConfiguration.loadConfiguration(teamScoreConfigFile);
-
-        teamDataConfigFile = new File(getDataFolder(), "teamdata.yml");
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(teamDataConfigFile);
-
-        try {
-            teamConfig.save(teamConfigFile);
-            regionConfig.save(regionConfigFile);
-            questConfig.save(questConfigFile);
-            wandConfig.save(wandConfigFile);
-            endPortalConfig.save(endPortalConfigFile);
-            candyConfig.save(candyConfigFile);
-            hatConfig.save(hatConfigFile);
-            steveConfig.save(steveConfigFile);
-            teamScoreConfig.save(teamScoreConfigFile);
-            teamDataConfig.save(teamDataConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        challengeManager = new ChallengeManager(this);
+        this.database = new Database(config.getDBConfig());
 
         TowerCommands towerCommands = new TowerCommands(challengeManager);
-        TowerTabComplete towerTabComplete = new TowerTabComplete();
+        TowerTabComplete towerTabComplete = new TowerTabComplete(this);
 
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
@@ -121,7 +60,7 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("hat").setExecutor(hatCommands);
         this.getCommand("hat").setTabCompleter(hatTabComplete);
 
-        new SitEventHandler();
+//        new SitEventHandler();
 
         // Teams
         ChatHandler chatHandler = new ChatHandler();
@@ -130,8 +69,8 @@ public final class TowerChallenge extends JavaPlugin {
         // Wands
         WandCommands wandCommands = new WandCommands(this);
         this.getCommand("wand").setExecutor(wandCommands);
-        WandListener wandListener = new WandListener();
-        getServer().getPluginManager().registerEvents(wandListener, this);
+//        WandListener wandListener = new WandListener();
+//        getServer().getPluginManager().registerEvents(wandListener, this);
 
         // Timer
         Timer timer = new Timer(this);
@@ -141,7 +80,7 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
-        // Other Commands
+        // Other
         GodCommand godCommand = new GodCommand();
         this.getCommand("god").setExecutor(godCommand);
 
@@ -159,15 +98,30 @@ public final class TowerChallenge extends JavaPlugin {
         new CraftCommand(this);
         new RenameCommand(this);
 
+        ferrisWheel = new FerrisWheel(this);
+
+    }
+
+    public FerrisWheel getFerrisWheel() {
+        return ferrisWheel;
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         Bukkit.getScheduler().cancelTasks(this);
+        ferrisWheel.unloadCars();
+    }
+
+    public Config getPluginConfig() {
+        return this.config;
     }
 
     public ChallengeManager getChallengeManager() {
         return challengeManager;
+    }
+
+    public Database getDatabase() {
+        return database;
     }
 }

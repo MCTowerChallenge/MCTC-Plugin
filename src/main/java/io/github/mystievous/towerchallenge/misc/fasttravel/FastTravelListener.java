@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.configs.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -27,33 +28,8 @@ public class FastTravelListener implements Listener {
 
     public static final String COOKIE_TAG = "fasttravel_cookie";
 
-    public static final String COOKIE_CONFIG_KEY = "CookieCount";
-
-    public static Integer getTeleportCount(UUID uuid) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        return teamDataConfig.getInt("Individual."+uuid.toString()+"."+COOKIE_CONFIG_KEY, 0);
-    }
-
-    public static Integer getTeleportCount(OfflinePlayer player) {
-        return getTeleportCount(player.getUniqueId());
-    }
-
-    public static void addTeleportCount(UUID uuid) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(TowerChallenge.teamDataConfigFile);
-        teamDataConfig.set("Individual."+uuid.toString()+"."+COOKIE_CONFIG_KEY, getTeleportCount(uuid)+1);
-        try {
-            teamDataConfig.save(TowerChallenge.teamDataConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void addTeleportCount(OfflinePlayer player) {
-        addTeleportCount(player.getUniqueId());
-    }
-
     public FastTravelListener() {
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
     public ItemStack getCookie() {
@@ -124,7 +100,6 @@ public class FastTravelListener implements Listener {
                     teleportEffect(player.getLocation());
                     player.teleport(BukkitAdapter.adapt(spawn.getFlag(Flags.TELE_LOC)));
                     teleportEffect(player.getLocation());
-                    addTeleportCount(player);
                     return;
                 }
             }
@@ -134,12 +109,11 @@ public class FastTravelListener implements Listener {
                     teleportEffect(player.getLocation());
                     player.teleport(BukkitAdapter.adapt(candyVillage.getFlag(Flags.TELE_LOC)));
                     teleportEffect(player.getLocation());
-                    addTeleportCount(player);
                     return;
                 }
             }
         }
-        player.sendMessage(Component.text("The magic tastes weak...").decoration(TextDecoration.ITALIC, true).color(TowerChallenge.NEGATIVE_COLOR));
+        player.sendMessage(Component.text("The magic tastes weak...").decoration(TextDecoration.ITALIC, true).color(Palette.NEGATIVE_COLOR.getTextColor()));
     }
 
 }

@@ -12,6 +12,14 @@ import java.util.function.Consumer;
 
 public class ButtonElement extends Element implements Clickable {
 
+
+    // STATIC METHODS AND FIELDS
+
+    /**
+     * Red left arrow item
+     *
+     * @return the Item
+     */
     public static ItemStack backItem() {
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
         ItemMeta exitMeta = exit.getItemMeta();
@@ -21,6 +29,11 @@ public class ButtonElement extends Element implements Clickable {
         return exit;
     }
 
+    /**
+     * Red X item
+     *
+     * @return the Item
+     */
     public static ItemStack exitItem() {
         ItemStack exit = QuestUtil.setButton(new ItemStack(Material.REDSTONE_BLOCK));
         ItemMeta exitMeta = exit.getItemMeta();
@@ -30,12 +43,34 @@ public class ButtonElement extends Element implements Clickable {
         return exit;
     }
 
-    private final Consumer<Player> consumer;
 
+    // INSTANCE VARIABLES
+
+    private Consumer<Player> consumer;
+
+
+    // CONSTRUCTORS
+
+    /**
+     * Clickable Button element to go in a GUI
+     *
+     * @param item     The item to represent the element
+     * @param consumer The consumer for the button to run
+     */
     public ButtonElement(ItemStack item, Consumer<Player> consumer) {
         super(item);
         this.consumer = consumer;
     }
+
+
+    // ACCESSORS AND MUTATORS
+
+    public void setConsumer(Consumer<Player> consumer) {
+        this.consumer = consumer;
+    }
+
+
+    // METHODS
 
     public void use(Player player) {
         if (consumer != null) {

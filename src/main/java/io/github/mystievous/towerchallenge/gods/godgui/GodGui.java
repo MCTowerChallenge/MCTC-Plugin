@@ -1,14 +1,15 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.TextUtil;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.gods.godgui.regionteleports.WorldsRegionOverview;
 import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.*;
+import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.quests.Dialogue;
 import io.github.mystievous.towerchallenge.quests.Quest;
@@ -20,9 +21,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Utility GUI for the Gods to use.
+ * <p>
+ * This is opened generally through the GuiHeldItem.
+ */
 public class GodGui extends PresetGui implements Openable {
 
     public static final String TEXT_NAME = "God Menu";
@@ -33,14 +41,23 @@ public class GodGui extends PresetGui implements Openable {
     private final GuiHeldItem guiBook;
     private final WorldsRegionOverview worldsRegionOverview;
 
-    public GodGui(ChallengeManager challengeManager, GodManager godManager, TowerListener towerListener) {
+    /**
+     * Utility GUI for the Gods to use.
+     * <p>
+     * This is opened generally through the GuiHeldItem.
+     *
+     * @param challengeManager Manager for this event
+     * @param godManager       God Manager for this event
+     * @param towerListener    Tower Listener for this event
+     */
+    public GodGui(@NotNull ChallengeManager challengeManager, @NotNull GodManager godManager, @NotNull TowerListener towerListener) {
         super(COMPONENT_NAME, ROWS);
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("God Menu").decoration(TextDecoration.ITALIC, false));
-        bookMeta.lore(new ArrayList<>(){{
-            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
-            add(Component.text("to open the god menu!").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR));
+        bookMeta.lore(new ArrayList<>() {{
+            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
+            add(Component.text("to open the god menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
         }});
         bookMeta.setCustomModelData(1);
         book.setItemMeta(bookMeta);
@@ -102,7 +119,7 @@ public class GodGui extends PresetGui implements Openable {
             ButtonElement element = new ButtonElement(item, dialogue::play);
             dialogueGui.addElement(element);
         }
-        ButtonElement dialogueElement = new ButtonElement(new ItemStack(Material.BOOK){{
+        ButtonElement dialogueElement = new ButtonElement(new ItemStack(Material.BOOK) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(TextUtil.noItalic("Dialogues"));
             setItemMeta(meta);
@@ -156,68 +173,58 @@ public class GodGui extends PresetGui implements Openable {
             player.openWorkbench(null, true);
         });
 
+        ItemStack hatItem = new ItemStack(Material.LEATHER_HORSE_ARMOR);
+        ItemMeta hatMeta = hatItem.getItemMeta();
+        hatMeta.displayName(TextUtil.noItalic("Hat Menu (At some point :p)"));
+        hatItem.setItemMeta(hatMeta);
+        Element hatElement = new Element(hatItem);
 
-        ItemStack spiritMeltItem = new ItemStack(Material.WITHER_SKELETON_SKULL);
-        ItemMeta spiritMeltMeta = spiritMeltItem.getItemMeta();
-        spiritMeltMeta.displayName(TextUtil.noItalic("Spirit Melt Dialogue"));
-        spiritMeltItem.setItemMeta(spiritMeltMeta);
-        ButtonElement meltElement = new ButtonElement(spiritMeltItem, player -> {
-            new ConfirmationGUI(Component.text("Spirit Melt Dialogue"), player1 -> {
-                challengeManager.getQuestManager().getNpcManager().spiritMelt();
-            }, player1 -> {
-                godManager.getGodGui().openInventory(player1);
-            }).openInventory(player);
-        });
+        ItemStack devItem = new ItemStack(Material.PAPER);
+        ItemMeta devMeta = devItem.getItemMeta();
+        devMeta.displayName(TextUtil.noItalic("Developer Menu"));
+        devMeta.setCustomModelData(4);
+        devItem.setItemMeta(devMeta);
+        DeveloperGui devGui = new DeveloperGui(challengeManager);
+        Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
-        ItemStack spiritFinalItem = new ItemStack(Material.WITHER_SKELETON_SKULL);
-        ItemMeta spiritFinalMeta = spiritFinalItem.getItemMeta();
-        spiritFinalMeta.displayName(TextUtil.noItalic("Spirit Final Dialogue"));
-        spiritFinalItem.setItemMeta(spiritFinalMeta);
-        ButtonElement finalElement = new ButtonElement(spiritFinalItem, player -> {
-            new ConfirmationGUI(Component.text("Spirit Final Dialogue"), player1 -> {
-                challengeManager.getQuestManager().getNpcManager().spiritFinale();
-            }, player1 -> {
-                godManager.getGodGui().openInventory(player1);
-            }).openInventory(player);
-        });
-
-        ItemStack nothing = new ItemStack(Material.GLOW_INK_SAC);
-        ItemMeta nothingMeta = nothing.getItemMeta();
-        nothingMeta.displayName(TextUtil.noItalic("This doesn't do anything"));
-        nothingMeta.lore(TextUtil.formatTexts("I just needed to balance", "out the gui"));
-        nothing.setItemMeta(nothingMeta);
-        Element nothingElement = new Element(nothing);
-
-        ItemStack warning = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-        ItemMeta warningMeta = warning.getItemMeta();
-        warningMeta.displayName(TextUtil.noItalic("!!WARNING!!"));
-        warning.setItemMeta(warningMeta);
-        Element warningElement = new Element(warning);
+//        ItemStack warning = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+//        ItemMeta warningMeta = warning.getItemMeta();
+//        warningMeta.displayName(TextUtil.noItalic("!!WARNING!!"));
+//        warning.setItemMeta(warningMeta);
+//        Element warningElement = new Element(warning);
 
         placeElement(2, 2, regionTeleportsElement);
         placeElement(4, 2, magicElement);
-        placeElement(6, 2, nothingElement);
+        placeElement(6, 2, hatElement);
         placeElement(2, 5, startingItemsElement);
-        placeElement(3,4, dialogueElement);
+        placeElement(3, 4, dialogueElement);
         placeElement(4, 5, teleportHistoryElement);
         placeElement(5, 4, teamQuestElement);
         placeElement(6, 5, trackedStatsElement);
         placeElement(8, 1, crafting);
         placeElement(9, 1, anvil);
         placeElement(9, 2, enderChest);
-        placeElement(9, 4, warningElement);
-        placeElement(8, 4, warningElement);
-        placeElement(8, 5, warningElement);
-        placeElement(8, 6, warningElement);
-        placeElement(9, 5, meltElement);
-        placeElement(9, 6, finalElement);
+        placeElement(8, 5, devElement);
 
     }
 
+    /**
+     * Gets the GuiHeldItem that
+     * opens the God GUI
+     *
+     * @return
+     */
     public GuiHeldItem getGuiHeldItem() {
         return guiBook;
     }
 
+    /**
+     * Gets the ItemStack from
+     * the GuiHeldItem that opens
+     * the God GUI
+     *
+     * @return
+     */
     public ItemStack getItem() {
         return guiBook.getItem();
     }

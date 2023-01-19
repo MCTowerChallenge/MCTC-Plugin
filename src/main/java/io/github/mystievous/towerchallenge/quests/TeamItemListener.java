@@ -16,17 +16,17 @@ import org.bukkit.inventory.ItemStack;
 public class TeamItemListener implements Listener {
 
     public TeamItemListener() {
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.me);
+        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
-    public static boolean teamCanInteract(Player player, ItemStack itemStack) {
-        TowerTeam team = TowerChallenge.me.getChallengeManager().getPlayerTeam(player);
+    public static boolean teamCannotInteract(Player player, ItemStack itemStack) {
+        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
 
         if (NBTUtils.hasTeam(itemStack)) {
-            return team != null && (NBTUtils.matchTeam(itemStack, team) || team instanceof GodTeam);
+            return team == null || (!NBTUtils.matchTeam(itemStack, team) && !(team instanceof GodTeam));
         }
 
-        return true;
+        return false;
     }
 
     @EventHandler
@@ -37,7 +37,7 @@ public class TeamItemListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem().getItemStack();
 
-        if (!teamCanInteract(player, item)) {
+        if (teamCannotInteract(player, item)) {
             event.setCancelled(true);
         }
 
@@ -54,7 +54,7 @@ public class TeamItemListener implements Listener {
 
             ItemStack item = event.getCurrentItem();
 
-            if (!teamCanInteract(player, item)) {
+            if (teamCannotInteract(player, item)) {
                 event.setCancelled(true);
             }
         }

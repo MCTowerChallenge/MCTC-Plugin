@@ -1,5 +1,7 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
@@ -8,20 +10,28 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
 
 public class TowerCommands implements CommandExecutor {
 
     public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
     private final TowerListener towerListener;
     private final ChallengeManager manager;
-
-//    private static ItemEntityHandler handler;
 
     public TowerCommands(ChallengeManager manager) {
         this.manager = manager;
@@ -33,8 +43,23 @@ public class TowerCommands implements CommandExecutor {
 
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
-                switch(args[0].toLowerCase()) {
-                    case ("addfullblock"):
+                switch (args[0].toLowerCase()) {
+                    case ("reloadferriswheel") -> manager.getPlugin().getFerrisWheel().reload();
+                    case ("addplayer") -> {
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                        StringBuilder teamNameBuilder = new StringBuilder();
+                        for (int i = 2; i < args.length; i++) {
+                            teamNameBuilder.append(args[i]).append(" ");
+                        }
+                        String teamName = teamNameBuilder.toString().strip();
+                        TowerTeam team = manager.getTowerListener().getTeam(teamName);
+                        if (team != null) {
+                            manager.getPlugin().getDatabase().updateUserTeam(player.getUniqueId(), team);
+                        } else {
+                            sender.sendMessage(CommandUtils.errorMessage(String.format("Team %s does not exist", teamName)));
+                        }
+                    }
+                    case ("addfullblock") -> {
                         if (args.length < 2) {
                             if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
@@ -66,8 +91,8 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(Component.text("ex. /tower addFullBlock acacia_log").color(NamedTextColor.DARK_RED));
                             }
                         }
-                        break;
-                    case("removefullblock"):
+                    }
+                    case ("removefullblock") -> {
                         if (args.length < 2) {
                             if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
@@ -99,18 +124,14 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(Component.text("ex. /tower removeFullBlock acacia_log").color(NamedTextColor.DARK_RED));
                             }
                         }
-                        break;
-                    case ("reloadconfig"):
+                    }
+                    case ("reloadconfig") -> {
                         sender.sendMessage(Component.text("Reloading Config"));
                         towerListener.loadConfig();
-                        break;
-                    case ("resetendportal"):
-                        manager.resetEndPortal();
-                        break;
-                    case ("showtowerscores"):
-                        manager.showTowerScores(sender);
-                        break;
-                    case ("dealitems"):
+                    }
+                    case ("resetendportal") -> manager.resetEndPortal();
+                    case ("showtowerscores") -> manager.showTowerScores(sender);
+                    case ("dealitems") -> {
                         if (args.length < 2) {
                             manager.dealItems();
                         } else {
@@ -121,12 +142,12 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                             }
                         }
-                        break;
-                    case ("resetteams"):
+                    }
+                    case ("resetteams") -> {
                         manager.resetTeams();
                         towerListener.loadTeams();
-                        break;
-                    case ("shulker"):
+                    }
+                    case ("shulker") -> {
                         if (args.length < 2) {
                             sender.sendMessage(CommandUtils.errorMessage("Please enter a player to give a shulker"));
                         } else {
@@ -146,8 +167,8 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                             }
                         }
-                        break;
-                    case ("addscore"):
+                    }
+                    case ("addscore") -> {
                         if (args.length < 2) {
                             sender.sendMessage(CommandUtils.errorMessage("Please enter a player to add score to"));
                         } else {
@@ -178,8 +199,8 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                             }
                         }
-                        break;
-                    case ("removescore"):
+                    }
+                    case ("removescore") -> {
                         if (args.length < 2) {
                             sender.sendMessage(CommandUtils.errorMessage("Please enter a player to remove score from"));
                         } else {
@@ -210,15 +231,15 @@ public class TowerCommands implements CommandExecutor {
                                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                             }
                         }
-                        break;
-                    case ("pickwinner"):
+                    }
+                    case ("pickwinner") -> {
                         if (sender instanceof Player player) {
                             manager.getWinnerGUI().openUI(player);
                         } else {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
-                        break;
-                    case ("voucher"):
+                    }
+                    case ("voucher") -> {
                         if (sender instanceof Player player) {
                             int number = 1;
                             if (args.length > 1) {
@@ -233,8 +254,8 @@ public class TowerCommands implements CommandExecutor {
                         } else {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
-                        break;
-                    case ("toggletower"):
+                    }
+                    case ("toggletower") -> {
                         if (manager.getChallengePhase().equals(ChallengeManager.ChallengePhase.TOWERING)) {
                             manager.setChallengePhase(ChallengeManager.ChallengePhase.IN_PROGRESS);
                             sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));
@@ -242,9 +263,8 @@ public class TowerCommands implements CommandExecutor {
                             manager.setChallengePhase(ChallengeManager.ChallengePhase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
-                        break;
-                    default:
-                        sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));
+                    }
+                    default -> sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));
                 }
             }
         }

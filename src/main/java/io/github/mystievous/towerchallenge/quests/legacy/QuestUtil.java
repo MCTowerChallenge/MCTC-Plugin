@@ -12,7 +12,8 @@ public class QuestUtil {
 
     /**
      * Sets the value of the "is_questbook" NBT tag on an itemstack
-     * @param itemStack ItemStack to change
+     *
+     * @param itemStack      ItemStack to change
      * @param questbookState State to change is_questbook to
      * @return ItemStack, with the updated is_questbook tag
      */
@@ -22,6 +23,7 @@ public class QuestUtil {
 
     /**
      * Tags an ItemStack as a hat
+     *
      * @param itemStack ItemStack to change
      * @return ItemStack, with the updated is_questbook tag
      */

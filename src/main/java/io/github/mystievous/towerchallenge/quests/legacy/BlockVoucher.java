@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.legacy;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class BlockVoucher extends ItemStack {
-    
-    public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(TowerChallenge.PRIMARY_COLOR);
+
+    public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor());
 
     public static ItemStack getVouchers(int number) {
         ItemStack vouchers = QuestUtil.setVoucher(new ItemStack(Material.PAPER, number));
@@ -22,5 +22,5 @@ public class BlockVoucher extends ItemStack {
         vouchers.setItemMeta(voucherMeta);
         return vouchers;
     }
-    
+
 }

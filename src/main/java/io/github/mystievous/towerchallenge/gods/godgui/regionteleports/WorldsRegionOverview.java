@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.gods.godgui.regionteleports;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
@@ -19,13 +19,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
+/**
+ * Shows all worlds, allowing to open
+ * the WorldIndividualGui for each one
+ */
 public class WorldsRegionOverview implements Openable {
 
     public static final String GUI_NAME = "Worlds:";
-
-    public WorldsRegionOverview() {
-
-    }
 
     @Override
     public Gui getGui(Player player) {
@@ -38,10 +38,10 @@ public class WorldsRegionOverview implements Openable {
         ItemStack overworldItem = new ItemStack(Material.GRASS_BLOCK);
         ItemMeta overworldMeta = overworldItem.getItemMeta();
         overworldMeta.displayName(Component.text("Overworld").decoration(TextDecoration.ITALIC, false));
-        overworldMeta.lore(new ArrayList<>(){{
+        overworldMeta.lore(new ArrayList<>() {{
             add(Component.text("Regions: ")
                     .append(Component.text(overworldManager.size()))
-                    .color(TowerChallenge.PRIMARY_COLOR)
+                    .color(Palette.PRIMARY.getTextColor())
                     .decoration(TextDecoration.ITALIC, false)
             );
         }});
@@ -52,10 +52,10 @@ public class WorldsRegionOverview implements Openable {
         ItemStack netherItem = new ItemStack(Material.NETHERRACK);
         ItemMeta netherMeta = netherItem.getItemMeta();
         netherMeta.displayName(Component.text("Nether").decoration(TextDecoration.ITALIC, false));
-        netherMeta.lore(new ArrayList<>(){{
+        netherMeta.lore(new ArrayList<>() {{
             add(Component.text("Regions: ")
                     .append(Component.text(netherManager.size()))
-                    .color(TowerChallenge.PRIMARY_COLOR)
+                    .color(Palette.PRIMARY.getTextColor())
                     .decoration(TextDecoration.ITALIC, false)
             );
         }});

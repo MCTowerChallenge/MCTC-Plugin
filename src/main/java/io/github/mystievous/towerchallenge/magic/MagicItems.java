@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.magic;
 import io.github.mystievous.towerchallenge.NBTUtils;
 import io.github.mystievous.towerchallenge.TextUtil;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.decoration.presents.PresentEntityHandler;
+import io.github.mystievous.towerchallenge.eventspecific.winter.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
@@ -14,6 +14,8 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Cow;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.EntityEquipment;
@@ -22,6 +24,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.loot.LootTables;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.UUID;
 
@@ -56,11 +60,42 @@ public class MagicItems {
         Player player = playerInteractEvent.getPlayer();
         World world = player.getWorld();
         int numPerEvent = 4;
-        for (int i = 0; i < numPerEvent+1; i++) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.me, () -> {
+        for (int i = 0; i < numPerEvent + 1; i++) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
                 player.launchProjectile(Snowball.class);
                 world.playSound(player, Sound.ENTITY_SNOWBALL_THROW, 1f, 1f);
-            }, i*(4/numPerEvent));
+            }, i * (4 / numPerEvent));
+        }
+    });
+
+    public static final Wand cowWand = new Wand("cow", new ItemStack(Material.STICK) {{
+        ItemMeta meta = getItemMeta();
+        meta.displayName(TextUtil.noItalic("Cow Wand"));
+        meta.setCustomModelData(1);
+        setItemMeta(meta);
+    }}, playerInteractEvent -> {
+        Player player = playerInteractEvent.getPlayer();
+        Cow cow = (Cow) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.COW);
+        cow.setVelocity(player.getEyeLocation().getDirection().multiply(3.0d));
+        cow.setInvulnerable(true);
+        cow.customName(Component.text("Moo-ssile"));
+        cow.setLootTable(LootTables.EMPTY.getLootTable());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
+            cow.getLocation().createExplosion(5, false, false);
+            cow.setHealth(0);
+        }, 60);
+    });
+
+    public static final Wand lightningWand = new Wand("lightning", new ItemStack(Material.STICK) {{
+        ItemMeta meta = getItemMeta();
+        meta.displayName(TextUtil.noItalic("Lightning Wand"));
+        meta.setCustomModelData(2);
+        setItemMeta(meta);
+    }}, playerInteractEvent -> {
+        Player player = playerInteractEvent.getPlayer();
+        RayTraceResult rayTrace = player.rayTraceBlocks(50);
+        if (rayTrace != null) {
+            player.getWorld().strikeLightning(rayTrace.getHitPosition().toLocation(player.getWorld()));
         }
     });
 
@@ -121,12 +156,23 @@ public class MagicItems {
         return NBTUtils.setUniqueID(itemStack, UUID.randomUUID());
     }
 
+    /**
+     * Gets the GUI with all the magic items inside
+     *
+     * @return the Gui
+     */
     public static PresetGui getGui() {
         PresetGui gui = new PresetGui(Component.text("Magic Items"), 3);
         gui.placeElement(1, 1, new ButtonElement(snowballWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(snowballWand.getItem()));
         }));
-        gui.placeElement(2, 1, new ButtonElement(presentWand.getItem(), player -> {
+        gui.placeElement(2, 1, new ButtonElement(cowWand.getItem(), player -> {
+            player.getInventory().addItem(randomUUID(cowWand.getItem()));
+        }));
+        gui.placeElement(3, 1, new ButtonElement(lightningWand.getItem(), player -> {
+            player.getInventory().addItem(randomUUID(lightningWand.getItem()));
+        }));
+        gui.placeElement(4, 1, new ButtonElement(presentWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(presentWand.getItem()));
         }));
         gui.placeElement(1, 3, new ButtonElement(speedBoots, player -> {
@@ -139,7 +185,7 @@ public class MagicItems {
             player.getInventory().addItem(goatHat.getItem());
         }));
 
-        gui.placeElement(9,3, new ButtonElement(portalReplaceWand.getItem(), player -> {
+        gui.placeElement(9, 3, new ButtonElement(portalReplaceWand.getItem(), player -> {
             player.getInventory().addItem(portalReplaceWand.getItem());
         }));
         return gui;
