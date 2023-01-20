@@ -54,12 +54,12 @@ public class ParticipantTeam extends TowerTeam {
             if (worldContainer.hasRegion(getSpawnName())) {
                 this.spawnRegion = new SpawnRegion(this, getManager(), worldContainer.getRegion(getSpawnName()));
             } else {
-                ChallengeManager.log("No Spawn Region for "+getTextName());
+                TowerChallenge.log("No Spawn Region for "+getTextName());
             }
             if (worldContainer.hasRegion(getTowerName())) {
                 this.towerRegion = new TowerRegion(this, getManager(), worldContainer.getRegion(getTowerName()), getTextName());
             } else {
-                ChallengeManager.log("No Tower Region for "+getTextName());
+                TowerChallenge.log("No Tower Region for "+getTextName());
             }
         }
     }
@@ -227,7 +227,7 @@ public class ParticipantTeam extends TowerTeam {
 
         final Component chatMessage = getDisplayName().color(getTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes+" remain... ").color(Palette.PRIMARY.getTextColor()));
+                .append(Component.text(remainingEyes+" remain... ").color(Palette.PRIMARY.toTextColor()));
 
         // Send the title to your audience
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));

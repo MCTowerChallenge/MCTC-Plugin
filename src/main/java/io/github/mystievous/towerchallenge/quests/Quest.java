@@ -1,6 +1,5 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
@@ -132,7 +131,7 @@ public class Quest implements Openable {
             } else if (i < 14) {
                 gui.placeElement(i - 7 + 2, 3, element);
             } else {
-                ChallengeManager.log("Quest has too many requirements");
+                TowerChallenge.log("Quest has too many requirements");
             }
         }
 
@@ -142,7 +141,7 @@ public class Quest implements Openable {
             if (i < 7) {
                 gui.placeElement(i + 2, 5, element);
             } else {
-                ChallengeManager.log("Quest has too many rewards");
+                TowerChallenge.log("Quest has too many rewards");
             }
         }
 

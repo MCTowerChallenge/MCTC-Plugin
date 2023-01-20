@@ -80,7 +80,7 @@ public class SpawnCompass implements Listener {
         meta.lore(new ArrayList<>(){{
             add(Component.keybind("key.use")
                     .append(Component.text(" to point home :)"))
-                    .color(Palette.PRIMARY.getTextColor()).decoration(TextDecoration.ITALIC, false)
+                    .color(Palette.PRIMARY.toTextColor()).decoration(TextDecoration.ITALIC, false)
             );
         }});
         meta.addEnchant(Enchantment.MENDING, 1, true);

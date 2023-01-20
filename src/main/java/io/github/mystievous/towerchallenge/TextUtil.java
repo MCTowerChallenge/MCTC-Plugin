@@ -2,6 +2,8 @@ package io.github.mystievous.towerchallenge;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +27,7 @@ public class TextUtil {
     }
 
     public static Component formatText(Component text) {
-        return text.decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor());
+        return text.decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor());
     }
 
     public static Component formatText(String text) {
@@ -47,5 +49,14 @@ public class TextUtil {
         } else {
             return Component.translatable(item.translationKey());
         }
+    }
+
+    public static String formatBlockType(Material material) {
+        String name = material.name().toLowerCase();
+        StringBuilder output = new StringBuilder();
+        for (String word : name.split("_")) {
+            output.append(StringUtils.capitalize(word)).append(' ');
+        }
+        return output.toString();
     }
 }

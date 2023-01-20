@@ -1,11 +1,10 @@
 package io.github.mystievous.towerchallenge.towering.regions;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
-import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.TextUtil;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
@@ -15,7 +14,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
@@ -93,7 +91,7 @@ public class TowerRegion extends EventRegion implements Listener {
                 score.setScore(blocks.size());
                 return false;
             } else {
-                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(TextUtil.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
                 return true;
             }
         } else {
@@ -149,7 +147,7 @@ public class TowerRegion extends EventRegion implements Listener {
                     boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
                     event.setCancelled(cancelEvent);
                 } else {
-                    event.getPlayer().sendActionBar(Component.text(ChallengeManager.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
+                    event.getPlayer().sendActionBar(Component.text(TextUtil.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)
                             .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
                     event.setCancelled(true);
                 }

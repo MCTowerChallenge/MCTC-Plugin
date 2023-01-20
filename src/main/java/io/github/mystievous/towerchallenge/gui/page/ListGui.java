@@ -106,8 +106,8 @@ public class ListGui extends Gui {
      * Individual page
      */
     public class ListPage {
-        private static final Color ARROW_COLOR = Palette.PRIMARY.getBukkitColor();
-        private static final Color DISABLED_COLOR = Palette.GRAYED_OUT.getBukkitColor();
+        private static final Color ARROW_COLOR = Palette.PRIMARY.toBukkitColor();
+        private static final Color DISABLED_COLOR = Palette.GRAYED_OUT.toBukkitColor();
 
         private final List<Element> pageElementList;
         private ListPage previousPage;

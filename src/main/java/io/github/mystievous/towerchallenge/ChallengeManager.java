@@ -2,24 +2,20 @@ package io.github.mystievous.towerchallenge;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.mystievous.towerchallenge.eventspecific.winter.sweetsburg.MarketStalls;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
+import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.quests.TeamItemListener;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
-import io.github.mystievous.towerchallenge.towering.WinnerGUI;
+import io.github.mystievous.towerchallenge.towering.*;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -50,19 +46,6 @@ public class ChallengeManager {
 
     private static final String OBJECTIVE_NAME = "TowerHeight";
 
-    public static String formatBlockType(Material material) {
-        String name = material.name().toLowerCase();
-        StringBuilder output = new StringBuilder();
-        for (String word : name.split("_")) {
-            output.append(StringUtils.capitalize(word)).append(' ');
-        }
-        return output.toString();
-    }
-
-    public static void log(String text) {
-        Bukkit.getLogger().info(text);
-    }
-
     // Instance Variables
     private final TowerChallenge plugin;
     private ChallengePhase challengePhase;
@@ -71,7 +54,7 @@ public class ChallengeManager {
     private Objective towerHeight;
     private final TowerListener towerListener;
     private final EndPortal endPortal;
-    private final WinnerGUI winnerGUI;
+    private final WinnersGUI winnersGUI;
     private final GodManager godManager;
     private final TeleportHistoryManager teleportHistoryManager;
 
@@ -91,7 +74,7 @@ public class ChallengeManager {
         questManager = new QuestManager(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         endPortal = new EndPortal(this);
-        winnerGUI = new WinnerGUI(this);
+        winnersGUI = new WinnersGUI(this, Element.empty());
         this.godManager = new GodManager(this, towerListener);
         teleportHistoryManager = new TeleportHistoryManager(godManager);
         new SpawnCompass();
@@ -141,7 +124,7 @@ public class ChallengeManager {
                 audience.sendMessage(team.getDisplayName().color(team.getTextColor())
                         .append(Component.text(" has ").color(NamedTextColor.WHITE)
                                 .append(Component.text(towerHeight.getScore(PlainTextComponentSerializer.plainText().serialize(team.getDisplayName())).getScore()+team.getExtraScore())
-                                        .color(Palette.PRIMARY.getTextColor()))
+                                        .color(Palette.PRIMARY.toTextColor()))
                                 .append(Component.text(" blocks"))));
             }
         }
@@ -160,8 +143,8 @@ public class ChallengeManager {
         return teleportHistoryManager;
     }
 
-    public WinnerGUI getWinnerGUI() {
-        return winnerGUI;
+    public WinnersGUI getWinnersGUI() {
+        return winnersGUI;
     }
 
     public HashMap<String, ParticipantTeam> getTeams() {
@@ -182,7 +165,7 @@ public class ChallengeManager {
         Bukkit.getLogger().info("Resetting End Portal");
         endPortal.resetPortal();
         HashMap<String, ParticipantTeam> teams = towerListener.getTeams();
-        ChallengeManager.log(teams.toString());
+        TowerChallenge.log(teams.toString());
         for (Map.Entry<String, ParticipantTeam> entry : teams.entrySet()) {
             Bukkit.getLogger().info("Resetting frame for " + entry.getKey());
             entry.getValue().resetFrame();

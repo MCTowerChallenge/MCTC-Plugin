@@ -6,6 +6,7 @@ import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.*;
+import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -16,9 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class DeveloperGui extends PresetGui {
 
@@ -47,8 +50,19 @@ public class DeveloperGui extends PresetGui {
                 (player, participantTeam) -> new PlayerGui(Component.text("Pick player to add:"),
                         offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
                         (playerClicking, playerSelected) -> {
-                            challengeManager.getPlugin().getDatabase().updateUserTeam(playerSelected.getUniqueId(), participantTeam);
-                            playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
+                            try {
+                                String playerName = playerSelected.getName();
+                                UUID playerId = playerSelected.getUniqueId();
+                                if (challengeManager.getPlugin().getDatabase().upsertUserTeam(playerId, participantTeam)) {
+                                    assert playerSelected.getName() != null;
+                                    playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
+                                } else {
+                                    playerClicking.sendMessage(String.format("Failed to update team for:\n    user: %s\n    team: %s", playerName, participantTeam));
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                playerClicking.sendMessage(CommandUtils.errorMessage("Error updating the database"));
+                            }
                             this.openInventory(playerClicking);
                         },
                         new ButtonElement(ButtonElement.exitItem(), this::openInventory)).openInventory(player),
@@ -63,8 +77,8 @@ public class DeveloperGui extends PresetGui {
 
         ItemStack spawnItem = formatItem("Spawn Entity", Material.SHEEP_SPAWN_EGG, null);
         Element spawnElement = new ButtonElement(spawnItem, player -> {
-             ref.sheep = player.getWorld().spawnEntity(player.getLocation(), EntityType.SHEEP);
-             ref.sheep.addScoreboardTag(tag);
+            ref.sheep = player.getWorld().spawnEntity(player.getLocation(), EntityType.SHEEP);
+            ref.sheep.addScoreboardTag(tag);
         });
 
         ItemStack hideEntity = formatItem("Hide Entity", Material.DIAMOND_SHOVEL, null);
@@ -131,6 +145,17 @@ public class DeveloperGui extends PresetGui {
             }, this::openInventory).openInventory(player);
         });
 
+        ItemStack hatItem = formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
+        Element hatElement = new ButtonElement(hatItem, player -> {
+            try {
+                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), challengeManager.getPlugin().getDatabase().getPlayerHatElements(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                hatGui.openInventory(player);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
+            }
+        });
+
         placeElement(1, 1, testElement);
         placeElement(2, 1, addPlayerElement);
         placeElement(3, 1, spawnElement);
@@ -138,6 +163,7 @@ public class DeveloperGui extends PresetGui {
         placeElement(5, 1, showElement);
         placeElement(6, 1, openPortalElement);
         placeElement(7, 1, closePortalElement);
+        placeElement(8, 1, hatElement);
 
         placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> {
             challengeManager.getGodManager().getGodGui().openInventory(player);

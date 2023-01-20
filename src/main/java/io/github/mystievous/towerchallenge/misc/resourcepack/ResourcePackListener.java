@@ -37,9 +37,9 @@ public class ResourcePackListener implements Listener {
             if (playerAttempts > 3) {
                 player.sendMessage(
                         Component.text("[ERROR] Unable to load resource pack! Manually reload with ")
-                                .append(Component.text("/resourcepack").color(Palette.PRIMARY.getTextColor()))
+                                .append(Component.text("/resourcepack").color(Palette.PRIMARY.toTextColor()))
                                 .append(Component.text(" or "))
-                                .append(Component.text("/rp").color(Palette.PRIMARY.getTextColor()))
+                                .append(Component.text("/rp").color(Palette.PRIMARY.toTextColor()))
                                 .append(Component.text(" or try relogging."))
                                 .color(NamedTextColor.DARK_RED));
             } else {
@@ -57,9 +57,9 @@ public class ResourcePackListener implements Listener {
         } else if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED)) {
             player.sendMessage(
                     Component.text("If you have issues with the resource pack, manually reload with ")
-                            .append(Component.text("/resourcepack").color(Palette.PRIMARY.getTextColor()))
+                            .append(Component.text("/resourcepack").color(Palette.PRIMARY.toTextColor()))
                             .append(Component.text(" or "))
-                            .append(Component.text("/rp").color(Palette.PRIMARY.getTextColor()))
+                            .append(Component.text("/rp").color(Palette.PRIMARY.toTextColor()))
                             .append(Component.text(" or try relogging."))
                             .color(NamedTextColor.DARK_RED));
         }

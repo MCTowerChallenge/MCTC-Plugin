@@ -62,6 +62,9 @@ public class ButtonElement extends Element implements Clickable {
         this.consumer = consumer;
     }
 
+    public ButtonElement(ItemStack item) {
+        this(item, null);
+    }
 
     // ACCESSORS AND MUTATORS
 

@@ -6,11 +6,9 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.*;
-import io.github.mystievous.towerchallenge.configs.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,9 +18,6 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.io.IOException;
-import java.util.UUID;
 
 public class FastTravelListener implements Listener {
 
@@ -113,7 +108,7 @@ public class FastTravelListener implements Listener {
                 }
             }
         }
-        player.sendMessage(Component.text("The magic tastes weak...").decoration(TextDecoration.ITALIC, true).color(Palette.NEGATIVE_COLOR.getTextColor()));
+        player.sendMessage(Component.text("The magic tastes weak...").decoration(TextDecoration.ITALIC, true).color(Palette.NEGATIVE_COLOR.toTextColor()));
     }
 
 }

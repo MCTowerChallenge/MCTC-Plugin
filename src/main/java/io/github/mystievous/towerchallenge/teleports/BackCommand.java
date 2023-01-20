@@ -31,7 +31,7 @@ public class BackCommand implements CommandExecutor {
             return true;
         }
         player.teleport(location);
-        player.sendMessage(Component.text("Teleported back to last location.").color(Palette.PRIMARY.getTextColor()));
+        player.sendMessage(Component.text("Teleported back to last location.").color(Palette.PRIMARY.toTextColor()));
         return true;
     }
 }

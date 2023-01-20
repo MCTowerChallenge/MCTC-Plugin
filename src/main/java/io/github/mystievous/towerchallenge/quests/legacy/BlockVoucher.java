@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class BlockVoucher extends ItemStack {
 
-    public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor());
+    public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor());
 
     public static ItemStack getVouchers(int number) {
         ItemStack vouchers = QuestUtil.setVoucher(new ItemStack(Material.PAPER, number));

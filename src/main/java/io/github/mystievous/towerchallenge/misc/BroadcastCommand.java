@@ -33,16 +33,16 @@ public class BroadcastCommand implements CommandExecutor {
         }
 
         manager.getTowerListener().getGodTeam().getAudience().sendMessage(
-                Component.text(sender.getName()).color(Palette.PRIMARY.getTextColor()).decoration(TextDecoration.ITALIC, true)
+                Component.text(sender.getName()).color(Palette.PRIMARY.toTextColor()).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" has sent an announcement!")
-                                .color(Palette.SECONDARY.getTextColor())
+                                .color(Palette.SECONDARY.toTextColor())
                                 .decoration(TextDecoration.ITALIC, false))
         );
 
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text();
 
         // \uF801 is the -1 character width from the resource pack
-        message.append(Component.text("------ \uF801ANNOUNCEMENT\uF801 ------").color(Palette.PRIMARY.getTextColor()))
+        message.append(Component.text("------ \uF801ANNOUNCEMENT\uF801 ------").color(Palette.PRIMARY.toTextColor()))
                 .append(Component.text("\n\n"));
 
         int pixelCount = 0;
@@ -56,10 +56,10 @@ public class BroadcastCommand implements CommandExecutor {
             message.append(Component.text(word)).append(Component.space());
         }
 
-        message.append(Component.text("\n\n")).append(Component.text("-------------------------").color(Palette.PRIMARY.getTextColor()));
+        message.append(Component.text("\n\n")).append(Component.text("-------------------------").color(Palette.PRIMARY.toTextColor()));
 
         Bukkit.getServer().sendMessage(message.build());
-        Title title = Title.title(Component.text("ANNOUNCEMENT").color(Palette.PRIMARY.getTextColor()), Component.text("An event announcement has been posted in chat!").color(NamedTextColor.WHITE));
+        Title title = Title.title(Component.text("ANNOUNCEMENT").color(Palette.PRIMARY.toTextColor()), Component.text("An event announcement has been posted in chat!").color(NamedTextColor.WHITE));
 //        Title title = Title.title(Component.empty(), Component.text("An event announcement has been posted in chat!"));
         Bukkit.getServer().showTitle(title);
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 100, 1f));

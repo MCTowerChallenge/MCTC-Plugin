@@ -10,12 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class WandCommands implements CommandExecutor {
 
-    private final WandGUI gui;
-
-    public WandCommands(Plugin plugin) {
-        this.gui = new WandGUI(plugin);
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {

@@ -1,8 +1,7 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TextUtil;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
 import net.kyori.adventure.text.Component;
@@ -14,18 +13,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -54,7 +46,14 @@ public class TowerCommands implements CommandExecutor {
                         String teamName = teamNameBuilder.toString().strip();
                         TowerTeam team = manager.getTowerListener().getTeam(teamName);
                         if (team != null) {
-                            manager.getPlugin().getDatabase().updateUserTeam(player.getUniqueId(), team);
+                            try {
+                                if (manager.getPlugin().getDatabase().upsertUserTeam(player.getUniqueId(), team)) {
+                                    sender.sendMessage(Component.text(player.getName()).append(Component.text(" set to team ")).append(team.getDisplayName()));
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                sender.sendMessage(CommandUtils.errorMessage("Error updating the database."));
+                            }
                         } else {
                             sender.sendMessage(CommandUtils.errorMessage(String.format("Team %s does not exist", teamName)));
                         }
@@ -69,7 +68,7 @@ public class TowerCommands implements CommandExecutor {
                                 } else {
                                     try {
                                         manager.addFullBlock(item.getType());
-                                        player.sendMessage(Component.text(ChallengeManager.formatBlockType(item.getType())).append(Component.text("added as a full block.")));
+                                        player.sendMessage(Component.text(TextUtil.formatBlockType(item.getType())).append(Component.text("added as a full block.")));
                                     } catch (IllegalArgumentException e) {
                                         player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
                                         player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -84,7 +83,7 @@ public class TowerCommands implements CommandExecutor {
                             try {
                                 Material type = Material.valueOf(args[1].toUpperCase());
                                 manager.addFullBlock(type);
-                                sender.sendMessage(Component.text(ChallengeManager.formatBlockType(type)).append(Component.text("added as a full block.")));
+                                sender.sendMessage(Component.text(TextUtil.formatBlockType(type)).append(Component.text("added as a full block.")));
                             } catch (IllegalArgumentException e) {
                                 sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
                                 sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -102,7 +101,7 @@ public class TowerCommands implements CommandExecutor {
                                 } else {
                                     try {
                                         manager.removeFullBlock(item.getType());
-                                        player.sendMessage(Component.text(ChallengeManager.formatBlockType(item.getType())).append(Component.text("is no longer a full block.")));
+                                        player.sendMessage(Component.text(TextUtil.formatBlockType(item.getType())).append(Component.text("is no longer a full block.")));
                                     } catch (IllegalArgumentException e) {
                                         player.sendMessage(Component.text("Held Item is not a block!").color(NamedTextColor.DARK_RED));
                                         player.sendMessage(Component.text("You must hold a block, or specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -117,7 +116,7 @@ public class TowerCommands implements CommandExecutor {
                             try {
                                 Material type = Material.valueOf(args[1].toUpperCase());
                                 manager.removeFullBlock(type);
-                                sender.sendMessage(Component.text(ChallengeManager.formatBlockType(type)).append(Component.text("is no longer a full block.")));
+                                sender.sendMessage(Component.text(TextUtil.formatBlockType(type)).append(Component.text("is no longer a full block.")));
                             } catch (IllegalArgumentException e) {
                                 sender.sendMessage(Component.text("Selected material is not a block! Make sure you entered it correctly.").color(NamedTextColor.DARK_RED));
                                 sender.sendMessage(Component.text("You must specify a block type in the command.").color(NamedTextColor.DARK_RED));
@@ -234,7 +233,7 @@ public class TowerCommands implements CommandExecutor {
                     }
                     case ("pickwinner") -> {
                         if (sender instanceof Player player) {
-                            manager.getWinnerGUI().openUI(player);
+                            manager.getWinnersGUI().openInventory(player);
                         } else {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }

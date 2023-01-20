@@ -1,13 +1,10 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import com.onarandombox.MultiverseNetherPortals.MultiverseNetherPortals;
-import com.onarandombox.MultiverseNetherPortals.utils.MVEventRecord;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.hats.HatGUI;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -42,7 +39,6 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -56,14 +52,11 @@ public class TowerListener implements Listener {
     private final ChallengeManager manager;
     private final JavaPlugin plugin;
 
-    public static HatGUI defaultHats;
-
     public TowerListener(ChallengeManager manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
         this.teams = manager.getTeams();
         loadTeams();
-        defaultHats = new HatGUI(manager, Color.RED);
     }
 
     public @Nullable TowerTeam getTeam(@NotNull String name) {
@@ -165,7 +158,7 @@ public class TowerListener implements Listener {
                     || !(getPlayerTeam(player) instanceof GodTeam || player.isOp())) {
                 event.setCancelled(true);
                 Location location = event.getBlocks().get(0).getLocation();
-                ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().decoration(TextDecoration.ITALIC, true).color(Palette.PRIMARY.getTextColor());
+                ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().decoration(TextDecoration.ITALIC, true).color(Palette.PRIMARY.toTextColor());
                 message.append(Component.text("A portal was attempted to be opened at ")
                         .append(Component.text("X: "+location.getBlockX()))
                         .append(Component.text(", Y: "+location.getBlockY()))

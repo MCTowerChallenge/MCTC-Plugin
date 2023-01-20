@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.gui.page;
 
 import io.github.mystievous.towerchallenge.TextUtil;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
+import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.element.TeamElement;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import net.kyori.adventure.text.Component;
@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class TeamGui extends ListGui {
 
-    public TeamGui(Component name, Function<ParticipantTeam, List<Component>> loreBuilder, Collection<ParticipantTeam> teamList, BiConsumer<Player, ParticipantTeam> biConsumer, ButtonElement lastElement) {
+    public TeamGui(Component name, Function<ParticipantTeam, List<Component>> loreBuilder, Collection<ParticipantTeam> teamList, BiConsumer<Player, ParticipantTeam> biConsumer, Element lastElement) {
         super(TextUtil.noItalic(name), lastElement);
         for (ParticipantTeam team : teamList) {
             if (team != null) {
@@ -24,7 +24,7 @@ public class TeamGui extends ListGui {
         }
     }
 
-    public TeamGui(Component name, List<Component> lore, Collection<ParticipantTeam> teamList, BiConsumer<Player, ParticipantTeam> biConsumer, ButtonElement lastElement) {
+    public TeamGui(Component name, List<Component> lore, Collection<ParticipantTeam> teamList, BiConsumer<Player, ParticipantTeam> biConsumer, Element lastElement) {
         this(name, team -> lore, teamList, biConsumer, lastElement);
     }
 

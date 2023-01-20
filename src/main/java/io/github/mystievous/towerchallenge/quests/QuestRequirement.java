@@ -113,7 +113,7 @@ public class QuestRequirement implements Representable {
             item.setItemMeta(paperMeta);
         }
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(itemName.append(Component.text(String.format(" (%d/%d)", currentAmount, requiredAmount)).color(Palette.PRIMARY.getTextColor())).decoration(TextDecoration.ITALIC, false));
+        meta.displayName(itemName.append(Component.text(String.format(" (%d/%d)", currentAmount, requiredAmount)).color(Palette.PRIMARY.toTextColor())).decoration(TextDecoration.ITALIC, false));
         item.setItemMeta(meta);
         item.setAmount(Math.max(requiredAmount-currentAmount, 1));
         return new Element(item);

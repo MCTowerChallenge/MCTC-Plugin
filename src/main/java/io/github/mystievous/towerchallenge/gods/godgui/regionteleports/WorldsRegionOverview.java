@@ -41,7 +41,7 @@ public class WorldsRegionOverview implements Openable {
         overworldMeta.lore(new ArrayList<>() {{
             add(Component.text("Regions: ")
                     .append(Component.text(overworldManager.size()))
-                    .color(Palette.PRIMARY.getTextColor())
+                    .color(Palette.PRIMARY.toTextColor())
                     .decoration(TextDecoration.ITALIC, false)
             );
         }});
@@ -55,7 +55,7 @@ public class WorldsRegionOverview implements Openable {
         netherMeta.lore(new ArrayList<>() {{
             add(Component.text("Regions: ")
                     .append(Component.text(netherManager.size()))
-                    .color(Palette.PRIMARY.getTextColor())
+                    .color(Palette.PRIMARY.toTextColor())
                     .decoration(TextDecoration.ITALIC, false)
             );
         }});

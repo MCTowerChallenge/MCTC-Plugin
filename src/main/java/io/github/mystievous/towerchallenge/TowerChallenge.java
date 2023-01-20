@@ -15,7 +15,6 @@ import io.github.mystievous.towerchallenge.towering.ChatHandler;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
 import io.github.mystievous.towerchallenge.wands.WandCommands;
-import io.github.mystievous.towerchallenge.wands.WandListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,10 +31,14 @@ public final class TowerChallenge extends JavaPlugin {
     }
 
     private Config config;
-    private ChallengeManager challengeManager;
     private Database database;
+    private ChallengeManager challengeManager;
 
     private FerrisWheel ferrisWheel;
+
+    public static void log(String text) {
+        Bukkit.getLogger().info(text);
+    }
 
     @Override
     public void onEnable() {
@@ -55,7 +58,7 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
-        HatCommands hatCommands = new HatCommands(challengeManager.getTowerListener());
+        HatCommands hatCommands = new HatCommands(this);
         HatTabComplete hatTabComplete = new HatTabComplete();
         this.getCommand("hat").setExecutor(hatCommands);
         this.getCommand("hat").setTabCompleter(hatTabComplete);
@@ -67,7 +70,7 @@ public final class TowerChallenge extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Wands
-        WandCommands wandCommands = new WandCommands(this);
+        WandCommands wandCommands = new WandCommands();
         this.getCommand("wand").setExecutor(wandCommands);
 //        WandListener wandListener = new WandListener();
 //        getServer().getPluginManager().registerEvents(wandListener, this);

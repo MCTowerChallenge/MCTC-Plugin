@@ -141,8 +141,8 @@ public class QuestManager implements Openable {
         bookMeta.displayName(Component.text("Better Quest Book").decoration(TextDecoration.ITALIC, false));
         bookMeta.setCustomModelData(2);
         bookMeta.lore(new ArrayList<>(){{
-            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
-            add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
+            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor()));
+            add(Component.text("to open the quest menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor()));
         }});
         book.setItemMeta(bookMeta);
         questBook = new GuiHeldItem(GUI_ID, book, this);

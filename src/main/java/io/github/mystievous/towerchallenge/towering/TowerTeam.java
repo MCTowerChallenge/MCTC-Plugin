@@ -1,9 +1,8 @@
 package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.Palette;
-import io.github.mystievous.towerchallenge.hats.HatGUI;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -15,14 +14,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -35,11 +32,10 @@ public abstract class TowerTeam {
     public static final String SHULKER_NAME = "Starting Shulker Box";
 
     private final Team team;
-    private final JavaPlugin plugin;
     private final ChallengeManager manager;
+    private final TowerChallenge plugin;
     private final String color;
     private final String dye;
-    private final HatGUI hatGUI;
     private boolean inDialogue;
 
     public TowerTeam(ChallengeManager manager, String displayName, String color, String dye) {
@@ -56,7 +52,6 @@ public abstract class TowerTeam {
             this.team.displayName(Component.text(displayName));
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
-        this.hatGUI = new HatGUI(manager, Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16)));
         this.inDialogue = false;
     }
 
@@ -124,23 +119,11 @@ public abstract class TowerTeam {
     }
 
     public Component getDisplayName() {
-        return team.displayName();
+        return team.displayName().color(getTextColor());
     }
 
-    public void openHatGUI(Player player) {
-        hatGUI.openInventory(player);
-    }
-
-    public HatGUI getHatGUI() {
-        return hatGUI;
-    }
-
-    public JavaPlugin getPlugin() {
+    public TowerChallenge getPlugin() {
         return plugin;
-    }
-
-    public void destroyTeam() {
-        team.unregister();
     }
 
     public void addTeamPlayer(OfflinePlayer player) {
@@ -282,7 +265,7 @@ public abstract class TowerTeam {
 
             if (item.getType().equals(Material.NETHERITE_PICKAXE) && player.getName().equals("ScaredArti")) {
                 item.lore(new ArrayList<>() {{
-                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.getTextColor()));
+                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.toTextColor()));
                 }});
             }
 

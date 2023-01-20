@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Utility GUI for the Gods to use.
@@ -56,8 +55,8 @@ public class GodGui extends PresetGui implements Openable {
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("God Menu").decoration(TextDecoration.ITALIC, false));
         bookMeta.lore(new ArrayList<>() {{
-            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
-            add(Component.text("to open the god menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.getTextColor()));
+            add(Component.text("Right click with me in your hand").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor()));
+            add(Component.text("to open the god menu!").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor()));
         }});
         bookMeta.setCustomModelData(1);
         book.setItemMeta(bookMeta);

@@ -38,7 +38,7 @@ public class TeleportHistoryIndividualGui extends ListGui implements Openable {
                         .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 );
 
-                add(Component.text("Click to teleport!").color(Palette.PRIMARY.getTextColor()));
+                add(Component.text("Click to teleport!").color(Palette.PRIMARY.toTextColor()));
             }});
             item.setItemMeta(meta);
             addElement(new ButtonElement(item, clickingPlayer -> {
