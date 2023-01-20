@@ -10,6 +10,7 @@ import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -121,7 +122,7 @@ public class Quest implements Openable {
             gui.placeElement(1, 1, element);
         }
 
-        gui.placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), HumanEntity::closeInventory));
+        gui.placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> Bukkit.getScheduler().scheduleSyncDelayedTask(team.getPlugin(), player::closeInventory, 1)));
 
         for (int i = 0; i < requirements.size(); i++) {
             QuestRequirement requirement = requirements.get(i);
