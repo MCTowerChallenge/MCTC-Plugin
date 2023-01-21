@@ -72,10 +72,10 @@ public class FerrisWheel {
 
     public void loadCars() {
         cars = new PassengerCar[]{
-                new PassengerCar(path[0], 1),
-                new PassengerCar(path[4], 5),
-                new PassengerCar(path[9], 10),
-                new PassengerCar(path[13], 14)
+                new PassengerCar(new Location(Worlds.Feb2023(), 99, 69, -2115).add(OFFSET), 0),
+                new PassengerCar(path[3].clone().add(0, 1, 0), 4),
+                new PassengerCar(path[8], 9),
+                new PassengerCar(path[13].clone().add(0, 1, 0), 14)
         };
         carTasks = new BukkitTask[cars.length];
         for (int i = 0; i < cars.length; i++) {
