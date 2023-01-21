@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.hats;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class HatUtil {

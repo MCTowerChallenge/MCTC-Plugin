@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.misc.resourcepack;
 
-import io.github.mystievous.towerchallenge.Palette;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import net.kyori.adventure.text.Component;

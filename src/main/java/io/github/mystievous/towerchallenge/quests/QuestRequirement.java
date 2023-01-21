@@ -1,8 +1,8 @@
 package io.github.mystievous.towerchallenge.quests;
 
 import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.Palette;
-import io.github.mystievous.towerchallenge.TextUtil;
+import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.text.Component;

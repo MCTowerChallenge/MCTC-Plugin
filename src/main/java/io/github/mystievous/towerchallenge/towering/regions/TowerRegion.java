@@ -4,7 +4,7 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
-import io.github.mystievous.towerchallenge.TextUtil;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;

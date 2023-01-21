@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.gui.element;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

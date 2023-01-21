@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.hats;
 
-import io.github.mystievous.towerchallenge.Color;
+import io.github.mystievous.towerchallenge.utility.Color;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.Element;
@@ -29,7 +29,7 @@ public class HatCommands implements CommandExecutor {
         this.towerListener = plugin.getChallengeManager().getTowerListener();
     }
 
-    public void setPlayerColor(Player player, io.github.mystievous.towerchallenge.Color color) throws SQLException {
+    public void setPlayerColor(Player player, Color color) throws SQLException {
         Database database = plugin.getDatabase();
         database.updatePlayerColor(player.getUniqueId(), color);
     }

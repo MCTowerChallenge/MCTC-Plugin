@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.magic;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

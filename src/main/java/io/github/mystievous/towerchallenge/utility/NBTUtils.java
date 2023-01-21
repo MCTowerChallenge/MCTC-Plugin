@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge;
+package io.github.mystievous.towerchallenge.utility;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;

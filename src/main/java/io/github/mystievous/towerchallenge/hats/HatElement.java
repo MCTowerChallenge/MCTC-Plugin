@@ -1,11 +1,10 @@
 package io.github.mystievous.towerchallenge.hats;
 
-import io.github.mystievous.towerchallenge.Color;
-import io.github.mystievous.towerchallenge.NBTUtils;
-import io.github.mystievous.towerchallenge.TextUtil;
+import io.github.mystievous.towerchallenge.utility.Color;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import net.kyori.adventure.text.Component;

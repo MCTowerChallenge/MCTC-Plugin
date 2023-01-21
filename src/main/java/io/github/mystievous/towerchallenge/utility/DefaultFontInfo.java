@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge;
+package io.github.mystievous.towerchallenge.utility;
 
 import org.jetbrains.annotations.NotNull;
 

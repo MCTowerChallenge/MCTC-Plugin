@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.spawncompass;
 
-import io.github.mystievous.towerchallenge.Palette;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import net.kyori.adventure.text.Component;

@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.legacy;
 
-import io.github.mystievous.towerchallenge.Palette;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;

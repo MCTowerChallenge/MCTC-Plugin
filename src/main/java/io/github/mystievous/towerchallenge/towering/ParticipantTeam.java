@@ -6,6 +6,7 @@ import io.github.mystievous.towerchallenge.*;
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;

@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.quests.entities;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;

@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.gui;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
 import io.github.mystievous.towerchallenge.gui.page.Openable;

@@ -12,6 +12,8 @@ import io.github.mystievous.towerchallenge.quests.TeamItemListener;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
 import io.github.mystievous.towerchallenge.towering.*;
+import io.github.mystievous.towerchallenge.utility.BlockSets;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -98,13 +100,13 @@ public class ChallengeManager {
 
     public void addFullBlock(Material material) {
         if (material.isBlock()) {
-            blockSets.getFullBlocks().add(material);
+            BlockSets.FULL_BLOCKS.add(material);
         } else {
             throw new IllegalArgumentException("Material must be a block!");
         }
     }
     public void removeFullBlock(Material material) {
-        blockSets.getFullBlocks().remove(material);
+        BlockSets.FULL_BLOCKS.remove(material);
     }
 
     public Objective getObjective() {
@@ -234,7 +236,7 @@ public class ChallengeManager {
     }
 
     public boolean isFullBlock(Material material) {
-        return blockSets.getFullBlocks().contains(material);
+        return BlockSets.FULL_BLOCKS.contains(material);
     }
 
 

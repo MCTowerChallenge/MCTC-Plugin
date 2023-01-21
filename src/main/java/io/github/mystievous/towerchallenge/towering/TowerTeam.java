@@ -1,7 +1,6 @@
 package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.Palette;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
@@ -31,6 +30,7 @@ public abstract class TowerTeam {
     public static final Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
     public static final String SHULKER_NAME = "Starting Shulker Box";
 
+    private final int databaseId;
     private final Team team;
     private final ChallengeManager manager;
     private final TowerChallenge plugin;
@@ -41,6 +41,7 @@ public abstract class TowerTeam {
     public TowerTeam(ChallengeManager manager, String displayName, String color, String dye) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
+        databaseId = 0;
         String name = displayName.replaceAll("\\s", "");
         this.color = color;
         this.dye = dye.toUpperCase();
@@ -61,6 +62,10 @@ public abstract class TowerTeam {
 
     public boolean isInDialogue() {
         return inDialogue;
+    }
+
+    public int getDatabaseId() {
+        return databaseId;
     }
 
     public Team getTeam() {
@@ -263,11 +268,11 @@ public abstract class TowerTeam {
             int index = entry.getKey();
             ItemStack item = entry.getValue();
 
-            if (item.getType().equals(Material.NETHERITE_PICKAXE) && player.getName().equals("ScaredArti")) {
-                item.lore(new ArrayList<>() {{
-                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.toTextColor()));
-                }});
-            }
+//            if (item.getType().equals(Material.NETHERITE_PICKAXE) && player.getName().equals("ScaredArti")) {
+//                item.lore(new ArrayList<>() {{
+//                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.toTextColor()));
+//                }});
+//            }
 
             player.getInventory().setItem(index, item);
 

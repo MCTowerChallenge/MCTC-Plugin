@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.gui.page;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
-import io.github.mystievous.towerchallenge.TextUtil;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.gui.element.Clickable;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import net.kyori.adventure.text.Component;

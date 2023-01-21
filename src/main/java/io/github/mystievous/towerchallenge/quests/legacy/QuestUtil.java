@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.legacy;
 
-import io.github.mystievous.towerchallenge.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class QuestUtil {

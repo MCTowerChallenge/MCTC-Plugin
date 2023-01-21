@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge;
+package io.github.mystievous.towerchallenge.utility;
 
 import org.bukkit.Material;
 
@@ -6,7 +6,7 @@ import java.util.EnumSet;
 
 public class BlockSets {
 
-    public final EnumSet<Material> fullBlocks = EnumSet.of(
+    public static final EnumSet<Material> FULL_BLOCKS = EnumSet.of(
             Material.ACACIA_LEAVES,
             Material.ACACIA_LOG,
             Material.ACACIA_PLANKS,
@@ -381,9 +381,5 @@ public class BlockSets {
             Material.YELLOW_TERRACOTTA,
             Material.YELLOW_WOOL
             );
-
-    public EnumSet<Material> getFullBlocks() {
-        return fullBlocks;
-    }
 
 }

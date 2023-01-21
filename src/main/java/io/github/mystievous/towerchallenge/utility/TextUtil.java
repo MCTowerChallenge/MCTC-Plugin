@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge;
+package io.github.mystievous.towerchallenge.utility;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
