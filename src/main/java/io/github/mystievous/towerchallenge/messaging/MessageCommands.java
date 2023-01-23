@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.messaging;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
@@ -26,14 +27,14 @@ import java.util.Set;
 
 public class MessageCommands implements CommandExecutor {
 
-    private final ChallengeManager challengeManager;
+    private final TeamManager teamManager;
 
-    public MessageCommands(ChallengeManager challengeManager) {
-        this.challengeManager = challengeManager;
-        challengeManager.getPlugin().getCommand("msg").setExecutor(this);
-        challengeManager.getPlugin().getCommand("msg").setTabCompleter(new MessageTabComplete());
-        challengeManager.getPlugin().getCommand("godhelp").setExecutor(this);
-        challengeManager.getPlugin().getCommand("godhelp").setTabCompleter(new MessageTabComplete());
+    public MessageCommands(TowerChallenge plugin, TeamManager teamManager) {
+        this.teamManager = teamManager;
+        plugin.getCommand("msg").setExecutor(this);
+        plugin.getCommand("msg").setTabCompleter(new MessageTabComplete());
+        plugin.getCommand("godhelp").setExecutor(this);
+        plugin.getCommand("godhelp").setTabCompleter(new MessageTabComplete());
     }
 
     @Override
@@ -50,7 +51,7 @@ public class MessageCommands implements CommandExecutor {
 
             String[] body = Arrays.copyOfRange(args, 1, args.length);
 
-            TowerTeam senderTeam = challengeManager.getTowerListener().getPlayerTeam(player);
+            TowerTeam senderTeam = teamManager.getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
                 sendFrom = senderTeam.getAudience();
@@ -94,7 +95,7 @@ public class MessageCommands implements CommandExecutor {
                         return true;
                     }
                 }
-                TowerTeam targetTeam = challengeManager.getTowerListener().getPlayerTeam(target);
+                TowerTeam targetTeam = teamManager.getPlayerTeam(target);
                 if (checkTeam(targetTeam)) {
                     send(targetTeam.getAudience(), formatFromMessage(player, body));
                     sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
@@ -115,7 +116,7 @@ public class MessageCommands implements CommandExecutor {
                 return true;
             }
 
-            TowerTeam senderTeam = challengeManager.getTowerListener().getPlayerTeam(player);
+            TowerTeam senderTeam = teamManager.getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
                 sendFrom = senderTeam.getAudience();
@@ -127,7 +128,7 @@ public class MessageCommands implements CommandExecutor {
                 }
             }
 
-            GodTeam targetTeam = challengeManager.getTowerListener().getGodTeam();
+            GodTeam targetTeam = teamManager.getGodTeam();
 
             send(targetTeam.getAudience(), formatFromToGods(player, args));
             sendFrom.sendMessage(formatFromToGods(player, args));
@@ -155,7 +156,7 @@ public class MessageCommands implements CommandExecutor {
 
         for (int i = 0; i < playersArr.length; i++) {
             Player recipient = playersArr[i];
-            TowerTeam team = challengeManager.getTowerListener().getPlayerTeam(recipient);
+            TowerTeam team = teamManager.getPlayerTeam(recipient);
             Component prefix;
 
 
@@ -191,20 +192,6 @@ public class MessageCommands implements CommandExecutor {
 
         message.append(formatPlayer(sender))
                 .append(Component.text(" whispers to "))
-                .append(formatPlayers(recipients))
-                .append(Component.text(": "));
-
-        for (String string : body) {
-            message.append(Component.text(string).append(Component.space()));
-        }
-
-        return message.build();
-    }
-
-    private Component formatToMessage(Set<Player> recipients, String[] body) {
-        ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
-
-        message.append(Component.text("You whisper to "))
                 .append(formatPlayers(recipients))
                 .append(Component.text(": "));
 

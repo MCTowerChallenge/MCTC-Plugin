@@ -1,16 +1,15 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
+import io.github.mystievous.towerchallenge.utility.Color;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -21,6 +20,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -32,16 +32,16 @@ public abstract class TowerTeam {
 
     private final int databaseId;
     private final Team team;
-    private final ChallengeManager manager;
+    protected final TeamManager teamManager;
     private final TowerChallenge plugin;
-    private final String color;
+    private final Color color;
     private final String dye;
     private boolean inDialogue;
 
-    public TowerTeam(ChallengeManager manager, String displayName, String color, String dye) {
-        this.manager = manager;
-        this.plugin = manager.getPlugin();
-        databaseId = 0;
+    public TowerTeam(TowerChallenge plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
+        this.teamManager = teamManager;
+        this.databaseId = databaseId;
+        this.plugin = plugin;
         String name = displayName.replaceAll("\\s", "");
         this.color = color;
         this.dye = dye.toUpperCase();
@@ -52,7 +52,7 @@ public abstract class TowerTeam {
             this.team = scoreboard.registerNewTeam(name);
             this.team.displayName(Component.text(displayName));
         }
-        this.team.prefix(Component.text("[").append(Component.text(displayName, TextColor.fromHexString(color))).append(Component.text("] ")));
+        this.team.prefix(Component.text("[").append(Component.text(displayName, color.toTextColor())).append(Component.text("] ")));
         this.inDialogue = false;
     }
 
@@ -76,24 +76,11 @@ public abstract class TowerTeam {
         return PlainTextComponentSerializer.plainText().serialize(team.displayName());
     }
 
-    public ChallengeManager getManager() {
-        return manager;
-    }
-
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public TextColor getTextColor() {
-        return TextColor.fromHexString(color);
-    }
-    public Color getBukkitColor() {
-        return Color.fromRGB(Integer.parseInt(this.color.replaceAll("#", ""), 16));
-    }
-
-    public ItemStack getItem() {
-        return new ItemStack(Material.PAPER);
-    }
+    public abstract ItemStack getItem();
 
     public String getDye() {
         return dye;
@@ -124,7 +111,7 @@ public abstract class TowerTeam {
     }
 
     public Component getDisplayName() {
-        return team.displayName().color(getTextColor());
+        return team.displayName().color(getColor().toTextColor());
     }
 
     public TowerChallenge getPlugin() {
@@ -139,22 +126,19 @@ public abstract class TowerTeam {
         }
     }
 
-    public abstract void registerConfigPlayer(OfflinePlayer player);
-
-    public void removePlayer(OfflinePlayer player) {
-        getTeam().removePlayer(player);
+    public void addAllPlayers(@NotNull List<OfflinePlayer> players) {
+        for (OfflinePlayer player : players) {
+            addTeamPlayer(player);
+        }
     }
 
-    public Boolean hasPlayer(OfflinePlayer player) {
-        return getTeam().hasPlayer(player);
-    }
-
-    public Set<String> getEntries() {
-        return getTeam().getEntries();
-    }
-
-    public void clear() {
-        getTeam().removeEntries(getTeam().getEntries());
+    public void clearPlayers() {
+        for (String entry : team.getEntries()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(entry));
+            if (player.hasPlayedBefore()) {
+                team.removePlayer(player);
+            }
+        }
     }
 
     public ItemStack getShulker() {
@@ -228,7 +212,7 @@ public abstract class TowerTeam {
         shovel.setItemMeta(shovelMeta);
         items.put(2, shovel);
 
-        items.put(3, getManager().getQuestManager().getQuestBook().getItem());
+//        items.put(3, getManager().getQuestManager().getQuestBook().getItem());
 
         ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
         items.put(4, steak);
@@ -246,6 +230,14 @@ public abstract class TowerTeam {
 
         return items;
 
+    }
+
+    public void dealItemsAllPlayers() {
+        for (OfflinePlayer offlinePlayer : getPlayers()) {
+            if (offlinePlayer instanceof Player player) {
+                dealItems(player);
+            }
+        }
     }
 
     public void dealItems(Player player) {
@@ -267,12 +259,6 @@ public abstract class TowerTeam {
 
             int index = entry.getKey();
             ItemStack item = entry.getValue();
-
-//            if (item.getType().equals(Material.NETHERITE_PICKAXE) && player.getName().equals("ScaredArti")) {
-//                item.lore(new ArrayList<>() {{
-//                    add(Component.text("Look what you made me do...").color(Palette.SECONDARY.toTextColor()));
-//                }});
-//            }
 
             player.getInventory().setItem(index, item);
 

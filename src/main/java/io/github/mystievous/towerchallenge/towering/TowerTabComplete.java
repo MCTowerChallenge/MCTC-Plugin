@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 
 public class TowerTabComplete implements TabCompleter {
 
-    private TowerChallenge plugin;
+    private final TeamManager teamManager;
 
-    public TowerTabComplete(TowerChallenge plugin) {
-        this.plugin = plugin;
+    public TowerTabComplete(TeamManager teamManager) {
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -28,7 +28,6 @@ public class TowerTabComplete implements TabCompleter {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<>();
 
-                strings.add("reloadConfig");
                 strings.add("toggleTower");
                 strings.add("addFullBlock");
                 strings.add("removeFullBlock");
@@ -37,6 +36,7 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("voucher");
                 strings.add("showTowerScores");
                 strings.add("resetEndPortal");
+                strings.add("reloadTeams");
                 strings.add("resetTeams");
                 strings.add("addScore");
                 strings.add("removeScore");
@@ -59,7 +59,7 @@ public class TowerTabComplete implements TabCompleter {
                 }
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("addplayer")) {
-                    return plugin.getChallengeManager().getTowerListener().getTeams().values().stream().map(TowerTeam::getTextName).collect(Collectors.toList());
+                    return teamManager.getParticipantTeams().stream().map(TowerTeam::getTextName).collect(Collectors.toList());
                 }
             }
         }

@@ -1,9 +1,10 @@
 package io.github.mystievous.towerchallenge.eventspecific.winter.presents;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.quests.entities.ItemEntityHandler;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
-import io.github.mystievous.towerchallenge.quests.entities.ItemEntityHandler;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -140,8 +141,8 @@ public class PresentEntityHandler extends ItemEntityHandler {
         return summonPresent(player.getLocation().add(0, -1.38, 0));
     }
 
-    public PresentEntityHandler(ChallengeManager challengeManager) {
-        super(challengeManager, PRESENT_TAG, null, getPresentItem());
+    public PresentEntityHandler(TeamManager teamManager) {
+        super(teamManager, PRESENT_TAG, null, getPresentItem());
     }
 
     /**

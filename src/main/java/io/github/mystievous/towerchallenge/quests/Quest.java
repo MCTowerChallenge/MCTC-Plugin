@@ -1,7 +1,8 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
@@ -13,7 +14,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,6 +25,7 @@ import java.util.List;
 
 public class Quest implements Openable {
 
+    private final TeamManager teamManager;
     private final String id;
     private final String friendlyName;
     private final List<QuestRequirement> requirements;
@@ -33,7 +34,8 @@ public class Quest implements Openable {
 
     private Quest next;
 
-    public Quest(String id, String friendlyName, List<QuestRequirement> requirements, List<QuestReward> rewards) {
+    public Quest(TeamManager teamManager, String id, String friendlyName, List<QuestRequirement> requirements, List<QuestReward> rewards) {
+        this.teamManager = teamManager;
         this.id = id;
         this.friendlyName = friendlyName;
         this.requirements = requirements;
@@ -41,13 +43,8 @@ public class Quest implements Openable {
         this.description = null;
     }
 
-    public Quest(String id, String friendlyName) {
-        this(id, friendlyName, new ArrayList<>(), new ArrayList<>());
-    }
-
-    public Quest(String id, String friendlyName, List<QuestRequirement> requirements, List<QuestReward> rewards, @Nullable List<Component> description) {
-        this(id, friendlyName, requirements, rewards);
-        this.description = description;
+    public Quest(TeamManager teamManager, String id, String friendlyName) {
+        this(teamManager, id, friendlyName, new ArrayList<>(), new ArrayList<>());
     }
 
     /**
@@ -151,7 +148,7 @@ public class Quest implements Openable {
 
     @Override
     public Gui getGui(Player player) {
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (team == null) {
             return QuestManager.NO_QUEST_GUI;
         }

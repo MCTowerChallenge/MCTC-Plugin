@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.misc;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.utility.DefaultFontInfo;
 import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.key.Key;
@@ -19,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BroadcastCommand implements CommandExecutor {
 
-    private final ChallengeManager manager;
+    private final TeamManager teamManager;
 
-    public BroadcastCommand(ChallengeManager manager) {
-        this.manager = manager;
+    public BroadcastCommand(TeamManager teamManager) {
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class BroadcastCommand implements CommandExecutor {
             return true;
         }
 
-        manager.getTowerListener().getGodTeam().getAudience().sendMessage(
+        teamManager.getGodTeam().getAudience().sendMessage(
                 Component.text(sender.getName()).color(Palette.PRIMARY.toTextColor()).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" has sent an announcement!")
                                 .color(Palette.SECONDARY.toTextColor())

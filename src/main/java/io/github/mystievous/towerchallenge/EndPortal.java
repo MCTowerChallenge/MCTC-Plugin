@@ -22,14 +22,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class EndPortal implements Listener {
 
-    private final ChallengeManager challengeManager;
+    private final TeamManager teamManager;
 
     public static final Location PORTAL_MIN = new Location(Worlds.Dec2022(), -1334, 49, -1270);
     public static final Location PORTAL_MAX = new Location(Worlds.Dec2022(), -1331, 49, -1267);
 
-    public EndPortal(ChallengeManager challengeManager) {
-        this.challengeManager = challengeManager;
-        Bukkit.getServer().getPluginManager().registerEvents(this, challengeManager.getPlugin());
+    public EndPortal(TowerChallenge plugin, TeamManager teamManager) {
+        this.teamManager = teamManager;
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public void openPortal() {
@@ -60,7 +60,7 @@ public class EndPortal implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
-            TowerTeam team = challengeManager.getTowerListener().getPlayerTeam(player);
+            TowerTeam team = teamManager.getPlayerTeam(player);
             assert block != null;
             if (block.getType().equals(Material.END_PORTAL_FRAME)) {
                 if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
@@ -71,7 +71,7 @@ public class EndPortal implements Listener {
                             player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
                             participantTeam.placeEye();
                         } else if (team instanceof GodTeam) {
-                            challengeManager.getTowerListener().getTeams().forEach((key, checkTeam) -> {
+                            teamManager.getParticipantTeams().forEach(checkTeam -> {
                                 if (block.getLocation().equals(checkTeam.getFrameLocation())) {
                                     checkTeam.placeEye();
                                 }

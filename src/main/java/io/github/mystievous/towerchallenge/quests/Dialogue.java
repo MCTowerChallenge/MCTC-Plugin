@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.quests;
 
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import net.kyori.adventure.audience.Audience;
@@ -13,13 +14,15 @@ import java.util.function.Consumer;
 
 public class Dialogue {
 
+    private final TeamManager teamManager;
     private String friendlyName;
     private Dialogue next;
     private final Component message;
     private final long delay;
     private Key soundKey;
 
-    public Dialogue(Component message, double delay) {
+    public Dialogue(TeamManager teamManager, Component message, double delay) {
+        this.teamManager = teamManager;
         this.message = message;
         this.delay = (long) (delay * 20L);
     }
@@ -60,7 +63,7 @@ public class Dialogue {
     }
 
     public void play(Player player, Consumer<Player> callback) {
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (team == null) {
             return;
         }

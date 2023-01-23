@@ -1,10 +1,9 @@
 package io.github.mystievous.towerchallenge.magic;
 
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -48,7 +47,6 @@ public class Wand implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (event.getAction() == Action.PHYSICAL
                 || event.getAction() == Action.LEFT_CLICK_AIR

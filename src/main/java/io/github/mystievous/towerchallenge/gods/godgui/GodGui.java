@@ -1,20 +1,23 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.gods.godgui.regionteleports.WorldsRegionOverview;
 import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.*;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
+import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.Dialogue;
 import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
+import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
+import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -23,7 +26,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 /**
  * Utility GUI for the Gods to use.
@@ -44,12 +49,8 @@ public class GodGui extends PresetGui implements Openable {
      * Utility GUI for the Gods to use.
      * <p>
      * This is opened generally through the GuiHeldItem.
-     *
-     * @param challengeManager Manager for this event
-     * @param godManager       God Manager for this event
-     * @param towerListener    Tower Listener for this event
      */
-    public GodGui(@NotNull ChallengeManager challengeManager, @NotNull GodManager godManager, @NotNull TowerListener towerListener) {
+    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, QuestManager questManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager) {
         super(COMPONENT_NAME, ROWS);
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
@@ -61,13 +62,13 @@ public class GodGui extends PresetGui implements Openable {
         bookMeta.setCustomModelData(1);
         book.setItemMeta(bookMeta);
         guiBook = new GuiHeldItem(GUI_ID, book, this);
-
+        guiBook.setPermission("towerchallenge.godgui");
 
         ItemStack teleportHistory = new ItemStack(Material.ENDER_EYE);
         ItemMeta teleportHistoryMeta = teleportHistory.getItemMeta();
         teleportHistoryMeta.displayName(Component.text("Teleport History").decoration(TextDecoration.ITALIC, false));
         teleportHistory.setItemMeta(teleportHistoryMeta);
-        ButtonElement teleportHistoryElement = new ButtonElement(teleportHistory, player -> challengeManager.getTeleportHistoryManager().getGui(player).openInventory(player));
+        ButtonElement teleportHistoryElement = new ButtonElement(teleportHistory, player -> teleportHistoryManager.getGui(player).openInventory(player));
 
 
         worldsRegionOverview = new WorldsRegionOverview();
@@ -77,18 +78,22 @@ public class GodGui extends PresetGui implements Openable {
         regionTeleports.setItemMeta(regionTeleportsMeta);
         ButtonElement regionTeleportsElement = new ButtonElement(regionTeleports, player -> worldsRegionOverview.getGui(player).openInventory(player));
 
-
-        TeamGui startingItemsTeamGui = new TeamGui(Component.text("Pick team to view items"), new ArrayList<>(), towerListener.getTeams().values().stream().toList(), (player, participantTeam) -> {
-            (new StartingItemsGui(participantTeam)).openInventory(player);
-        }, new ButtonElement(ButtonElement.backItem(), player1 -> {
-            godManager.getGodGui().openInventory(player1);
-        }));
+        Component startingItemsTitle = Component.text("Pick team to view items");
+        BiConsumer<Player, TowerTeam> startingItemsBiconsumer = (player, team) -> {
+            (new StartingItemsGui((ParticipantTeam) team)).openInventory(player);
+        };
+        TeamGui startingItemsTeamGui = new TeamGui(startingItemsTitle,
+                new ArrayList<>(),
+                teamManager.getParticipantTeams().stream().map(participantTeam -> (TowerTeam) participantTeam).toList(),
+                startingItemsBiconsumer,
+                new ButtonElement(ButtonElement.backItem(), player1 -> {
+                    godManager.getGodGui().openInventory(player1);
+                }));
         ItemStack startingItemsItem = new ItemStack(Material.NETHERITE_PICKAXE);
         ItemMeta startingItemsMeta = startingItemsItem.getItemMeta();
         startingItemsMeta.displayName(TextUtil.noItalic("Starting Items"));
         startingItemsItem.setItemMeta(startingItemsMeta);
         ButtonElement startingItemsElement = new ButtonElement(startingItemsItem, startingItemsTeamGui::openInventory);
-
 
 //        RegionListGui regionListGui = new RegionListGui(godManager, towerListener);
 //        ItemStack regionSetupItem = new ItemStack(Material.WOODEN_AXE);
@@ -109,7 +114,7 @@ public class GodGui extends PresetGui implements Openable {
         ListGui dialogueGui = new ListGui(Component.text("Dialogues"), new ButtonElement(ButtonElement.backItem(), player1 -> {
             godManager.getGodGui().openInventory(player1);
         }));
-        for (Dialogue dialogue : challengeManager.getQuestManager().getNpcManager().getDialogues()) {
+        for (Dialogue dialogue : questManager.getNpcManager().getDialogues()) {
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
             meta.displayName(TextUtil.noItalic(dialogue.getFriendlyName()));
@@ -126,16 +131,16 @@ public class GodGui extends PresetGui implements Openable {
 
 
         TeamGui teamQuestGUI = new TeamGui(Component.text("Pick team to view quest:"), team -> {
-            String teamQuest = QuestManager.getTeamQuest(team);
-            Quest quest = challengeManager.getQuestManager().getQuest(team, teamQuest);
+            String teamQuest = questManager.getTeamQuest(team);
+            Quest quest = questManager.getQuest(team, teamQuest);
             if (quest != null) {
                 return TextUtil.formatTexts("Current Quest: ", quest.getId());
             } else {
                 return TextUtil.formatTexts("No Current Quest");
             }
-        }, challengeManager.getTowerListener().getTeams().values(), (player, team) -> {
-            String teamQuest = QuestManager.getTeamQuest(team);
-            Quest quest = challengeManager.getQuestManager().getQuest(team, teamQuest);
+        }, teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(), (player, team) -> {
+            String teamQuest = questManager.getTeamQuest(team);
+            Quest quest = questManager.getQuest(team, teamQuest);
             if (quest != null) {
                 quest.getGui(team).openInventory(player);
             } else {
@@ -151,7 +156,7 @@ public class GodGui extends PresetGui implements Openable {
             setItemMeta(bookMeta);
         }}, teamQuestGUI::openInventory);
 
-        TrackedStatsGUI trackedStatsGUI = new TrackedStatsGUI(new ButtonElement(ButtonElement.backItem(), player -> {
+        TrackedStatsGUI trackedStatsGUI = new TrackedStatsGUI(teamManager, new ButtonElement(ButtonElement.backItem(), player -> {
             godManager.getGodGui().openInventory(player);
         }));
         ItemStack trackedStatsItem = new ItemStack(Material.BEACON);
@@ -172,18 +177,23 @@ public class GodGui extends PresetGui implements Openable {
             player.openWorkbench(null, true);
         });
 
-        ItemStack hatItem = new ItemStack(Material.LEATHER_HORSE_ARMOR);
-        ItemMeta hatMeta = hatItem.getItemMeta();
-        hatMeta.displayName(TextUtil.noItalic("Hat Menu (At some point :p)"));
-        hatItem.setItemMeta(hatMeta);
-        Element hatElement = new Element(hatItem);
+        ItemStack hatItem = formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
+        Element hatElement = new ButtonElement(hatItem, player -> {
+            try {
+                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                hatGui.openInventory(player);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
+            }
+        });
 
         ItemStack devItem = new ItemStack(Material.PAPER);
         ItemMeta devMeta = devItem.getItemMeta();
         devMeta.displayName(TextUtil.noItalic("Developer Menu"));
         devMeta.setCustomModelData(4);
         devItem.setItemMeta(devMeta);
-        DeveloperGui devGui = new DeveloperGui(challengeManager);
+        DeveloperGui devGui = new DeveloperGui(plugin, teamManager);
         Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
 //        ItemStack warning = new ItemStack(Material.RED_STAINED_GLASS_PANE);
@@ -210,8 +220,6 @@ public class GodGui extends PresetGui implements Openable {
     /**
      * Gets the GuiHeldItem that
      * opens the God GUI
-     *
-     * @return
      */
     public GuiHeldItem getGuiHeldItem() {
         return guiBook;
@@ -221,8 +229,6 @@ public class GodGui extends PresetGui implements Openable {
      * Gets the ItemStack from
      * the GuiHeldItem that opens
      * the God GUI
-     *
-     * @return
      */
     public ItemStack getItem() {
         return guiBook.getItem();

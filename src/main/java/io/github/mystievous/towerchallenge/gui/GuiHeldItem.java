@@ -1,9 +1,9 @@
 package io.github.mystievous.towerchallenge.gui;
 
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
 import io.github.mystievous.towerchallenge.gui.page.Openable;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class GuiHeldItem implements Listener {
 
@@ -22,12 +23,22 @@ public class GuiHeldItem implements Listener {
     private final ItemStack item;
     private final Openable openable;
     private final String guiId;
+    private String permission;
 
     public GuiHeldItem(String guiId, ItemStack item, Openable openable) {
         this.guiId = guiId;
         this.item = NBTUtils.noStack(NBTUtils.setString(GUI_ID, item, this.guiId));
         this.openable = openable;
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
+    }
+
+    /**
+     * Sets the permission required to use this item
+     *
+     * @param permission The permission string
+     */
+    public void setPermission(@Nullable String permission) {
+        this.permission = permission;
     }
 
     /**
@@ -58,8 +69,6 @@ public class GuiHeldItem implements Listener {
 
     /**
      * Disallows players to craft using the item
-     *
-     * @param event
      */
     @EventHandler
     public void onCraft(CraftItemEvent event) {
@@ -84,7 +93,7 @@ public class GuiHeldItem implements Listener {
                 || event.getAction() == Action.LEFT_CLICK_BLOCK
                 || item == null)
             return;
-        if (matchItem(item)) {
+        if (matchItem(item) && (permission == null || player.hasPermission(permission))) {
             openable.getGui(player).openInventory(player);
         }
     }

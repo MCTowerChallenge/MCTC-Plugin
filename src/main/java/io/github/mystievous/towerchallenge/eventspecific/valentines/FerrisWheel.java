@@ -29,9 +29,8 @@ public class FerrisWheel {
 
     private final TowerChallenge plugin;
 
-    private CommandSender sender = Bukkit.createCommandSender(component -> {});
+    private final CommandSender sender = Bukkit.createCommandSender(component -> {});
 
-    private PassengerCar[] cars;
     private BukkitTask[] carTasks;
 
     private static final Location[] path = new Location[]{
@@ -71,7 +70,7 @@ public class FerrisWheel {
     }
 
     public void loadCars() {
-        cars = new PassengerCar[]{
+        PassengerCar[] cars = new PassengerCar[]{
                 new PassengerCar(new Location(Worlds.Feb2023(), 99, 69, -2115).add(OFFSET), 0),
                 new PassengerCar(path[3].clone().add(0, 1, 0), 4),
                 new PassengerCar(path[8], 9),

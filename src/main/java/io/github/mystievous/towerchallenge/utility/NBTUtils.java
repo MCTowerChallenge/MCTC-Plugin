@@ -119,31 +119,12 @@ public class NBTUtils {
         return nbtItem.getItem();
     }
 
-    public static String getTeam(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) {
-            return null;
-        }
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getString(TEAM);
-    }
-
     public static boolean matchTeam(ItemStack itemStack, TowerTeam team) {
         if (itemStack == null || itemStack.getType().isAir()) {
             return false;
         }
         NBTItem nbtItem = new NBTItem(itemStack);
         return nbtItem.getString(TEAM).equals(team.getTextName());
-    }
-
-    public static ItemStack setInteger(String tag, ItemStack itemStack, int value) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setInteger(tag, value);
-        return nbtItem.getItem();
-    }
-
-    public static int getInteger(String tag, ItemStack itemStack) {
-        NBTItem nbtItem = new NBTItem(itemStack);
-        return nbtItem.getInteger(tag);
     }
 
 }

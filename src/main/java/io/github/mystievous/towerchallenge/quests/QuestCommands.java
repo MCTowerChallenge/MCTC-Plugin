@@ -1,8 +1,9 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -17,9 +18,11 @@ import java.util.HashMap;
 public class QuestCommands implements CommandExecutor {
 
     private final QuestManager questManager;
+    private final TeamManager teamManager;
 
-    public QuestCommands(QuestManager questManager) {
+    public QuestCommands(QuestManager questManager, TeamManager teamManager) {
         this.questManager = questManager;
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -37,9 +40,9 @@ public class QuestCommands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("reset")) {
                 if (sender.hasPermission("towerchallenge.questbook.reset")) {
                     if (sender instanceof Player player) {
-                        TowerTeam team = questManager.getChallengeManager().getPlayerTeam(player);
+                        TowerTeam team = teamManager.getPlayerTeam(player);
                         if (team != null){
-                            QuestManager.resetTeamQuests(team);
+                            questManager.resetTeamQuests(team);
                             player.sendMessage(TextUtil.formatText("Reset Quests..."));
                         } else {
                             player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
@@ -51,9 +54,9 @@ public class QuestCommands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("items")) {
                 if (sender.hasPermission("towerchallenge.questbook.items")) {
                     if (sender instanceof Player player) {
-                        TowerTeam team = questManager.getChallengeManager().getPlayerTeam(player);
+                        TowerTeam team = teamManager.getPlayerTeam(player);
                         if (team != null){
-                            QuestManager.resetTeamItems(team);
+                            questManager.resetTeamItems(team);
                             player.sendMessage(TextUtil.formatText("Reset Items..."));
                         } else {
                             player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));

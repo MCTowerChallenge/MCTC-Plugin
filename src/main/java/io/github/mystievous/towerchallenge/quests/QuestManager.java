@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.eventspecific.winter.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
@@ -58,7 +59,7 @@ public class QuestManager implements Openable {
 
     }};
 
-    public static void resetTeamQuests(TowerTeam team) {
+    public void resetTeamQuests(TowerTeam team) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String teamPath = team.getTextName()+".QuestProgress";
         teamDataConfig.set(teamPath, null);
@@ -70,7 +71,7 @@ public class QuestManager implements Openable {
         }
     }
 
-    public static void resetTeamItems(TowerTeam team) {
+    public void resetTeamItems(TowerTeam team) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         String itemsPath = team.getTextName()+".CollectedItems";
         teamDataConfig.set(itemsPath, null);
@@ -82,7 +83,7 @@ public class QuestManager implements Openable {
         }
     }
 
-    public static void setTeamQuest(TowerTeam team, String questId) {
+    public void setTeamQuest(TowerTeam team, String questId) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         teamDataConfig.set(team.getTextName()+".CurrentQuest", questId);
         try {
@@ -94,8 +95,8 @@ public class QuestManager implements Openable {
 //        team.getAudience().sendMessage(Component.text("New Quest: "+getTeamQuest(team)));
     }
 
-    public static void setTeamQuest(Player player, String questId) {
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+    public void setTeamQuest(Player player, String questId) {
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (team != null) {
             setTeamQuest(team, questId);
         } else {
@@ -103,7 +104,7 @@ public class QuestManager implements Openable {
         }
     }
 
-    public static String getTeamQuest(TowerTeam team) {
+    public String getTeamQuest(TowerTeam team) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
         if (!hasTeamQuest(team)) {
             setTeamQuest(team, "no-quest");
@@ -111,15 +112,7 @@ public class QuestManager implements Openable {
         return teamDataConfig.getString(team.getTextName()+".CurrentQuest", NO_QUEST);
     }
 
-    public static String getTeamQuest(Player player) {
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
-        if (team != null) {
-            return getTeamQuest(team);
-        }
-        return NO_QUEST;
-    }
-
-    public static boolean hasTeamQuest(TowerTeam team) {
+    public boolean hasTeamQuest(TowerTeam team) {
         if (team == null)
             return false;
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
@@ -131,10 +124,12 @@ public class QuestManager implements Openable {
     private final GuiHeldItem questBook;
     private final ItemStack steveListItem;
     private final ChallengeManager challengeManager;
+    private final TeamManager teamManager;
     private final NPCManager npcManager;
 
-    public QuestManager(ChallengeManager challengeManager) {
+    public QuestManager(ChallengeManager challengeManager, TeamManager teamManager) {
         this.challengeManager = challengeManager;
+        this.teamManager = teamManager;
         quests = new ArrayList<>();
         teamQuests = new HashMap<>();
 
@@ -168,12 +163,12 @@ public class QuestManager implements Openable {
         List<QuestReward> penelopeRewards = new ArrayList<>();
         penelopeRewards.add(new QuestReward(BlockVoucher.getVouchers(1)));
 
-        penelopeStart = new Quest(PENELOPE_START, "Talk to Penelope");
+        penelopeStart = new Quest(teamManager, PENELOPE_START, "Talk to Penelope");
         penelopeStart.setDescription(TextUtil.formatTexts("Talk to Penelope in", "the iceberg at Spawn!"));
 //        penelopeStart.getRewards().addAll(penelopeRewards);
         quests.add(penelopeStart);
 
-        penelopeArmor = new Quest(PENELOPE_ARMOR, "Find Penelope's Fancy Fit");
+        penelopeArmor = new Quest(teamManager, PENELOPE_ARMOR, "Find Penelope's Fancy Fit");
         penelopeArmor.setDescription(TextUtil.formatTexts("Penelope has lost", "her outfit for steve's", "party! Help her", "find it.", "", "She mentioned climbing", "the north-west side", "of the iceberg...", "maybe it's up there?"));
         penelopeArmor.getRequirements().add(new QuestRequirement(penelopeArmor, new ItemStack(Material.DIAMOND_HORSE_ARMOR), 1, 0));
         penelopeArmor.getRewards().addAll(penelopeRewards);
@@ -203,13 +198,13 @@ public class QuestManager implements Openable {
         List<QuestReward> steveRewards = new ArrayList<>();
         steveRewards.add(new QuestReward(BlockVoucher.getVouchers(2)));
 
-        steveStart = new Quest(STEVE_START, "Talk to steve skellington");
+        steveStart = new Quest(teamManager, STEVE_START, "Talk to steve skellington");
         steveStart.setDescription(TextUtil.formatTexts("Penelope said to go", "talk to steve", "over at his home", "to the south-west"));
 //        steveStart.getRewards().addAll(steveRewards);
         quests.add(steveStart);
         penelopeArmor.setNext(steveStart);
 
-        steveList = new Quest(STEVE_LIST, "Retrieve steve skellington's List");
+        steveList = new Quest(teamManager, STEVE_LIST, "Retrieve steve skellington's List");
         steveList.setDescription(TextUtil.formatTexts("Go upstairs to look", "for steve's list."));
 //        steveList.getRequirements().add(new QuestRequirement(steveList, steveListItem, 1, 0));
         steveList.getRewards().add(new QuestReward(steveListItem));
@@ -217,7 +212,7 @@ public class QuestManager implements Openable {
         quests.add(steveList);
         steveStart.setNext(steveList);
 
-        steveItems = new Quest(STEVE_ITEMS, "Find the items for steve!");
+        steveItems = new Quest(teamManager, STEVE_ITEMS, "Find the items for steve!");
         steveItems.setDescription(TextUtil.formatTexts("Help steve find all", "the items he needs", "to decorate for the", "party!"));
         List<QuestRequirement> steveItemsReq = steveItems.getRequirements();
         steveItemsReq.add(new QuestRequirement(steveItems, new ItemStack(Material.MELON_SLICE), TextUtil.formatTexts("Give this to steve", "for 1 Nether Wart!"), 32, 0));
@@ -245,22 +240,22 @@ public class QuestManager implements Openable {
             setItemMeta(meta);
         }}));
 
-        spiritStart = new Quest(SPIRIT_START, "Investigate the strange voice");
+        spiritStart = new Quest(teamManager, SPIRIT_START, "Investigate the strange voice");
         spiritStart.setDescription(TextUtil.formatTexts("You heard a strange voice", "coming from the bushes", "behind steve's house...", "", "Maybe you should go", "check it out?"));
 //        spiritStart.getRewards().addAll(spiritRewards);
         quests.add(spiritStart);
         steveItems.setNext(spiritStart);
 
-        spiritPresents = new Quest(SPIRIT_PRESENTS, "Collect PRESENTS for the spirit");
+        spiritPresents = new Quest(teamManager, SPIRIT_PRESENTS, "Collect PRESENTS for the spirit");
         spiritPresents.setDescription(TextUtil.formatTexts("Collect all ## PRESENTS", "around the challenge", "areas and bring", "them to the spirit", "behind steve's house!"));
         spiritPresents.getRequirements().add(new QuestRequirement(spiritPresents, PresentEntityHandler.getPresentItem(), 24));
         spiritPresents.getRewards().addAll(spiritRewards);
         quests.add(spiritPresents);
         spiritStart.setNext(spiritPresents);
 
-        npcManager = new NPCManager(this);
+        npcManager = new NPCManager(teamManager, this);
 
-        QuestCommands commands = new QuestCommands(this);
+        QuestCommands commands = new QuestCommands(this, teamManager);
         challengeManager.getPlugin().getCommand("questbook").setExecutor(commands);
     }
 
@@ -276,10 +271,6 @@ public class QuestManager implements Openable {
         return questBook;
     }
 
-    public List<String> getQuestIds() {
-        return quests.stream().map(Quest::getId).toList();
-    }
-
     public @Nullable Quest getQuest(TowerTeam team, String id) {
         return teamQuests.getOrDefault(team.getTextName(), List.copyOf(quests)).stream().filter(quest -> quest.getId().equals(id)).findFirst().orElse(null);
     }
@@ -291,7 +282,7 @@ public class QuestManager implements Openable {
     @Override
     public Gui getGui(Player player) {
         YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (team != null) {
             String currentQuestPath = team.getTextName()+".CurrentQuest";
             String currentQuestId = teamDataConfig.getString(currentQuestPath, "");

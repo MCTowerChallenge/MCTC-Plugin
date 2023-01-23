@@ -6,9 +6,10 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import org.bukkit.Bukkit;
@@ -31,12 +32,14 @@ import java.util.function.Consumer;
 
 public class NPC implements Listener {
 
+    private final TeamManager teamManager;
     private final String tag;
     private final Map<String, Consumer<PlayerInteractAtEntityEvent>> questHandlers;
-    private Set<String> allowedRegions = new HashSet<>();
-    private Set<String> disallowedRegions = new HashSet<>();
+    private final Set<String> allowedRegions = new HashSet<>();
+    private final Set<String> disallowedRegions = new HashSet<>();
 
-    public NPC(String tag) {
+    public NPC(TeamManager teamManager, String tag) {
+        this.teamManager = teamManager;
         this.tag = tag;
         this.questHandlers = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
@@ -69,7 +72,7 @@ public class NPC implements Listener {
         }
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
-        TowerTeam team = TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player);
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (entity.getScoreboardTags().contains(tag)) {
             if (team == null) {
                 player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));

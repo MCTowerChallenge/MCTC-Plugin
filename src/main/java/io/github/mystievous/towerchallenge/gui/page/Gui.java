@@ -1,9 +1,9 @@
 package io.github.mystievous.towerchallenge.gui.page;
 
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.gui.element.Clickable;
 import io.github.mystievous.towerchallenge.gui.element.Element;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -56,7 +56,7 @@ public abstract class Gui implements Listener {
     private final Component inventoryTitle;
 
     private Inventory firstInventory;
-    private List<Inventory> inventories;
+    private final List<Inventory> inventories;
 
     private final HashMap<UUID, Element> elements;
 

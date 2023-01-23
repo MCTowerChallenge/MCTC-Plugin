@@ -2,47 +2,46 @@ package io.github.mystievous.towerchallenge.towering;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
+import io.github.mystievous.towerchallenge.utility.Color;
 import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
 
 public class ParticipantTeam extends TowerTeam {
 
     public static World getSpawnWorld() {
         return Worlds.WORLD();
     }
+
     public static World getTowerWorld() {
         return Worlds.WORLD();
     }
 
-    private int extraScore;
     private SpawnRegion spawnRegion;
     private TowerRegion towerRegion;
     private Location frameLocation;
 
-    public ParticipantTeam(ChallengeManager manager, String displayName, String color, String dye) {
-        super(manager, displayName, color, dye);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
-        extraScore = config.getInt(displayName);
+    public ParticipantTeam(TowerChallenge plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
+        super(plugin, teamManager, databaseId, displayName, color, dye);
         this.loadRegions();
         this.loadPortal();
     }
@@ -53,14 +52,14 @@ public class ParticipantTeam extends TowerTeam {
 
         if (worldContainer != null) {
             if (worldContainer.hasRegion(getSpawnName())) {
-                this.spawnRegion = new SpawnRegion(this, getManager(), worldContainer.getRegion(getSpawnName()));
+                this.spawnRegion = new SpawnRegion(getPlugin(), this, worldContainer.getRegion(getSpawnName()));
             } else {
-                TowerChallenge.log("No Spawn Region for "+getTextName());
+                TowerChallenge.log("No Spawn Region for " + getTextName());
             }
             if (worldContainer.hasRegion(getTowerName())) {
-                this.towerRegion = new TowerRegion(this, getManager(), worldContainer.getRegion(getTowerName()), getTextName());
+                this.towerRegion = new TowerRegion(getPlugin(), this, worldContainer.getRegion(getTowerName()), getTextName());
             } else {
-                TowerChallenge.log("No Tower Region for "+getTextName());
+                TowerChallenge.log("No Tower Region for " + getTextName());
             }
         }
     }
@@ -74,20 +73,9 @@ public class ParticipantTeam extends TowerTeam {
     }
 
     public void loadPortal() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
-        if (config.isString(getTextName()+".world")) {
-            this.frameLocation = new Location(Worlds.WORLD(), config.getInt(getTextName()+".x"), config.getInt(getTextName()+".y"), config.getInt(getTextName()+".z"));
-            Block block = this.frameLocation.getBlock();
-            block.setType(Material.END_PORTAL_FRAME);
-            EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
-            if (config.isString(getTextName()+".facing")) {
-                blockData.setFacing(BlockFace.valueOf((config.getString(getTextName()+".facing")).toUpperCase()));
-            }
-            if (config.isBoolean(getTextName()+".completed")) {
-                blockData.setEye(config.getBoolean(getTextName()+".completed"));
-                block.setBlockData(blockData);
-            }
-            Bukkit.getLogger().info("Loaded portal frame for " + getTextName() + " at location " + this.frameLocation.getX() +" "+ this.frameLocation.getY() +" "+ this.frameLocation.getZ());
+        this.frameLocation = teamManager.getPortalFrame(this);
+        if (this.frameLocation != null) {
+            Bukkit.getLogger().info("Loaded portal frame for " + getTextName() + " at location " + this.frameLocation.getX() + " " + this.frameLocation.getY() + " " + this.frameLocation.getZ());
         }
     }
 
@@ -110,41 +98,8 @@ public class ParticipantTeam extends TowerTeam {
         }
     }
 
-    public int getScore() {
-        int score = getManager().getObjective().getScore(PlainTextComponentSerializer.plainText().serialize(getDisplayName())).getScore();
-        return score+extraScore;
-    }
-
-    public int addExtraScore(int score) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
-        extraScore += score;
-        config.set(getTextName(), extraScore);
-        try {
-            config.save(Config.teamScoreConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return extraScore;
-    }
-
-    public int removeExtraScore(int score) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamScoreConfigFile);
-        extraScore -= score;
-        config.set(getTextName(), extraScore);
-        try {
-            config.save(Config.teamScoreConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return extraScore;
-    }
-
-    public int getExtraScore() {
-        return extraScore;
-    }
-
-    public void setExtraScore(int extraScore) {
-        this.extraScore = extraScore;
+    public void addExtraScore(int score) {
+        teamManager.addExtraScore(this, score);
     }
 
     @Override
@@ -158,35 +113,6 @@ public class ParticipantTeam extends TowerTeam {
         }
     }
 
-    @Override
-    public void registerConfigPlayer(OfflinePlayer player) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamConfigFile);
-        for (Map.Entry<String, ParticipantTeam> entry : getManager().getTowerListener().getTeams().entrySet()) {
-            ParticipantTeam team = entry.getValue();
-            if (team.hasPlayer(player)) {
-                String path = "Teams."+team.getTextName()+".players";
-                List<String> players = config.getStringList(path);
-                players.remove(player.getUniqueId().toString());
-                config.set(path, players);
-            }
-        }
-        if (getManager().getTowerListener().getGodTeam().hasPlayer(player)) {
-            String path = "Gods";
-            List<String> players = config.getStringList(path);
-            players.remove(player.getUniqueId().toString());
-            config.set(path, players);
-        }
-        String path = "Teams."+ getTextName()+".players";
-        List<String> players = config.getStringList(path);
-        players.add(player.getUniqueId().toString());
-        config.set(path, players);
-        try {
-            config.save(Config.teamConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public Location getSpawnpoint() {
         return spawnRegion.getSpawnpoint();
     }
@@ -195,8 +121,9 @@ public class ParticipantTeam extends TowerTeam {
         return frameLocation;
     }
 
+    @Override
     public ItemStack getItem() {
-        ItemStack item = new ItemStack(Material.valueOf(getDye()+"_CONCRETE"));
+        ItemStack item = new ItemStack(Material.valueOf(getDye() + "_CONCRETE"));
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(getDisplayName().decoration(TextDecoration.ITALIC, false));
         itemMeta.setCustomModelData(1);
@@ -204,60 +131,41 @@ public class ParticipantTeam extends TowerTeam {
         return item;
     }
 
-    public boolean hasEye() {
-        if (frameLocation.getBlock().getBlockData() instanceof EndPortalFrame frame) {
-            return frame.hasEye();
-        }
-        return false;
-    }
-
     public void placeEye() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
-        config.set(getTextName()+".completed", true);
-        try {
-            config.save(Config.endPortalConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         frame.setBlockData(frameData);
+        teamManager.setPortalFrame(this, true);
 
-        int remainingEyes = getManager().getTowerListener().getTeams().size()-getManager().getCompletedPortalFrames();
+        int remainingEyes = teamManager.getRemainingPortalFrames();
 
-        final Component chatMessage = getDisplayName().color(getTextColor())
+        final Component chatMessage = getDisplayName().color(getColor().toTextColor())
                 .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes+" remain... ").color(Palette.PRIMARY.toTextColor()));
+                .append(Component.text(remainingEyes + " remain... ").color(Palette.PRIMARY.toTextColor()));
 
         // Send the title to your audience
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
         Bukkit.getServer().sendMessage(chatMessage);
 
-        if (remainingEyes <= 0) {
-            getManager().getEndPortal().openPortal();
+        if (remainingEyes == 0) {
+            teamManager.openEndPortal();
         }
 
     }
 
     public void resetFrame() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.endPortalConfigFile);
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
-        config.set(getTextName() + ".completed", false);
-        try {
-            config.save(Config.endPortalConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        teamManager.setPortalFrame(this, false);
         frame.setBlockData(frameData);
         Bukkit.getLogger().info("Reset frame for " + getTextName());
     }
 
     @Override
-    public void clear() {
-        getTeam().removeEntries(getTeam().getEntries());
+    public void clearPlayers() {
+        super.clearPlayers();
         if (towerRegion != null) {
             towerRegion.clearPlayers();
         }

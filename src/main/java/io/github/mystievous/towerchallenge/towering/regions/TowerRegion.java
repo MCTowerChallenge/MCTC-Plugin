@@ -4,9 +4,10 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.utility.BlockSets;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -16,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -24,35 +24,19 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.scoreboard.Score;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 
 public class TowerRegion extends EventRegion implements Listener {
 
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
     private final Score score;
 
-    public TowerRegion(ParticipantTeam team, ChallengeManager manager, ProtectedRegion region, String name) {
-        super(team, manager, region);
-        Bukkit.getServer().getPluginManager().registerEvents(this, manager.getPlugin());
-        score = manager.getObjective().getScore(name);
+    public TowerRegion(TowerChallenge plugin, ParticipantTeam team, ProtectedRegion region, String name) {
+        super(team, region);
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+        score = ChallengeManager.getScoreObjective().getScore(name);
         score.setScore(blocks.size());
 //        scanBlocks();
-    }
-
-    public void sendBlockCount(Audience audience) {
-        if (blocks.size() == 1) {
-            audience.sendMessage(
-                    getTeam().getDisplayName().color(getTeam().getTextColor()).append(Component.text(" Tower"))
-                            .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
-            );
-        } else {
-            audience.sendMessage(
-                    getTeam().getDisplayName().color(getTeam().getTextColor()).append(Component.text(" Tower"))
-                            .append(Component.text(String.format(" has %d block", blocks.size())).color(NamedTextColor.WHITE))
-            );
-        }
     }
 
     private boolean exclude(BlockState block) {
@@ -75,16 +59,8 @@ public class TowerRegion extends EventRegion implements Listener {
             return false;
         }
 
-        List<Player> godPlayers = new ArrayList<>();
-        audience.forEachAudience(audience1 -> {
-            if (audience1 instanceof Player player) {
-                if (getManager().getPlayerTeam(player) instanceof GodTeam) {
-                    godPlayers.add(player);
-                }
-            }
-        });
         // block is already in tower
-        if (godPlayers.size() == 0) {
+        if (!block.getType().equals(Material.BEDROCK)) {
             if (blocks.get(material) == null) {
                 blocks.put(material, block);
 //            sendBlockCount(audience);
@@ -123,7 +99,7 @@ public class TowerRegion extends EventRegion implements Listener {
 
 
     private boolean checkFullBlock(BlockState block) {
-        return getManager().isFullBlock(block.getType());
+        return BlockSets.FULL_BLOCKS.contains(block.getType());
     }
 
     @EventHandler
@@ -142,7 +118,7 @@ public class TowerRegion extends EventRegion implements Listener {
             return;
         BlockState block = event.getBlockPlaced().getState();
         if (checkInRegion(block)) {
-            if (getManager().isTowering()) {
+//            if (getManager().isTowering()) {
                 if (checkFullBlock(block)) {
                     boolean cancelEvent = addBlock(event.getPlayer(), event.getBlockPlaced().getState());
                     event.setCancelled(cancelEvent);
@@ -151,7 +127,7 @@ public class TowerRegion extends EventRegion implements Listener {
                             .append(Component.text("is not a full block!").color(NamedTextColor.WHITE)));
                     event.setCancelled(true);
                 }
-            }
+//            }
         }
     }
 
@@ -161,9 +137,9 @@ public class TowerRegion extends EventRegion implements Listener {
             return;
         BlockState block = event.getBlock().getState();
         if (checkInRegion(block)) {
-            if (getManager().isTowering()) {
+//            if (getManager().isTowering()) {
                 removeBlock(event.getBlock().getState());
-            }
+//            }
         }
     }
 

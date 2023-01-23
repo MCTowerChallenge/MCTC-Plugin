@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,8 +10,11 @@ import org.spigotmc.event.entity.EntityMountEvent;
 
 public class GodMountNPC extends NPC {
 
-    public GodMountNPC(String tag) {
-        super(tag);
+    private final TeamManager teamManager;
+
+    public GodMountNPC(TeamManager teamManager, String tag) {
+        super(teamManager, tag);
+        this.teamManager = teamManager;
     }
 
     /**
@@ -22,7 +25,7 @@ public class GodMountNPC extends NPC {
 
         if (event.getEntity() instanceof Player player) {
             if (event.getMount().getScoreboardTags().contains(getTag())) {
-                if (!(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(teamManager.getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }
@@ -38,7 +41,7 @@ public class GodMountNPC extends NPC {
         if (event.getInventory().getHolder() instanceof Entity entity &&
                 event.getPlayer() instanceof Player player) {
             if (entity.getScoreboardTags().contains(getTag())) {
-                if (!(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(teamManager.getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }

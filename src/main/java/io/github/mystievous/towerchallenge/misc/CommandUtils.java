@@ -8,8 +8,12 @@ public class CommandUtils {
     public static final Component SENDER_NOT_PLAYER = Component.text("You must be a player to run this command.");
     public static final Component PLAYER_DOES_NOT_EXIST = Component.text("That player does not exist!").color(NamedTextColor.DARK_RED);
 
+    public static Component errorMessage(Component text) {
+        return text.color(NamedTextColor.DARK_RED);
+    }
+
     public static Component errorMessage(String text) {
-        return Component.text(text).color(NamedTextColor.DARK_RED);
+        return errorMessage(Component.text(text));
     }
 
 }

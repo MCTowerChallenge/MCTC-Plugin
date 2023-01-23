@@ -2,12 +2,15 @@ package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.eventspecific.valentines.FerrisWheel;
+import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePackListener;
+import io.github.mystievous.towerchallenge.quests.QuestManager;
+import io.github.mystievous.towerchallenge.quests.TeamItemListener;
 import io.github.mystievous.towerchallenge.timer.Timer;
 import io.github.mystievous.towerchallenge.timer.TimerCommands;
 import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
@@ -30,10 +33,6 @@ public final class TowerChallenge extends JavaPlugin {
         return me;
     }
 
-    private Config config;
-    private Database database;
-    private ChallengeManager challengeManager;
-
     private FerrisWheel ferrisWheel;
 
     public static void log(String text) {
@@ -46,19 +45,28 @@ public final class TowerChallenge extends JavaPlugin {
 
         me = this;
 
-        this.config = new Config(this);
+        Config config = new Config(this);
 
-        this.challengeManager = new ChallengeManager(this);
+        Database database = new Database(this, config.getDBConfig());
 
-        this.database = new Database(config.getDBConfig());
+        TeamManager teamManager = new TeamManager(this, database);
+        new TeamItemListener(this, teamManager);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager);
-        TowerTabComplete towerTabComplete = new TowerTabComplete(this);
+        ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
+
+        QuestManager questManager = new QuestManager(challengeManager, teamManager);
+
+        new GodManager(this, teamManager, questManager);
+
+        ferrisWheel = new FerrisWheel(this);
+
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, ferrisWheel);
+        TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
-        HatCommands hatCommands = new HatCommands(this);
+        HatCommands hatCommands = new HatCommands(database);
         HatTabComplete hatTabComplete = new HatTabComplete();
         this.getCommand("hat").setExecutor(hatCommands);
         this.getCommand("hat").setTabCompleter(hatTabComplete);
@@ -91,22 +99,17 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("resourcepack").setExecutor(resourcePack);
         new ResourcePackListener(challengeManager);
 
-        BroadcastCommand broadcastCommand = new BroadcastCommand(challengeManager);
+        BroadcastCommand broadcastCommand = new BroadcastCommand(teamManager);
         this.getCommand("broadcast").setExecutor(broadcastCommand);
 
         new EnderChestCommand(this);
         new InvseeCommand(this);
-        new MessageCommands(challengeManager);
+        new MessageCommands(this, teamManager);
         new AnvilCommand(this);
         new CraftCommand(this);
         new RenameCommand(this);
+        new SpectateTPCommand();
 
-        ferrisWheel = new FerrisWheel(this);
-
-    }
-
-    public FerrisWheel getFerrisWheel() {
-        return ferrisWheel;
     }
 
     @Override
@@ -116,15 +119,4 @@ public final class TowerChallenge extends JavaPlugin {
         ferrisWheel.unloadCars();
     }
 
-    public Config getPluginConfig() {
-        return this.config;
-    }
-
-    public ChallengeManager getChallengeManager() {
-        return challengeManager;
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
 }

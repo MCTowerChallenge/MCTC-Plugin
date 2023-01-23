@@ -26,8 +26,6 @@ public class ConstantSpout extends Spout {
      */
     @Override
     public void runSpout() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(TowerChallenge.getInstance(), () -> {
-            spray(height);
-        }, 0, 1);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(TowerChallenge.getInstance(), () -> spray(height), 0, 1);
     }
 }

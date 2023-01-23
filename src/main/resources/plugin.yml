@@ -94,6 +94,8 @@ commands:
     permission: towerchallenge.godmenu
     aliases:
       - gm
+  spectatetp:
+    permission: towerchallenge.spectatetp
   back:
     description: Teleports you to your last location
     usage: /back

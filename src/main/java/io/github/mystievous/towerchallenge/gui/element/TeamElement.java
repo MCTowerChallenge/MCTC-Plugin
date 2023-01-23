@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.gui.element;
 
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,21 +11,21 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
- * Element representing a ParticipantTeam
+ * Element representing a TowerTeam
  */
 public class TeamElement extends Element implements Clickable {
 
-    private final ParticipantTeam team;
-    private final BiConsumer<Player, ParticipantTeam> consumer;
+    private final TowerTeam team;
+    private final BiConsumer<Player, TowerTeam> consumer;
 
     /**
-     * Element representing a ParticipantTeam
+     * Element representing a TowerTeam
      */
-    public TeamElement(ParticipantTeam team, List<Component> lore, BiConsumer<Player, ParticipantTeam> biConsumer) {
+    public TeamElement(TowerTeam team, List<Component> lore, BiConsumer<Player, TowerTeam> biConsumer) {
         super(team.getItem());
         ItemStack item = getItem();
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(team.getTextName()));
+        meta.displayName(TextUtil.noItalic(team.getDisplayName()));
         meta.lore(lore);
         item.setItemMeta(meta);
         this.team = team;

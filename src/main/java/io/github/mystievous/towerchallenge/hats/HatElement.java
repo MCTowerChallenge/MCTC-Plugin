@@ -1,12 +1,12 @@
 package io.github.mystievous.towerchallenge.hats;
 
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.Color;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,10 +25,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class HatElement extends ButtonElement {
-
-    private Component name;
-    private String author;
-    private String referenced;
 
     public HatElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
         super(HatUtil.setHat(new ItemStack(material) {{
@@ -78,9 +74,6 @@ public class HatElement extends ButtonElement {
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), player::closeInventory, 1);
         });
-        this.name = name;
-        this.author = author;
-        this.referenced = referenced;
     }
 
     public HatElement(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {

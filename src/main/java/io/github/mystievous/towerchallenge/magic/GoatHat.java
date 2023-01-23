@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.magic;
 
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -35,9 +35,7 @@ public class GoatHat implements Listener {
         goat.clearLootTable();
         goat.setInvulnerable(true);
         goat.setScreaming(true);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
-            goat.setHealth(0.0d);
-        }, 100);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> goat.setHealth(0.0d), 100);
     }
 
     @EventHandler

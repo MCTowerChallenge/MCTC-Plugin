@@ -1,8 +1,8 @@
 package io.github.mystievous.towerchallenge.spawncompass;
 
-import io.github.mystievous.towerchallenge.utility.Palette;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
@@ -58,12 +57,6 @@ public class SpawnCompass implements Listener {
         return compass;
     }
 
-    public static ItemStack refreshPlayerDestination(Player player, ItemStack compass, EquipmentSlot slot) {
-        ItemStack newCompass = refreshPlayerDestination(player, compass);
-        player.getInventory().setItem(slot, newCompass);
-        return newCompass;
-    }
-
     public static void refreshAllPlayer(Player player) {
         HashMap<Integer, ? extends ItemStack> compasses = player.getInventory().all(Material.COMPASS);
 
@@ -87,10 +80,6 @@ public class SpawnCompass implements Listener {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         return item;
-    }
-
-    public static ItemStack getCompass(Player player) {
-        return refreshPlayerDestination(player, getCompass());
     }
 
     public SpawnCompass() {

@@ -1,10 +1,10 @@
 package io.github.mystievous.towerchallenge.gui.page;
 
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
+import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -32,13 +32,10 @@ public class ListGui extends Gui {
     private final Element exitElement;
     private final List<Element> elementList;
 
-    private final List<ListPage> listPages;
-
     public ListGui(Component name, List<Element> elementList, Element exitElement) {
         super(name);
         this.elementList = elementList;
         this.exitElement = exitElement;
-        this.listPages = new ArrayList<>();
         loadInventory();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
@@ -78,25 +75,22 @@ public class ListGui extends Gui {
             ListPage prevPage = null;
             for (int i = 0; i < fullPages; i++) {
                 List<Element> pageElementList = elementList.subList(i * maxItemsPerPage, maxItemsPerPage + (maxItemsPerPage * i));
-                ListPage page = new ListPage(pageElementList, false, true, true, i + 1);
+                ListPage page = new ListPage(pageElementList, false, true, i + 1);
                 if (i > 0) {
                     page.setPreviousPage(prevPage);
                     prevPage.setNextPage(page);
                 }
-                listPages.add(page);
                 prevPage = page;
             }
             int lastPageItems = elementList.size() - fullPages * maxItemsPerPage;
             List<Element> pageElementList = elementList.subList(fullPages * maxItemsPerPage, lastPageItems + (fullPages * maxItemsPerPage));
-            ListPage page = new ListPage(pageElementList, false, true, true, fullPages + 1);
+            ListPage page = new ListPage(pageElementList, false, true, fullPages + 1);
             if (prevPage != null) {
                 prevPage.setNextPage(page);
             }
             page.setPreviousPage(prevPage);
-            listPages.add(page);
         } else {
             ListPage page = new ListPage(elementList, true, false);
-            listPages.add(page);
             setFirstInventory(page.getInventory());
         }
 
@@ -118,21 +112,19 @@ public class ListGui extends Gui {
          * Whether the GUI automatically adjusts
          * the rows to how many elements are in it
          */
-        private boolean dynamicScale;
+        private final boolean dynamicScale;
         private final boolean showArrows;
 
-        private boolean showPageNumber;
-        private int pageNumber;
+        private final int pageNumber;
 
         public ListPage(List<Element> pageElementList, boolean dynamicScale, boolean showArrows) {
-            this(pageElementList, dynamicScale, showArrows, false, 0);
+            this(pageElementList, dynamicScale, showArrows, 0);
         }
 
-        public ListPage(List<Element> pageElementList, boolean dynamicScale, boolean showArrows, boolean showPageNumber, int pageNumber) {
+        public ListPage(List<Element> pageElementList, boolean dynamicScale, boolean showArrows, int pageNumber) {
             this.pageElementList = pageElementList;
             this.dynamicScale = dynamicScale;
             this.showArrows = showArrows;
-            this.showPageNumber = showPageNumber;
             this.pageNumber = pageNumber;
             loadInventory();
         }
@@ -145,10 +137,6 @@ public class ListGui extends Gui {
         public void setPreviousPage(ListPage previousPage) {
             this.previousPage = previousPage;
             loadInventory();
-        }
-
-        public void setDynamicScale(boolean dynamicScale) {
-            this.dynamicScale = dynamicScale;
         }
 
         public Inventory getInventory() {
@@ -231,9 +219,6 @@ public class ListGui extends Gui {
             }
             TextComponent.Builder title = Component.text();
             title.append(getInventoryTitle());
-//            if (showPageNumber) {
-//                title.append(Component.text(String.format(" (Page %d)", pageNumber)));
-//            }
 
             Inventory inventory = Bukkit.createInventory(null, invSize, title.build());
 

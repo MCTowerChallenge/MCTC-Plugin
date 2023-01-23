@@ -1,8 +1,10 @@
 package io.github.mystievous.towerchallenge.gods;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.godgui.GodGui;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
+import io.github.mystievous.towerchallenge.quests.QuestManager;
+import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
 import org.bukkit.Bukkit;
 
 public class GodManager {
@@ -12,11 +14,11 @@ public class GodManager {
     /**
      * Manager for everything pertaining to Gods
      *
-     * @param challengeManager Challenge Manager for the event
-     * @param towerListener    Tower Listener for the event
+     * @param teamManager   Team Manager for the event
      */
-    public GodManager(ChallengeManager challengeManager, TowerListener towerListener) {
-        godGui = new GodGui(challengeManager, this, towerListener);
+    public GodManager(TowerChallenge plugin, TeamManager teamManager, QuestManager questManager) {
+        TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(this);
+        godGui = new GodGui(plugin, this, questManager, teleportHistoryManager, teamManager);
 
         GodMenuCommand command = new GodMenuCommand(this);
         Bukkit.getPluginCommand("godmenu").setExecutor(command);

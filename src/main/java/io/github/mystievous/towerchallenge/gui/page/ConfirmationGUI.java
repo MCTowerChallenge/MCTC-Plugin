@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.gui.page;
 
-import io.github.mystievous.towerchallenge.utility.TextUtil;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;

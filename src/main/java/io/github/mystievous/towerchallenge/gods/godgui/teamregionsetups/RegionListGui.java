@@ -4,7 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
@@ -12,9 +12,10 @@ import io.github.mystievous.towerchallenge.gui.page.Openable;
 import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.TowerListener;
+import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,40 +23,39 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * GUI for initial setup of the team regions
  */
 public class RegionListGui implements Openable {
 
+    private final TeamManager teamManager;
     private final GodManager godManager;
-    private final TowerListener towerListener;
 
     /**
      * GUI for initial setup of the team regions
      */
-    public RegionListGui(GodManager godManager, TowerListener towerListener) {
+    public RegionListGui(TeamManager teamManager, GodManager godManager) {
+        this.teamManager = teamManager;
         this.godManager = godManager;
-        this.towerListener = towerListener;
     }
 
     @Override
     public Gui getGui(Player player) {
-        return new TeamGui(Component.text("Team to set:"), participantTeam -> {
+        return new TeamGui(Component.text("Team to set:"), team -> {
+            if (!(team instanceof ParticipantTeam participantTeam)) return new ArrayList<>();
             TowerRegion towerRegion = participantTeam.getTowerRegion();
             SpawnRegion spawnRegion = participantTeam.getSpawnRegion();
 
-            List<Component> lore = new ArrayList<>(
+            return new ArrayList<>(
                     TextUtil.formatTexts(
                             String.format("Tower: %s", towerRegion == null ? "No Region" : towerRegion.getId()),
                             String.format("Spawn: %s", spawnRegion == null ? "No Region" : spawnRegion.getId())
                     )
             );
 
-            return lore;
-
-        }, towerListener.getTeams().values().stream().toList(), (player1, participantTeam) -> {
+        }, teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(), (player1, towerTeam) -> {
+            if (!(towerTeam instanceof ParticipantTeam participantTeam)) return;
             PresetGui gui = new PresetGui(Component.text(participantTeam.getTextName()), 3);
 
             RegionManager spawnWorldManager = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(ParticipantTeam.getSpawnWorld()));

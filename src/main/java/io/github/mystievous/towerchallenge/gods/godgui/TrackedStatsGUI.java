@@ -1,13 +1,13 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
-import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.gui.page.PlayerGui;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -53,72 +53,36 @@ public class TrackedStatsGUI extends ListGui {
      *
      * @param exitElement Element used to exit the gui
      */
-    public TrackedStatsGUI(Element exitElement) {
+    public TrackedStatsGUI(TeamManager teamManager, Element exitElement) {
         super(Component.text("Pick stat to view"), exitElement);
 
         ItemStack jumpsItem = new ItemStack(Material.RABBIT_FOOT);
         ItemMeta jumpsMeta = jumpsItem.getItemMeta();
         jumpsMeta.displayName(TextUtil.noItalic("Jumps"));
         jumpsItem.setItemMeta(jumpsMeta);
-        ButtonElement jumpsElement = new TrackedStatElement(jumpsItem, new AbstractStatistic(Statistic.JUMP));
+        ButtonElement jumpsElement = new TrackedStatElement(teamManager, jumpsItem, new AbstractStatistic(Statistic.JUMP));
         addElement(jumpsElement);
 
         ItemStack distanceItem = new ItemStack(Material.LEATHER_BOOTS);
         ItemMeta distanceMeta = distanceItem.getItemMeta();
         distanceMeta.displayName(TextUtil.noItalic("Distance Travelled"));
         distanceItem.setItemMeta(distanceMeta);
-        ButtonElement distanceElement = new TrackedStatElement(distanceItem, distanceStats);
+        ButtonElement distanceElement = new TrackedStatElement(teamManager, distanceItem, distanceStats);
         addElement(distanceElement);
 
         ItemStack bellsItem = new ItemStack(Material.BELL);
         ItemMeta bellsMeta = bellsItem.getItemMeta();
         bellsMeta.displayName(TextUtil.noItalic("Bells Rung"));
         bellsItem.setItemMeta(bellsMeta);
-        ButtonElement bellsElement = new TrackedStatElement(bellsItem, new AbstractStatistic(Statistic.BELL_RING));
+        ButtonElement bellsElement = new TrackedStatElement(teamManager, bellsItem, new AbstractStatistic(Statistic.BELL_RING));
         addElement(bellsElement);
 
         ItemStack snowballItem = new ItemStack(Material.SNOWBALL);
         ItemMeta snowballMeta = snowballItem.getItemMeta();
         snowballMeta.displayName(TextUtil.noItalic("Snowballs Picked Up"));
         snowballItem.setItemMeta(snowballMeta);
-        ButtonElement snowballElement = new TrackedStatElement(snowballItem, new AbstractStatistic(Statistic.PICKUP, Material.SNOWBALL));
+        ButtonElement snowballElement = new TrackedStatElement(teamManager, snowballItem, new AbstractStatistic(Statistic.PICKUP, Material.SNOWBALL));
         addElement(snowballElement);
-
-        /*
-            Time in Splash Zone from Dec2022 Event
-         */
-//        ItemStack waterItem = new ItemStack(Material.WATER_BUCKET);
-//        ItemMeta waterMeta = waterItem.getItemMeta();
-//        waterMeta.displayName(TextUtil.noItalic("Time Spent in Splash Zone"));
-//        waterItem.setItemMeta(waterMeta);
-//        ButtonElement waterElement = new ButtonElement(waterItem, player -> {
-//            PlayerGui gui = new PlayerGui(Component.text("Splash Time:"), player1 -> {
-//                return TextUtil.formatTexts(Component.text("Time: ").append(Component.text(SpoutManager.getRegionTime(player1).toSeconds()).append(Component.text(" seconds"))));
-//            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
-//                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
-//            }).sorted(Comparator.comparingLong(value -> (SpoutManager.getRegionTime(((OfflinePlayer) value)).toSeconds())).reversed()).collect(Collectors.toList()),
-//                    (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
-//            gui.openInventory(player);
-//        });
-//        addElement(waterElement);
-
-        /*
-            Cookies for Dec2022 Event
-         */
-//        ItemStack cookieItem = new ItemStack(Material.COOKIE);
-//        ItemMeta cookieMeta = cookieItem.getItemMeta();
-//        cookieMeta.displayName(TextUtil.noItalic("Portal Cookies Eaten"));
-//        cookieItem.setItemMeta(cookieMeta);
-//        ButtonElement cookieElement = new ButtonElement(cookieItem, player -> {
-//            PlayerGui gui = new PlayerGui(Component.text("Cookies Eaten:"), player1 -> {
-//                return TextUtil.formatTexts(Component.text("Cookies: ").append(Component.text(FastTravelListener.getTeleportCount(player1))));
-//            }, Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> {
-//                return !(TowerChallenge.me.getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
-//            }).sorted(Comparator.comparingInt(value -> FastTravelListener.getTeleportCount(((OfflinePlayer) value))).reversed()).collect(Collectors.toList()),
-//                    (player1, offlinePlayer) -> {}, new ButtonElement(ButtonElement.backItem(), this::openInventory));
-//            gui.openInventory(player);
-//        });
-//        addElement(cookieElement);
 
     }
 
@@ -134,12 +98,12 @@ public class TrackedStatsGUI extends ListGui {
          * brings the user to a PlayerGui showing
          * the stat for all players
          */
-        public TrackedStatElement(ItemStack icon, AbstractStatistic... statistics) {
+        public TrackedStatElement(TeamManager teamManager, ItemStack icon, AbstractStatistic... statistics) {
             super(icon, playerInGui -> {
                 List<OfflinePlayer> players = new ArrayList<>(Arrays.stream(Bukkit.getOfflinePlayers())
                         .filter(offlinePlayer -> {
                             if (!ChallengeManager.DEBUG) {
-                                return !(TowerChallenge.getInstance().getChallengeManager().getPlayerTeam(offlinePlayer) instanceof GodTeam);
+                                return !(teamManager.getPlayerTeam(offlinePlayer) instanceof GodTeam);
                             } else {
                                 return true;
                             }

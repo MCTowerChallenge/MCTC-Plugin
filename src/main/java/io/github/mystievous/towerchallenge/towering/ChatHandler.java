@@ -40,98 +40,59 @@ public class ChatHandler implements Listener {
 
         String stringBody = PlainTextComponentSerializer.plainText().serialize(body);
         String[] splitBody = stringBody.toLowerCase().split(" ");
-        switch(splitBody[0]) {
-            case("teehee"):
-                dayBotMessage = Component.text("teehee");
-                break;
-            case("soup"):
-                dayBotMessage = Component.text("good soup");
-                break;
-            case("so"):
+        switch (splitBody[0]) {
+            case ("teehee") -> dayBotMessage = Component.text("teehee");
+            case ("soup") -> dayBotMessage = Component.text("good soup");
+            case ("so") -> {
                 if (splitBody[1] != null && splitBody[1].equals("true")) {
                     dayBotMessage = Component.text("so true bestie");
                 }
-                break;
-            case("smooch?"):
-            case("!smooch"):
-            case("smooch"):
+            }
+            case ("smooch?"), ("!smooch"), ("smooch") -> {
                 // $(eval if(decodeURIComponent("$(user)") == "cptkapn"){ "Yes 😘"}
                 // else {e = Math.floor(Math.random() * 10);
                 // if (e == 1){"Just this once, $(user) 😘"}
                 // else {"$(user), no way. I'm Kapn's only"}})
-                int e = (int) Math.floor(Math.random()*10);
+                int e = (int) Math.floor(Math.random() * 10);
                 if (e == 1) {
                     dayBotMessage = Component.text("Just this once, " + event.getPlayer().getName() + " ;)");
                 } else {
                     dayBotMessage = Component.text(event.getPlayer().getName() + ", no way. I'm Kapn's only");
                 }
-                break;
-            case("rip"):
+            }
+            case ("rip") -> {
                 ComponentBuilder<TextComponent, TextComponent.Builder> text = Component.text().append(Component.text("o7"));
                 if (splitBody.length > 1) {
                     text.append(Component.text(stringBody.substring(stringBody.indexOf(' '))));
                 }
                 dayBotMessage = text.build();
-                break;
-            case("o7"):
-                dayBotMessage = Component.text("o7");
-                break;
-            case("daybot"):
-                dayBotMessage = Component.text("you talking about me?");
-                break;
-            case("l"):
-                dayBotMessage = Component.text("that sucks man");
-                break;
-            case("imagine"):
-                dayBotMessage = Component.text("imagine");
-                break;
-            case("chomp"):
-                dayBotMessage = Component.text("nom nom nom");
-                break;
-            case("bruh"):
-                dayBotMessage = Component.text("this is a certified bruh moment");
-                break;
-            case("^"):
-                dayBotMessage = Component.text("^");
-                break;
-            case("!arson"):
-            case("arson"):
-                dayBotMessage = Component.text("haha yea");
-                break;
-            case("!barson"):
-            case("barson"):
-                dayBotMessage = Component.text("baha yea");
-                break;
-            case("!carson"):
-            case("carson"):
-                dayBotMessage = Component.text("committing haha yea");
-                break;
-            case("fr"):
-                dayBotMessage = Component.text("frfr");
-                break;
-            case("frfr"):
-                dayBotMessage = Component.text("fr");
-                break;
-            case("smh"):
-                dayBotMessage = Component.text("smh my head");
-                break;
-            case("creeper"):
-            case("!creeper"):
-                dayBotMessage = Component.text("Awwwww man SSSsss");
-                break;
-            case("!bonk"):
-            case("bonk"):
+            }
+            case ("o7") -> dayBotMessage = Component.text("o7");
+            case ("daybot") -> dayBotMessage = Component.text("you talking about me?");
+            case ("l") -> dayBotMessage = Component.text("that sucks man");
+            case ("imagine") -> dayBotMessage = Component.text("imagine");
+            case ("chomp") -> dayBotMessage = Component.text("nom nom nom");
+            case ("bruh") -> dayBotMessage = Component.text("this is a certified bruh moment");
+            case ("^") -> dayBotMessage = Component.text("^");
+            case ("!arson"), ("arson") -> dayBotMessage = Component.text("haha yea");
+            case ("!barson"), ("barson") -> dayBotMessage = Component.text("baha yea");
+            case ("!carson"), ("carson") -> dayBotMessage = Component.text("committing haha yea");
+            case ("fr") -> dayBotMessage = Component.text("frfr");
+            case ("frfr") -> dayBotMessage = Component.text("fr");
+            case ("smh") -> dayBotMessage = Component.text("smh my head");
+            case ("creeper"), ("!creeper") -> dayBotMessage = Component.text("Awwwww man SSSsss");
+            case ("!bonk"), ("bonk") -> {
                 if (splitBody[1] != null) {
                     dayBotMessage = Component.text(event.getPlayer().getName() + " has bonked " + splitBody[1]);
                 } else {
                     dayBotMessage = Component.text("bonk");
                 }
-                break;
-            case("!hug"):
+            }
+            case ("!hug") -> {
                 if (splitBody[1] != null) {
                     dayBotMessage = Component.text(event.getPlayer().getName() + " is hugging " + splitBody[1] + "! How sweet!");
                 }
-                break;
+            }
         }
 
         for (Audience audience : event.viewers()) {

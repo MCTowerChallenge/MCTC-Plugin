@@ -3,14 +3,21 @@ package io.github.mystievous.towerchallenge;
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mystievous.towerchallenge.configs.DatabaseConfig;
+import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.hats.HatElement;
+import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.Color;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Database {
 
@@ -35,10 +40,12 @@ public class Database {
         return new HatElement(name, material, customModelData, color, author, referenced);
     }
 
+    private final TowerChallenge plugin;
     private final DatabaseConfig config;
     private DataSource dataSource;
 
-    public Database(DatabaseConfig databaseConfig) {
+    public Database(TowerChallenge plugin, DatabaseConfig databaseConfig) {
+        this.plugin = plugin;
         this.config = databaseConfig;
         TowerChallenge.log("Loading database...");
         try {
@@ -76,7 +83,194 @@ public class Database {
         return dataSource;
     }
 
-    public boolean updateWinningTeam(@NotNull TowerTeam team) throws SQLException {
+    public void setGameTeamPlayers(List<TowerTeam> teams) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT team_id, uuid FROM users;
+                        """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            Map<Integer, List<OfflinePlayer>> users = new HashMap<>();
+            while (resultSet.next()) {
+                String userIdString = resultSet.getString("uuid");
+                try {
+                    UUID userId = UUID.fromString(userIdString);
+                    int teamId = resultSet.getInt("team_id");
+                    if (!resultSet.wasNull()) {
+                        List<OfflinePlayer> teamUsers = users.getOrDefault(teamId, new ArrayList<>());
+                        teamUsers.add(Bukkit.getOfflinePlayer(userId));
+                        users.put(teamId, teamUsers);
+                    }
+                } catch (IllegalArgumentException e) {
+                    Bukkit.getLogger().warning("Invalid User Id: " + userIdString);
+                }
+            }
+            for (TowerTeam team : teams) {
+                List<OfflinePlayer> teamUsers = users.get(team.getDatabaseId());
+                if (teamUsers != null) {
+                    team.addAllPlayers(teamUsers);
+                }
+            }
+        }
+    }
+
+    public @Nullable GodTeam getGodTeam(TeamManager teamManager) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT id, name, color, dye FROM teams
+                        WHERE teams.id = 1;
+                        """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                int color = resultSet.getInt("color");
+                String dye = resultSet.getString("dye");
+                return new GodTeam(plugin, teamManager, id, name, new Color(color), dye);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public List<ParticipantTeam> getParticipantTeams(TeamManager teamManager) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT id, name, color, dye
+                        FROM teams
+                        WHERE teams.disabled = 0
+                        AND teams.is_participant = 1;
+                        """
+        )) {
+            List<ParticipantTeam> teams = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                int color = resultSet.getInt("color");
+                String dye = resultSet.getString("dye");
+                ParticipantTeam team = new ParticipantTeam(plugin, teamManager, id, name, new Color(color), dye);
+                teams.add(team);
+            }
+            return teams;
+        }
+    }
+
+    public Map<Integer, Integer> getAddedScores() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT teams.id, teams.added_score FROM teams
+                        WHERE teams.is_participant = 1
+                        AND teams.disabled = 0;
+                        """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            Map<Integer, Integer> addedScores = new HashMap<>();
+            while (resultSet.next()) {
+                int teamId = resultSet.getInt("team_id");
+                int addedScore = resultSet.getInt("added_score");
+                addedScores.put(teamId, addedScore);
+            }
+            return addedScores;
+        }
+    }
+
+    public boolean addTeamScore(ParticipantTeam team, int score) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        UPDATE teams
+                        SET added_score = added_score + ?
+                        WHERE id = ?;
+                        """
+        )) {
+            statement.setInt(1, score);
+            statement.setInt(2, team.getDatabaseId());
+            return statement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean setFilled(ParticipantTeam team, boolean filled) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement updateFrameStatement = conn.prepareStatement(
+                """
+                        UPDATE portalframes
+                        SET portalframes.filled = ?
+                        WHERE portalframes.team_id = ?;
+                        """
+        )) {
+            updateFrameStatement.setBoolean(1, filled);
+            updateFrameStatement.setInt(2, team.getDatabaseId());
+            return updateFrameStatement.executeUpdate() > 0;
+        }
+    }
+
+    public Location getPortalFrame(ParticipantTeam team) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement getFrameStatement = conn.prepareStatement(
+                """
+                        SELECT filled, facing, x, y, z, worlds.name FROM portalframes
+                        LEFT JOIN worlds ON portalframes.world_id = worlds.id
+                        WHERE portalframes.team_id = ?;
+                        """
+        )) {
+            getFrameStatement.setInt(1, team.getDatabaseId());
+            ResultSet resultSet = getFrameStatement.executeQuery();
+            if (resultSet.next()) {
+                Location location = new Location(Worlds.WORLD(), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"));
+                Block block = location.getBlock();
+                if (block.getType().equals(Material.END_PORTAL_FRAME)) {
+                    EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
+                    blockData.setFacing(BlockFace.valueOf(resultSet.getString("facing")));
+                    blockData.setEye(resultSet.getBoolean("filled"));
+                    block.setBlockData(blockData);
+                } else {
+                    Bukkit.getLogger().warning("End Portal location for " + team.getTextName() + " is not a frame.");
+                }
+                return location;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public int getRemainingPortalFrames() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT COUNT(DISTINCT p.id) AS count
+                        FROM teams
+                        JOIN portalframes p on teams.id = p.team_id
+                        WHERE teams.disabled = 0
+                        AND p.filled = 0;
+                        """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            }
+            return -1;
+        }
+    }
+
+//    public boolean setItemCollected(String tag, Entity entity) {
+//
+//    }
+
+    public @Nullable Integer getPlayerTeamId(@NotNull UUID uuid) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                "SELECT team_id FROM users WHERE users.uuid = ?"
+        )) {
+            statement.setString(1, uuid.toString());
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int teamId = resultSet.getInt("team_id");
+                if (!resultSet.wasNull()) {
+                    return teamId;
+                }
+            }
+            return null;
+        }
+    }
+
+    public void updateWinningTeam(@NotNull TowerTeam team) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement clearWinnersStatement = conn.prepareStatement(
                 """
                         DELETE FROM user_hatgroups
@@ -101,37 +295,34 @@ public class Database {
                 int rowCount = addWinnersStatement.executeUpdate();
                 if (rowCount == 0) {
                     Bukkit.getLogger().warning(String.format("Failed to set winner:\n    user: %s", userId));
-                    return false;
+                    return;
                 }
             }
         }
-        return true;
     }
 
     public boolean upsertUserTeam(@NotNull UUID uuid, @NotNull TowerTeam team) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         INSERT INTO users (uuid, team_id)
-                        SELECT ?, teams.id
-                        FROM teams
-                        WHERE teams.name = ?
-                        ON DUPLICATE KEY UPDATE users.team_id = teams.id;
+                        VALUES(?, ?)
+                        ON DUPLICATE KEY UPDATE users.team_id = VALUES(team_id);
                         """
         )) {
             String userId = uuid.toString();
-            String teamName = team.getTextName();
+            int teamId = team.getDatabaseId();
             statement.setString(1, userId);
-            statement.setString(2, teamName);
+            statement.setInt(2, teamId);
             int rowCount = statement.executeUpdate();
             if (rowCount == 0) {
-                Bukkit.getLogger().warning(String.format("Failed to update team for:\n    user: %s\n    team: %s", userId, team));
+                Bukkit.getLogger().warning(String.format("Failed to update team for:\n    user: %s\n    team: %s", userId, team.getTextName()));
                 return false;
             }
             return true;
         }
     }
 
-    public boolean updatePlayerColor(@NotNull UUID uuid, @Nullable Color color) throws SQLException {
+    public void updatePlayerColor(@NotNull UUID uuid, @Nullable Color color) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         UPDATE users
@@ -149,9 +340,7 @@ public class Database {
             int rowCount = statement.executeUpdate();
             if (rowCount == 0) {
                 Bukkit.getLogger().warning(String.format("Failed to update color for:\n    user: %s\n    color: %s", userId, color));
-                return false;
             }
-            return true;
         }
     }
 
@@ -186,7 +375,7 @@ public class Database {
         }
     }
 
-    public List<Element> getPlayerHatElements(@NotNull UUID uuid) throws SQLException {
+    public List<Element> getPlayerHats(@NotNull UUID uuid) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         SELECT

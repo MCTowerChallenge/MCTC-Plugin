@@ -1,14 +1,23 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import co.aikar.timings.Timing;
+import co.aikar.timings.TimingHistory;
+import co.aikar.timings.Timings;
+import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.*;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import org.bukkit.Axis;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Entity;
@@ -18,14 +27,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Function;
 
 public class DeveloperGui extends PresetGui {
 
-    public DeveloperGui(ChallengeManager challengeManager) {
+    public DeveloperGui(TowerChallenge plugin, TeamManager teamManager) {
         super(Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);
@@ -45,23 +56,21 @@ public class DeveloperGui extends PresetGui {
         addPlayerMeta.displayName(TextUtil.noItalic("Add Player to Team"));
         addPlayerMeta.setCustomModelData(3);
         addPlayerItem.setItemMeta(addPlayerMeta);
-        TeamGui addPlayerGui = new TeamGui(Component.text("Team to add Player to:"),
-                participantTeam -> TextUtil.formatTexts(participantTeam.getDisplayName()), challengeManager.getTowerListener().getTeams().values(),
+        TeamGui addPlayerGui = new TeamGui(
+                Component.text("Team to add Player to:"),
+                team -> new ArrayList<>(),
+                teamManager.getAllTeams(),
                 (player, participantTeam) -> new PlayerGui(Component.text("Pick player to add:"),
                         offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
                         (playerClicking, playerSelected) -> {
-                            try {
-                                String playerName = playerSelected.getName();
-                                UUID playerId = playerSelected.getUniqueId();
-                                if (challengeManager.getPlugin().getDatabase().upsertUserTeam(playerId, participantTeam)) {
-                                    assert playerSelected.getName() != null;
-                                    playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
-                                } else {
-                                    playerClicking.sendMessage(String.format("Failed to update team for:\n    user: %s\n    team: %s", playerName, participantTeam));
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                                playerClicking.sendMessage(CommandUtils.errorMessage("Error updating the database"));
+                            if (teamManager.setPlayerTeam(player, participantTeam)) {
+                                assert playerSelected.getName() != null;
+                                playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, teamManager::loadTeams);
+                            } else {
+                                playerClicking.sendMessage(CommandUtils.errorMessage(Component.text("Could not set ")
+                                        .append(Component.text(player.getName())).append(Component.text(" to team "))
+                                        .append(participantTeam.getDisplayName())));
                             }
                             this.openInventory(playerClicking);
                         },
@@ -85,7 +94,7 @@ public class DeveloperGui extends PresetGui {
         Element hideElement = new ButtonElement(hideEntity, player -> {
             Entity entity = ref.sheep;
             if (entity != null) {
-                player.hideEntity(challengeManager.getPlugin(), entity);
+                player.hideEntity(plugin, entity);
             }
         });
 
@@ -93,7 +102,7 @@ public class DeveloperGui extends PresetGui {
         Element showElement = new ButtonElement(showEntity, player -> {
             Entity entity = ref.sheep;
             if (entity != null) {
-                player.showEntity(challengeManager.getPlugin(), entity);
+                player.showEntity(plugin, entity);
             }
         });
 
@@ -126,29 +135,31 @@ public class DeveloperGui extends PresetGui {
         });
 
         ItemStack openPortalItem = formatItem("Open Nether Portal", Material.OBSIDIAN, null);
-        Element openPortalElement = new ButtonElement(openPortalItem, player -> {
-            new ConfirmationGUI(Component.text("Confirm opening portal?"), player1 -> {
-                for (Vector[] layer : portalBlocks) {
-                    for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
-                        for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
-                            for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                Location location = new Location(Worlds.Feb2023(), x, y, z);
-                                Block block = location.getBlock();
-                                block.setType(Material.NETHER_PORTAL);
-                                Orientable blockData = (Orientable) block.getBlockData();
-                                blockData.setAxis(Axis.Z);
-                                block.setBlockData(blockData);
+        Element openPortalElement = new ButtonElement(openPortalItem,
+                player -> new ConfirmationGUI(Component.text("Confirm opening portal?"),
+                        player1 -> {
+                            for (Vector[] layer : portalBlocks) {
+                                for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
+                                    for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
+                                        for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
+                                            Location location = new Location(Worlds.Feb2023(), x, y, z);
+                                            Block block = location.getBlock();
+                                            block.setType(Material.NETHER_PORTAL);
+                                            Orientable blockData = (Orientable) block.getBlockData();
+                                            blockData.setAxis(Axis.Z);
+                                            block.setBlockData(blockData);
+                                        }
+                                    }
+                                }
                             }
-                        }
-                    }
-                }
-            }, this::openInventory).openInventory(player);
-        });
+                        },
+                        this::openInventory)
+                        .openInventory(player));
 
         ItemStack hatItem = formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
         Element hatElement = new ButtonElement(hatItem, player -> {
             try {
-                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), challengeManager.getPlugin().getDatabase().getPlayerHatElements(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
                 hatGui.openInventory(player);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -165,9 +176,9 @@ public class DeveloperGui extends PresetGui {
         placeElement(7, 1, closePortalElement);
         placeElement(8, 1, hatElement);
 
-        placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> {
-            challengeManager.getGodManager().getGodGui().openInventory(player);
-        }));
+//        placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> {
+//            challengeManager.getGodManager().getGodGui().openInventory(player);
+//        }));
 
     }
 }

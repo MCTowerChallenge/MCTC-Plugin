@@ -1,11 +1,11 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -34,31 +34,22 @@ public class ItemEntityHandler implements Listener {
 
     public static final String CONFIG_LABEL = "CollectedItems";
 
-    private final ChallengeManager challengeManager;
+    private final TeamManager teamManager;
     private final String tag;
     private final ItemStack itemStack;
-    private double yOffset;
+    private final double yOffset;
     private Key soundKey;
     private final String requiredQuest;
     private Consumer<Player> eventHandler;
 
-    public ItemEntityHandler(ChallengeManager challengeManager, String tag, @Nullable String requiredQuest, ItemStack itemStack) {
-        this.challengeManager = challengeManager;
+    public ItemEntityHandler(TeamManager teamManager, String tag, @Nullable String requiredQuest, ItemStack itemStack) {
+        this.teamManager = teamManager;
         this.tag = tag;
         this.requiredQuest = requiredQuest;
         this.itemStack = itemStack;
         this.yOffset = -1.5;
         this.soundKey = Key.key(Key.MINECRAFT_NAMESPACE, "block.amethyst_cluster.place");
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
-    }
-
-    public ItemEntityHandler(ChallengeManager challengeManager, String tag, @Nullable String requiredQuest, ItemStack itemStack, double yOffset) {
-        this(challengeManager, tag, requiredQuest, itemStack);
-        this.yOffset = yOffset;
-    }
-
-    public String getTag() {
-        return tag;
     }
 
     public void setEventHandler(Consumer<Player> eventHandler) {
@@ -86,7 +77,7 @@ public class ItemEntityHandler implements Listener {
         return summonArmorStand(location);
     }
 
-    public ItemStack getItem(@NotNull TowerTeam team, Entity entity) {
+    public ItemStack getItem(@NotNull TowerTeam team) {
         return NBTUtils.setTeam(itemStack, team);
     }
 
@@ -109,7 +100,7 @@ public class ItemEntityHandler implements Listener {
     public void onPlayerInteractEntity(final PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        TowerTeam team = challengeManager.getPlayerTeam(player);
+        TowerTeam team = teamManager.getPlayerTeam(player);
         if (team == null) {
             player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
             return;
@@ -134,7 +125,7 @@ public class ItemEntityHandler implements Listener {
                     return;
                 }
             }
-            HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(getItem(team, entity));
+            HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(getItem(team));
             if (!leftoverItems.isEmpty()) {
                 player.sendMessage(CommandUtils.errorMessage("You do not have enough inventory space to pick that up."));
             } else {
