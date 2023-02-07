@@ -1,8 +1,12 @@
 package io.github.mystievous.towerchallenge.utility;
 
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.util.HSVLike;
+import net.kyori.adventure.util.RGBLike;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
-public class Color extends Number {
+public class Color extends Number implements RGBLike {
     private final int color;
 
     public Color(int color) {
@@ -45,5 +49,25 @@ public class Color extends Number {
     @Override
     public double doubleValue() {
         return color;
+    }
+
+    @Override
+    public @Range(from = 0L, to = 255L) int red() {
+        return toTextColor().red();
+    }
+
+    @Override
+    public @Range(from = 0L, to = 255L) int green() {
+        return toTextColor().green();
+    }
+
+    @Override
+    public @Range(from = 0L, to = 255L) int blue() {
+        return toTextColor().blue();
+    }
+
+    @Override
+    public @NotNull HSVLike asHSV() {
+        return asHSV();
     }
 }

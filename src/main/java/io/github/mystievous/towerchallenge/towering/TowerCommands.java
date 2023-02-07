@@ -3,7 +3,10 @@ package io.github.mystievous.towerchallenge.towering;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.eventspecific.valentines.FerrisWheel;
+import io.github.mystievous.towerchallenge.gui.page.PresetGui;
+import io.github.mystievous.towerchallenge.gui.page.QuestGui;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.quests.TextFormatter;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
@@ -18,6 +21,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -38,6 +44,17 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
+                    case ("text") -> {
+                        if (sender instanceof Player player) {
+                            String[] words = Arrays.copyOfRange(args, 1, args.length);
+                            StringBuilder builder = new StringBuilder();
+                            for (String word : words) {
+                                builder.append(word).append(' ');
+                            }
+                            QuestGui questGui = new QuestGui("Test a Quest!", builder.toString());
+                            questGui.openInventory(player);
+                        }
+                    }
                     case ("reloadferriswheel") -> ferrisWheel.reload();
                     case ("addplayer") -> {
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
@@ -50,7 +67,7 @@ public class TowerCommands implements CommandExecutor {
                         if (team != null) {
                             if (teamManager.setPlayerTeam(player, team)) {
                                 sender.sendMessage(Component.text(player.getName()).append(Component.text(" set to team ")).append(team.getDisplayName()));
-                                teamManager.loadTeams();
+                                teamManager.loadPlayers();
                             } else {
                                 sender.sendMessage(CommandUtils.errorMessage(Component.text("Could not set ")
                                         .append(Component.text(player.getName())).append(Component.text(" to team "))
@@ -129,6 +146,7 @@ public class TowerCommands implements CommandExecutor {
                     case ("reloadteams") -> {
                         sender.sendMessage(Component.text("Reloading Config"));
                         teamManager.loadTeams();
+                        teamManager.loadPlayers();
                     }
                     case ("resetendportal") -> teamManager.resetEndPortal();
                     case ("showtowerscores") -> teamManager.showTowerScores(sender);

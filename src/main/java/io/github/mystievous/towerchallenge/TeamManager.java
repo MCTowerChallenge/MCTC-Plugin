@@ -12,15 +12,12 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +41,8 @@ public class TeamManager implements Listener {
         this.database = database;
         endPortal = new EndPortal(plugin, this);
         loadTeams();
+        loadPlayers();
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     /**
@@ -51,16 +50,25 @@ public class TeamManager implements Listener {
      */
     public void loadTeams() {
         try {
+            Database.unloadPortalBorders();
+            database.placePortalBorders();
             this.godTeam = database.getGodTeam(this);
             this.teams = database.getParticipantTeams(this);
 
             this.allTeams = new ArrayList<>();
             this.allTeams.add(this.godTeam);
             this.allTeams.addAll(this.teams);
-
-            database.setGameTeamPlayers(this.allTeams);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("SQL Error retrieving teams: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void loadPlayers() {
+        try {
+            database.setGameTeamPlayers(this.allTeams);
+        } catch (SQLException e) {
+            Bukkit.getLogger().warning("SQL Error setting player teams: " + e.getMessage());
         }
     }
 
@@ -137,6 +145,7 @@ public class TeamManager implements Listener {
         }
         getGodTeam().clearPlayers();
         loadTeams();
+        loadPlayers();
     }
 
     public void addExtraScore(ParticipantTeam team, int score) {
@@ -193,9 +202,10 @@ public class TeamManager implements Listener {
         }
     }
 
-    public void setPortalFrame(ParticipantTeam team, boolean filled) {
+
+    public void setPortalFrameFilled(ParticipantTeam team, boolean filled) {
         try {
-            database.setFilled(team, filled);
+            database.setPortalFrameFilled(team, filled);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
         }
@@ -236,7 +246,20 @@ public class TeamManager implements Listener {
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        loadTeams();
+
+//        loadTeams();
+//        try {
+//            Integer teamId = database.getPlayerTeamId(player.getUniqueId());
+//            if (teamId != null) {
+//                TowerTeam team = getTeam(teamId);
+//                if (team != null) {
+//                    team.addTeamPlayer(player);
+//                }
+//            }
+//        } catch (SQLException e) {
+//            Bukkit.getLogger().warning(String.format("Error setting team for %s: %s", player.getName(), e.getMessage()));
+//        }
+        loadPlayers();
 
         if (!player.hasPlayedBefore()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -249,6 +272,25 @@ public class TeamManager implements Listener {
             }, 1);
         }
     }
+
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void onRespawn(PlayerRespawnEvent event) {
+//        Player player = event.getPlayer();
+//        if (player.getBedSpawnLocation() != null) {
+//            return;
+//        }
+//        if (getPlayerTeam(player) instanceof ParticipantTeam team) {
+//            SpawnRegion spawnRegion = team.getSpawnRegion();
+//            if (spawnRegion != null && spawnRegion.isMember(event.getPlayer())) {
+//                Location location = spawnRegion.getSpawnpoint();
+//                if (location != null) {
+//                    event.setRespawnLocation(location);
+//                    return;
+//                }
+//            }
+//        }
+//        event.setRespawnLocation(Worlds.WORLD().getSpawnLocation());
+//    }
 
     @EventHandler
     public void onPortalCreate(final PortalCreateEvent event) {

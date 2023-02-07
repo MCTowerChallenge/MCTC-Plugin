@@ -29,26 +29,27 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class NPCManager {
 
-    public static Component SteveText(Component text) {
+    public static @NotNull Component SteveText(@NotNull Component text) {
         return Component.text("<steve skellington> ").color(TextColor.color(0xc458ab))
                 .append(text.color(TextColor.color(0xffabeb)));
     }
 
-    public static Component SteveText(String text) {
+    public static @NotNull Component SteveText(String text) {
         return SteveText(Component.text(text));
     }
 
-    public static Component PenelopeText(String text) {
+    public static @NotNull Component PenelopeText(String text) {
         return Component.text("<Penelope> ").color(TextColor.color(0x932172))
                 .append(Component.text(text).color(TextColor.color(0xbc519c)));
     }
 
-    public static Component SpiritText(Component text) {
+    public static @NotNull Component SpiritText(@NotNull Component text) {
         return Component.text("<Mysterious Entity> ").color(TextColor.color(0x373f26))
                 .append(text.color(TextColor.color(0x4d5835)));
     }

@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.towerchallenge.utility.Color;
 import net.kyori.adventure.audience.Audience;
@@ -22,6 +23,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public abstract class TowerTeam {
@@ -36,6 +38,9 @@ public abstract class TowerTeam {
     private final TowerChallenge plugin;
     private final Color color;
     private final String dye;
+
+    private Map<String, Quest> quests;
+    private String currentQuest;
     private boolean inDialogue;
 
     public TowerTeam(TowerChallenge plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
@@ -53,7 +58,46 @@ public abstract class TowerTeam {
             this.team.displayName(Component.text(displayName));
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, color.toTextColor())).append(Component.text("] ")));
+        this.quests = new HashMap<>();
         this.inDialogue = false;
+    }
+
+    public boolean hasQuests() {
+        return !quests.isEmpty();
+    }
+
+    public Quest getQuest(String tag) {
+        return quests.get(tag);
+    }
+
+    public void setQuests(Map<String, Quest> quests) {
+        this.quests = quests;
+    }
+
+    public void setCurrentQuestId(String currentQuest) {
+        this.currentQuest = currentQuest;
+    }
+
+    public String getCurrentQuestId() {
+        return currentQuest;
+    }
+
+    public boolean addObjectiveScore(String tag, String name, int value) {
+        try {
+            return teamManager.getDatabase().addObjectiveScore(this, tag, name, value);
+        } catch (SQLException e) {
+            Bukkit.getLogger().warning("Error updating database: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public int getObjective(String tag, String name) {
+        try {
+            return teamManager.getDatabase().getObjective(this, tag, name);
+        } catch (SQLException e) {
+            Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
+        }
+        return 0;
     }
 
     public void setInDialogue(boolean inDialogue) {

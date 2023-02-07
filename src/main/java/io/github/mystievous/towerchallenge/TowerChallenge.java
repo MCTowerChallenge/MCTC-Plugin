@@ -2,6 +2,8 @@ package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.eventspecific.valentines.FerrisWheel;
+import io.github.mystievous.towerchallenge.eventspecific.valentines.Lovebot;
+import io.github.mystievous.towerchallenge.eventspecific.valentines.Plushies;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
@@ -15,10 +17,12 @@ import io.github.mystievous.towerchallenge.timer.Timer;
 import io.github.mystievous.towerchallenge.timer.TimerCommands;
 import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
 import io.github.mystievous.towerchallenge.towering.ChatHandler;
+import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
 import io.github.mystievous.towerchallenge.wands.WandCommands;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TowerChallenge extends JavaPlugin {
@@ -59,6 +63,8 @@ public final class TowerChallenge extends JavaPlugin {
         new GodManager(this, teamManager, questManager);
 
         ferrisWheel = new FerrisWheel(this);
+        new Lovebot(this, teamManager, database);
+        new Plushies(this, teamManager, database);
 
         TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, ferrisWheel);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
@@ -109,6 +115,7 @@ public final class TowerChallenge extends JavaPlugin {
         new CraftCommand(this);
         new RenameCommand(this);
         new SpectateTPCommand();
+        new MystiSkinListener(this);
 
     }
 
@@ -117,6 +124,7 @@ public final class TowerChallenge extends JavaPlugin {
         // Plugin shutdown logic
         Bukkit.getScheduler().cancelTasks(this);
         ferrisWheel.unloadCars();
+        Database.unloadPortalBorders();
     }
 
 }

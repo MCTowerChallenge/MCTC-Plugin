@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -68,6 +69,11 @@ public class TowerListener implements Listener {
 
     private final Location overworldPortalLocation = new Location(Worlds.Feb2023(), 97.5, 66, -2114.5);
     private final Location netherPortalLocation = new Location(Worlds.Feb2023_nether(), -23.5, 41, -388.5);
+
+//    @EventHandler
+//    public void onChangeWorld(final PlayerChangedWorldEvent event) {
+//        event.
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityPortal(final EntityPortalEvent event) {

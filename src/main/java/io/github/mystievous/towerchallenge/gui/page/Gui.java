@@ -71,13 +71,13 @@ public abstract class Gui implements Listener {
     public Gui(Component name, int textureAdjust, Character customTexture, int titleAdjust) {
         TextComponent.Builder titleBuilder = Component.text();
         if (textureAdjust != 0) {
-            titleBuilder.append(Component.translatable(String.format("space.%d", textureAdjust)));
+            titleBuilder.append(TextUtil.space(textureAdjust));
         }
         if (customTexture != null) {
             titleBuilder.append(Component.text(customTexture).color(NamedTextColor.WHITE));
         }
         if (titleAdjust != 0) {
-            titleBuilder.append(Component.translatable(String.format("space.%d", titleAdjust)));
+            titleBuilder.append(TextUtil.space(titleAdjust));
         }
         titleBuilder.append(name);
         inventoryTitle = titleBuilder.build();

@@ -26,7 +26,11 @@ public class NBTUtils {
         if (itemStack == null || itemStack.getType().isAir())
             return itemStack;
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setUUID(tag, uuid);
+        if (uuid != null) {
+            nbtItem.setUUID(tag, uuid);
+        } else {
+            nbtItem.removeKey(tag);
+        }
         return nbtItem.getItem();
     }
 

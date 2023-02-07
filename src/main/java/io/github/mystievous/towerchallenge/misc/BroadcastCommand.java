@@ -47,7 +47,7 @@ public class BroadcastCommand implements CommandExecutor {
 
         int pixelCount = 0;
         for (String word : args) {
-            int wordPixels = DefaultFontInfo.getStringLength(word + " ");
+            int wordPixels = DefaultFontInfo.getPixelLength(word + " ");
             pixelCount += wordPixels;
             if (pixelCount >= 245) {
                 message.append(Component.newline());

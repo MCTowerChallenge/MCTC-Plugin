@@ -6,7 +6,6 @@ import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
 import io.github.mystievous.towerchallenge.utility.Color;
@@ -19,12 +18,17 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.util.Vector;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.List;
 
 public class ParticipantTeam extends TowerTeam {
 
@@ -74,9 +78,6 @@ public class ParticipantTeam extends TowerTeam {
 
     public void loadPortal() {
         this.frameLocation = teamManager.getPortalFrame(this);
-        if (this.frameLocation != null) {
-            Bukkit.getLogger().info("Loaded portal frame for " + getTextName() + " at location " + this.frameLocation.getX() + " " + this.frameLocation.getY() + " " + this.frameLocation.getZ());
-        }
     }
 
     public TowerRegion getTowerRegion() {
@@ -136,7 +137,7 @@ public class ParticipantTeam extends TowerTeam {
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
         frame.setBlockData(frameData);
-        teamManager.setPortalFrame(this, true);
+        teamManager.setPortalFrameFilled(this, true);
 
         int remainingEyes = teamManager.getRemainingPortalFrames();
 
@@ -158,7 +159,7 @@ public class ParticipantTeam extends TowerTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
-        teamManager.setPortalFrame(this, false);
+        teamManager.setPortalFrameFilled(this, false);
         frame.setBlockData(frameData);
         Bukkit.getLogger().info("Reset frame for " + getTextName());
     }

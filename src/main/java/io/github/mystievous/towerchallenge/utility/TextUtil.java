@@ -59,4 +59,9 @@ public class TextUtil {
         }
         return output.toString();
     }
+
+    public static Component space(int space) {
+        return Component.translatable(String.format("space.%d", space));
+    }
+
 }

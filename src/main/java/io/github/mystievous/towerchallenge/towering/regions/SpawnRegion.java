@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,9 +30,12 @@ public class SpawnRegion extends EventRegion implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         if (isMember(event.getPlayer())) {
-            Location location = getSpawnpoint();
-            if (location != null) {
-                event.setRespawnLocation(location);
+            Location spawnLocation = event.getRespawnLocation();
+            if (spawnLocation.getWorld().equals(Worlds.Feb2023())) {
+                Location location = getSpawnpoint();
+                if (location != null) {
+                    event.setRespawnLocation(location);
+                }
             }
         }
     }

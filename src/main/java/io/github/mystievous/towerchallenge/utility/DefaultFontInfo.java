@@ -27,7 +27,7 @@ public enum DefaultFontInfo {
     K('K', 5),
     k('k', 4),
     L('L', 5),
-    l('l', 1),
+    l('l', 2),
     M('M', 5),
     m('m', 5),
     N('N', 5),
@@ -43,7 +43,7 @@ public enum DefaultFontInfo {
     S('S', 5),
     s('s', 5),
     T('T', 5),
-    t('t', 4),
+    t('t', 3),
     U('U', 5),
     u('u', 5),
     V('V', 5),
@@ -74,14 +74,14 @@ public enum DefaultFontInfo {
     UP_ARROW('^', 5),
     AMPERSAND('&', 5),
     ASTERISK('*', 5),
-    LEFT_PARENTHESIS('(', 4),
-    RIGHT_PARENTHESIS(')', 4),
+    LEFT_PARENTHESIS('(', 3),
+    RIGHT_PARENTHESIS(')', 3),
     MINUS('-', 5),
     UNDERSCORE('_', 5),
     PLUS_SIGN('+', 5),
     EQUALS_SIGN('=', 5),
-    LEFT_CURL_BRACE('{', 4),
-    RIGHT_CURL_BRACE('}', 4),
+    LEFT_CURL_BRACE('{', 3),
+    RIGHT_CURL_BRACE('}', 3),
     LEFT_BRACKET('[', 3),
     RIGHT_BRACKET(']', 3),
     COLON(':', 1),
@@ -94,7 +94,7 @@ public enum DefaultFontInfo {
     SLASH('/', 5),
     BACK_SLASH('\\', 5),
     LINE('|', 1),
-    TILDE('~', 5),
+    TILDE('~', 6),
     TICK('`', 2),
     PERIOD('.', 1),
     COMMA(',', 1),
@@ -115,7 +115,7 @@ public enum DefaultFontInfo {
     }
 
     public int getLength() {
-        return this.length;
+        return this.length+1;
     }
 
     public static DefaultFontInfo getDefaultFontInfo(char c) {
@@ -125,7 +125,12 @@ public enum DefaultFontInfo {
         return DefaultFontInfo.DEFAULT;
     }
 
-    public static int getStringLength(@NotNull String s) {
+    /**
+     * Returns the string length in Pixels
+     * @param s input string
+     * @return the length
+     */
+    public static int getPixelLength(@NotNull String s) {
         int count = 0;
         for (char c : s.toCharArray()) {
             count += getDefaultFontInfo(c).getLength();

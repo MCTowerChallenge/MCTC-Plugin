@@ -9,12 +9,10 @@ import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.misc.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -35,6 +33,7 @@ public class NPC implements Listener {
     private final TeamManager teamManager;
     private final String tag;
     private final Map<String, Consumer<PlayerInteractAtEntityEvent>> questHandlers;
+    private Consumer<PlayerInteractAtEntityEvent> defaultHandler = null;
     private final Set<String> allowedRegions = new HashSet<>();
     private final Set<String> disallowedRegions = new HashSet<>();
 
@@ -47,6 +46,10 @@ public class NPC implements Listener {
 
     public void addQuestHandler(String quest, Consumer<PlayerInteractAtEntityEvent> handler) {
         questHandlers.put(quest, handler);
+    }
+
+    public void setDefaultHandler(Consumer<PlayerInteractAtEntityEvent> defaultHandler) {
+        this.defaultHandler = defaultHandler;
     }
 
     public void addAllowedRegion(String regionName) {
@@ -78,10 +81,11 @@ public class NPC implements Listener {
                 player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
                 return;
             }
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
-            Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(config.getString(team.getTextName() + ".CurrentQuest"));
+            Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(team.getCurrentQuestId());
             if (consumer != null) {
                 consumer.accept(event);
+            } else if (defaultHandler != null) {
+                defaultHandler.accept(event);
             }
         }
     }

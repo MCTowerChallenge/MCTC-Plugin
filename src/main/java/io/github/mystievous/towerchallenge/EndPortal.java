@@ -19,13 +19,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 public class EndPortal implements Listener {
 
     private final TeamManager teamManager;
 
-    public static final Location PORTAL_MIN = new Location(Worlds.Dec2022(), -1334, 49, -1270);
-    public static final Location PORTAL_MAX = new Location(Worlds.Dec2022(), -1331, 49, -1267);
+    public static final Location PORTAL_MIN = new Location(Worlds.Feb2023(), 108, 64, -2109);
+    public static final Location PORTAL_MAX = new Location(Worlds.Feb2023(), 111, 64, -2106);
 
     public EndPortal(TowerChallenge plugin, TeamManager teamManager) {
         this.teamManager = teamManager;
@@ -66,13 +67,17 @@ public class EndPortal implements Listener {
                 if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
                     if (event.getItem().getType().equals(Material.ENDER_EYE)) {
                         event.setCancelled(true);
-                        if (team instanceof ParticipantTeam participantTeam
-                                && block.getLocation().equals(participantTeam.getFrameLocation())) {
-                            player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
-                            participantTeam.placeEye();
+                        Location blockLocation = block.getLocation().toBlockLocation();
+                        if (team instanceof ParticipantTeam participantTeam) {
+                            Location teamBlockLocation = participantTeam.getFrameLocation().toBlockLocation();
+                            if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
+                                player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
+                                participantTeam.placeEye();
+                            }
                         } else if (team instanceof GodTeam) {
                             teamManager.getParticipantTeams().forEach(checkTeam -> {
-                                if (block.getLocation().equals(checkTeam.getFrameLocation())) {
+                                Location teamBlockLocation = checkTeam.getFrameLocation().toBlockLocation();
+                                if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
                                     checkTeam.placeEye();
                                 }
                             });

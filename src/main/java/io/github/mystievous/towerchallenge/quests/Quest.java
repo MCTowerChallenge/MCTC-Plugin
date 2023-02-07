@@ -20,8 +20,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Quest implements Openable {
 
@@ -96,12 +98,13 @@ public class Quest implements Openable {
     }
 
     public Gui getGui(@NotNull TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
-        String questPath = team.getTextName() + ".QuestProgress." + getId();
-        for (QuestRequirement requirement : requirements) {
-            String requirementPath = questPath + "." + requirement.getType().toString();
-            int requirementAmount = teamDataConfig.getInt(requirementPath, 0);
-            requirement.setCurrentAmount(requirementAmount);
+        try {
+            Map<String, Integer> objectiveScores = teamManager.getDatabase().getObjectives(team, id);
+            for (QuestRequirement requirement : requirements) {
+                requirement.setCurrentAmount(objectiveScores.getOrDefault(requirement.getType().name(), 0));
+            }
+        } catch (SQLException e) {
+            Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
         }
         PresetGui gui = new PresetGui(Component.text(friendlyName).color(NamedTextColor.BLACK), -8, '\uE002', -170, 6);
         if (description != null) {

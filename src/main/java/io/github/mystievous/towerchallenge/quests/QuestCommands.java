@@ -36,36 +36,7 @@ public class QuestCommands implements CommandExecutor {
             } else {
                 sender.sendMessage(Component.text("You must be a player to use this command."));
             }
-        } else {
-            if (args[0].equalsIgnoreCase("reset")) {
-                if (sender.hasPermission("towerchallenge.questbook.reset")) {
-                    if (sender instanceof Player player) {
-                        TowerTeam team = teamManager.getPlayerTeam(player);
-                        if (team != null){
-                            questManager.resetTeamQuests(team);
-                            player.sendMessage(TextUtil.formatText("Reset Quests..."));
-                        } else {
-                            player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
-                        }
-                    }
-                }
-            }
-
-            if (args[0].equalsIgnoreCase("items")) {
-                if (sender.hasPermission("towerchallenge.questbook.items")) {
-                    if (sender instanceof Player player) {
-                        TowerTeam team = teamManager.getPlayerTeam(player);
-                        if (team != null){
-                            questManager.resetTeamItems(team);
-                            player.sendMessage(TextUtil.formatText("Reset Items..."));
-                        } else {
-                            player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
-                        }
-                    }
-                }
-            }
         }
-        
         return true;
     }
 }

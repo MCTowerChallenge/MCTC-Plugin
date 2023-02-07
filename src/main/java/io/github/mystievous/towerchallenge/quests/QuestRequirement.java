@@ -49,7 +49,7 @@ public class QuestRequirement implements Representable {
      */
     public int turnIn(TowerTeam team, int amount) {
         int amountToTake = amount + Math.min((requiredAmount-currentAmount)-amount, 0);
-        setTeamAmount(team, getCurrentAmount()+amountToTake);
+        addTeamAmount(team, amountToTake);
         return amountToTake;
     }
 
@@ -70,10 +70,7 @@ public class QuestRequirement implements Representable {
     }
 
     public int getTeamAmount(TowerTeam team) {
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
-        String questPath = team.getTextName()+".QuestProgress."+quest.getId();
-        String requirementPath = questPath+"."+getType().toString();
-        int amount = teamDataConfig.getInt(requirementPath, 0);
+        int amount = team.getObjective(quest.getId(), getType().name());
         setCurrentAmount(amount);
         return amount;
     }
@@ -82,17 +79,13 @@ public class QuestRequirement implements Representable {
         this.currentAmount = currentAmount;
     }
 
-    public void setTeamAmount(TowerTeam team, int amount) {
-        setCurrentAmount(amount);
-        YamlConfiguration teamDataConfig = YamlConfiguration.loadConfiguration(Config.teamDataConfigFile);
-        String questPath = team.getTextName()+".QuestProgress."+quest.getId();
-        String requirementPath = questPath+"."+getType().toString();
-        teamDataConfig.set(requirementPath, getCurrentAmount());
-        try {
-            teamDataConfig.save(Config.teamDataConfigFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void addCurrentAmount(int addAmount) {
+        this.currentAmount += addAmount;
+    }
+
+    public void addTeamAmount(TowerTeam team, int amount) {
+        team.addObjectiveScore(quest.getId(), getType().name(), amount);
+        getTeamAmount(team);
     }
 
     public int getRemaining(TowerTeam team) {

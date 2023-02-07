@@ -10,6 +10,7 @@ depend:
   - GSit
   - Multiverse-Core
   - Multiverse-Portals
+  - ProtocolLib
 commands:
   tower:
     description: Commands relating to the towers
