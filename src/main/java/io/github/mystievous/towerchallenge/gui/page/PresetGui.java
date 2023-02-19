@@ -63,12 +63,12 @@ public class PresetGui extends Gui {
     /**
      * Places an element in a specific slot of the inventory
      *
-     * @param col     column to place it in, starting at 1
      * @param row     row to place it in, starting at 1
+     * @param col     column to place it in, starting at 1
      * @param element element to place in the gui
      * @throws IndexOutOfBoundsException if the resulting index is not valid for the inventory
      */
-    public void placeElement(int col, int row, Element element) throws IndexOutOfBoundsException {
+    public void placeElement(int row, int col, Element element) throws IndexOutOfBoundsException {
         int index = colRowToIndex(col, row);
         if (0 > index || index >= getFirstInventory().getSize()) {
             throw new IndexOutOfBoundsException("Resulting index is invalid for the inventory");

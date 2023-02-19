@@ -1,9 +1,9 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

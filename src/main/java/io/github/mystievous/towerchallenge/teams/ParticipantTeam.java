@@ -1,15 +1,14 @@
-package io.github.mystievous.towerchallenge.towering;
+package io.github.mystievous.towerchallenge.teams;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.towering.regions.SpawnRegion;
-import io.github.mystievous.towerchallenge.towering.regions.TowerRegion;
+import io.github.mystievous.towerchallenge.quests.Quest;
+import io.github.mystievous.towerchallenge.quests.QuestChangeEvent;
+import io.github.mystievous.towerchallenge.teams.regions.SpawnRegion;
+import io.github.mystievous.towerchallenge.teams.regions.TowerRegion;
 import io.github.mystievous.towerchallenge.utility.Color;
 import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -18,26 +17,20 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.util.Vector;
 
-import java.util.List;
+import java.sql.SQLException;
 
 public class ParticipantTeam extends TowerTeam {
 
     public static World getSpawnWorld() {
-        return Worlds.WORLD();
+        return Worlds.Feb2023();
     }
 
     public static World getTowerWorld() {
-        return Worlds.WORLD();
+        return Worlds.Feb2023_tower();
     }
 
     private SpawnRegion spawnRegion;
@@ -52,55 +45,20 @@ public class ParticipantTeam extends TowerTeam {
 
     public void loadRegions() {
 
-        RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.WORLD()));
+        this.spawnRegion = new SpawnRegion(getPlugin(), this);
+        this.towerRegion = new TowerRegion(getPlugin(), this, getTextName());
 
-        if (worldContainer != null) {
-            if (worldContainer.hasRegion(getSpawnName())) {
-                this.spawnRegion = new SpawnRegion(getPlugin(), this, worldContainer.getRegion(getSpawnName()));
-            } else {
-                TowerChallenge.log("No Spawn Region for " + getTextName());
-            }
-            if (worldContainer.hasRegion(getTowerName())) {
-                this.towerRegion = new TowerRegion(getPlugin(), this, worldContainer.getRegion(getTowerName()), getTextName());
-            } else {
-                TowerChallenge.log("No Tower Region for " + getTextName());
-            }
-        }
-    }
-
-    public String getSpawnName() {
-        return String.format("%s_spawn", getDye().toLowerCase());
-    }
-
-    public String getTowerName() {
-        return String.format("%s_tower", getDye().toLowerCase());
     }
 
     public void loadPortal() {
         this.frameLocation = teamManager.getPortalFrame(this);
     }
 
-    public TowerRegion getTowerRegion() {
-        return towerRegion;
-    }
-
-    public SpawnRegion getSpawnRegion() {
-        return spawnRegion;
-    }
-
-    public void centerRegions(double y) {
-        if (towerRegion != null) {
-            towerRegion.setSpawnCenter(y);
-            towerRegion.setTeleportCenter(y);
-        }
-        if (spawnRegion != null) {
-            spawnRegion.setSpawnCenter(y);
-            spawnRegion.setTeleportCenter(y);
-        }
-    }
-
-    public void addExtraScore(int score) {
+    public void addExtraScore(int score) throws SQLException {
         teamManager.addExtraScore(this, score);
+    }
+    public int getExtraScore() throws SQLException {
+        return teamManager.getExtraScore(this);
     }
 
     @Override
@@ -175,4 +133,26 @@ public class ParticipantTeam extends TowerTeam {
         }
     }
 
+    @EventHandler
+    public void onQuestChange(final QuestChangeEvent event) {
+        if (event.isCancelled())
+            return;
+        if (event.getTeam().getDatabaseId() != getDatabaseId())
+            return;
+
+        Quest quest = event.getQuest();
+        if (quest != null) {
+            sendMessage(TextUtil.formatText("New Quest: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
+        } else {
+            sendMessage(TextUtil.formatText("No more quests!"));
+        }
+        playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
+    }
+
+    @Override
+    public void unregisterEvents() {
+        QuestChangeEvent.getHandlerList().unregister(this);
+        spawnRegion.unregisterEvents();
+        towerRegion.unregisterEvents();
+    }
 }

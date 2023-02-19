@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.misc;
 
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

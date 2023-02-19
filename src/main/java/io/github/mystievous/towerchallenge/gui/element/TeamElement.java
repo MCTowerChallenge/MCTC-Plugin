@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.gui.element;
 
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;

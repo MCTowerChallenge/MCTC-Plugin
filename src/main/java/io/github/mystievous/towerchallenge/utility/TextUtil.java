@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +50,24 @@ public class TextUtil {
         } else {
             return Component.translatable(item.translationKey());
         }
+    }
+
+    public static ItemMeta appendQuestItemLore(ItemMeta meta) {
+        List<Component> lore;
+        if (meta.hasLore()) {
+            lore = meta.lore();
+            assert lore != null;
+        } else {
+            lore = new ArrayList<>();
+        }
+        lore.add(formatText("Quest Item").decoration(TextDecoration.ITALIC, true));
+        meta.lore(lore);
+        return meta;
+    }
+
+    public static void appendQuestItemLore(ItemStack itemStack) {
+        ItemMeta meta = itemStack.getItemMeta();
+        itemStack.setItemMeta(appendQuestItemLore(meta));
     }
 
     public static String formatBlockType(Material material) {

@@ -9,8 +9,9 @@ import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.hats.HatElement;
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.Color;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
@@ -196,7 +197,7 @@ public class Database {
             ResultSet resultSet = statement.executeQuery();
             Map<Integer, Integer> addedScores = new HashMap<>();
             while (resultSet.next()) {
-                int teamId = resultSet.getInt("team_id");
+                int teamId = resultSet.getInt("id");
                 int addedScore = resultSet.getInt("added_score");
                 addedScores.put(teamId, addedScore);
             }
@@ -218,6 +219,23 @@ public class Database {
         }
     }
 
+    public int getTeamScore(ParticipantTeam team) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT added_score FROM teams
+                        WHERE id = ?;
+                        """
+        )) {
+            statement.setInt(1, team.getDatabaseId());
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("added_score");
+            } else {
+                return 0;
+            }
+        }
+    }
+
     public static final String FRAME_TAG = "portal-frame-colorborder";
     private static final int FRAME_CUSTOM_MODEL = 1006;
     private static final org.bukkit.util.Vector FRAME_OFFSET = new Vector(0.5, -1.31, 0.5);
@@ -235,6 +253,15 @@ public class Database {
                 Location location = new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"));
                 BlockFace facing = BlockFace.valueOf(resultSet.getString("facing"));
                 location.setDirection(facing.getDirection());
+                Block block = location.getBlock();
+                if (block.getType().equals(Material.END_PORTAL_FRAME)) {
+                    EndPortalFrame blockData = (EndPortalFrame) block.getBlockData();
+                    blockData.setFacing(facing);
+                    blockData.setEye(resultSet.getBoolean("filled"));
+                    block.setBlockData(blockData);
+                } else {
+                    Bukkit.getLogger().warning("End Portal location for " + resultSet.getString("team_name") + " is not a frame.");
+                }
                 Color color = new Color(resultSet.getInt("color"));
                 ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(FRAME_OFFSET), EntityType.ARMOR_STAND);
                 armorStand.addScoreboardTag(FRAME_TAG);
@@ -416,7 +443,23 @@ public class Database {
         }
     }
 
-    public boolean isItemCollected(TowerTeam team, String tag, UUID uuid) throws SQLException {
+    public boolean setObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        INSERT INTO objectives (team_id, quest_tag_id, name, value)
+                        VALUES (?, (SELECT id FROM tags WHERE tags.name = ?), ?, ?)
+                        ON DUPLICATE KEY UPDATE value = VALUES(value);
+                        """
+        )) {
+            statement.setInt(1, team.getDatabaseId());
+            statement.setString(2, tag);
+            statement.setString(3, name);
+            statement.setInt(4, value);
+            return statement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean isItemCollected(TowerTeam team, String tag, String uuid) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         SELECT collected FROM collected_items
@@ -427,7 +470,7 @@ public class Database {
         )) {
             statement.setInt(1, team.getDatabaseId());
             statement.setString(2, tag);
-            statement.setString(3, uuid.toString());
+            statement.setString(3, uuid);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getBoolean("collected");
@@ -436,7 +479,10 @@ public class Database {
         }
     }
 
-    public boolean setItemCollected(TowerTeam team, String tag, UUID uuid, boolean collected) throws SQLException {
+    public boolean isItemCollected(TowerTeam team, String tag, UUID uuid) throws SQLException {
+        return isItemCollected(team, tag, uuid.toString());
+    }
+    public boolean setItemCollected(TowerTeam team, String tag, String uuid, boolean collected) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         INSERT INTO collected_items (team_id, tag_id, uuid, collected)
@@ -446,10 +492,14 @@ public class Database {
         )) {
             statement.setInt(1, team.getDatabaseId());
             statement.setString(2, tag);
-            statement.setString(3, uuid.toString());
+            statement.setString(3, uuid);
             statement.setBoolean(4, collected);
             return statement.executeUpdate() > 0;
         }
+    }
+
+    public boolean setItemCollected(TowerTeam team, String tag, UUID uuid, boolean collected) throws SQLException {
+        return setItemCollected(team, tag, uuid.toString(), collected);
     }
 
     public @Nullable Integer getPlayerTeamId(@NotNull UUID uuid) throws SQLException {
@@ -710,6 +760,7 @@ public class Database {
                     ItemStack representation = item.clone();
                     ItemMeta meta = representation.getItemMeta();
                     meta.displayName(TextUtil.noItalic(listGui.getInventoryTitle()));
+                    meta.lore(new ArrayList<>());
                     representation.setItemMeta(meta);
                     ButtonElement groupButton = new ButtonElement(representation, listGui::openInventory);
                     elements.add(groupButton);
@@ -719,7 +770,7 @@ public class Database {
         }
     }
 
-    public Element getModel(int databaseId, boolean debug) throws SQLException {
+    public ButtonElement getModel(int databaseId, boolean showAuthor, boolean debug) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         SELECT models.name AS model, m.name AS material, models.custom_model_data, hp.name AS author
@@ -735,7 +786,10 @@ public class Database {
                 String name = resultSet.getString("model");
                 Material material = Material.valueOf(resultSet.getString("material"));
                 int customModelData = resultSet.getInt("custom_model_data");
-                String author = resultSet.getString("author");
+                String author = null;
+                if (showAuthor) {
+                     author = resultSet.getString("author");
+                }
                 return new ModelElement(name, material, customModelData, null, author, debug);
             }
             return null;

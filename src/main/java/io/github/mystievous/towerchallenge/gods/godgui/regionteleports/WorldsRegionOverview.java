@@ -47,7 +47,7 @@ public class WorldsRegionOverview implements Openable {
         }});
         overworldItem.setItemMeta(overworldMeta);
         ButtonElement overworldElement = new ButtonElement(overworldItem, player1 -> (new WorldIndividualGui(Worlds.WORLD(), overworldManager, Component.text("Overworld regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
-        gui.placeElement(3, 2, overworldElement);
+        gui.placeElement(2, 3, overworldElement);
 
         ItemStack netherItem = new ItemStack(Material.NETHERRACK);
         ItemMeta netherMeta = netherItem.getItemMeta();
@@ -61,14 +61,14 @@ public class WorldsRegionOverview implements Openable {
         }});
         netherItem.setItemMeta(netherMeta);
         Element netherElement = new ButtonElement(netherItem, player1 -> (new WorldIndividualGui(Worlds.NETHER(), netherManager, Component.text("Nether regions:"), new ButtonElement(ButtonElement.backItem(), player2 -> getGui(player2).openInventory(player2)))).openInventory(player1));
-        gui.placeElement(5, 2, netherElement);
+        gui.placeElement(2, 5, netherElement);
 
         ItemStack endItem = new ItemStack(Material.END_STONE);
         ItemMeta endMeta = endItem.getItemMeta();
         endMeta.displayName(Component.text("PLACEHOLDER END"));
         endItem.setItemMeta(endMeta);
         Element endElement = new Element(endItem);
-        gui.placeElement(7, 2, endElement);
+        gui.placeElement(2, 7, endElement);
 
         return gui;
     }

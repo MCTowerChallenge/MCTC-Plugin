@@ -1,7 +1,6 @@
-package io.github.mystievous.towerchallenge.eventspecific.winter.presents;
+package io.github.mystievous.towerchallenge.eventspecific.dec2022.presents;
 
-import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.quests.entities.ItemEntityHandler;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.utility.TextUtil;

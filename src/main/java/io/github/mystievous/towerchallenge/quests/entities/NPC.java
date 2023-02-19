@@ -6,11 +6,12 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.Color;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -22,26 +23,36 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class NPC implements Listener {
 
+    // TODO: Use this to make wands for setting/removing npcs
+    private final static List<String> npcTags = new ArrayList<>();
+    private static void addNPCTag(String tag) {
+        npcTags.add(tag);
+    }
+
     private final TeamManager teamManager;
+    private final String name;
     private final String tag;
+    private final Color nameColor;
+    private final Color textColor;
     private final Map<String, Consumer<PlayerInteractAtEntityEvent>> questHandlers;
     private Consumer<PlayerInteractAtEntityEvent> defaultHandler = null;
     private final Set<String> allowedRegions = new HashSet<>();
     private final Set<String> disallowedRegions = new HashSet<>();
 
-    public NPC(TeamManager teamManager, String tag) {
+    public NPC(TeamManager teamManager, String name, String tag, Color nameColor, Color textColor) {
         this.teamManager = teamManager;
+        this.name = name;
         this.tag = tag;
+        this.nameColor = nameColor;
+        this.textColor = textColor;
         this.questHandlers = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
+        addNPCTag(tag);
     }
 
     public void addQuestHandler(String quest, Consumer<PlayerInteractAtEntityEvent> handler) {
@@ -68,6 +79,21 @@ public class NPC implements Listener {
         return entity.getScoreboardTags().contains(tag);
     }
 
+    public Component formatMessage(Component text) {
+        return Component.text(String.format("<%s> ", name)).color(nameColor.toTextColor())
+                .append(text.color(textColor.toTextColor()));
+    }
+
+    public Component formatMessage(String text) {
+        return formatMessage(Component.text(text));
+    }
+
+    public void runDefaultHandler(PlayerInteractAtEntityEvent event) {
+        if (defaultHandler != null) {
+            defaultHandler.accept(event);
+        }
+    }
+
     @EventHandler
     public void onPlayerInteractEntity(final PlayerInteractAtEntityEvent event) {
         if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
@@ -77,16 +103,16 @@ public class NPC implements Listener {
         Player player = event.getPlayer();
         TowerTeam team = teamManager.getPlayerTeam(player);
         if (entity.getScoreboardTags().contains(tag)) {
-            if (team == null) {
-                player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
-                return;
+            if (team != null) {
+                Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(team.getCurrentQuestId());
+                if (consumer != null) {
+                    consumer.accept(event);
+                    return;
+                }
+            } else {
+//                player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
             }
-            Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(team.getCurrentQuestId());
-            if (consumer != null) {
-                consumer.accept(event);
-            } else if (defaultHandler != null) {
-                defaultHandler.accept(event);
-            }
+            runDefaultHandler(event);
         }
     }
 

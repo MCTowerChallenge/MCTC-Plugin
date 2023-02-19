@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;

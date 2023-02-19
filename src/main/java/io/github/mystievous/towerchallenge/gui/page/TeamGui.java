@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.gui.page;
 
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.element.TeamElement;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;

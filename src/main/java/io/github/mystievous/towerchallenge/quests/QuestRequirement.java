@@ -1,18 +1,15 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.Palette;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.IOException;
 import java.util.List;
 
 public class QuestRequirement implements Representable {

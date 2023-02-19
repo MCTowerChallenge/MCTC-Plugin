@@ -14,7 +14,7 @@ public class HatUtil {
      * @return ItemStack, with the updated is_hat tag
      */
     public static ItemStack setHat(ItemStack itemStack, Boolean hatState) {
-        return NBTUtils.setBool(NBT_TAG, itemStack, hatState);
+        return NBTUtils.setNoUse(NBTUtils.setBool(NBT_TAG, itemStack, hatState));
     }
 
     /**

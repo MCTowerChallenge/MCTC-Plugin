@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.misc;
 
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

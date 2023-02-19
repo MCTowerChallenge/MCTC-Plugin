@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.eventspecific.valentines;
+package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
@@ -33,6 +33,9 @@ public class FerrisWheel {
 
     private BukkitTask[] carTasks;
 
+    private BukkitTask reload;
+    private PassengerCar[] cars;
+
     private static final Location[] path = new Location[]{
             new Location(Worlds.Feb2023(), 99, 69, -2114).add(OFFSET),
             new Location(Worlds.Feb2023(), 99, 71, -2110).add(OFFSET),
@@ -61,7 +64,17 @@ public class FerrisWheel {
 //            armorStand.addScoreboardTag(ENTITY_TAG);
 //        }
         // 0 4 9 13
-        loadCars();
+//        loadCars();
+        runReloadTimer();
+    }
+
+    private void runReloadTimer() {
+        if (hasPassengers()) {
+            reload = Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 6000L);
+        } else {
+            reload();
+            reload = Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 36000L);
+        }
     }
 
     public void reload() {
@@ -70,7 +83,7 @@ public class FerrisWheel {
     }
 
     public void loadCars() {
-        PassengerCar[] cars = new PassengerCar[]{
+        cars = new PassengerCar[]{
                 new PassengerCar(new Location(Worlds.Feb2023(), 99, 69, -2115).add(OFFSET), 0),
                 new PassengerCar(path[3].clone().add(0, 1, 0), 4),
                 new PassengerCar(path[8], 9),
@@ -95,13 +108,26 @@ public class FerrisWheel {
     }
 
     public void unloadCars() {
-        for (BukkitTask task : carTasks) {
-            task.cancel();
+        if (carTasks != null) {
+            for (BukkitTask task : carTasks) {
+                task.cancel();
+            }
         }
         List<Entity> entities = Bukkit.selectEntities(sender, String.format("@e[tag=%s]", ENTITY_TAG));
         for (Entity entity : entities) {
             entity.remove();
         }
+    }
+
+    public boolean hasPassengers() {
+        if (cars != null) {
+            for (PassengerCar car : cars) {
+                if (car.hasPassenger()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public class PassengerCar implements Listener {
@@ -172,6 +198,15 @@ public class FerrisWheel {
             this.nextLocation = nextLocation;
         }
 
+        private boolean hasPassenger() {
+            for (ArmorStand armorStand : seats) {
+                if (!armorStand.getPassengers().isEmpty()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private void moveEntity(Entity entity, Vector movement) {
             Bukkit.dispatchCommand(sender, String.format("execute as %s at @s run tp @s ~%f ~%f ~%f", entity.getUniqueId(), movement.getX(), movement.getY(), movement.getZ()));
         }
@@ -206,7 +241,7 @@ public class FerrisWheel {
             if (event.getHand().equals(EquipmentSlot.HAND)) {
                 Player player = event.getPlayer();
                 Entity entity = event.getRightClicked();
-                if (entity.getScoreboardTags().contains(SEAT_TAG)) {
+                if (entity.getScoreboardTags().contains(SEAT_TAG) && entity.getPassengers().isEmpty()) {
                     entity.addPassenger(player);
                 }
             }

@@ -1,10 +1,10 @@
 package io.github.mystievous.towerchallenge.messaging;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -54,7 +54,7 @@ public class MessageCommands implements CommandExecutor {
             TowerTeam senderTeam = teamManager.getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
-                sendFrom = senderTeam.getAudience();
+                sendFrom = senderTeam;
             } else {
                 if (player.getName().equalsIgnoreCase("Mystievous") || player.getName().equalsIgnoreCase("apple270")) {
                     Player mysti = Bukkit.getPlayer("Mystievous");
@@ -97,7 +97,7 @@ public class MessageCommands implements CommandExecutor {
                 }
                 TowerTeam targetTeam = teamManager.getPlayerTeam(target);
                 if (checkTeam(targetTeam)) {
-                    send(targetTeam.getAudience(), formatFromMessage(player, body));
+                    send(targetTeam, formatFromMessage(player, body));
                     sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
                 } else {
                     send(target, formatFromMessage(player, body));
@@ -119,7 +119,7 @@ public class MessageCommands implements CommandExecutor {
             TowerTeam senderTeam = teamManager.getPlayerTeam(player);
             Audience sendFrom;
             if (checkTeam(senderTeam)) {
-                sendFrom = senderTeam.getAudience();
+                sendFrom = senderTeam;
             } else {
                 if (senderTeam instanceof GodTeam) {
                     sendFrom = Audience.empty();
@@ -130,7 +130,7 @@ public class MessageCommands implements CommandExecutor {
 
             GodTeam targetTeam = teamManager.getGodTeam();
 
-            send(targetTeam.getAudience(), formatFromToGods(player, args));
+            send(targetTeam, formatFromToGods(player, args));
             sendFrom.sendMessage(formatFromToGods(player, args));
             return true;
 

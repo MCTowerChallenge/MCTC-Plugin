@@ -1,9 +1,14 @@
-package io.github.mystievous.towerchallenge;
+package io.github.mystievous.towerchallenge.teams;
 
+import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.Database;
+import io.github.mystievous.towerchallenge.EndPortal;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -52,6 +57,13 @@ public class TeamManager implements Listener {
         try {
             Database.unloadPortalBorders();
             database.placePortalBorders();
+
+            if (allTeams != null) {
+                for (TowerTeam team : allTeams) {
+                    team.unregisterEvents();
+                }
+            }
+
             this.godTeam = database.getGodTeam(this);
             this.teams = database.getParticipantTeams(this);
 
@@ -70,6 +82,10 @@ public class TeamManager implements Listener {
         } catch (SQLException e) {
             Bukkit.getLogger().warning("SQL Error setting player teams: " + e.getMessage());
         }
+    }
+
+    public TowerChallenge getPlugin() {
+        return plugin;
     }
 
     public Database getDatabase() {
@@ -148,12 +164,12 @@ public class TeamManager implements Listener {
         loadPlayers();
     }
 
-    public void addExtraScore(ParticipantTeam team, int score) {
-        try {
-            database.addTeamScore(team, score);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error setting score for " + team.getTextName());
-        }
+    public void addExtraScore(ParticipantTeam team, int score) throws SQLException {
+        database.addTeamScore(team, score);
+    }
+
+    public int getExtraScore(ParticipantTeam participantTeam) throws SQLException {
+        return database.getTeamScore(participantTeam);
     }
 
     public void showTowerScores(Audience audience) {
@@ -325,11 +341,12 @@ public class TeamManager implements Listener {
                             .clickEvent(ClickEvent.runCommand("/tp " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ()))
                     );
                 }
-                godTeam.getAudience().sendMessage(message.build());
+                godTeam.sendMessage(message.build());
             }
         }
         if (event.getBlocks().get(0).getType().equals(Material.END_PORTAL_FRAME)) {
             event.setCancelled(true);
         }
     }
+
 }

@@ -59,16 +59,18 @@ public class TeleportHistoryManager implements Listener, Openable {
             return;
         TeleportLocation.Reason reason;
         if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL)) {
-            reason = TeleportLocation.Reason.PEARL;
+//            reason = TeleportLocation.Reason.PEARL;
+            return;
         } else if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL) ||
                 event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_GATEWAY) ||
                 event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-            reason = TeleportLocation.Reason.PORTAL;
+//            reason = TeleportLocation.Reason.PORTAL;
+            return;
         } else {
             reason = TeleportLocation.Reason.TELEPORT;
         }
         Player player = event.getPlayer();
-        addTeleport(player, new TeleportLocation(player.getLocation(), reason));
+        addTeleport(player, new TeleportLocation(player.getLocation(), reason, event.getCause()));
     }
 
     @EventHandler
@@ -76,7 +78,7 @@ public class TeleportHistoryManager implements Listener, Openable {
         if (event.isCancelled())
             return;
         Player player = event.getPlayer();
-        addTeleport(player, new TeleportLocation(player.getLocation(), TeleportLocation.Reason.DEATH));
+        addTeleport(player, new TeleportLocation(player.getLocation(), TeleportLocation.Reason.DEATH, null));
     }
 
 }

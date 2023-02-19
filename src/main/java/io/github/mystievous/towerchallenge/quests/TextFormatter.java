@@ -4,6 +4,7 @@ import io.github.mystievous.towerchallenge.utility.DefaultFontInfo;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import org.jetbrains.annotations.Nullable;
 
 public class TextFormatter {
 
@@ -31,23 +32,37 @@ public class TextFormatter {
 
     // Function to return a completely formatted string using toLine and DefaultFontInfo
     // Line Max = 68
-    public static Component toBookBodyFormat(String string) {
-        String[] words = string.strip().split(" ");
-        TextComponent.Builder output = Component.text();
-        int currentLine = 0;
-        int pixelCount = 0;
-        for (String word : words) {
-            word = word+' ';
-            int wordLength = DefaultFontInfo.getPixelLength(word);
-            if (pixelCount + wordLength > LINE_MAX) {
-                output.append(TextUtil.space(-pixelCount));
-                pixelCount = 0;
-                currentLine++;
+    public static Component toBookBodyFormat(@Nullable String string) {
+        if (string != null) {
+            String[] words = string.strip().split(" ");
+            TextComponent.Builder output = Component.text();
+            int currentLine = 0;
+            int pixelCount = 0;
+            for (String word : words) {
+                word = word+' ';
+                int wordLength = DefaultFontInfo.getPixelLength(word);
+                if (pixelCount + wordLength > LINE_MAX) {
+                    output.append(TextUtil.space(-pixelCount));
+                    pixelCount = 0;
+                    currentLine++;
+                }
+                pixelCount += wordLength;
+                output.append(Component.text(toLine(currentLine, word)));
             }
-            pixelCount += wordLength;
-            output.append(Component.text(toLine(currentLine, word)));
+            return output.build();
         }
-        return output.build();
+        return Component.empty();
+    }
+
+    public static Component toBookFullFormat(@Nullable String title, @Nullable String body) {
+        TextComponent.Builder textBuilder = Component.text();
+        if (title != null) {
+            textBuilder.append(Component.text(title));
+        }
+        if (body != null) {
+            textBuilder.append(toBookBodyFormat(body));
+        }
+        return textBuilder.build();
     }
 
 }

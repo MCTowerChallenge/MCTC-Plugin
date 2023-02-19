@@ -1,10 +1,9 @@
 package io.github.mystievous.towerchallenge.hats;
 
 import io.github.mystievous.towerchallenge.Database;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.utility.Color;
 import net.kyori.adventure.text.Component;

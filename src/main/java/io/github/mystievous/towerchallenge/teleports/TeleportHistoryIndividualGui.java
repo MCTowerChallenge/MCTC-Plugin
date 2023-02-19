@@ -5,6 +5,7 @@ import io.github.mystievous.towerchallenge.gui.page.Gui;
 import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.gui.page.Openable;
 import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -27,6 +28,8 @@ public class TeleportHistoryIndividualGui extends ListGui implements Openable {
             ItemStack item = location.getReason().getItem();
             ItemMeta meta = item.getItemMeta();
             meta.lore(new ArrayList<>(){{
+                add(TextUtil.formatText("Teleport Cause: " + location.getCause().name()));
+
                 add(Component.text("Biome: ")
                         .append(Component.translatable(location.getBiome().translationKey()))
                         .color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)

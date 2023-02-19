@@ -6,9 +6,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 public class TeleportLocation extends Location {
 
@@ -65,10 +67,12 @@ public class TeleportLocation extends Location {
     }
 
     private final Reason reason;
+    private final PlayerTeleportEvent.TeleportCause cause;
 
-    public TeleportLocation(Location location, Reason reason) {
+    public TeleportLocation(Location location, Reason reason, @Nullable PlayerTeleportEvent.TeleportCause cause) {
         super(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         this.reason = reason;
+        this.cause = cause;
     }
 
     public Biome getBiome() {
@@ -77,5 +81,9 @@ public class TeleportLocation extends Location {
 
     public Reason getReason() {
         return reason;
+    }
+
+    public PlayerTeleportEvent.TeleportCause getCause() {
+        return cause;
     }
 }

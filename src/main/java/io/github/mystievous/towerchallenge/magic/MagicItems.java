@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.magic;
 
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.eventspecific.winter.presents.PresentEntityHandler;
+import io.github.mystievous.towerchallenge.eventspecific.dec2022.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
@@ -166,26 +166,26 @@ public class MagicItems {
         gui.placeElement(1, 1, new ButtonElement(snowballWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(snowballWand.getItem()));
         }));
-        gui.placeElement(2, 1, new ButtonElement(cowWand.getItem(), player -> {
+        gui.placeElement(1, 2, new ButtonElement(cowWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(cowWand.getItem()));
         }));
-        gui.placeElement(3, 1, new ButtonElement(lightningWand.getItem(), player -> {
+        gui.placeElement(1, 3, new ButtonElement(lightningWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(lightningWand.getItem()));
         }));
-        gui.placeElement(4, 1, new ButtonElement(presentWand.getItem(), player -> {
+        gui.placeElement(1, 4, new ButtonElement(presentWand.getItem(), player -> {
             player.getInventory().addItem(randomUUID(presentWand.getItem()));
         }));
-        gui.placeElement(1, 3, new ButtonElement(speedBoots, player -> {
+        gui.placeElement(3, 1, new ButtonElement(speedBoots, player -> {
             player.getInventory().addItem(speedBoots);
         }));
-        gui.placeElement(2, 3, new ButtonElement(greaterSpeedBoots, player -> {
+        gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> {
             player.getInventory().addItem(greaterSpeedBoots);
         }));
-        gui.placeElement(4, 3, new ButtonElement(goatHat.getItem(), player -> {
+        gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> {
             player.getInventory().addItem(goatHat.getItem());
         }));
 
-        gui.placeElement(9, 3, new ButtonElement(portalReplaceWand.getItem(), player -> {
+        gui.placeElement(3, 9, new ButtonElement(portalReplaceWand.getItem(), player -> {
             player.getInventory().addItem(portalReplaceWand.getItem());
         }));
         return gui;

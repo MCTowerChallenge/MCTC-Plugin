@@ -7,6 +7,7 @@ import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.towering.TowerListener;
 import io.github.mystievous.towerchallenge.towering.WinnersGUI;
 import io.github.mystievous.towerchallenge.utility.BlockSets;

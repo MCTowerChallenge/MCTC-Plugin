@@ -107,3 +107,12 @@ commands:
     aliases:
       - rp
       - pack
+  stopdialogue:
+    description: Stops dialogue for a team
+    usage: /stopdialogue <team>
+    permission: towerchallenge.stopdialogue
+  fullinventory:
+    description: Gives the player any excess items that could not be given to them
+    usage: /fullinventory
+    aliases:
+      - fullinv

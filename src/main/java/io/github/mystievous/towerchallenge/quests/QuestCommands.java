@@ -1,9 +1,6 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.TeamManager;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;

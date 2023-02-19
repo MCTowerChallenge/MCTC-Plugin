@@ -25,6 +25,17 @@ public class Worlds {
     public static World Feb2023_the_end() {
         return Bukkit.getWorld("Feb2023_the_end");
     }
+    public static World Feb2023_tower() {
+        return Bukkit.getWorld("Feb2023_tower");
+    }
+
+    public static World GodInterviews() {
+        return Bukkit.getWorld("GodInterviews");
+    }
+
+    public static World eviltowers() {
+        return Bukkit.getWorld("eviltowers");
+    }
 
     public static World WORLD() {
         return Feb2023();

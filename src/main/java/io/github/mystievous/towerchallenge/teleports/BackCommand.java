@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.teleports;
 
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.Palette;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;

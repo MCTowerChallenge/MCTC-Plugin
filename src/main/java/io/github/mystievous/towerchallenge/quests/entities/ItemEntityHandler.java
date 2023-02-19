@@ -1,9 +1,9 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -57,6 +57,10 @@ public class ItemEntityHandler implements Listener {
         this.soundKey = soundKey;
     }
 
+    protected TeamManager getTeamManager() {
+        return teamManager;
+    }
+
     public @NotNull ArmorStand summonArmorStand(@NotNull Location location) {
         World world = location.getWorld();
         ArmorStand armorStand = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND, false);
@@ -78,6 +82,10 @@ public class ItemEntityHandler implements Listener {
         return NBTUtils.setTeam(itemStack, team);
     }
 
+    public String getTag() {
+        return tag;
+    }
+
     @EventHandler
     public void onCraft(CraftItemEvent event) {
         if (event.isCancelled())
@@ -93,48 +101,57 @@ public class ItemEntityHandler implements Listener {
         }
     }
 
+    public boolean hasCollected(TowerTeam team, String check) throws SQLException {
+        return teamManager.getDatabase().isItemCollected(team, tag, check);
+    }
+
+    public void setItemCollected(TowerTeam team, String check) throws SQLException {
+        teamManager.getDatabase().setItemCollected(team, tag, check, true);
+    }
+
     @EventHandler
     public void onPlayerInteractEntity(final PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        TowerTeam team = teamManager.getPlayerTeam(player);
-        if (team == null) {
-            player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
-            return;
-        }
 
         if (entity instanceof LivingEntity livingEntity && livingEntity.getScoreboardTags().contains(tag)) {
-            if (requiredQuest != null) {
-                if (team.getCurrentQuestId().equals(requiredQuest)) {
-                    player.sendActionBar(CommandUtils.errorMessage("You do not have the quest for this item!"));
+            Bukkit.getScheduler().runTaskAsynchronously(teamManager.getPlugin(), () -> {
+                TowerTeam team = teamManager.getPlayerTeam(player);
+                if (team == null) {
+                    player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
                     return;
                 }
-            }
-            try {
-                boolean hasCollected = teamManager.getDatabase().isItemCollected(team, tag, livingEntity.getUniqueId());
-                if (hasCollected) {
+                if (requiredQuest != null) {
+                    if (team.getCurrentQuestId().equals(requiredQuest)) {
+                        player.sendActionBar(CommandUtils.errorMessage("You do not have the quest for this item!"));
+                        return;
+                    }
+                }
+                try {
+                    if (hasCollected(team, livingEntity.getUniqueId().toString())) {
+                        player.spawnParticle(Particle.CRIT, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225, 0);
+                        player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.snare"), Sound.Source.MASTER, 100, 0));
+                        player.sendActionBar(CommandUtils.errorMessage("You've already collected that item!"));
+                        return;
+                    }
+                    HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(getItem(team));
+                    if (!leftoverItems.isEmpty()) {
+                        player.sendMessage(CommandUtils.errorMessage("You do not have enough inventory space to pick that up."));
+                    } else {
+                        if (eventHandler != null) {
+                            eventHandler.accept(player);
+                        }
+                        player.spawnParticle(Particle.COMPOSTER, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225);
+                        player.playSound(Sound.sound(soundKey, Sound.Source.MASTER, 100, 1));
+                        setItemCollected(team, livingEntity.getUniqueId().toString());
+                    }
+                } catch (SQLException e) {
                     player.spawnParticle(Particle.CRIT, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225, 0);
                     player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.snare"), Sound.Source.MASTER, 100, 0));
-                    player.sendActionBar(CommandUtils.errorMessage("You've already collected that item!"));
-                    return;
+                    player.sendActionBar(CommandUtils.errorMessage("There was an error using the database!"));
+                    Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
                 }
-                HashMap<Integer, ItemStack> leftoverItems = player.getInventory().addItem(getItem(team));
-                if (!leftoverItems.isEmpty()) {
-                    player.sendMessage(CommandUtils.errorMessage("You do not have enough inventory space to pick that up."));
-                } else {
-                    if (eventHandler != null) {
-                        eventHandler.accept(player);
-                    }
-                    player.spawnParticle(Particle.COMPOSTER, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225);
-                    player.playSound(Sound.sound(soundKey, Sound.Source.MASTER, 100, 1));
-                    teamManager.getDatabase().setItemCollected(team, tag, livingEntity.getUniqueId(), true);
-                }
-            } catch (SQLException e) {
-                player.spawnParticle(Particle.CRIT, livingEntity.getEyeLocation(), 10, 0.225, 0.225, 0.225, 0);
-                player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.snare"), Sound.Source.MASTER, 100, 0));
-                player.sendActionBar(CommandUtils.errorMessage("There was an error using the database!"));
-                Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
-            }
+            });
         }
     }
 

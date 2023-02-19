@@ -1,7 +1,8 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.utility.Color;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,8 +13,8 @@ public class GodMountNPC extends NPC {
 
     private final TeamManager teamManager;
 
-    public GodMountNPC(TeamManager teamManager, String tag) {
-        super(teamManager, tag);
+    public GodMountNPC(TeamManager teamManager, String name, String tag, Color nameColor, Color textColor) {
+        super(teamManager, name, tag, nameColor, textColor);
         this.teamManager = teamManager;
     }
 

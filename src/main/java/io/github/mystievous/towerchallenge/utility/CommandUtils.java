@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.misc;
+package io.github.mystievous.towerchallenge.utility;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -9,7 +9,7 @@ public class CommandUtils {
     public static final Component PLAYER_DOES_NOT_EXIST = Component.text("That player does not exist!").color(NamedTextColor.DARK_RED);
 
     public static Component errorMessage(Component text) {
-        return text.color(NamedTextColor.DARK_RED);
+        return text.color(Palette.NEGATIVE_COLOR.toTextColor());
     }
 
     public static Component errorMessage(String text) {

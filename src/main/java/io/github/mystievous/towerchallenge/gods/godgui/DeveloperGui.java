@@ -1,12 +1,14 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.*;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.TextFormatter;
 import io.github.mystievous.towerchallenge.utility.DefaultFontInfo;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
@@ -30,7 +32,7 @@ import java.util.List;
 
 public class DeveloperGui extends PresetGui {
 
-    public DeveloperGui(TowerChallenge plugin, TeamManager teamManager) {
+    public DeveloperGui(TowerChallenge plugin, TeamManager teamManager, EvilTowerManager evilTowerManager) {
         super(Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);
@@ -57,13 +59,13 @@ public class DeveloperGui extends PresetGui {
                 (player, participantTeam) -> new PlayerGui(Component.text("Pick player to add:"),
                         offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
                         (playerClicking, playerSelected) -> {
-                            if (teamManager.setPlayerTeam(player, participantTeam)) {
+                            if (teamManager.setPlayerTeam(playerSelected, participantTeam)) {
                                 assert playerSelected.getName() != null;
                                 playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
                                 Bukkit.getScheduler().runTaskAsynchronously(plugin, teamManager::loadPlayers);
                             } else {
                                 playerClicking.sendMessage(CommandUtils.errorMessage(Component.text("Could not set ")
-                                        .append(Component.text(player.getName())).append(Component.text(" to team "))
+                                        .append(Component.text(playerSelected.getName())).append(Component.text(" to team "))
                                         .append(participantTeam.getDisplayName())));
                             }
                             this.openInventory(playerClicking);
@@ -137,7 +139,7 @@ public class DeveloperGui extends PresetGui {
             ListGui modelGui = new ListGui(Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.empty());
             ItemStack modelItem = formatItem("Models", Material.RED_MUSHROOM, 1);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
-            placeElement(9, 1, modelElement);
+            placeElement(1, 9, modelElement);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Models have failed: " + e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -152,6 +154,14 @@ public class DeveloperGui extends PresetGui {
 
         TextComponent.Builder text = Component.text();
 
+        placeElement(1, 1, testElement);
+        placeElement(1, 2, addPlayerElement);
+        placeElement(1, 3, new ButtonElement(new ItemStack(Material.OBSIDIAN) {{
+            ItemMeta meta = getItemMeta();
+            meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
+            setItemMeta(meta);
+        }}, player -> evilTowerManager.getGui(player).openInventory(player)));
+
         try {
             text.append(Component.text(title));
             text.append(TextUtil.space(-DefaultFontInfo.getPixelLength(title)));
@@ -163,18 +173,16 @@ public class DeveloperGui extends PresetGui {
 
             // -15 -175
             PresetGui testQuest = new PresetGui(text.build(), -15, '\uE003', -175, 6);
-            Element questOpen = new ButtonElement(NBTUtils.setUniqueID(teamManager.getDatabase().getModel(10, false).getItem(), null), testQuest::openInventory);
-            placeElement(4, 1, questOpen);
+            Element questOpen = new ButtonElement(NBTUtils.setUniqueID(teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
+            placeElement(1, 4, questOpen);
         } catch (SQLException ignored) {}
 
-        placeElement(1, 1, testElement);
-        placeElement(2, 1, addPlayerElement);
+        placeElement(1, 6, openPortalElement);
+        placeElement(1, 7, closePortalElement);
+        placeElement(1, 8, hatElement);
 
-
-
-        placeElement(6, 1, openPortalElement);
-        placeElement(7, 1, closePortalElement);
-        placeElement(8, 1, hatElement);
+        placeElement(2, 1, new ButtonElement(new ItemStack(Material.STONE), player -> ValentinesUtil.closeTowerArea()));
+        placeElement(2, 2, new ButtonElement(new ItemStack(Material.CRACKED_STONE_BRICKS), player -> ValentinesUtil.openTowerArea()));
 
 //        placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> {
 //            challengeManager.getGodManager().getGodGui().openInventory(player);

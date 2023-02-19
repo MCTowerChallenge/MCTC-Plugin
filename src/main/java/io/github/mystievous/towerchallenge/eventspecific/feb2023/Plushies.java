@@ -1,10 +1,10 @@
-package io.github.mystievous.towerchallenge.eventspecific.valentines;
+package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 
 import io.github.mystievous.towerchallenge.Database;
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.utility.Palette;
@@ -20,13 +20,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.*;
 
+import io.github.mystievous.towerchallenge.utility.Color;
 public class Plushies extends NPC {
 
     public static final String TAG = "plushy-pile";
@@ -39,7 +39,7 @@ public class Plushies extends NPC {
     private Set<UUID> players;
 
     public Plushies(TowerChallenge plugin, TeamManager teamManager, Database database) {
-        super(teamManager, TAG);
+        super(teamManager, "plushie", TAG, new Color(0), new Color(0));
         this.database = database;
         this.players = new HashSet<>();
         setDefaultHandler(playerInteractAtEntityEvent -> {
@@ -85,7 +85,7 @@ public class Plushies extends NPC {
                 randoms.add(id);
             }
         }
-        ItemStack item = database.getModel(randoms.get(RANDOM.nextInt(randoms.size())), false).getItem();
+        ItemStack item = database.getModel(randoms.get(RANDOM.nextInt(randoms.size())), true, false).getItem();
         item = NBTUtils.setUniqueID(item, null);
         item = NBTUtils.setBool(ITEM_TAG, item);
         return item;

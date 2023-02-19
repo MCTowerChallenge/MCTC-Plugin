@@ -3,6 +3,7 @@ package io.github.mystievous.towerchallenge.towering;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -67,8 +67,8 @@ public class TowerListener implements Listener {
         }
     }
 
-    private final Location overworldPortalLocation = new Location(Worlds.Feb2023(), 97.5, 66, -2114.5);
-    private final Location netherPortalLocation = new Location(Worlds.Feb2023_nether(), -23.5, 41, -388.5);
+    private final Location overworldPortalLocation = new Location(Worlds.Feb2023(), 97.5, 66, -2114.5, -90, 0);
+    private final Location netherPortalLocation = new Location(Worlds.Feb2023_nether(), -23.5, 41, -388.5, 90, 0);
 
 //    @EventHandler
 //    public void onChangeWorld(final PlayerChangedWorldEvent event) {

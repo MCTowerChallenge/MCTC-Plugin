@@ -1,12 +1,11 @@
 package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.TeamManager;
-import io.github.mystievous.towerchallenge.eventspecific.valentines.FerrisWheel;
-import io.github.mystievous.towerchallenge.gui.page.PresetGui;
-import io.github.mystievous.towerchallenge.gui.page.QuestGui;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.TextFormatter;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
+import io.github.mystievous.towerchallenge.quests.QuestGui;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
 import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.text.Component;
@@ -22,8 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Map;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -44,6 +44,17 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
+                    case ("deserialize") -> {
+                        if (sender instanceof Player player) {
+                            ItemStack item = player.getInventory().getItemInMainHand();
+                            byte[] bytes = item.serializeAsBytes();
+                            String output = Base64.getEncoder().encodeToString(bytes);
+                            player.sendMessage(output);
+                            Bukkit.getServer().getLogger().info("Map: " + output);
+                        } else {
+                            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+                        }
+                    }
                     case ("text") -> {
                         if (sender instanceof Player player) {
                             String[] words = Arrays.copyOfRange(args, 1, args.length);

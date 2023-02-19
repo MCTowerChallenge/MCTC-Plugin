@@ -1,11 +1,19 @@
 package io.github.mystievous.towerchallenge.gods;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.quests.Quest;
+import io.github.mystievous.towerchallenge.quests.QuestChangeEvent;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.Color;
+import io.github.mystievous.towerchallenge.utility.TextUtil;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,4 +36,29 @@ public class GodTeam extends TowerTeam {
         return item;
     }
 
+    @EventHandler
+    public void onQuestChange(final QuestChangeEvent event) {
+        if (event.isCancelled())
+            return;
+
+        TowerTeam team = event.getTeam();
+        Quest quest = event.getQuest();
+        Quest prevQuest = event.getPrevQuest();
+        if (prevQuest != null) {
+            if (quest == null) {
+                sendMessage(team.getDisplayName()
+                        .append(Component.text(" has no more quests! ").color(NamedTextColor.WHITE)));
+            } else {
+                sendMessage(team.getDisplayName()
+                        .append(Component.text(" has completed a quest! ").color(NamedTextColor.WHITE))
+                        .append(TextUtil.formatText(String.format("%s -> %s", prevQuest.getFriendlyName(), quest.getFriendlyName()))));
+            }
+
+        }
+    }
+
+    @Override
+    public void unregisterEvents() {
+        QuestChangeEvent.getHandlerList().unregister(this);
+    }
 }

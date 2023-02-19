@@ -1,22 +1,18 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.gui.page.Gui;
 import io.github.mystievous.towerchallenge.gui.page.Openable;
 import io.github.mystievous.towerchallenge.gui.page.PresetGui;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +28,7 @@ public class Quest implements Openable {
     private final String friendlyName;
     private final List<QuestRequirement> requirements;
     private final List<QuestReward> rewards;
-    private @Nullable List<Component> description;
+    private @Nullable String description;
 
     private Quest next;
 
@@ -63,6 +59,10 @@ public class Quest implements Openable {
         return id;
     }
 
+    public String getFriendlyName() {
+        return friendlyName;
+    }
+
     public Quest getNext() {
         return next;
     }
@@ -79,7 +79,7 @@ public class Quest implements Openable {
         return rewards;
     }
 
-    public void setDescription(@Nullable List<Component> description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -106,45 +106,32 @@ public class Quest implements Openable {
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
         }
-        PresetGui gui = new PresetGui(Component.text(friendlyName).color(NamedTextColor.BLACK), -8, '\uE002', -170, 6);
-        if (description != null) {
-            ItemStack descItem = new ItemStack(Material.PAPER);
-            ItemMeta descMeta = descItem.getItemMeta();
-            if (description.size() > 0) {
-                Component title = description.get(0);
-                descMeta.displayName(title);
-            } else {
-                descMeta.displayName(Component.empty());
-            }
-            descMeta.lore(description.subList(1, description.size()));
-            descItem.setItemMeta(descMeta);
-            Element element = new Element(descItem);
-            gui.placeElement(1, 1, element);
-        }
 
-        gui.placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> Bukkit.getScheduler().scheduleSyncDelayedTask(team.getPlugin(), player::closeInventory, 1)));
+        QuestGui gui = new QuestGui(friendlyName, description);
 
-        for (int i = 0; i < requirements.size(); i++) {
-            QuestRequirement requirement = requirements.get(i);
-            Element element = requirement.getRepresentation();
-            if (i < 7) {
-                gui.placeElement(i + 2, 2, element);
-            } else if (i < 14) {
-                gui.placeElement(i - 7 + 2, 3, element);
-            } else {
-                TowerChallenge.log("Quest has too many requirements");
-            }
-        }
+//        gui.placeElement(1, 9, new ButtonElement(ButtonElement.exitItem(), player -> Bukkit.getScheduler().scheduleSyncDelayedTask(team.getPlugin(), player::closeInventory, 1)));
 
-        for (int i = 0; i < rewards.size(); i++) {
-            QuestReward reward = rewards.get(i);
-            Element element = reward.getRepresentation();
-            if (i < 7) {
-                gui.placeElement(i + 2, 5, element);
-            } else {
-                TowerChallenge.log("Quest has too many rewards");
-            }
-        }
+//        for (int i = 0; i < requirements.size(); i++) {
+//            QuestRequirement requirement = requirements.get(i);
+//            Element element = requirement.getRepresentation();
+//            if (i < 7) {
+//                gui.placeElement(2, i + 2, element);
+//            } else if (i < 14) {
+//                gui.placeElement(3, i - 7 + 2, element);
+//            } else {
+//                TowerChallenge.log("Quest has too many requirements");
+//            }
+//        }
+
+//        for (int i = 0; i < rewards.size(); i++) {
+//            QuestReward reward = rewards.get(i);
+//            Element element = reward.getRepresentation();
+//            if (i < 7) {
+//                gui.placeElement(5, i + 2, element);
+//            } else {
+//                TowerChallenge.log("Quest has too many rewards");
+//            }
+//        }
 
         return gui;
     }

@@ -1,18 +1,33 @@
 package io.github.mystievous.towerchallenge.utility;
 
 import de.tr7zw.nbtapi.NBTItem;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class NBTUtils {
+public class NBTUtils implements Listener {
 
     public static final String TEAM = "item_team";
     public static final String UNIQUE_ID = "unique_id";
     public static final String NO_STACK = "no_stack";
+
+    public static String toTeamTag(TowerTeam team, String tag) {
+        return String.format("%s-%s", team.getServerTeamName(), tag);
+    }
 
     public static ItemStack noStack(ItemStack itemStack) {
         if (itemStack == null || itemStack.getType().isAir())
@@ -129,6 +144,57 @@ public class NBTUtils {
         }
         NBTItem nbtItem = new NBTItem(itemStack);
         return nbtItem.getString(TEAM).equals(team.getTextName());
+    }
+
+    public static final String NO_USE_TAG = "no-use";
+
+    public static ItemStack setNoUse(ItemStack itemStack) {
+        return setBool(NO_USE_TAG, itemStack);
+    }
+
+    public static boolean isNoUse(ItemStack itemStack) {
+        return boolState(NO_USE_TAG, itemStack);
+    }
+
+    public NBTUtils(TowerChallenge plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler
+    public void onCraft(final CraftItemEvent event) {
+        if (event.isCancelled())
+            return;
+        CraftingInventory inventory = event.getInventory();
+        for (ItemStack item : inventory.getMatrix()) {
+//            event.getWhoClicked().sendMessage("Craft");
+            if (isNoUse(item)) {
+                event.getWhoClicked().sendMessage(Component.text("You can't craft with that!"));
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerShoot(final EntityShootBowEvent event) {
+        ItemStack item = event.getConsumable();
+        if (isNoUse(item)) {
+            event.getEntity().sendMessage(TextUtil.formatText("The arrow falls out of your bow as you try to shoot.").decoration(TextDecoration.ITALIC, true));
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCrossbowLoad(final EntityLoadCrossbowEvent event) {
+        if (event.getEntity() instanceof InventoryHolder inventoryHolder) {
+            for (ItemStack itemStack : inventoryHolder.getInventory().getContents()) {
+                if (isNoUse(itemStack)) {
+                    event.getEntity().sendMessage(TextUtil.formatText("The arrow falls out of your crossbow as you try to load it.").decoration(TextDecoration.ITALIC, true));
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
     }
 
 }

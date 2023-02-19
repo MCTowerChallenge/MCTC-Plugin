@@ -1,56 +1,71 @@
-package io.github.mystievous.towerchallenge.towering.regions;
+package io.github.mystievous.towerchallenge.teams.regions;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.RegionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.Collection;
 
-public class EventRegion {
+public abstract class EventRegion implements Listener {
 
-    private final ParticipantTeam team;
-    private final ProtectedRegion region;
+    protected final TowerChallenge plugin;
+    private final TowerTeam team;
+    private ProtectedRegion region;
+    private Location[] area;
 
-    public EventRegion(ParticipantTeam team, ProtectedRegion region) {
+    public EventRegion(TowerChallenge plugin, Location[] area, TowerTeam team) {
+        this.plugin = plugin;
         this.team = team;
-        this.region = region;
+        this.area = area;
+        loadRegion();
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public ParticipantTeam getTeam() {
+    public abstract void unregisterEvents();
+
+    public abstract String getRegionName();
+
+    public abstract String parentRegionName();
+
+    protected abstract void setFlags(ProtectedRegion region);
+
+    public void loadRegion() {
+
+        String name = getRegionName();
+
+        region = RegionUtils.upsertRegion(name, area[0], area[1], parentRegionName());
+
+        setFlags(region);
+
+    }
+
+    public TowerTeam getTeam() {
         return team;
     }
 
-    public BlockVector3 getCenter() {
-        return region.getMaximumPoint().subtract(region.getMinimumPoint()).divide(2).add(region.getMinimumPoint());
-    }
-
-    public void setSpawnCenter(double y) {
-        BlockVector3 center = getCenter();
-        com.sk89q.worldedit.util.Location location = BukkitAdapter.adapt(new org.bukkit.Location(ParticipantTeam.getSpawnWorld(), center.getX()+1, y, center.getZ()+1));
-        region.setFlag(Flags.SPAWN_LOC, location);
-    }
-
-    public void setTeleportCenter(double y) {
-        BlockVector3 center = getCenter();
-        com.sk89q.worldedit.util.Location location = BukkitAdapter.adapt(new org.bukkit.Location(ParticipantTeam.getSpawnWorld(), center.getX()+1, y, center.getZ()+1));
-        region.setFlag(Flags.TELE_LOC, location);
+    public ProtectedRegion getRegion() {
+        return region;
     }
 
     public String getId() {
         return region.getId();
     }
+
     public boolean isMember(Player player) {
         return region.isMember(WorldGuardPlugin.inst().wrapPlayer(player));
     }
+
     public void addPlayer(OfflinePlayer player) {
         region.getMembers().addPlayer(player.getUniqueId());
     }
@@ -68,9 +83,11 @@ public class EventRegion {
     public boolean checkInRegion(Location location) {
         return region.contains(BukkitAdapter.adapt(location).toVector().toBlockPoint());
     }
+
     public boolean checkInRegion(BlockState block) {
         return checkInRegion(block.getLocation());
     }
+
     public boolean checkInRegion(Entity entity) {
         return checkInRegion(entity.getLocation());
     }

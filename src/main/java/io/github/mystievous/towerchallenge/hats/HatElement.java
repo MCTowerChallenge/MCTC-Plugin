@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.hats;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
-import io.github.mystievous.towerchallenge.misc.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.Color;
 import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import io.github.mystievous.towerchallenge.utility.TextUtil;

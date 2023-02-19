@@ -1,8 +1,9 @@
 package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.towering.ParticipantTeam;
-import io.github.mystievous.towerchallenge.towering.TowerTeam;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -19,7 +20,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.util.Vector;
 
 public class EndPortal implements Listener {
 
