@@ -20,12 +20,14 @@ public class GuiHeldItem implements Listener {
 
     public static final String GUI_ID = "gui_id";
 
+    private final TowerChallenge plugin;
+    private final String guiId;
     private final ItemStack item;
     private final Openable openable;
-    private final String guiId;
     private String permission;
 
-    public GuiHeldItem(String guiId, ItemStack item, Openable openable) {
+    public GuiHeldItem(TowerChallenge plugin, String guiId, ItemStack item, Openable openable) {
+        this.plugin = plugin;
         this.guiId = guiId;
         this.item = NBTUtils.noStack(NBTUtils.setString(GUI_ID, item, this.guiId));
         this.openable = openable;
@@ -60,7 +62,7 @@ public class GuiHeldItem implements Listener {
      * @return true, if the item has the proper tag for the gui
      */
     public boolean matchItem(ItemStack item) {
-        return NBTUtils.getString(GUI_ID, item).equals(guiId);
+        return guiId.equals(NBTUtils.getString(GUI_ID, item));
     }
 
     public void openInventory(Player player) {
@@ -93,9 +95,11 @@ public class GuiHeldItem implements Listener {
                 || event.getAction() == Action.LEFT_CLICK_BLOCK
                 || item == null)
             return;
-        if (matchItem(item) && (permission == null || player.hasPermission(permission))) {
-            openable.getGui(player).openInventory(player);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (matchItem(item) && (permission == null || player.hasPermission(permission))) {
+                openable.getGui(player).openInventory(player);
+            }
+        });
     }
 
 }
