@@ -7,7 +7,6 @@ depend:
   - WorldGuard
   - WorldEdit
   - NBTAPI
-  - GSit
   - Multiverse-Core
   - Multiverse-Portals
   - ProtocolLib
