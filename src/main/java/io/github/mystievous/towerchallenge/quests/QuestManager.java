@@ -116,7 +116,7 @@ public class QuestManager implements Openable {
                 Component.text("to open the quest menu!")
         ));
         book.setItemMeta(bookMeta);
-        questBook = new GuiHeldItem(GUI_ID, book, this);
+        questBook = new GuiHeldItem(plugin, GUI_ID, book, this);
 
         // Declare Quests
 

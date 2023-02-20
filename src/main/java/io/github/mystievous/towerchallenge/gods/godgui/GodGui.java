@@ -72,7 +72,7 @@ public class GodGui extends PresetGui implements Openable {
         }});
         bookMeta.setCustomModelData(1);
         book.setItemMeta(bookMeta);
-        guiBook = new GuiHeldItem(GUI_ID, book, this);
+        guiBook = new GuiHeldItem(plugin, GUI_ID, book, this);
         guiBook.setPermission("towerchallenge.godgui");
 
 
