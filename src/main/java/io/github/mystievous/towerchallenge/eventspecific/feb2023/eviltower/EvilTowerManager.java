@@ -1,6 +1,12 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower;
 
 import com.onarandombox.MultiversePortals.event.MVPortalEvent;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.mystigui.page.Openable;
+import io.github.mystievous.mystigui.page.PresetGui;
+import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.quests.Dialogue;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
 import io.github.mystievous.towerchallenge.quests.entities.OneTimeItemEntityHandler;
@@ -8,14 +14,9 @@ import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.page.Gui;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
-import io.github.mystievous.towerchallenge.gui.page.Openable;
-import io.github.mystievous.towerchallenge.gui.page.PresetGui;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -64,6 +65,7 @@ public class EvilTowerManager implements Listener, Openable {
         put(14, new Location(Worlds.eviltowers(), -1799, 98, -9));
     }};
 
+    private final TowerChallenge plugin;
     private final Map<Integer, EvilTower> evilTowers;
     private final QuestManager questManager;
     private final TeamManager teamManager;
@@ -72,6 +74,7 @@ public class EvilTowerManager implements Listener, Openable {
     private final Dialogue enterTower;
 
     public EvilTowerManager(TowerChallenge plugin, TeamManager teamManager, QuestManager questManager) {
+        this.plugin = plugin;
         this.teamManager = teamManager;
         this.questManager = questManager;
 
@@ -98,15 +101,15 @@ public class EvilTowerManager implements Listener, Openable {
             evilTowers.put(entry.getKey(), new EvilTower(plugin, questManager, teamManager, entry.getValue().clone().subtract(baseLocation).toVector(), entry.getKey()));
         }
 
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[0], null, ValentinesUtil.oceanKeyFragments[0]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[1], null, ValentinesUtil.oceanKeyFragments[1]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[2], null, ValentinesUtil.oceanKeyFragments[2]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[3], null, ValentinesUtil.oceanKeyFragments[3]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[4], null, ValentinesUtil.oceanKeyFragments[4]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[5], null, ValentinesUtil.oceanKeyFragments[5]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[6], null, ValentinesUtil.oceanKeyFragments[6]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[7], null, ValentinesUtil.oceanKeyFragments[7]);
-        new OneTimeItemEntityHandler(teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[8], null, ValentinesUtil.oceanKeyFragments[8]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[0], null, ValentinesUtil.oceanKeyFragments[0]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[1], null, ValentinesUtil.oceanKeyFragments[1]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[2], null, ValentinesUtil.oceanKeyFragments[2]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[3], null, ValentinesUtil.oceanKeyFragments[3]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[4], null, ValentinesUtil.oceanKeyFragments[4]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[5], null, ValentinesUtil.oceanKeyFragments[5]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[6], null, ValentinesUtil.oceanKeyFragments[6]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[7], null, ValentinesUtil.oceanKeyFragments[7]);
+        new OneTimeItemEntityHandler(plugin, teamManager, ValentinesUtil.OCEAN_TAG, ValentinesUtil.oceanKeyFragmentTags[8], null, ValentinesUtil.oceanKeyFragments[8]);
 
         loadGui();
 
@@ -115,10 +118,10 @@ public class EvilTowerManager implements Listener, Openable {
     }
 
     public void loadGui() {
-        gui = new PresetGui(Component.text("Evil Tower Management"), 3);
+        gui = new PresetGui(plugin, Component.text("Evil Tower Management"), 3);
 
         try {
-            ListGui questItems = new ListGui(Component.text("Quest Items: "), new ButtonElement(ButtonElement.backItem(), gui::openInventory));
+            ListGui questItems = new ListGui(plugin, Component.text("Quest Items: "), new ButtonElement(Icons.backItem(), gui::openInventory));
 
             questItems.addElement(new ButtonElement(ValentinesUtil.galleryKey, player -> player.getInventory().addItem(ValentinesUtil.galleryKey)));
             questItems.addElement(new ButtonElement(ValentinesUtil.mazeKey, player -> player.getInventory().addItem(ValentinesUtil.mazeKey)));

@@ -1,11 +1,12 @@
 package io.github.mystievous.towerchallenge.hats;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.towerchallenge.Database;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
-import io.github.mystievous.towerchallenge.utility.Color;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -19,9 +20,11 @@ import java.sql.SQLException;
 
 public class HatCommands implements CommandExecutor {
 
+    private final TowerChallenge plugin;
     private final Database database;
 
-    public HatCommands(Database database) {
+    public HatCommands(TowerChallenge plugin, Database database) {
+        this.plugin = plugin;
         this.database = database;
     }
 
@@ -71,7 +74,7 @@ public class HatCommands implements CommandExecutor {
             }
         }
         try {
-            ListGui hatGui = new ListGui(Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.empty());
+            ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.blank());
             hatGui.openInventory(player);
         } catch (SQLException e) {
 //            e.printStackTrace();

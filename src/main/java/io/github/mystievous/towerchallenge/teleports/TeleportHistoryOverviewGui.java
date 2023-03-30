@@ -1,8 +1,10 @@
 package io.github.mystievous.towerchallenge.teleports;
 
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.page.Gui;
-import io.github.mystievous.towerchallenge.gui.page.PlayerGui;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.PlayerGui;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.gui.Icons;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -15,8 +17,8 @@ public class TeleportHistoryOverviewGui extends PlayerGui {
 
     public static final String TITLE = "Teleport Histories:";
 
-    public TeleportHistoryOverviewGui(TeleportHistoryManager historyManager, Gui exitGui) {
-        super(Component.text(TITLE),
+    public TeleportHistoryOverviewGui(TowerChallenge plugin, TeleportHistoryManager historyManager, Gui exitGui) {
+        super(plugin, Component.text(TITLE),
                 player -> new ArrayList<>(){{
                     add(Component.text(historyManager.get(player).size())
                             .append(Component.text(" teleports"))
@@ -25,8 +27,8 @@ public class TeleportHistoryOverviewGui extends PlayerGui {
                     );
                 }},
                 historyManager.getTeleports().keySet().stream().map(Bukkit::getPlayer).collect(Collectors.toList()),
-                (player, player2) -> (new TeleportHistoryIndividualGui(historyManager, player2, historyManager.getGui(player))).getGui(player).openInventory(player),
-                new ButtonElement(ButtonElement.backItem(), exitGui::openInventory));
+                (player, player2) -> (new TeleportHistoryIndividualGui(plugin, historyManager, player2, historyManager.getGui(player))).getGui(player).openInventory(player),
+                new ButtonElement(Icons.backItem(), exitGui::openInventory));
     }
 
 }

@@ -1,18 +1,24 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
+import io.github.mystievous.mysticore.DefaultFontInfo;
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mystigui.GuiUtil;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ConfirmationGUI;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.mystigui.page.PlayerGui;
+import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
+import io.github.mystievous.towerchallenge.gui.Icons;
+import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.*;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.TextFormatter;
-import io.github.mystievous.towerchallenge.utility.DefaultFontInfo;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Axis;
@@ -33,7 +39,7 @@ import java.util.List;
 public class DeveloperGui extends PresetGui {
 
     public DeveloperGui(TowerChallenge plugin, TeamManager teamManager, EvilTowerManager evilTowerManager) {
-        super(Component.text("Developer Menu"), 6);
+        super(plugin, Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);
         ItemMeta listTestMeta = listTest.getItemMeta();
@@ -44,7 +50,7 @@ public class DeveloperGui extends PresetGui {
             Element randomElement = new Element(new ItemStack(Material.PAPER));
             testElements.add(randomElement);
         }
-        ListGui testGui = new ListGui(Component.text("Test Gui"), testElements, new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+        ListGui testGui = new ListGui(plugin, Component.text("Test Gui"), testElements, new ButtonElement(Icons.exitItem(), this::openInventory));
         Element testElement = new ButtonElement(listTest, testGui::openInventory);
 
         ItemStack addPlayerItem = new ItemStack(Material.PAPER);
@@ -53,10 +59,11 @@ public class DeveloperGui extends PresetGui {
         addPlayerMeta.setCustomModelData(3);
         addPlayerItem.setItemMeta(addPlayerMeta);
         TeamGui addPlayerGui = new TeamGui(
+                plugin,
                 Component.text("Team to add Player to:"),
                 team -> new ArrayList<>(),
                 teamManager.getAllTeams(),
-                (player, participantTeam) -> new PlayerGui(Component.text("Pick player to add:"),
+                (player, participantTeam) -> new PlayerGui(plugin, Component.text("Pick player to add:"),
                         offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
                         (playerClicking, playerSelected) -> {
                             if (teamManager.setPlayerTeam(playerSelected, participantTeam)) {
@@ -70,8 +77,8 @@ public class DeveloperGui extends PresetGui {
                             }
                             this.openInventory(playerClicking);
                         },
-                        new ButtonElement(ButtonElement.exitItem(), this::openInventory)).openInventory(player),
-                new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                        new ButtonElement(Icons.exitItem(), this::openInventory)).openInventory(player),
+                new ButtonElement(Icons.exitItem(), this::openInventory));
         ButtonElement addPlayerElement = new ButtonElement(addPlayerItem, addPlayerGui::openInventory);
 
         /*
@@ -87,7 +94,7 @@ public class DeveloperGui extends PresetGui {
                 {new Vector(97, 73, -2115), new Vector(97, 74, -2115)},
         };
 
-        ItemStack closePortalItem = formatItem("Close Nether Portal", Material.CRYING_OBSIDIAN, null);
+        ItemStack closePortalItem = GuiUtil.formatItem("Close Nether Portal", Material.CRYING_OBSIDIAN, null);
         Element closePortalElement = new ButtonElement(closePortalItem, player -> {
             for (Vector[] layer : portalBlocks) {
                 for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
@@ -102,9 +109,9 @@ public class DeveloperGui extends PresetGui {
             }
         });
 
-        ItemStack openPortalItem = formatItem("Open Nether Portal", Material.OBSIDIAN, null);
+        ItemStack openPortalItem = GuiUtil.formatItem("Open Nether Portal", Material.OBSIDIAN, null);
         Element openPortalElement = new ButtonElement(openPortalItem,
-                player -> new ConfirmationGUI(Component.text("Confirm opening portal?"),
+                player -> new ConfirmationGUI(plugin, Component.text("Confirm opening portal?"),
                         player1 -> {
                             for (Vector[] layer : portalBlocks) {
                                 for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
@@ -124,10 +131,10 @@ public class DeveloperGui extends PresetGui {
                         this::openInventory)
                         .openInventory(player));
 
-        ItemStack hatItem = formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
+        ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
         Element hatElement = new ButtonElement(hatItem, player -> {
             try {
-                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
                 hatGui.openInventory(player);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -136,8 +143,8 @@ public class DeveloperGui extends PresetGui {
         });
 
         try {
-            ListGui modelGui = new ListGui(Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.empty());
-            ItemStack modelItem = formatItem("Models", Material.RED_MUSHROOM, 1);
+            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());
+            ItemStack modelItem = GuiUtil.formatItem("Models", Material.RED_MUSHROOM, 1);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
             placeElement(1, 9, modelElement);
         } catch (SQLException e) {
@@ -172,8 +179,8 @@ public class DeveloperGui extends PresetGui {
             text.append(Component.text(TextFormatter.toLine(2, line3)));
 
             // -15 -175
-            PresetGui testQuest = new PresetGui(text.build(), -15, '\uE003', -175, 6);
-            Element questOpen = new ButtonElement(NBTUtils.setUniqueID(teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
+            PresetGui testQuest = new PresetGui(plugin, text.build(), -15, '\uE003', -175, 6);
+            Element questOpen = new ButtonElement(NBTUtils.setUniqueID(plugin, teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
             placeElement(1, 4, questOpen);
         } catch (SQLException ignored) {}
 
@@ -183,10 +190,6 @@ public class DeveloperGui extends PresetGui {
 
         placeElement(2, 1, new ButtonElement(new ItemStack(Material.STONE), player -> ValentinesUtil.closeTowerArea()));
         placeElement(2, 2, new ButtonElement(new ItemStack(Material.CRACKED_STONE_BRICKS), player -> ValentinesUtil.openTowerArea()));
-
-//        placeElement(9, 1, new ButtonElement(ButtonElement.exitItem(), player -> {
-//            challengeManager.getGodManager().getGodGui().openInventory(player);
-//        }));
 
     }
 }

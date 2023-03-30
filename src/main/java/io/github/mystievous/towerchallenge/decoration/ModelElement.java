@@ -1,10 +1,11 @@
 package io.github.mystievous.towerchallenge.decoration;
 
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class ModelElement extends ButtonElement {
 
     public ModelElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
-        super(NBTUtils.setNoUse(new ItemStack(material) {{
+        super(NBTUtils.setNoUse(TowerChallenge.getInstance(), new ItemStack(material) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(name);
             meta.setCustomModelData(customModelData);

@@ -11,7 +11,7 @@ import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,6 +22,7 @@ public class Maze implements Listener {
 
     private boolean hasBeenReset;
 
+    private final TowerChallenge plugin;
     private final TeamManager teamManager;
     private final int teamId;
     private final QuestManager questManager;
@@ -30,6 +31,7 @@ public class Maze implements Listener {
     private final Dialogue resetMaze;
 
     public Maze(TowerChallenge plugin, TeamManager teamManager, QuestManager questManager, int teamId) {
+        this.plugin = plugin;
         this.teamManager = teamManager;
         this.teamId = teamId;
         this.questManager = questManager;
@@ -54,35 +56,34 @@ public class Maze implements Listener {
     @EventHandler
     public void onPlayerPortal(MVPortalEvent event) {
 
-        MVPortal portal = event.getSendingPortal();
-        Player player = event.getTeleportee();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            MVPortal portal = event.getSendingPortal();
+            Player player = event.getTeleportee();
 
-        TowerTeam team = teamManager.getTeam(teamId);
+            TowerTeam team = teamManager.getTeam(teamId);
 
-        if (team == null)
-            return;
+            if (team == null)
+                return;
 
-        if (portal.getName().equals(NBTUtils.toTeamTag(team, TowerPortalManager.MAZE_EXIT))) {
-            if (questManager.getTeamQuest(team).equals(QuestManager.LIBRARY_MAZE)) {
-                FullInventory.givePlayerItems(player, ValentinesUtil.mazeKey, ValentinesUtil.oceanExploreMap);
-                team.setInDialogue(true);
-                questManager.setTeamQuest(team, QuestManager.PICK_TOWER_ROOM);
-                finishMaze.play(team, () -> {
-                    team.setInDialogue(false);
-                });
+            if (portal.getName().equals(TeamUtils.toTeamTag(team, TowerPortalManager.MAZE_EXIT))) {
+                if (questManager.getTeamQuest(team).equals(QuestManager.LIBRARY_MAZE)) {
+                    FullInventory.givePlayerItems(player, ValentinesUtil.mazeKey, ValentinesUtil.oceanExploreMap);
+                    team.setInDialogue(true);
+                    questManager.setTeamQuest(team, QuestManager.PICK_TOWER_ROOM);
+                    finishMaze.play(team, () -> team.setInDialogue(false));
+                }
+
             }
 
-        }
-
-        if (portal.getName().equals(NBTUtils.toTeamTag(team, TowerPortalManager.MAZE_RESET))) {
-            if (!hasBeenReset) {
-                team.setInDialogue(true);
-                resetMaze.play(team, () -> {
-                    team.setInDialogue(false);
-                });
-                hasBeenReset = true;
+            if (portal.getName().equals(TeamUtils.toTeamTag(team, TowerPortalManager.MAZE_RESET))) {
+                if (!hasBeenReset) {
+                    team.setInDialogue(true);
+                    resetMaze.play(team, () -> team.setInDialogue(false));
+                    hasBeenReset = true;
+                }
             }
-        }
+        });
+
 
     }
 

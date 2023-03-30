@@ -5,9 +5,10 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -95,8 +96,8 @@ public class WorldIndividualGui extends ListGui {
      * @param name          Name for the GUI
      * @param exitElement   Element to use for exiting the GUI
      */
-    public WorldIndividualGui(World world, RegionManager regionManager, Component name, Element exitElement) {
-        super(name, new ArrayList<>(), exitElement);
+    public WorldIndividualGui(TowerChallenge plugin, World world, RegionManager regionManager, Component name, Element exitElement) {
+        super(plugin, name, new ArrayList<>(), exitElement);
 
         for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
             String key = entry.getKey();

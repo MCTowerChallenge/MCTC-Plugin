@@ -1,9 +1,9 @@
 package io.github.mystievous.towerchallenge.teleports;
 
+import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodManager;
-import io.github.mystievous.towerchallenge.gui.page.Gui;
-import io.github.mystievous.towerchallenge.gui.page.Openable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -19,9 +19,11 @@ public class TeleportHistoryManager implements Listener, Openable {
 
     private final Map<UUID, List<TeleportLocation>> teleports;
 
+    private final TowerChallenge plugin;
     private final GodManager godManager;
 
-    public TeleportHistoryManager(GodManager godManager) {
+    public TeleportHistoryManager(TowerChallenge plugin, GodManager godManager) {
+        this.plugin = plugin;
         this.godManager = godManager;
         teleports = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
@@ -44,7 +46,7 @@ public class TeleportHistoryManager implements Listener, Openable {
 
     @Override
     public Gui getGui(Player player) {
-        return new TeleportHistoryOverviewGui(this, godManager.getGodGui().getGui(player));
+        return new TeleportHistoryOverviewGui(plugin, this, godManager.getGodGui().getGui(player));
     }
 
     private void addTeleport(Player player, TeleportLocation location) {
@@ -59,13 +61,11 @@ public class TeleportHistoryManager implements Listener, Openable {
             return;
         TeleportLocation.Reason reason;
         if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL)) {
-//            reason = TeleportLocation.Reason.PEARL;
-            return;
+            reason = TeleportLocation.Reason.PEARL;
         } else if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL) ||
                 event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_GATEWAY) ||
                 event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-//            reason = TeleportLocation.Reason.PORTAL;
-            return;
+            reason = TeleportLocation.Reason.PORTAL;
         } else {
             reason = TeleportLocation.Reason.TELEPORT;
         }
@@ -78,7 +78,7 @@ public class TeleportHistoryManager implements Listener, Openable {
         if (event.isCancelled())
             return;
         Player player = event.getPlayer();
-        addTeleport(player, new TeleportLocation(player.getLocation(), TeleportLocation.Reason.DEATH, null));
+        addTeleport(player, new TeleportLocation(player.getLocation(), TeleportLocation.Reason.DEATH, PlayerTeleportEvent.TeleportCause.UNKNOWN));
     }
 
 }

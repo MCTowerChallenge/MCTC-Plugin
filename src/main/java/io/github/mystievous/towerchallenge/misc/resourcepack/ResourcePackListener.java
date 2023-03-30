@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.misc.resourcepack;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
-import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

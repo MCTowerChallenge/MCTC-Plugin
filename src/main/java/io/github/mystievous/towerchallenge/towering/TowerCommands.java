@@ -1,13 +1,14 @@
 package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
 import io.github.mystievous.towerchallenge.quests.QuestGui;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,16 +24,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Map;
 
 public class TowerCommands implements CommandExecutor {
 
     public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
+
+    private final TowerChallenge plugin;
     private final ChallengeManager challengeManager;
     private final TeamManager teamManager;
     private final FerrisWheel ferrisWheel;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, FerrisWheel ferrisWheel) {
+    public TowerCommands(TowerChallenge plugin, ChallengeManager challengeManager, TeamManager teamManager, FerrisWheel ferrisWheel) {
+        this.plugin = plugin;
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.ferrisWheel = ferrisWheel;
@@ -62,7 +65,7 @@ public class TowerCommands implements CommandExecutor {
                             for (String word : words) {
                                 builder.append(word).append(' ');
                             }
-                            QuestGui questGui = new QuestGui("Test a Quest!", builder.toString());
+                            QuestGui questGui = new QuestGui(plugin, "Test a Quest!", builder.toString());
                             questGui.openInventory(player);
                         }
                     }

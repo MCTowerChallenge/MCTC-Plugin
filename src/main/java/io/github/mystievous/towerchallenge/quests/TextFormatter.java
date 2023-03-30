@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.utility.DefaultFontInfo;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.DefaultFontInfo;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.Nullable;
@@ -52,17 +52,6 @@ public class TextFormatter {
             return output.build();
         }
         return Component.empty();
-    }
-
-    public static Component toBookFullFormat(@Nullable String title, @Nullable String body) {
-        TextComponent.Builder textBuilder = Component.text();
-        if (title != null) {
-            textBuilder.append(Component.text(title));
-        }
-        if (body != null) {
-            textBuilder.append(toBookBodyFormat(body));
-        }
-        return textBuilder.build();
     }
 
 }

@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower;
 
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.maze.Maze;
 import io.github.mystievous.towerchallenge.quests.Dialogue;
@@ -11,9 +12,7 @@ import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.gallery.ShootingGallery;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.ocean.MermaidsGrove;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -58,6 +57,7 @@ public class EvilTower implements Listener {
     private final Location enterLocation;
     private final Location topEnterLocation;
     private final int teamId;
+    private final TowerChallenge plugin;
     private final TeamManager teamManager;
     private final QuestManager questManager;
 
@@ -70,6 +70,7 @@ public class EvilTower implements Listener {
         enterLocation = offsetLocation(baseEnterLocation);
         topEnterLocation = offsetLocation(baseTopEnterLocation);
         this.teamId = teamId;
+        this.plugin = plugin;
         this.teamManager = teamManager;
         this.questManager = questManager;
 
@@ -121,7 +122,6 @@ public class EvilTower implements Listener {
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEvent event) {
         EquipmentSlot hand = event.getHand();
-        int count = 0;
         if (hand != null && !hand.equals(EquipmentSlot.HAND))
             return;
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
@@ -173,7 +173,7 @@ public class EvilTower implements Listener {
 
     public static final String lockTag = "tower_lock";
 
-    private static ArmorStand summonArmorStand(Location location, ItemStack itemStack) {
+    private static void summonArmorStand(Location location, ItemStack itemStack) {
         ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND, false);
         armorStand.getEquipment().setHelmet(itemStack);
         armorStand.setDisabledSlots(EquipmentSlot.values());
@@ -182,7 +182,6 @@ public class EvilTower implements Listener {
         armorStand.setGravity(false);
 //        armorStand.setRotation(90, 0);
         armorStand.addScoreboardTag(lockTag);
-        return armorStand;
     }
 
     public static final String lockObjective = "lock";
@@ -205,7 +204,7 @@ public class EvilTower implements Listener {
             Player player = event.getPlayer();
             ItemStack item = player.getInventory().getItem(hand);
             TowerTeam team = teamManager.getTeam(teamId);
-            if (team != null && NBTUtils.boolState(ValentinesUtil.GALLERY_TAG, item)) {
+            if (team != null && NBTUtils.boolState(plugin, ValentinesUtil.GALLERY_TAG, item)) {
                 player.getInventory().setItem(hand, item.subtract(1));
                 summonArmorStand(offsetLocation(baseGalleryArmorStandLocation), ValentinesUtil.galleryKey);
                 entityLocation.getWorld().playSound(entityLocation, Sound.ENTITY_ITEM_FRAME_ADD_ITEM, 1f, 1f);
@@ -221,7 +220,7 @@ public class EvilTower implements Listener {
             Player player = event.getPlayer();
             ItemStack item = player.getInventory().getItem(hand);
             TowerTeam team = teamManager.getTeam(teamId);
-            if (team != null && NBTUtils.boolState(ValentinesUtil.MAZE_TAG, item)) {
+            if (team != null && NBTUtils.boolState(plugin, ValentinesUtil.MAZE_TAG, item)) {
                 player.getInventory().setItem(hand, item.subtract(1));
                 summonArmorStand(offsetLocation(baseMazeArmorStandLocation), ValentinesUtil.mazeKey);
                 entityLocation.getWorld().playSound(entityLocation, Sound.ENTITY_ITEM_FRAME_ADD_ITEM, 1f, 1f);
@@ -237,7 +236,7 @@ public class EvilTower implements Listener {
             Player player = event.getPlayer();
             ItemStack item = player.getInventory().getItem(hand);
             TowerTeam team = teamManager.getTeam(teamId);
-            if (team != null && NBTUtils.boolState(ValentinesUtil.OCEAN_TAG, item)) {
+            if (team != null && NBTUtils.boolState(plugin, ValentinesUtil.OCEAN_TAG, item)) {
                 player.getInventory().setItem(hand, item.subtract(1));
                 summonArmorStand(offsetLocation(baseOceanArmorStandLocation), ValentinesUtil.oceanKey);
                 entityLocation.getWorld().playSound(entityLocation, Sound.ENTITY_ITEM_FRAME_ADD_ITEM, 1f, 1f);

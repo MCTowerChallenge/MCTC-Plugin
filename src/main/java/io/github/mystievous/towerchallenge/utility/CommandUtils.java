@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.utility;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import io.github.mystievous.mysticore.Palette;
 
 public class CommandUtils {
 

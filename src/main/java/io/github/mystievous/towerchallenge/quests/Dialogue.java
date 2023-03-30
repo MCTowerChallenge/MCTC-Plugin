@@ -45,13 +45,12 @@ public class Dialogue {
         this.sound = dialogue.sound;
     }
 
-    public Dialogue clone() {
+    public Dialogue duplicate() {
         return new Dialogue(this);
     }
 
-    public Dialogue setNext(Dialogue next) {
+    public void setNext(Dialogue next) {
         this.next = next;
-        return this;
     }
 
     public Dialogue setSound(Sound sound) {
@@ -59,15 +58,13 @@ public class Dialogue {
         return this;
     }
 
-    public Dialogue setSoundKey(Key soundKey) {
+    public void setSoundKey(Key soundKey) {
         this.sound = Sound.sound(soundKey, Sound.Source.RECORD, 1f, 1f);
-        return this;
     }
 
-    public Dialogue setFriendlyName(String friendlyName) {
+    public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
         addDialogue(this);
-        return this;
     }
 
     public String getFriendlyName() {
@@ -94,28 +91,6 @@ public class Dialogue {
             }
         }, delay);
     }
-
-//    public void play(TowerTeam team, Runnable callback) {
-//        Audience audience = team;
-//        audience.sendMessage(message);
-//        if (soundKey != null) {
-//            audience.playSound(Sound.sound(soundKey, Sound.Source.RECORD, 1f ,1f));
-//        }
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
-//            if (next != null) {
-//                if (team.shouldStopDialogue()) {
-//                    team.setInDialogue(false);
-//                    team.setStopDialogue(false);
-//                } else {
-//                    next.play(team, callback);
-//                }
-//            } else {
-//                if (callback != null) {
-//                    callback.run();
-//                }
-//            }
-//        }, delay);
-//    }
 
     public void play(TowerTeam team) {
         play(team, null);

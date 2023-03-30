@@ -1,9 +1,10 @@
 package io.github.mystievous.towerchallenge.eventspecific.dec2022.presents;
 
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.quests.entities.ItemEntityHandler;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,28 +35,28 @@ public class PresentEntityHandler extends ItemEntityHandler {
      */
     public static final List<ItemStack> PRESENTS = new ArrayList<>() {{
         // tall
-        add(NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
+        add(NBTUtils.setBool(TowerChallenge.getInstance(), PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             ItemMeta meta = getItemMeta();
             meta.setCustomModelData(1001);
             setItemMeta(meta);
         }}));
 
         // wide
-        add(NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
+        add(NBTUtils.setBool(TowerChallenge.getInstance(), PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             ItemMeta meta = getItemMeta();
             meta.setCustomModelData(1002);
             setItemMeta(meta);
         }}));
 
         // box
-        add(NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
+        add(NBTUtils.setBool(TowerChallenge.getInstance(), PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             ItemMeta meta = getItemMeta();
             meta.setCustomModelData(1003);
             setItemMeta(meta);
         }}));
 
         // flat
-        add(NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
+        add(NBTUtils.setBool(TowerChallenge.getInstance(), PRESENT_TAG, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             ItemMeta meta = getItemMeta();
             meta.setCustomModelData(1004);
             setItemMeta(meta);
@@ -70,7 +71,7 @@ public class PresentEntityHandler extends ItemEntityHandler {
      * @return The present item
      */
     public static @NotNull ItemStack getPresentItem() {
-        ItemStack present = NBTUtils.setBool(PRESENT_TAG, new ItemStack(Material.SCUTE));
+        ItemStack present = NBTUtils.setBool(TowerChallenge.getInstance(), PRESENT_TAG, new ItemStack(Material.SCUTE));
         ItemMeta meta = present.getItemMeta();
         meta.setCustomModelData(10);
         meta.displayName(TextUtil.noItalic("Present"));
@@ -140,8 +141,8 @@ public class PresentEntityHandler extends ItemEntityHandler {
         return summonPresent(player.getLocation().add(0, -1.38, 0));
     }
 
-    public PresentEntityHandler(TeamManager teamManager) {
-        super(teamManager, PRESENT_TAG, null, getPresentItem());
+    public PresentEntityHandler(TowerChallenge plugin, TeamManager teamManager) {
+        super(plugin, teamManager, PRESENT_TAG, null, getPresentItem());
     }
 
     /**
@@ -178,7 +179,7 @@ public class PresentEntityHandler extends ItemEntityHandler {
         if (event.isCancelled())
             return;
         if (event.getView().getTopInventory() instanceof AbstractHorseInventory) {
-            if (NBTUtils.boolState(PRESENT_TAG, event.getCurrentItem())) {
+            if (NBTUtils.boolState(TowerChallenge.getInstance(), PRESENT_TAG, event.getCurrentItem())) {
                 event.setCancelled(true);
             }
         }

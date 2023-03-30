@@ -2,23 +2,21 @@ package io.github.mystievous.towerchallenge;
 
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.towerchallenge.configs.DatabaseConfig;
 import io.github.mystievous.towerchallenge.decoration.ModelElement;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
 import io.github.mystievous.towerchallenge.hats.HatElement;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
@@ -205,7 +203,7 @@ public class Database {
         }
     }
 
-    public boolean addTeamScore(ParticipantTeam team, int score) throws SQLException {
+    public void addTeamScore(ParticipantTeam team, int score) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         UPDATE teams
@@ -215,7 +213,7 @@ public class Database {
         )) {
             statement.setInt(1, score);
             statement.setInt(2, team.getDatabaseId());
-            return statement.executeUpdate() > 0;
+            statement.executeUpdate();
         }
     }
 
@@ -289,7 +287,7 @@ public class Database {
         }
     }
 
-    public boolean setPortalFrameFilled(ParticipantTeam team, boolean filled) throws SQLException {
+    public void setPortalFrameFilled(ParticipantTeam team, boolean filled) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement updateFrameStatement = conn.prepareStatement(
                 """
                         UPDATE portalframes
@@ -299,7 +297,7 @@ public class Database {
         )) {
             updateFrameStatement.setBoolean(1, filled);
             updateFrameStatement.setInt(2, team.getDatabaseId());
-            return updateFrameStatement.executeUpdate() > 0;
+            updateFrameStatement.executeUpdate();
         }
     }
 
@@ -351,38 +349,19 @@ public class Database {
         }
     }
 
-    public String getTeamQuest(TowerTeam team) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        SELECT tags.name 
-                        FROM tags
-                        WHERE tags.id = (SELECT quest_tag_id FROM teams WHERE id = ?);
-                        """
-        )) {
-            statement.setInt(1, team.getDatabaseId());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("name");
-            }
-            return null;
-        }
-    }
-
-    public boolean setTeamQuest(TowerTeam team, String tag) throws SQLException {
+    public void setTeamQuest(TowerTeam team, String tag) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         UPDATE teams
                         SET teams.quest_tag_id = (SELECT id FROM tags WHERE tags.name = ?)
-                        WHERE teams.id = ?;   
+                        WHERE teams.id = ?;
                         """
         )) {
             statement.setString(1, tag);
             statement.setInt(2, team.getDatabaseId());
             if (statement.executeUpdate() > 0) {
                 team.setCurrentQuestId(tag);
-                return true;
             }
-            return false;
         }
     }
 
@@ -443,7 +422,7 @@ public class Database {
         }
     }
 
-    public boolean setObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
+    public void setObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         INSERT INTO objectives (team_id, quest_tag_id, name, value)
@@ -455,7 +434,7 @@ public class Database {
             statement.setString(2, tag);
             statement.setString(3, name);
             statement.setInt(4, value);
-            return statement.executeUpdate() > 0;
+            statement.executeUpdate();
         }
     }
 
@@ -479,9 +458,6 @@ public class Database {
         }
     }
 
-    public boolean isItemCollected(TowerTeam team, String tag, UUID uuid) throws SQLException {
-        return isItemCollected(team, tag, uuid.toString());
-    }
     public boolean setItemCollected(TowerTeam team, String tag, String uuid, boolean collected) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
@@ -496,10 +472,6 @@ public class Database {
             statement.setBoolean(4, collected);
             return statement.executeUpdate() > 0;
         }
-    }
-
-    public boolean setItemCollected(TowerTeam team, String tag, UUID uuid, boolean collected) throws SQLException {
-        return setItemCollected(team, tag, uuid.toString(), collected);
     }
 
     public @Nullable Integer getPlayerTeamId(@NotNull UUID uuid) throws SQLException {
@@ -741,7 +713,7 @@ public class Database {
             while (groupsResultSet.next()) {
                 int id = groupsResultSet.getInt("id");
                 String name = groupsResultSet.getString("name");
-                groups.put(id, new ListGui(Component.text(name), Element.empty()));
+                groups.put(id, new ListGui(plugin, Component.text(name), Element.blank()));
             }
 
             ResultSet modelsResultSet = models.executeQuery();
@@ -788,7 +760,7 @@ public class Database {
                 int customModelData = resultSet.getInt("custom_model_data");
                 String author = null;
                 if (showAuthor) {
-                     author = resultSet.getString("author");
+                    author = resultSet.getString("author");
                 }
                 return new ModelElement(name, material, customModelData, null, author, debug);
             }
@@ -808,8 +780,7 @@ public class Database {
             statement.setInt(2, customModelData);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                return id;
+                return resultSet.getInt("id");
             }
             return null;
         }
@@ -817,6 +788,81 @@ public class Database {
 
     public @Nullable Integer getModelId(ItemStack itemStack) throws SQLException {
         return getModelId(itemStack.getType(), itemStack.getItemMeta().getCustomModelData());
+    }
+
+    public Integer getWorldId(String name) throws SQLException, WorldNotStoredException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT worlds.id FROM worlds
+                        WHERE worlds.name = ?;
+                        """
+        )) {
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("id");
+            }
+            throw new WorldNotStoredException("This world is not stored in the database.");
+        }
+    }
+
+    public void addWaterDrip(Location location) throws SQLException, WorldNotStoredException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        INSERT INTO waterdrips(x, y, z, world_id)
+                        VALUES (?, ?, ?, ?);
+                        """
+        )) {
+            statement.setInt(1, location.getBlockX());
+            statement.setInt(2, location.getBlockY());
+            statement.setInt(3, location.getBlockZ());
+            statement.setInt(4, getWorldId(location.getWorld().getName()));
+            statement.executeUpdate();
+        }
+    }
+
+    public boolean removeWaterDrip(Location location) throws SQLException, WorldNotStoredException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        DELETE FROM waterdrips
+                        WHERE x = ? && y = ? && z = ? && world_id = ?;
+                        """
+        )) {
+            statement.setInt(1, location.getBlockX());
+            statement.setInt(2, location.getBlockY());
+            statement.setInt(3, location.getBlockZ());
+            statement.setInt(4, getWorldId(location.getWorld().getName()));
+            return statement.executeUpdate() > 0;
+        }
+    }
+
+    public Collection<Location> getWaterDrips() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT waterdrips.x, waterdrips.y, waterdrips.z, w.name FROM waterdrips
+                        INNER JOIN worlds w on waterdrips.world_id = w.id
+                        """
+        )) {
+            Collection<Location> locations = new ArrayList<>();
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String worldName = resultSet.getString("name");
+                World world = Bukkit.getWorld(worldName);
+                if (world == null) {
+                    Bukkit.getLogger().warning(String.format("World %s does not exist.", worldName));
+                    continue;
+                }
+                int x = resultSet.getInt("x");
+                int y = resultSet.getInt("y");
+                int z = resultSet.getInt("z");
+                Location location = new Location(world, x, y, z);
+                locations.add(location);
+            }
+
+            return locations;
+        }
     }
 
 }

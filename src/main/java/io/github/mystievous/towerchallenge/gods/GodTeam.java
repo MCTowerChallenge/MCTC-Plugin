@@ -1,14 +1,12 @@
 package io.github.mystievous.towerchallenge.gods;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestChangeEvent;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

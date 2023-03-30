@@ -4,7 +4,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.RegionUtils;
 import org.bukkit.Bukkit;
@@ -22,7 +21,7 @@ public abstract class EventRegion implements Listener {
     protected final TowerChallenge plugin;
     private final TowerTeam team;
     private ProtectedRegion region;
-    private Location[] area;
+    private final Location[] area;
 
     public EventRegion(TowerChallenge plugin, Location[] area, TowerTeam team) {
         this.plugin = plugin;
@@ -56,10 +55,6 @@ public abstract class EventRegion implements Listener {
 
     public ProtectedRegion getRegion() {
         return region;
-    }
-
-    public String getId() {
-        return region.getId();
     }
 
     public boolean isMember(Player player) {

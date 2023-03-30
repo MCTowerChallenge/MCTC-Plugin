@@ -1,12 +1,13 @@
 package io.github.mystievous.towerchallenge.hats;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
+import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,7 +28,7 @@ import java.util.UUID;
 public class HatElement extends ButtonElement {
 
     public HatElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
-        super(HatUtil.setHat(new ItemStack(material) {{
+        super(HatUtil.setHat(TowerChallenge.getInstance(), new ItemStack(material) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(name);
             meta.setCustomModelData(customModelData);
@@ -67,7 +68,7 @@ public class HatElement extends ButtonElement {
         }}));
         setConsumer(player -> {
             PlayerInventory inventory = player.getInventory();
-            if (NBTUtils.boolState(MagicItems.goatHat.getTag(), inventory.getHelmet())) {
+            if (NBTUtils.boolState(TowerChallenge.getInstance(), GoatHat.GOAT_HAT, inventory.getHelmet())) {
                 player.sendMessage(CommandUtils.errorMessage("Please unequip the goat horns first!"));
             } else {
                 inventory.setHelmet(getItem());

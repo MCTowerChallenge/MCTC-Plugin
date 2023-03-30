@@ -5,12 +5,12 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Color;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -96,24 +96,24 @@ public class NPC implements Listener {
 
     @EventHandler
     public void onPlayerInteractEntity(final PlayerInteractAtEntityEvent event) {
-        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
-            return;
-        }
-        Entity entity = event.getRightClicked();
-        Player player = event.getPlayer();
-        TowerTeam team = teamManager.getPlayerTeam(player);
-        if (entity.getScoreboardTags().contains(tag)) {
-            if (team != null) {
-                Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(team.getCurrentQuestId());
-                if (consumer != null) {
-                    consumer.accept(event);
-                    return;
-                }
-            } else {
-//                player.sendMessage(CommandUtils.errorMessage("You are not on a team!"));
+        Bukkit.getScheduler().runTaskAsynchronously(teamManager.getPlugin(), () -> {
+            if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+                return;
             }
-            runDefaultHandler(event);
-        }
+            Entity entity = event.getRightClicked();
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (entity.getScoreboardTags().contains(tag)) {
+                if (team != null) {
+                    Consumer<PlayerInteractAtEntityEvent> consumer = questHandlers.get(team.getCurrentQuestId());
+                    if (consumer != null) {
+                        consumer.accept(event);
+                        return;
+                    }
+                }
+                runDefaultHandler(event);
+            }
+        });
     }
 
     @EventHandler

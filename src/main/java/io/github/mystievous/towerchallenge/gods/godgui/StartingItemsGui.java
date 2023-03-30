@@ -1,8 +1,9 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.PresetGui;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.PresetGui;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.EquipmentSlot;
@@ -21,10 +22,10 @@ public class StartingItemsGui extends PresetGui {
      * A Gui that shows all the starting
      * items from the specified team.
      *
-     * @param team The team to show the items from.
+     * @param team   The team to show the items from.
      */
-    public StartingItemsGui(@NotNull ParticipantTeam team) {
-        super(Component.text("Starting Items for " + team.getTextName()), 5);
+    public StartingItemsGui(TowerChallenge plugin, @NotNull ParticipantTeam team) {
+        super(plugin, Component.text("Starting Items for " + team.getTextName()), 5);
         Map<Integer, ItemStack> startingItems = team.getStartingItems();
         Map<EquipmentSlot, ItemStack> startingEquipment = team.getStartingEquipment();
 

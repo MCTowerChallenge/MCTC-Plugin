@@ -2,8 +2,8 @@ package io.github.mystievous.towerchallenge;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
-import io.github.mystievous.towerchallenge.gui.element.Element;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.scoreboard.Objective;
+import org.jetbrains.annotations.Nullable;
 
 public class ChallengeManager {
 
@@ -33,14 +34,13 @@ public class ChallengeManager {
     }
 
     private static final String OBJECTIVE_NAME = "TowerHeight";
-    public static Objective getScoreObjective() {
+    public static @Nullable Objective getScoreObjective() {
         return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(OBJECTIVE_NAME);
     }
 
     // Instance Variables
     private final TowerChallenge plugin;
     private ChallengePhase challengePhase;
-    private final TowerListener towerListener;
     private final WinnersGUI winnersGUI;
 
     // Constructor
@@ -50,9 +50,9 @@ public class ChallengeManager {
         if (getScoreObjective() == null) {
             Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective(OBJECTIVE_NAME, "dummy", Component.text("Tower Height"));
         }
-        towerListener = new TowerListener(this);
+        TowerListener towerListener = new TowerListener(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
-        winnersGUI = new WinnersGUI(plugin, teamManager, Element.empty());
+        winnersGUI = new WinnersGUI(plugin, teamManager, Element.blank());
         new SpawnCompass();
 //        new MarketStalls();
         new FastTravelListener();

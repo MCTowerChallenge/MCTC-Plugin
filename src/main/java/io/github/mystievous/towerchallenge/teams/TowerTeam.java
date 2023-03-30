@@ -1,13 +1,13 @@
 package io.github.mystievous.towerchallenge.teams;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mystigui.GuiHeldItem;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
 import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -103,13 +103,12 @@ public abstract class TowerTeam implements Audience, Listener {
         return currentQuest;
     }
 
-    public boolean addObjectiveScore(String tag, String name, int value) {
+    public void addObjectiveScore(String tag, String name, int value) {
         try {
-            return teamManager.getDatabase().addObjectiveScore(this, tag, name, value);
+            teamManager.getDatabase().addObjectiveScore(this, tag, name, value);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Error updating database: " + e.getMessage());
         }
-        return false;
     }
 
     public int getObjective(String tag, String name) {
@@ -275,7 +274,9 @@ public abstract class TowerTeam implements Audience, Listener {
         shovel.setItemMeta(shovelMeta);
         items.put(2, shovel);
 
-        ItemStack book = NBTUtils.noStack(NBTUtils.setString(GuiHeldItem.GUI_ID, new ItemStack(Material.BOOK), QuestManager.GUI_ID));
+        ItemStack book = new ItemStack(Material.BOOK);
+        NBTUtils.noStack(plugin, book);
+        NBTUtils.setString(plugin, GuiHeldItem.GUI_ID, book, QuestManager.GUI_ID);
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("Quest Book").decoration(TextDecoration.ITALIC, false));
         bookMeta.setCustomModelData(2);

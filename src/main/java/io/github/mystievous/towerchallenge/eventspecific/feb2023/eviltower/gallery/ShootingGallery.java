@@ -1,17 +1,14 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.gallery;
 
-import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTower;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.TowerPortalManager;
 import io.github.mystievous.towerchallenge.quests.Dialogue;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -247,7 +244,6 @@ public class ShootingGallery implements Listener {
         Audience audience = Audience.audience(participants);
         audience.sendMessage(Component.text("Final Score: ").color(Palette.PRIMARY.toTextColor())
                 .append(Component.text(String.format("%d points", finalPoints)).color(NamedTextColor.WHITE)));
-//        Bukkit.getServer().sendMessage(Component.text(String.format("Time Up: %s", team.getTextName())));
         if (finalPoints >= GOAL_SCORE) {
             buttonLocation.getWorld().playSound(buttonLocation, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f);
             dropperLocation.clone().add(0, -1, 0).getBlock().setType(Material.REDSTONE_BLOCK);
@@ -256,9 +252,7 @@ public class ShootingGallery implements Listener {
             if (team != null && questManager.getTeamQuest(team).equals(QuestManager.SHOOTING_GALLERY)) {
                 team.setInDialogue(true);
                 questManager.setTeamQuest(team, QuestManager.PICK_TOWER_ROOM);
-                finishGallery.play(team, () -> {
-                    team.setInDialogue(false);
-                });
+                finishGallery.play(team, () -> team.setInDialogue(false));
             }
         } else {
             buttonLocation.getWorld().playSound(buttonLocation, Sound.BLOCK_NOTE_BLOCK_SNARE, 1.0f, 1.0f);

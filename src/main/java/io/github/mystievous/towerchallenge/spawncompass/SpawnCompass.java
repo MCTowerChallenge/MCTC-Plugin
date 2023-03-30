@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.spawncompass;
 
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;

@@ -1,13 +1,15 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.mystigui.page.PlayerGui;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
-import io.github.mystievous.towerchallenge.gui.page.PlayerGui;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -53,35 +55,35 @@ public class TrackedStatsGUI extends ListGui {
      *
      * @param exitElement Element used to exit the gui
      */
-    public TrackedStatsGUI(TeamManager teamManager, Element exitElement) {
-        super(Component.text("Pick stat to view"), exitElement);
+    public TrackedStatsGUI(TowerChallenge plugin, TeamManager teamManager, Element exitElement) {
+        super(plugin, Component.text("Pick stat to view"), exitElement);
 
         ItemStack jumpsItem = new ItemStack(Material.RABBIT_FOOT);
         ItemMeta jumpsMeta = jumpsItem.getItemMeta();
         jumpsMeta.displayName(TextUtil.noItalic("Jumps"));
         jumpsItem.setItemMeta(jumpsMeta);
-        ButtonElement jumpsElement = new TrackedStatElement(teamManager, jumpsItem, new AbstractStatistic(Statistic.JUMP));
+        ButtonElement jumpsElement = new TrackedStatElement(plugin, teamManager, jumpsItem, new AbstractStatistic(Statistic.JUMP));
         addElement(jumpsElement);
 
         ItemStack distanceItem = new ItemStack(Material.LEATHER_BOOTS);
         ItemMeta distanceMeta = distanceItem.getItemMeta();
         distanceMeta.displayName(TextUtil.noItalic("Distance Travelled"));
         distanceItem.setItemMeta(distanceMeta);
-        ButtonElement distanceElement = new TrackedStatElement(teamManager, distanceItem, distanceStats);
+        ButtonElement distanceElement = new TrackedStatElement(plugin, teamManager, distanceItem, distanceStats);
         addElement(distanceElement);
 
         ItemStack bellsItem = new ItemStack(Material.BELL);
         ItemMeta bellsMeta = bellsItem.getItemMeta();
         bellsMeta.displayName(TextUtil.noItalic("Bells Rung"));
         bellsItem.setItemMeta(bellsMeta);
-        ButtonElement bellsElement = new TrackedStatElement(teamManager, bellsItem, new AbstractStatistic(Statistic.BELL_RING));
+        ButtonElement bellsElement = new TrackedStatElement(plugin, teamManager, bellsItem, new AbstractStatistic(Statistic.BELL_RING));
         addElement(bellsElement);
 
         ItemStack snowballItem = new ItemStack(Material.SNOWBALL);
         ItemMeta snowballMeta = snowballItem.getItemMeta();
         snowballMeta.displayName(TextUtil.noItalic("Snowballs Picked Up"));
         snowballItem.setItemMeta(snowballMeta);
-        ButtonElement snowballElement = new TrackedStatElement(teamManager, snowballItem, new AbstractStatistic(Statistic.PICKUP, Material.SNOWBALL));
+        ButtonElement snowballElement = new TrackedStatElement(plugin, teamManager, snowballItem, new AbstractStatistic(Statistic.PICKUP, Material.SNOWBALL));
         addElement(snowballElement);
 
     }
@@ -98,7 +100,7 @@ public class TrackedStatsGUI extends ListGui {
          * brings the user to a PlayerGui showing
          * the stat for all players
          */
-        public TrackedStatElement(TeamManager teamManager, ItemStack icon, AbstractStatistic... statistics) {
+        public TrackedStatElement(TowerChallenge plugin, TeamManager teamManager, ItemStack icon, AbstractStatistic... statistics) {
             super(icon, playerInGui -> {
                 List<OfflinePlayer> players = new ArrayList<>(Arrays.stream(Bukkit.getOfflinePlayers())
                         .filter(offlinePlayer -> {
@@ -121,11 +123,11 @@ public class TrackedStatsGUI extends ListGui {
                 players.sort(Comparator.comparingInt(value -> playerStats.get(((OfflinePlayer) value).getUniqueId())).reversed());
 
                 Component iconName = TextUtil.getItemName(icon);
-                PlayerGui gui = new PlayerGui(iconName,
+                PlayerGui gui = new PlayerGui(plugin, iconName,
                         playerOfIcon -> TextUtil.formatTexts(iconName.append(Component.text(": ")).append(Component.text(playerStats.get(playerOfIcon.getUniqueId())))),
                         players,
                         (player1, offlinePlayer) -> {
-                        }, new ButtonElement(ButtonElement.backItem(), TrackedStatsGUI.this::openInventory));
+                        }, new ButtonElement(Icons.backItem(), TrackedStatsGUI.this::openInventory));
                 gui.openInventory(playerInGui);
             });
         }

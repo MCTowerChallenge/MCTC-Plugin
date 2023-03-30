@@ -33,7 +33,6 @@ public class FerrisWheel {
 
     private BukkitTask[] carTasks;
 
-    private BukkitTask reload;
     private PassengerCar[] cars;
 
     private static final Location[] path = new Location[]{
@@ -70,10 +69,10 @@ public class FerrisWheel {
 
     private void runReloadTimer() {
         if (hasPassengers()) {
-            reload = Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 6000L);
+            Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 6000L);
         } else {
             reload();
-            reload = Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 36000L);
+            Bukkit.getScheduler().runTaskLater(plugin, this::runReloadTimer, 36000L);
         }
     }
 

@@ -1,14 +1,15 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -25,21 +26,22 @@ import org.jetbrains.annotations.Nullable;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.*;
-
-import io.github.mystievous.towerchallenge.utility.Color;
 public class Plushies extends NPC {
 
     public static final String TAG = "plushy-pile";
     public static final String ITEM_TAG = "plushy";
-    private static int[] PLUSHY_IDS = new int[]{31, 32, 33};
+    private static final int[] PLUSHY_IDS = new int[]{31, 32, 33};
 
-    private static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    private Database database;
-    private Set<UUID> players;
+    private final Database database;
+    private final Set<UUID> players;
+
+    private final TowerChallenge plugin;
 
     public Plushies(TowerChallenge plugin, TeamManager teamManager, Database database) {
         super(teamManager, "plushie", TAG, new Color(0), new Color(0));
+        this.plugin = plugin;
         this.database = database;
         this.players = new HashSet<>();
         setDefaultHandler(playerInteractAtEntityEvent -> {
@@ -53,7 +55,7 @@ public class Plushies extends NPC {
                 } else {
                     EquipmentSlot hand = playerInteractAtEntityEvent.getHand();
                     ItemStack currentItem = player.getInventory().getItem(hand);
-                    if (NBTUtils.boolState(ITEM_TAG, currentItem)) {
+                    if (NBTUtils.boolState(plugin, ITEM_TAG, currentItem)) {
                         player.getInventory().setItem(hand, randomPlushy(database.getModelId(currentItem)));
                         player.playSound(entity.getLocation(), Sound.ENTITY_HORSE_SADDLE, 1f, 1.2f);
                     } else {
@@ -86,8 +88,8 @@ public class Plushies extends NPC {
             }
         }
         ItemStack item = database.getModel(randoms.get(RANDOM.nextInt(randoms.size())), true, false).getItem();
-        item = NBTUtils.setUniqueID(item, null);
-        item = NBTUtils.setBool(ITEM_TAG, item);
+        NBTUtils.setUniqueID(plugin, item, null);
+        NBTUtils.setBool(plugin, ITEM_TAG, item);
         return item;
     }
 

@@ -1,14 +1,11 @@
 package io.github.mystievous.towerchallenge.teams;
 
+import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.EndPortal;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -17,12 +14,15 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.NotNull;
@@ -263,18 +263,6 @@ public class TeamManager implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-//        loadTeams();
-//        try {
-//            Integer teamId = database.getPlayerTeamId(player.getUniqueId());
-//            if (teamId != null) {
-//                TowerTeam team = getTeam(teamId);
-//                if (team != null) {
-//                    team.addTeamPlayer(player);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            Bukkit.getLogger().warning(String.format("Error setting team for %s: %s", player.getName(), e.getMessage()));
-//        }
         loadPlayers();
 
         if (!player.hasPlayedBefore()) {
@@ -288,25 +276,6 @@ public class TeamManager implements Listener {
             }, 1);
         }
     }
-
-//    @EventHandler(priority = EventPriority.HIGHEST)
-//    public void onRespawn(PlayerRespawnEvent event) {
-//        Player player = event.getPlayer();
-//        if (player.getBedSpawnLocation() != null) {
-//            return;
-//        }
-//        if (getPlayerTeam(player) instanceof ParticipantTeam team) {
-//            SpawnRegion spawnRegion = team.getSpawnRegion();
-//            if (spawnRegion != null && spawnRegion.isMember(event.getPlayer())) {
-//                Location location = spawnRegion.getSpawnpoint();
-//                if (location != null) {
-//                    event.setRespawnLocation(location);
-//                    return;
-//                }
-//            }
-//        }
-//        event.setRespawnLocation(Worlds.WORLD().getSpawnLocation());
-//    }
 
     @EventHandler
     public void onPortalCreate(final PortalCreateEvent event) {

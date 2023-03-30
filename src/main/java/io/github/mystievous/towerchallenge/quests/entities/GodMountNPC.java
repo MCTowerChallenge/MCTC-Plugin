@@ -1,8 +1,8 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
+import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.utility.Color;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

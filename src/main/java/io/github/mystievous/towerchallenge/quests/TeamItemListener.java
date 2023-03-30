@@ -4,7 +4,7 @@ import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -16,9 +16,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class TeamItemListener implements Listener {
 
+    private final TowerChallenge plugin;
     private final TeamManager teamManager;
 
     public TeamItemListener(TowerChallenge plugin, TeamManager teamManager) {
+        this.plugin = plugin;
         this.teamManager = teamManager;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -26,8 +28,8 @@ public class TeamItemListener implements Listener {
     public boolean teamCannotInteract(Player player, ItemStack itemStack) {
         TowerTeam team = teamManager.getPlayerTeam(player);
 
-        if (NBTUtils.hasTeam(itemStack)) {
-            return team == null || (!NBTUtils.matchTeam(itemStack, team) && !(team instanceof GodTeam));
+        if (TeamUtils.hasTeam(plugin, itemStack)) {
+            return team == null || (!TeamUtils.matchTeam(plugin, itemStack, team) && !(team instanceof GodTeam));
         }
 
         return false;

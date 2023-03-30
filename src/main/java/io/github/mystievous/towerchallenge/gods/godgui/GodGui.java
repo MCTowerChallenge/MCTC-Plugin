@@ -1,27 +1,26 @@
 package io.github.mystievous.towerchallenge.gods.godgui;
 
+import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.mystigui.GuiHeldItem;
+import io.github.mystievous.mystigui.GuiUtil;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.*;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
-import io.github.mystievous.towerchallenge.gods.godgui.regionteleports.WorldsRegionOverview;
-import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.*;
+import io.github.mystievous.towerchallenge.gui.Icons;
+import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
-import io.github.mystievous.towerchallenge.timer.Timer;
-import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.Dialogue;
-import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Axis;
@@ -61,8 +60,8 @@ public class GodGui extends PresetGui implements Openable {
      * <p>
      * This is opened generally through the GuiHeldItem.
      */
-    public GodGui(TowerChallenge plugin, Timer timer, @NotNull GodManager godManager, FerrisWheel ferrisWheel, QuestManager questManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, EvilTowerManager evilTowerManager) {
-        super(COMPONENT_NAME, ROWS);
+    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, FerrisWheel ferrisWheel, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, EvilTowerManager evilTowerManager, MagicItems magicItems) {
+        super(plugin, COMPONENT_NAME, ROWS);
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("God Menu").decoration(TextDecoration.ITALIC, false));
@@ -84,16 +83,12 @@ public class GodGui extends PresetGui implements Openable {
 
 
         Component startingItemsTitle = Component.text("Pick team to view items");
-        BiConsumer<Player, TowerTeam> startingItemsBiconsumer = (player, team) -> {
-            (new StartingItemsGui((ParticipantTeam) team)).openInventory(player);
-        };
-        TeamGui startingItemsTeamGui = new TeamGui(startingItemsTitle,
+        BiConsumer<Player, TowerTeam> startingItemsBiconsumer = (player, team) -> (new StartingItemsGui(plugin, (ParticipantTeam) team)).openInventory(player);
+        TeamGui startingItemsTeamGui = new TeamGui(plugin, startingItemsTitle,
                 new ArrayList<>(),
                 teamManager.getParticipantTeams().stream().map(participantTeam -> (TowerTeam) participantTeam).toList(),
                 startingItemsBiconsumer,
-                new ButtonElement(ButtonElement.backItem(), player1 -> {
-                    godManager.getGodGui().openInventory(player1);
-                }));
+                new ButtonElement(Icons.backItem(), player1 -> godManager.getGodGui().openInventory(player1)));
         ItemStack startingItemsItem = new ItemStack(Material.PAPER);
         ItemMeta startingItemsMeta = startingItemsItem.getItemMeta();
         startingItemsMeta.displayName(TextUtil.noItalic("Starter Items"));
@@ -102,7 +97,7 @@ public class GodGui extends PresetGui implements Openable {
         ButtonElement startingItemsElement = new ButtonElement(startingItemsItem, startingItemsTeamGui::openInventory);
 
 
-        PresetGui magicGui = MagicItems.getGui();
+        Gui magicGui = magicItems.getGui(null);
         ItemStack magicItem = new ItemStack(Material.PAPER);
         ItemMeta magicMeta = magicItem.getItemMeta();
         magicMeta.displayName(TextUtil.noItalic("Magic Items"));
@@ -111,49 +106,16 @@ public class GodGui extends PresetGui implements Openable {
         ButtonElement magicElement = new ButtonElement(magicItem, magicGui::openInventory);
 
 
-        TeamGui teamQuestGUI = new TeamGui(Component.text("Pick team to view quest:"), team -> {
-            String teamQuest = questManager.getTeamQuest(team);
-            Quest quest = questManager.getQuest(team, teamQuest);
-            if (quest != null) {
-                return TextUtil.formatTexts("Current Quest: ", quest.getId());
-            } else {
-                return TextUtil.formatTexts("No Current Quest");
-            }
-        }, teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(), (player, team) -> {
-            String teamQuest = questManager.getTeamQuest(team);
-            Quest quest = questManager.getQuest(team, teamQuest);
-            if (quest != null) {
-                quest.getGui(team).openInventory(player);
-            } else {
-                QuestManager.NO_QUEST_GUI.openInventory(player);
-            }
-        }, new ButtonElement(ButtonElement.backItem(), player -> {
-            godManager.getGodGui().openInventory(player);
-        }));
-        ButtonElement teamQuestElement = new ButtonElement(new ItemStack(Material.BOOK) {{
-            ItemMeta bookMeta = getItemMeta();
-            bookMeta.displayName(Component.text("Quest Menu").decoration(TextDecoration.ITALIC, false));
-            bookMeta.setCustomModelData(2);
-            setItemMeta(bookMeta);
-        }}, teamQuestGUI::openInventory);
+        ButtonElement anvil = new ButtonElement(new ItemStack(Material.ANVIL), player -> player.openAnvil(null, true));
 
+        ButtonElement enderChest = new ButtonElement(new ItemStack(Material.ENDER_CHEST), player -> player.openInventory(player.getEnderChest()));
 
-        ButtonElement anvil = new ButtonElement(new ItemStack(Material.ANVIL), player -> {
-            player.openAnvil(null, true);
-        });
+        ButtonElement crafting = new ButtonElement(new ItemStack(Material.CRAFTING_TABLE), player -> player.openWorkbench(null, true));
 
-        ButtonElement enderChest = new ButtonElement(new ItemStack(Material.ENDER_CHEST), player -> {
-            player.openInventory(player.getEnderChest());
-        });
-
-        ButtonElement crafting = new ButtonElement(new ItemStack(Material.CRAFTING_TABLE), player -> {
-            player.openWorkbench(null, true);
-        });
-
-        ItemStack hatItem = formatItem("Hat Gui", Material.PAPER, 11);
+        ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.PAPER, 11);
         Element hatElement = new ButtonElement(hatItem, player -> {
             try {
-                ListGui hatGui = new ListGui(Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
                 hatGui.openInventory(player);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -182,9 +144,9 @@ public class GodGui extends PresetGui implements Openable {
                 {new Vector(97, 73, -2115), new Vector(97, 74, -2115)},
         };
 
-        ItemStack netherItem = formatItem("Nether Portal", Material.PAPER, 9);
-        ChoiceGUI netherGui = new ChoiceGUI(Component.text("Nether Portal"),
-                player -> new ConfirmationGUI(Component.text("Confirm opening portal?"),
+        ItemStack netherItem = GuiUtil.formatItem("Nether Portal", Material.PAPER, 9);
+        ChoiceGUI netherGui = new ChoiceGUI(plugin, Component.text("Nether Portal"),
+                player -> new ConfirmationGUI(plugin, Component.text("Confirm opening portal?"),
                         player1 -> {
                             for (Vector[] layer : portalBlocks) {
                                 for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
@@ -218,12 +180,12 @@ public class GodGui extends PresetGui implements Openable {
         );
         ButtonElement netherPortal = new ButtonElement(netherItem, netherGui::openInventory);
 
-        ItemStack endItem = formatItem("Reset End Portal", Material.PAPER, 10);
-        ConfirmationGUI endGui = new ConfirmationGUI(Component.text("Confirm RESETTING end portal?"), player -> teamManager.resetEndPortal(), this::openInventory);
+        ItemStack endItem = GuiUtil.formatItem("Reset End Portal", Material.PAPER, 10);
+        ConfirmationGUI endGui = new ConfirmationGUI(plugin, Component.text("Confirm RESETTING end portal?"), player -> teamManager.resetEndPortal(), this::openInventory);
         ButtonElement endPortal = new ButtonElement(endItem, endGui::openInventory);
 
-        ItemStack ferrisItem = formatItem("Reload Ferris Wheel", Material.PAPER, 14);
-        ConfirmationGUI ferrisGui = new ConfirmationGUI(Component.text("Will kick all players off of ferris wheel."), player -> ferrisWheel.reload(), this::openInventory);
+        ItemStack ferrisItem = GuiUtil.formatItem("Reload Ferris Wheel", Material.PAPER, 14);
+        ConfirmationGUI ferrisGui = new ConfirmationGUI(plugin, Component.text("Will kick all players off of ferris wheel."), player -> ferrisWheel.reload(), this::openInventory);
         ButtonElement ferrisElement = new ButtonElement(ferrisItem, ferrisGui::openInventory);
 
         ItemStack addPlayerItem = new ItemStack(Material.PAPER);
@@ -232,10 +194,11 @@ public class GodGui extends PresetGui implements Openable {
         addPlayerMeta.setCustomModelData(3);
         addPlayerItem.setItemMeta(addPlayerMeta);
         TeamGui addPlayerGui = new TeamGui(
+                plugin,
                 Component.text("Team to add Player to:"),
                 team -> new ArrayList<>(),
                 teamManager.getAllTeams(),
-                (player, participantTeam) -> new PlayerGui(Component.text("Pick player to add:"),
+                (player, participantTeam) -> new PlayerGui(plugin, Component.text("Pick player to add:"),
                         offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
                         (playerClicking, playerSelected) -> {
                             if (teamManager.setPlayerTeam(playerSelected, participantTeam)) {
@@ -249,8 +212,8 @@ public class GodGui extends PresetGui implements Openable {
                             }
                             this.openInventory(playerClicking);
                         },
-                        new ButtonElement(ButtonElement.exitItem(), this::openInventory)).openInventory(player),
-                new ButtonElement(ButtonElement.exitItem(), this::openInventory));
+                        new ButtonElement(Icons.exitItem(), this::openInventory)).openInventory(player),
+                new ButtonElement(Icons.exitItem(), this::openInventory));
         ButtonElement addPlayerElement = new ButtonElement(addPlayerItem, addPlayerGui::openInventory);
 
         ButtonElement evilTower = new ButtonElement(new ItemStack(Material.PAPER) {{
@@ -259,10 +222,6 @@ public class GodGui extends PresetGui implements Openable {
             meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
             setItemMeta(meta);
         }}, player -> evilTowerManager.getGui(player).openInventory(player));
-
-        ItemStack eventItem = formatItem("Event Logistics", Material.PAPER, 5);
-        PresetGui eventGui = new PresetGui(Component.text("Event Logistics"), 4);
-
 
 
         // Add Player to Team
@@ -282,47 +241,47 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(1, 1, crafting);
         placeElement(1, 2, anvil);
         placeElement(1, 3, enderChest);
-        placeElement(1, 4, Element.blankSlot);
-        placeElement(1, 5, Element.blankSlot);
-        placeElement(1, 6, Element.blankSlot);
+        placeElement(1, 4, Icons.blankSlot);
+        placeElement(1, 5, Icons.blankSlot);
+        placeElement(1, 6, Icons.blankSlot);
         placeElement(1, 7, devElement);
-        placeElement(1, 8, Element.blankSlot);
-        placeElement(1, 9, new ButtonElement(ButtonElement.exitItem(), HumanEntity::closeInventory));
+        placeElement(1, 8, Icons.blankSlot);
+        placeElement(1, 9, new ButtonElement(Icons.exitItem(), HumanEntity::closeInventory));
 
         for (int i = 1; i <= 9; i++) {
-            placeElement(2, i, Element.blankSlot);
+            placeElement(2, i, Icons.blankSlot);
         }
 
-        placeElement(3, 1, Element.blankSlot);
+        placeElement(3, 1, Icons.blankSlot);
         placeElement(3, 2, teleportHistoryElement);
-        placeElement(3, 3, Element.blankSlot);
+        placeElement(3, 3, Icons.blankSlot);
         placeElement(3, 4, netherPortal);
-        placeElement(3, 5, Element.blankSlot);
+        placeElement(3, 5, Icons.blankSlot);
         placeElement(3, 6, ferrisElement);
-        placeElement(3, 7, Element.blankSlot);
+        placeElement(3, 7, Icons.blankSlot);
         placeElement(3, 8, hatElement);
-        placeElement(3, 9, Element.blankSlot);
+        placeElement(3, 9, Icons.blankSlot);
 
-        placeElement(4, 1, Element.blankSlot);
+        placeElement(4, 1, Icons.blankSlot);
         placeElement(4, 2, startingItemsElement);
-        placeElement(4, 3, Element.blankSlot);
-        placeElement(4, 4, Element.blankSlot);
-        placeElement(4, 5, Element.blankSlot);
+        placeElement(4, 3, Icons.blankSlot);
+        placeElement(4, 4, Icons.blankSlot);
+        placeElement(4, 5, Icons.blankSlot);
         placeElement(4, 6, evilTower);
-        placeElement(4, 7, Element.blankSlot);
+        placeElement(4, 7, Icons.blankSlot);
         placeElement(4, 8, magicElement);
-        placeElement(4, 9, Element.blankSlot);
+        placeElement(4, 9, Icons.blankSlot);
 
-        placeElement(5, 1, Element.blankSlot);
+        placeElement(5, 1, Icons.blankSlot);
         placeElement(5, 2, addPlayerElement);
-        placeElement(5, 3, Element.blankSlot);
+        placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endPortal);
-        placeElement(5, 5, Element.blankSlot);
-        placeElement(5, 6, Element.blankSlot);
-        placeElement(5, 7, Element.blankSlot);
+        placeElement(5, 5, Icons.blankSlot);
+        placeElement(5, 6, Icons.blankSlot);
+        placeElement(5, 7, Icons.blankSlot);
         try {
-            ListGui modelGui = new ListGui(Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.empty());
-            ItemStack modelItem = formatItem("Models", Material.PAPER, 12);
+            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());
+            ItemStack modelItem = GuiUtil.formatItem("Models", Material.PAPER, 12);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
             placeElement(5, 8, modelElement);
         } catch (SQLException e) {
@@ -330,10 +289,10 @@ public class GodGui extends PresetGui implements Openable {
         } catch (IllegalArgumentException e) {
             Bukkit.getLogger().warning("Model has invalid material: " + e.getMessage());
         }
-        placeElement(5, 9, Element.blankSlot);
+        placeElement(5, 9, Icons.blankSlot);
 
         for (int i = 1; i <= 9; i++) {
-            placeElement(6, i, Element.blankSlot);
+            placeElement(6, i, Icons.blankSlot);
         }
 
     }

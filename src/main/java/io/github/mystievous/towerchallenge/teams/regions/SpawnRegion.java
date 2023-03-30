@@ -9,50 +9,15 @@ import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SpawnRegion extends EventRegion {
 
-    public static final Location referenceLocation = new Location(Worlds.Feb2023(), 136, 63, -2100, 0, 0);
+    private final Location spawnLocation;
 
-    public static final Location baseSpawn = new Location(Worlds.Feb2023(), 142, 64, -2094);
-    public static final Location[] baseBounds = new Location[]{
-            new Location(Worlds.Feb2023(), 133, 64, -2103),
-            new Location(Worlds.Feb2023(), 150, 319, -2086)
-    };
-
-    public static final Map<Integer, Location> teamLocations = new HashMap<>() {{
-        put(2, referenceLocation);
-        put(3, new Location(Worlds.Feb2023(), 158, 63, -2123, -90, 0));
-        put(6, new Location(Worlds.Feb2023(), 175, 63, -2173, 180, 0));
-        put(7, new Location(Worlds.Feb2023(), 197, 63, -2150, -90, 0));
-        put(8, new Location(Worlds.Feb2023(), 197, 63, -2123, -90, 0));
-        put(10, new Location(Worlds.Feb2023(), 214, 63, -2100, 0, 0));
-        put(11, new Location(Worlds.Feb2023(), 236, 63, -2123, -90, 0));
-        put(13, new Location(Worlds.Feb2023(), 214, 63, -2173, 180, 0));
-        put(14, new Location(Worlds.Feb2023(), 253, 63, -2173, 180, 0));
-    }};
-
-
-    public SpawnRegion(TowerChallenge plugin, ParticipantTeam team) {
-        super(plugin, Arrays.stream(baseBounds).map(location -> {
-            Location teamLocation = teamLocations.get(team.getDatabaseId());
-            Vector offset = teamLocation.clone().subtract(referenceLocation).toVector();
-
-            return location.clone().add(offset).setDirection(teamLocation.getDirection());
-        }).toArray(Location[]::new), team);
-    }
-
-    private Location offsetLocation(Location location) {
-        Location teamLocation = teamLocations.get(getTeam().getDatabaseId());
-        Vector offset = teamLocation.clone().subtract(referenceLocation).toVector();
-
-        return location.clone().add(offset).setDirection(teamLocation.getDirection());
+    public SpawnRegion(TowerChallenge plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
+        super(plugin, bounds, team);
+        this.spawnLocation = spawnLocation;
     }
 
     @Override
@@ -89,7 +54,7 @@ public class SpawnRegion extends EventRegion {
 
     @Override
     protected void setFlags(ProtectedRegion region) {
-        com.sk89q.worldedit.util.Location spawnLoc = BukkitAdapter.adapt(offsetLocation(baseSpawn));
+        com.sk89q.worldedit.util.Location spawnLoc = BukkitAdapter.adapt(spawnLocation);
         region.setPriority(1);
         region.setFlag(Flags.SPAWN_LOC, spawnLoc);
         region.setFlag(Flags.TELE_LOC, spawnLoc);

@@ -1,10 +1,11 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -29,8 +30,7 @@ import java.util.function.Consumer;
 
 public class ItemEntityHandler implements Listener {
 
-    public static final String CONFIG_LABEL = "CollectedItems";
-
+    private final TowerChallenge plugin;
     private final TeamManager teamManager;
     private final String tag;
     private final ItemStack itemStack;
@@ -39,7 +39,8 @@ public class ItemEntityHandler implements Listener {
     private final String requiredQuest;
     private Consumer<Player> eventHandler;
 
-    public ItemEntityHandler(TeamManager teamManager, String tag, @Nullable String requiredQuest, ItemStack itemStack) {
+    public ItemEntityHandler(TowerChallenge plugin, TeamManager teamManager, String tag, @Nullable String requiredQuest, ItemStack itemStack) {
+        this.plugin = plugin;
         this.teamManager = teamManager;
         this.tag = tag;
         this.requiredQuest = requiredQuest;
@@ -79,7 +80,7 @@ public class ItemEntityHandler implements Listener {
     }
 
     public ItemStack getItem(@NotNull TowerTeam team) {
-        return NBTUtils.setTeam(itemStack, team);
+        return TeamUtils.setTeam(plugin, itemStack, team);
     }
 
     public String getTag() {
@@ -92,8 +93,7 @@ public class ItemEntityHandler implements Listener {
             return;
         CraftingInventory inventory = event.getInventory();
         for (ItemStack item : inventory.getMatrix()) {
-//            event.getWhoClicked().sendMessage("Craft");
-            if (NBTUtils.boolState(tag, item)) {
+            if (NBTUtils.boolState(plugin, tag, item)) {
                 event.getWhoClicked().sendMessage(Component.text("You can't craft with that!"));
                 event.setCancelled(true);
                 return;

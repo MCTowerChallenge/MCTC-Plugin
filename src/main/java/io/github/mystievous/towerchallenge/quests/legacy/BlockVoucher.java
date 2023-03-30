@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.quests.legacy;
 
-import io.github.mystievous.towerchallenge.utility.Palette;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -14,7 +15,7 @@ public class BlockVoucher extends ItemStack {
     public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor());
 
     public static ItemStack getVouchers(int number) {
-        ItemStack vouchers = QuestUtil.setVoucher(new ItemStack(Material.PAPER, number));
+        ItemStack vouchers = QuestUtil.setVoucher(TowerChallenge.getInstance(), new ItemStack(Material.PAPER, number));
         ItemMeta voucherMeta = vouchers.getItemMeta();
         voucherMeta.displayName(VOUCHER_NAME);
         voucherMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

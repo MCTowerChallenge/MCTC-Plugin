@@ -8,7 +8,7 @@ import com.onarandombox.MultiversePortals.utils.PortalManager;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
+import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
@@ -89,7 +89,7 @@ public class TowerPortalManager {
     private void initPortal(String portalName, Location[] baseCorners, Location destinationLocation) {
         TowerTeam team = teamManager.getTeam(teamId);
         if (team != null) {
-            String teamPortalName = NBTUtils.toTeamTag(team, portalName);
+            String teamPortalName = TeamUtils.toTeamTag(team, portalName);
             Location[] corners = Arrays.stream(baseCorners).map(evilTower::offsetLocation).toArray(Location[]::new);
             PortalManager portalManager = multiversePortals.getPortalManager();
             MVWorldManager worldManager = multiversePortals.getCore().getMVWorldManager();

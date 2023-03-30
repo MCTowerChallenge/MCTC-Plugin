@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.entities;
 
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import org.bukkit.inventory.ItemStack;
@@ -9,10 +10,10 @@ import java.sql.SQLException;
 
 public class OneTimeItemEntityHandler extends ItemEntityHandler {
 
-    private String mainTag;
+    private final String mainTag;
 
-    public OneTimeItemEntityHandler(TeamManager teamManager, String mainTag, String entityTag, @Nullable String requiredQuest, ItemStack itemStack) {
-        super(teamManager, entityTag, requiredQuest, itemStack);
+    public OneTimeItemEntityHandler(TowerChallenge plugin, TeamManager teamManager, String mainTag, String entityTag, @Nullable String requiredQuest, ItemStack itemStack) {
+        super(plugin, teamManager, entityTag, requiredQuest, itemStack);
         this.mainTag = mainTag;
     }
 

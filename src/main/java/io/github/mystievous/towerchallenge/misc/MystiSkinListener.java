@@ -7,18 +7,13 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.List;
 import java.util.UUID;
 
 public class MystiSkinListener {
@@ -58,34 +53,6 @@ public class MystiSkinListener {
             }
 
         });
-
-//        manager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-//            @Override
-//            public void onPacketSending(PacketEvent event) {
-//                Player player = event.getPlayer();
-//                if (player.getUniqueId().equals(MYSTI_UUID) && currentValue != null && currentValue == 1) {
-//                    int entityId = event.getPacket().getIntegers().read(0);
-//                    if (Bukkit.getOnlinePlayers().stream().anyMatch(checkPlayer -> checkPlayer.getEntityId() == entityId)) {
-//                        if (event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
-//                            List<WrappedWatchableObject> watchableObjectList = event.getPacket().getWatchableCollectionModifier().read(0);
-//                            watchableObjectList.stream().filter(object -> object.getIndex() == 0).findFirst().ifPresent(watchableObject -> {
-//                                byte b = (byte) watchableObject.getValue();
-//                                b |= 0b01000000;
-//                                watchableObject.setValue(b);
-//                            });
-//                        } else {
-//                            WrappedDataWatcher watcher = event.getPacket().getDataWatcherModifier().read(0);
-//                            if (watcher.hasIndex(0)) {
-//                                byte b = watcher.getByte(0);
-//                                b |= 0b01000000;
-//                                watcher.setObject(0, b);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//        });
 
     }
 

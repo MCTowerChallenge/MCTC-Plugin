@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.eventspecific.apr2023.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
@@ -9,6 +10,7 @@ import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
+import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
@@ -24,8 +26,7 @@ import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
 import io.github.mystievous.towerchallenge.towering.ChatHandler;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.wands.WandCommands;
+import io.github.mystievous.towerchallenge.magic.WandCommands;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -84,24 +85,26 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
-        new GodManager(this, timer, teamManager, ferrisWheel, questManager, evilTowerManager);
+        WaterDrips waterDrips = new WaterDrips(this, database);
 
-        new NBTUtils(this);
+        MagicItems magicItems = new MagicItems(this, database, waterDrips);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, ferrisWheel);
+        new GodManager(this, teamManager, ferrisWheel, evilTowerManager, magicItems);
+
+        TowerCommands towerCommands = new TowerCommands(this, challengeManager, teamManager, ferrisWheel);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
         this.getCommand("tower").setTabCompleter(towerTabComplete);
 
-        HatCommands hatCommands = new HatCommands(database);
+        HatCommands hatCommands = new HatCommands(this, database);
         HatTabComplete hatTabComplete = new HatTabComplete();
         this.getCommand("hat").setExecutor(hatCommands);
         this.getCommand("hat").setTabCompleter(hatTabComplete);
 
         PluginCommand fullInvCommand = getCommand("fullinventory");
         if (fullInvCommand != null) {
-            FullInventory fullInventory = new FullInventory();
+            FullInventory fullInventory = new FullInventory(this);
             fullInvCommand.setExecutor(fullInventory);
         }
 
@@ -112,7 +115,7 @@ public final class TowerChallenge extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Wands
-        WandCommands wandCommands = new WandCommands();
+        WandCommands wandCommands = new WandCommands(magicItems);
         this.getCommand("wand").setExecutor(wandCommands);
 //        WandListener wandListener = new WandListener();
 //        getServer().getPluginManager().registerEvents(wandListener, this);

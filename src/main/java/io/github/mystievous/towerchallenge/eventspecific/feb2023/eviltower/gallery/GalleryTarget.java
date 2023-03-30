@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.gallery;
 
+import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.utility.Palette;
 import io.papermc.paper.event.block.TargetHitEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -22,7 +22,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.UUID;
 
 class GalleryTarget implements Listener {
 
@@ -51,7 +50,6 @@ class GalleryTarget implements Listener {
         this.targetUpLocation = location.clone().add(0, 1, 0);
         this.pistonLocation = location.clone().add(0, -1, 0);
         this.redstoneLocation = location.clone().add(0, -2, 0);
-        UUID targetId = UUID.randomUUID();
         this.tasks = new HashSet<>();
         this.pointValue = pointValue;
         this.active = false;

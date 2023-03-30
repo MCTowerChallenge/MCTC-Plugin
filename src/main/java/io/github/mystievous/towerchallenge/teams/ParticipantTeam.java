@@ -1,37 +1,54 @@
 package io.github.mystievous.towerchallenge.teams;
 
+import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestChangeEvent;
 import io.github.mystievous.towerchallenge.teams.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.teams.regions.TowerRegion;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ParticipantTeam extends TowerTeam {
 
-    public static World getSpawnWorld() {
-        return Worlds.Feb2023();
-    }
+    public static final Location towerLocation = new Location(Worlds.Feb2023_tower(), -60, -63, 3);
+    public static final Location[] towerBounds = new Location[]{
+            new Location(Worlds.Feb2023_tower(), -60, -62, 3),
+            new Location(Worlds.Feb2023_tower(), -62, 319, 1)
+    };
 
-    public static World getTowerWorld() {
-        return Worlds.Feb2023_tower();
-    }
+    public static final Map<Integer, Location> towerLocations = new HashMap<>();
+
+    public static final Location spawnLocation = new Location(Worlds.Feb2023(), 136, 63, -2100, 0, 0);
+
+    public static final Location baseSpawn = new Location(Worlds.Feb2023(), 142, 64, -2094);
+    public static final Location[] spawnBounds = new Location[]{
+            new Location(Worlds.Feb2023(), 133, 64, -2103),
+            new Location(Worlds.Feb2023(), 150, 319, -2086)
+    };
+
+    public static final Map<Integer, Location> spawnLocations = new HashMap<>();
 
     private SpawnRegion spawnRegion;
     private TowerRegion towerRegion;
@@ -45,8 +62,25 @@ public class ParticipantTeam extends TowerTeam {
 
     public void loadRegions() {
 
-        this.spawnRegion = new SpawnRegion(getPlugin(), this);
-        this.towerRegion = new TowerRegion(getPlugin(), this, getTextName());
+        if (towerLocations.containsKey(getDatabaseId())) {
+            Location[] bounds = Arrays.stream(towerBounds).map(location -> {
+                Location teamLocation = towerLocations.get(getDatabaseId());
+                Vector offset = teamLocation.clone().subtract(towerLocation).toVector();
+
+                return location.clone().add(offset).setDirection(teamLocation.getDirection());
+            }).toArray(Location[]::new);
+            this.towerRegion = new TowerRegion(getPlugin(), bounds, this, getTextName());
+        }
+
+        if (spawnLocations.containsKey(getDatabaseId())) {
+            Location teamLocation = spawnLocations.get(getDatabaseId());
+            Vector offset = teamLocation.clone().subtract(spawnLocation).toVector();
+            Location[] bounds = Arrays.stream(spawnBounds).map(location -> location.clone().add(offset).setDirection(teamLocation.getDirection())).toArray(Location[]::new);
+
+            Location spawnLocation = baseSpawn.clone().add(offset).setDirection(teamLocation.getDirection());
+            this.spawnRegion = new SpawnRegion(getPlugin(), bounds, spawnLocation, this);
+        }
+
 
     }
 
@@ -152,7 +186,11 @@ public class ParticipantTeam extends TowerTeam {
     @Override
     public void unregisterEvents() {
         QuestChangeEvent.getHandlerList().unregister(this);
-        spawnRegion.unregisterEvents();
-        towerRegion.unregisterEvents();
+        if (spawnRegion != null) {
+            spawnRegion.unregisterEvents();
+        }
+        if (towerRegion != null) {
+            towerRegion.unregisterEvents();
+        }
     }
 }

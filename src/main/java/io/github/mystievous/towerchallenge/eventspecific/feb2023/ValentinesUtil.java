@@ -1,14 +1,14 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.utility.BlockSets;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Candle;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,22 +24,19 @@ public class ValentinesUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    public static final String GALLERY_NAME = "Shooting Gallery";
     public static final String GALLERY_KEY = "Bow-wielder's Key";
     public static final String GALLERY_TAG = "shooting_gallery";
 
-    public static final String MAZE_NAME = "Historian's Archive";
     public static final String MAZE_KEY = "Historian's Key";
     public static final String MAZE_TAG = "tower_maze";
 
-    public static final String OCEAN_NAME = "Mermaid's Grove";
     public static final String OCEAN_KEY = "Mermaid's Grove Key";
     public static final String OCEAN_TAG = "mermaids_grove";
 
     public static final String HORSESHOE_NAME = "Diamond Horseshoe";
     public static final String HORSESHOE_TAG = "diamond_horseshoe";
 
-    public static final ItemStack galleryKey = NBTUtils.setNoUse(NBTUtils.setBool(GALLERY_TAG, new ItemStack(Material.SPECTRAL_ARROW) {{
+    public static final ItemStack galleryKey = NBTUtils.setNoUse(TowerChallenge.getInstance(), NBTUtils.setBool(TowerChallenge.getInstance(), GALLERY_TAG, new ItemStack(Material.SPECTRAL_ARROW) {{
         ItemMeta meta = getItemMeta();
         meta.displayName(TextUtil.noItalic(GALLERY_KEY));
         meta.setCustomModelData(1);
@@ -47,7 +44,7 @@ public class ValentinesUtil {
         setItemMeta(meta);
     }}));
 
-    public static final ItemStack mazeKey = NBTUtils.setNoUse(NBTUtils.setBool(MAZE_TAG, new ItemStack(Material.FEATHER) {{
+    public static final ItemStack mazeKey = NBTUtils.setNoUse(TowerChallenge.getInstance(), NBTUtils.setBool(TowerChallenge.getInstance(), MAZE_TAG, new ItemStack(Material.FEATHER) {{
         ItemMeta meta = getItemMeta();
         meta.displayName(TextUtil.noItalic(MAZE_KEY));
         meta.setCustomModelData(1);
@@ -55,7 +52,7 @@ public class ValentinesUtil {
         setItemMeta(meta);
     }}));
 
-    public static final ItemStack oceanKey = NBTUtils.setNoUse(NBTUtils.setBool(OCEAN_TAG, new ItemStack(Material.HEART_OF_THE_SEA) {{
+    public static final ItemStack oceanKey = NBTUtils.setNoUse(TowerChallenge.getInstance(), NBTUtils.setBool(TowerChallenge.getInstance(), OCEAN_TAG, new ItemStack(Material.HEART_OF_THE_SEA) {{
         ItemMeta meta = getItemMeta();
         meta.displayName(TextUtil.noItalic(OCEAN_KEY));
         meta.setCustomModelData(12);
@@ -63,7 +60,7 @@ public class ValentinesUtil {
         setItemMeta(meta);
     }}));
 
-    public static final ItemStack diamondHorseshoe = NBTUtils.setNoUse(NBTUtils.setBool(HORSESHOE_TAG, new ItemStack(Material.GOLD_INGOT) {{
+    public static final ItemStack diamondHorseshoe = NBTUtils.setNoUse(TowerChallenge.getInstance(), NBTUtils.setBool(TowerChallenge.getInstance(), HORSESHOE_TAG, new ItemStack(Material.GOLD_INGOT) {{
         ItemMeta meta = getItemMeta();
         meta.displayName(TextUtil.noItalic(HORSESHOE_NAME));
         meta.setCustomModelData(1);
@@ -95,12 +92,8 @@ public class ValentinesUtil {
             "mermaids_grove-fragment_9"
     };
 
-    public static String oceanKeyFragmentTag(@Range(from = 1, to = 9) int number) {
-        return String.format("%s-fragment_%d", OCEAN_TAG, number);
-    }
-
     public static ItemStack oceanKeyFragment(@Range(from = 1, to = 9) int number) {
-        return NBTUtils.setNoUse(NBTUtils.setBool(oceanKeyFragmentTags[number - 1], new ItemStack(Material.HEART_OF_THE_SEA) {{
+        return NBTUtils.setNoUse(TowerChallenge.getInstance(), NBTUtils.setBool(TowerChallenge.getInstance(), oceanKeyFragmentTags[number - 1], new ItemStack(Material.HEART_OF_THE_SEA) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(TextUtil.noItalic(String.format("%s Fragment %d", OCEAN_KEY, number)));
             meta.setCustomModelData(fragmentMap.get(number));
@@ -109,7 +102,7 @@ public class ValentinesUtil {
         }}));
     }
 
-    public static ItemStack[] oceanKeyFragments = new ItemStack[]{
+    public static final ItemStack[] oceanKeyFragments = new ItemStack[]{
             oceanKeyFragment(1),
             oceanKeyFragment(2),
             oceanKeyFragment(3),

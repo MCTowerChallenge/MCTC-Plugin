@@ -1,11 +1,11 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.element.Element;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -57,6 +57,12 @@ public class FullInventory implements CommandExecutor {
         }
     }
 
+    private final TowerChallenge plugin;
+
+    public FullInventory(TowerChallenge plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player) {
@@ -64,7 +70,7 @@ public class FullInventory implements CommandExecutor {
             if (args.length > 0 && player.hasPermission("towerchallenge.fullinv.other")) {
                 Player targetPlayer = Bukkit.getPlayer(args[0]);
                 if (targetPlayer != null) {
-                    ListGui viewInventory = new ListGui(Component.text(String.format("%s's Extra Items", targetPlayer.getName())), Element.empty());
+                    ListGui viewInventory = new ListGui(plugin, Component.text(String.format("%s's Extra Items", targetPlayer.getName())), Element.blank());
                     for (ItemStack item : getPlayerItems(targetPlayer)) {
                         ButtonElement buttonElement = new ButtonElement(item, player1 -> {
                             player1.getInventory().addItem(item);

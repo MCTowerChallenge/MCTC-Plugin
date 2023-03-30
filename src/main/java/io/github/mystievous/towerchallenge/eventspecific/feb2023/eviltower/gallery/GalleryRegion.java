@@ -8,8 +8,7 @@ import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTower;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.teams.regions.EventRegion;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -24,11 +23,8 @@ public class GalleryRegion extends EventRegion {
             new Location(Worlds.eviltowers(), -20, 119, -59)
     };
 
-    private final EvilTower evilTower;
-
     public GalleryRegion(TowerChallenge plugin, EvilTower evilTower, TowerTeam team) {
         super(plugin, Arrays.stream(baseCorners).map(evilTower::offsetLocation).toArray(Location[]::new), team);
-        this.evilTower = evilTower;
     }
 
     @Override
@@ -36,7 +32,7 @@ public class GalleryRegion extends EventRegion {
 
     @Override
     public String getRegionName() {
-        return NBTUtils.toTeamTag(getTeam(), "gallery_area");
+        return TeamUtils.toTeamTag(getTeam(), "gallery_area");
     }
 
     @Override

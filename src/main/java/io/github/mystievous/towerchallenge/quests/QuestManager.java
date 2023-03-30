@@ -1,18 +1,18 @@
 package io.github.mystievous.towerchallenge.quests;
 
+import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mystigui.GuiHeldItem;
+import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
 import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.gui.GuiHeldItem;
-import io.github.mystievous.towerchallenge.gui.page.Gui;
-import io.github.mystievous.towerchallenge.gui.page.Openable;
 import io.github.mystievous.towerchallenge.quests.entities.GodMountNPC;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.towerchallenge.utility.Color;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -54,18 +54,7 @@ public class QuestManager implements Openable {
     public static final String BUTT_STALLION = "buttstallion";
     public static final String SPIRIT = "evil-spirit";
 
-//    public static final PresetGui NO_QUEST_GUI = new PresetGui(Component.text("No quests!"), 3) {{
-//        Element element = new Element(new ItemStack(Material.PAPER) {{
-//            ItemMeta meta = getItemMeta();
-//            meta.displayName(Component.text("You have no available quests!"));
-//            setItemMeta(meta);
-//        }});
-//
-//        placeElement(2, 5, element);
-//
-//    }};
-
-    public static final QuestGui NO_QUEST_GUI = new QuestGui("No more quests!", "Enjoy the rest of the event!");
+    public static final QuestGui NO_QUEST_GUI = new QuestGui(TowerChallenge.getInstance(), "No more quests!", "Enjoy the rest of the event!");
 
     public void setTeamQuest(TowerTeam team, String questId) {
         QuestChangeEvent event = new QuestChangeEvent(team, getQuest(team, questId), getQuest(team, getTeamQuest(team)));
@@ -77,15 +66,6 @@ public class QuestManager implements Openable {
             teamManager.getDatabase().setTeamQuest(team, questId);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
-        }
-    }
-
-    public void setTeamQuest(Player player, String questId) {
-        TowerTeam team = teamManager.getPlayerTeam(player);
-        if (team != null) {
-            setTeamQuest(team, questId);
-        } else {
-            Bukkit.getLogger().info("What? How? Quest Manager SetTeamQuest without a team?");
         }
     }
 
@@ -152,9 +132,9 @@ public class QuestManager implements Openable {
         Dialogue steveGetUpHere3 = new Dialogue(teamManager, steve.formatMessage("How the fuck did you get up here?"), 3.0f);
         steveGetUpHere3.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.get_up_here.3"));
 
-        Dialogue steveGetUpHere4 = steveGetUpHere1.clone();
-        Dialogue steveGetUpHere5 = steveGetUpHere2.clone();
-        Dialogue steveGetUpHere6 = steveGetUpHere3.clone();
+        Dialogue steveGetUpHere4 = steveGetUpHere1.duplicate();
+        Dialogue steveGetUpHere5 = steveGetUpHere2.duplicate();
+        Dialogue steveGetUpHere6 = steveGetUpHere3.duplicate();
 
         Dialogue steveNotTimeYet = new Dialogue(teamManager, steve.formatMessage("It's not time yet!"), 2.5f);
         steveNotTimeYet.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.not_time_yet"));
@@ -211,7 +191,7 @@ public class QuestManager implements Openable {
         };
 
 
-        buttStallionStart = new Quest(teamManager, BUTTSTALLION_START, "Butt Stallion");
+        buttStallionStart = new Quest(plugin, teamManager, BUTTSTALLION_START, "Butt Stallion");
         buttStallionStart.setDescription("Go talk to Butt Stallion in the Stables to the North- East of the spawn islands!");
         quests.put(BUTTSTALLION_START, buttStallionStart);
 
@@ -275,7 +255,7 @@ public class QuestManager implements Openable {
         steve.addQuestHandler(BUTTSTALLION_START, getUpHereRandom);
 
 
-        investigateTower = new Quest(teamManager, INVESTIGATE_TOWER, "Ominous Tower");
+        investigateTower = new Quest(plugin, teamManager, INVESTIGATE_TOWER, "Ominous Tower");
         investigateTower.setDescription("Investigate the Tower on the hill above the Love Fair!");
         quests.put(INVESTIGATE_TOWER, investigateTower);
 
@@ -293,7 +273,7 @@ public class QuestManager implements Openable {
         });
         steve.addQuestHandler(INVESTIGATE_TOWER, getUpHereRandom);
 
-        pickTowerRoom = new Quest(teamManager, PICK_TOWER_ROOM, "Tower Rooms");
+        pickTowerRoom = new Quest(plugin, teamManager, PICK_TOWER_ROOM, "Tower Rooms");
         pickTowerRoom.setDescription("Pick your next room to complete in the Tower above the Love Fair.");
         quests.put(PICK_TOWER_ROOM, pickTowerRoom);
 
@@ -312,7 +292,7 @@ public class QuestManager implements Openable {
         steve.addQuestHandler(PICK_TOWER_ROOM, getUpHereRandom);
 
 
-        shootingGallery = new Quest(teamManager, SHOOTING_GALLERY, "The Gallery");
+        shootingGallery = new Quest(plugin, teamManager, SHOOTING_GALLERY, "The Gallery");
         shootingGallery.setDescription("Complete the shooting gallery in the tower above the Love Fair.");
         quests.put(SHOOTING_GALLERY, shootingGallery);
 
@@ -330,7 +310,7 @@ public class QuestManager implements Openable {
         });
         steve.addQuestHandler(SHOOTING_GALLERY, getUpHereRandom);
 
-        libraryMaze = new Quest(teamManager, LIBRARY_MAZE, "The Maze");
+        libraryMaze = new Quest(plugin, teamManager, LIBRARY_MAZE, "The Maze");
         libraryMaze.setDescription("Make your way through the maze in the Tower above the Love Fair.");
         quests.put(LIBRARY_MAZE, libraryMaze);
 
@@ -348,7 +328,7 @@ public class QuestManager implements Openable {
         });
         steve.addQuestHandler(LIBRARY_MAZE, getUpHereRandom);
 
-        oceanSearch = new Quest(teamManager, OCEAN_SEARCH, "The Sea");
+        oceanSearch = new Quest(plugin, teamManager, OCEAN_SEARCH, "The Sea");
         oceanSearch.setDescription("Find 9 key fragments in the Mermaid's Grove, in the tower above the Love Fair.");
         quests.put(OCEAN_SEARCH, oceanSearch);
 
@@ -366,7 +346,7 @@ public class QuestManager implements Openable {
         });
         steve.addQuestHandler(OCEAN_SEARCH, getUpHereRandom);
 
-        talkToSteve = new Quest(teamManager, TALK_TO_STEVE, "steve");
+        talkToSteve = new Quest(plugin, teamManager, TALK_TO_STEVE, "steve");
         talkToSteve.setDescription("Talk to steve skellington at the top of the tower above the Love Fair.");
         quests.put(TALK_TO_STEVE, talkToSteve);
 
@@ -437,7 +417,7 @@ public class QuestManager implements Openable {
         });
 
 
-        buttStallionReturn = new Quest(teamManager, BUTTSTALLION_RETURN, "Butt Stallion");
+        buttStallionReturn = new Quest(plugin, teamManager, BUTTSTALLION_RETURN, "Butt Stallion");
         buttStallionReturn.setDescription("Return to Butt Stallion with the Diamond Horseshoe from steve!");
         quests.put(BUTTSTALLION_RETURN, buttStallionReturn);
 
@@ -464,7 +444,7 @@ public class QuestManager implements Openable {
 
             if (!team.isInDialogue()) {
                 team.setInDialogue(true);
-                if (NBTUtils.boolState(ValentinesUtil.HORSESHOE_TAG, item)) {
+                if (NBTUtils.boolState(plugin, ValentinesUtil.HORSESHOE_TAG, item)) {
                     player.getInventory().setItem(hand, item.subtract(1));
                     bsButtStallion.play(team, () -> {
                         team.setInDialogue(false);
@@ -472,9 +452,7 @@ public class QuestManager implements Openable {
                         FullInventory.givePlayerItems(player, ValentinesUtil.randomBlockBundle(), BlockVoucher.getVouchers(3));
                     });
                 } else {
-                    bsTalkSteve.play(team, () -> {
-                        team.setInDialogue(false);
-                    });
+                    bsTalkSteve.play(team, () -> team.setInDialogue(false));
                 }
             }
         });
@@ -497,7 +475,7 @@ public class QuestManager implements Openable {
             }
         });
 
-        QuestCommands commands = new QuestCommands(this, teamManager);
+        QuestCommands commands = new QuestCommands(this);
         plugin.getCommand("questbook").setExecutor(commands);
     }
 

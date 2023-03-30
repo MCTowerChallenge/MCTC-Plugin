@@ -11,11 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Timer extends BukkitRunnable {
 
-    private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
     private LocalDateTime endTime;
     private final Duration maxDuration;
     private Duration timeLeft;
@@ -145,14 +143,6 @@ public class Timer extends BukkitRunnable {
         }
     }
 
-    public Duration getMaxDuration() {
-        return maxDuration;
-    }
-
-    public Duration getTimeLeft() {
-        return timeLeft;
-    }
-
     public BossBar getBossBar() {
         return bossBar;
     }
@@ -169,44 +159,6 @@ public class Timer extends BukkitRunnable {
     public void removeBossBar() {
         bossBarShown = false;
         Bukkit.getServer().hideBossBar(bossBar);
-    }
-
-    public void setEndTime(LocalDateTime time) {
-        this.endTime = time;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setCurrentTime() {
-        endTime = LocalDateTime.now();
-    }
-
-    public String getFormattedTime() {
-
-        return endTime.format(timeFormat);
-    }
-
-    public String getTimeFromSet() {
-        LocalDateTime fromDateTime = LocalDateTime.now();
-        LocalDateTime toDateTime = endTime;
-
-        Duration duration = new Duration(fromDateTime, toDateTime);
-
-        return ( duration.getYears() + " years " +
-                duration.getMonths() + " months " +
-                duration.getDays() + " days " +
-                duration.getHours() + " hours " +
-                duration.getMinutes() + " minutes " +
-                duration.getSeconds()  + " seconds.");
-    }
-
-    public TimerState getState() {
-        return state;
-    }
-    public void setState(TimerState state) {
-        this.state = state;
     }
 
 }

@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.magic;
 
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -41,7 +41,7 @@ public class GoatHat implements Listener {
     @EventHandler
     public void onPlayerToggleSneak(final PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
-            if (NBTUtils.boolState(GOAT_HAT, event.getPlayer().getEquipment().getHelmet())) {
+            if (NBTUtils.boolState(TowerChallenge.getInstance(), GOAT_HAT, event.getPlayer().getEquipment().getHelmet())) {
                 createGoat(event.getPlayer().getLocation());
             }
         }

@@ -3,11 +3,13 @@ package io.github.mystievous.towerchallenge.teams.regions;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mystievous.towerchallenge.*;
+import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.ChallengePhaseChangeEvent;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import io.github.mystievous.towerchallenge.utility.BlockSets;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.TextUtil;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -22,55 +24,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
-import org.bukkit.util.Vector;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TowerRegion extends EventRegion {
-
-    public static final Location referenceLocation = new Location(Worlds.Feb2023_tower(), -60, -63, 3);
-    public static final Location[] baseBounds = new Location[]{
-            new Location(Worlds.Feb2023_tower(), -60, -62, 3),
-            new Location(Worlds.Feb2023_tower(), -62, 319, 1)
-    };
-
-    public static final Map<Integer, Location> teamLocations = new HashMap<>() {{
-        put(2, referenceLocation);
-        put(3, new Location(Worlds.Feb2023_tower(), -53, -63, 10));
-        put(6, new Location(Worlds.Feb2023_tower(), -68, -63, 2));
-        put(7, new Location(Worlds.Feb2023_tower(), -63, -63, -3));
-        put(8, new Location(Worlds.Feb2023_tower(), -57, -63, -3));
-        put(10, new Location(Worlds.Feb2023_tower(), -47, -63, 7));
-        put(11, new Location(Worlds.Feb2023_tower(), -47, -63, 13));
-        put(13, new Location(Worlds.Feb2023_tower(), -57, -63, 23));
-        put(14, new Location(Worlds.Feb2023_tower(), -63, -63, 23));
-    }};
 
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
     private final Score score;
 
-    public TowerRegion(TowerChallenge plugin, ParticipantTeam team, String name) {
-        super(plugin, Arrays.stream(baseBounds).map(location -> {
-            Location teamLocation = teamLocations.get(team.getDatabaseId());
-            Vector offset = teamLocation.clone().subtract(referenceLocation).toVector();
-
-            return location.clone().add(offset).setDirection(teamLocation.getDirection());
-        }).toArray(Location[]::new), team);
-        score = ChallengeManager.getScoreObjective().getScore(name);
-        score.setScore(blocks.size());
-    }
-
-    private Location offsetLocation(Location location) {
-        Location teamLocation = teamLocations.get(getTeam().getDatabaseId());
-        Vector offset = teamLocation.clone().subtract(referenceLocation).toVector();
-
-        return location.clone().add(offset).setDirection(teamLocation.getDirection());
+    public TowerRegion(TowerChallenge plugin, Location[] bounds, ParticipantTeam team, String name) {
+        super(plugin, bounds, team);
+        Objective objective = ChallengeManager.getScoreObjective();
+        if (objective != null) {
+            score = objective.getScore(name);
+            score.setScore(blocks.size());
+        } else {
+            score = null;
+        }
     }
 
     @Override
@@ -121,7 +94,9 @@ public class TowerRegion extends EventRegion {
         if (!block.getType().equals(Material.BEDROCK)) {
             if (blocks.get(material) == null) {
                 blocks.put(material, block);
-                score.setScore(blocks.size());
+                if (score != null) {
+                    score.setScore(blocks.size());
+                }
                 return false;
             } else {
                 audience.sendActionBar(Component.text("You've already placed ").append(Component.text(TextUtil.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
@@ -153,7 +128,9 @@ public class TowerRegion extends EventRegion {
         Material material = block.getType();
         if (!material.equals(Material.BEDROCK)) {
             blocks.remove(material);
-            score.setScore(blocks.size());
+            if (score != null) {
+                score.setScore(blocks.size());
+            }
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {

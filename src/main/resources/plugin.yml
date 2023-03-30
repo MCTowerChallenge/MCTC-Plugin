@@ -6,10 +6,11 @@ prefix: TowerChallenge
 depend:
   - WorldGuard
   - WorldEdit
-  - NBTAPI
   - Multiverse-Core
   - Multiverse-Portals
   - ProtocolLib
+  - MystiCore
+  - MystiGui
 commands:
   tower:
     description: Commands relating to the towers

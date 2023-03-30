@@ -1,11 +1,13 @@
 package io.github.mystievous.towerchallenge.teleports;
 
-import io.github.mystievous.towerchallenge.gui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.gui.page.Gui;
-import io.github.mystievous.towerchallenge.gui.page.ListGui;
-import io.github.mystievous.towerchallenge.gui.page.Openable;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.ListGui;
+import io.github.mystievous.mystigui.page.Openable;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.gui.Icons;
+import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -20,8 +22,8 @@ import java.util.List;
 
 public class TeleportHistoryIndividualGui extends ListGui implements Openable {
 
-    public TeleportHistoryIndividualGui(TeleportHistoryManager teleportHistoryManager, OfflinePlayer player, Gui leaveGui) {
-        super(Component.text(player.getName()).append(Component.text("'s Teleport History")), new ButtonElement(ButtonElement.backItem(), leaveGui::openInventory));
+    public TeleportHistoryIndividualGui(TowerChallenge plugin, TeleportHistoryManager teleportHistoryManager, OfflinePlayer player, Gui leaveGui) {
+        super(plugin, Component.text(player.getName()).append(Component.text("'s Teleport History")), new ButtonElement(Icons.backItem(), leaveGui::openInventory));
         List<TeleportLocation> locations = teleportHistoryManager.get(player);
         for (int i = locations.size()-1; i >= 0; i--) {
             TeleportLocation location = locations.get(i);

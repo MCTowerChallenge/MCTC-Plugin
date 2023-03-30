@@ -5,12 +5,12 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.utility.NBTUtils;
-import io.github.mystievous.towerchallenge.utility.Palette;
-import io.github.mystievous.towerchallenge.utility.TextUtil;
+import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -33,7 +33,7 @@ public class FastTravelListener implements Listener {
     }
 
     public ItemStack getCookie() {
-        ItemStack cookie = NBTUtils.setBool(COOKIE_TAG, new ItemStack(Material.COOKIE));
+        ItemStack cookie = NBTUtils.setBool(TowerChallenge.getInstance(), COOKIE_TAG, new ItemStack(Material.COOKIE));
         ItemMeta meta = cookie.getItemMeta();
         meta.displayName(Component.text("Portal Cookie").decoration(TextDecoration.ITALIC, false));
         meta.lore(TextUtil.formatTexts("Eat me to teleport between", "Spawn and Sweetsburg!"));
@@ -63,11 +63,11 @@ public class FastTravelListener implements Listener {
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
         ItemStack previousItem = player.getInventory().getItem(event.getPreviousSlot());
 
-        if (NBTUtils.boolState(COOKIE_TAG, item)) {
+        if (NBTUtils.boolState(TowerChallenge.getInstance(), COOKIE_TAG, item)) {
             if (player.getFoodLevel() == 20) {
                 player.setFoodLevel(19);
             }
-        } else if (NBTUtils.boolState(COOKIE_TAG, previousItem)) {
+        } else if (NBTUtils.boolState(TowerChallenge.getInstance(), COOKIE_TAG, previousItem)) {
             if (player.getFoodLevel() == 19) {
                 player.setFoodLevel(20);
             }
@@ -84,7 +84,7 @@ public class FastTravelListener implements Listener {
             return;
         if (!(entity instanceof Player player))
             return;
-        if (!NBTUtils.boolState(COOKIE_TAG, item))
+        if (!NBTUtils.boolState(TowerChallenge.getInstance(), COOKIE_TAG, item))
             return;
         if (overworldManager == null)
             return;

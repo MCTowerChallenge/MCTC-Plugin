@@ -1,6 +1,5 @@
 package io.github.mystievous.towerchallenge.quests;
 
-import io.github.mystievous.towerchallenge.teams.TeamManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -15,11 +14,9 @@ import java.util.HashMap;
 public class QuestCommands implements CommandExecutor {
 
     private final QuestManager questManager;
-    private final TeamManager teamManager;
 
-    public QuestCommands(QuestManager questManager, TeamManager teamManager) {
+    public QuestCommands(QuestManager questManager) {
         this.questManager = questManager;
-        this.teamManager = teamManager;
     }
 
     @Override
