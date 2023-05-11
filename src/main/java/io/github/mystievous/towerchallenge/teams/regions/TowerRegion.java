@@ -32,11 +32,13 @@ import java.util.EnumMap;
 
 public class TowerRegion extends EventRegion {
 
+    public static final String REGION_TAG = "tower";
+
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
     private final Score score;
 
     public TowerRegion(TowerChallenge plugin, Location[] bounds, ParticipantTeam team, String name) {
-        super(plugin, bounds, team);
+        super(plugin, bounds, team, REGION_TAG);
         Objective objective = ChallengeManager.getScoreObjective();
         if (objective != null) {
             score = objective.getScore(name);
@@ -44,6 +46,7 @@ public class TowerRegion extends EventRegion {
         } else {
             score = null;
         }
+        setFlags(getRegion());
     }
 
     @Override
@@ -52,13 +55,8 @@ public class TowerRegion extends EventRegion {
     }
 
     @Override
-    public String getRegionName() {
-        return String.format("%s-tower", getTeam().getServerTeamName());
-    }
-
-    @Override
     public String parentRegionName() {
-        return "tower_area";
+        return "towers";
     }
 
     @Override

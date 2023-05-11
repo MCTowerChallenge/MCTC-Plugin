@@ -5,7 +5,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
-import io.github.mystievous.towerchallenge.misc.fasttravel.FastTravelListener;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.towering.TowerListener;
@@ -54,8 +53,6 @@ public class ChallengeManager {
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         winnersGUI = new WinnersGUI(plugin, teamManager, Element.blank());
         new SpawnCompass();
-//        new MarketStalls();
-        new FastTravelListener();
         new GoatHat();
         SpoutManager.runSpouts();
     }

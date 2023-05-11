@@ -13,27 +13,32 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 
 public abstract class EventRegion implements Listener {
 
-    protected final TowerChallenge plugin;
+    protected final Plugin plugin;
     private final TowerTeam team;
     private ProtectedRegion region;
     private final Location[] area;
+    private final String tag;
 
-    public EventRegion(TowerChallenge plugin, Location[] area, TowerTeam team) {
+    public EventRegion(Plugin plugin, Location[] area, TowerTeam team, String tag) {
         this.plugin = plugin;
         this.team = team;
         this.area = area;
+        this.tag = tag;
         loadRegion();
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public abstract void unregisterEvents();
 
-    public abstract String getRegionName();
+    public String getRegionName() {
+        return String.format("%s-%s", getTeam().getServerTeamName(), tag);
+    };
 
     public abstract String parentRegionName();
 
@@ -44,8 +49,6 @@ public abstract class EventRegion implements Listener {
         String name = getRegionName();
 
         region = RegionUtils.upsertRegion(name, area[0], area[1], parentRegionName());
-
-        setFlags(region);
 
     }
 

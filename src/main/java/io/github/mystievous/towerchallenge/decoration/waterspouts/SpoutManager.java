@@ -16,25 +16,25 @@ public class SpoutManager {
     public static void runSpouts() {
 
         // Dec2022
-        List<Spout> spouts = new ArrayList<>();
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-808) + 0.5))); // 1
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-801) + 0.5))); // 4
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-825) + 0.5, 67, (-806) + 0.5))); // 2
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-826) + 0.5, 67, (-800) + 0.5))); // 5
-        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-823) + 0.5, 67, (-803) + 0.5))); // 3
-
-        int count = 0;
-        for (Spout spout : spouts) {
-            count++;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), spout::runSpout, count * 20L * 5);
-        }
+//        List<Spout> spouts = new ArrayList<>();
+//        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-808) + 0.5))); // 1
+//        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-824) + 0.5, 67, (-801) + 0.5))); // 4
+//        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-825) + 0.5, 67, (-806) + 0.5))); // 2
+//        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-826) + 0.5, 67, (-800) + 0.5))); // 5
+//        spouts.add(new Spout(new Location(Worlds.Dec2022(), (-823) + 0.5, 67, (-803) + 0.5))); // 3
+//
+//        int count = 0;
+//        for (Spout spout : spouts) {
+//            count++;
+//            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), spout::runSpout, count * 20L * 5);
+//        }
 
         // Feb2023
-        final double height = 1.0d;
-        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2110.5), height).runSpout();
-        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2110.5), height).runSpout();
-        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2118.5), height).runSpout();
-        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2118.5), height).runSpout();
+//        final double height = 1.0d;
+//        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2110.5), height).runSpout();
+//        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2110.5), height).runSpout();
+//        new ConstantSpout(new Location(Worlds.Feb2023(), 99.5, 65, -2118.5), height).runSpout();
+//        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2118.5), height).runSpout();
 
 
     }

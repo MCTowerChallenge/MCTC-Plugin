@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.gods.godgui;
 
 import io.github.mystievous.mysticore.DefaultFontInfo;
 import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
@@ -9,16 +10,13 @@ import io.github.mystievous.mystigui.page.ConfirmationGUI;
 import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.mystigui.page.PlayerGui;
 import io.github.mystievous.mystigui.page.PresetGui;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
-import io.github.mystievous.towerchallenge.gui.Icons;
-import io.github.mystievous.towerchallenge.gui.page.TeamGui;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
-import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import io.github.mystievous.towerchallenge.gui.Icons;
+import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.quests.TextFormatter;
-import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Axis;
@@ -38,7 +36,7 @@ import java.util.List;
 
 public class DeveloperGui extends PresetGui {
 
-    public DeveloperGui(TowerChallenge plugin, TeamManager teamManager, EvilTowerManager evilTowerManager) {
+    public DeveloperGui(TowerChallenge plugin, TeamManager teamManager) {
         super(plugin, Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);
@@ -94,43 +92,6 @@ public class DeveloperGui extends PresetGui {
                 {new Vector(97, 73, -2115), new Vector(97, 74, -2115)},
         };
 
-        ItemStack closePortalItem = GuiUtil.formatItem("Close Nether Portal", Material.CRYING_OBSIDIAN, null);
-        Element closePortalElement = new ButtonElement(closePortalItem, player -> {
-            for (Vector[] layer : portalBlocks) {
-                for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
-                    for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
-                        for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                            Location location = new Location(Worlds.Feb2023(), x, y, z);
-                            Block block = location.getBlock();
-                            block.setType(Material.AIR);
-                        }
-                    }
-                }
-            }
-        });
-
-        ItemStack openPortalItem = GuiUtil.formatItem("Open Nether Portal", Material.OBSIDIAN, null);
-        Element openPortalElement = new ButtonElement(openPortalItem,
-                player -> new ConfirmationGUI(plugin, Component.text("Confirm opening portal?"),
-                        player1 -> {
-                            for (Vector[] layer : portalBlocks) {
-                                for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
-                                    for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
-                                        for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                            Location location = new Location(Worlds.Feb2023(), x, y, z);
-                                            Block block = location.getBlock();
-                                            block.setType(Material.NETHER_PORTAL);
-                                            Orientable blockData = (Orientable) block.getBlockData();
-                                            blockData.setAxis(Axis.Z);
-                                            block.setBlockData(blockData);
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        this::openInventory)
-                        .openInventory(player));
-
         ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
         Element hatElement = new ButtonElement(hatItem, player -> {
             try {
@@ -163,11 +124,11 @@ public class DeveloperGui extends PresetGui {
 
         placeElement(1, 1, testElement);
         placeElement(1, 2, addPlayerElement);
-        placeElement(1, 3, new ButtonElement(new ItemStack(Material.OBSIDIAN) {{
-            ItemMeta meta = getItemMeta();
-            meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
-            setItemMeta(meta);
-        }}, player -> evilTowerManager.getGui(player).openInventory(player)));
+//        placeElement(1, 3, new ButtonElement(new ItemStack(Material.OBSIDIAN) {{
+//            ItemMeta meta = getItemMeta();
+//            meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
+//            setItemMeta(meta);
+//        }}, player -> evilTowerManager.getGui(player).openInventory(player)));
 
         try {
             text.append(Component.text(title));
@@ -184,12 +145,7 @@ public class DeveloperGui extends PresetGui {
             placeElement(1, 4, questOpen);
         } catch (SQLException ignored) {}
 
-        placeElement(1, 6, openPortalElement);
-        placeElement(1, 7, closePortalElement);
         placeElement(1, 8, hatElement);
-
-        placeElement(2, 1, new ButtonElement(new ItemStack(Material.STONE), player -> ValentinesUtil.closeTowerArea()));
-        placeElement(2, 2, new ButtonElement(new ItemStack(Material.CRACKED_STONE_BRICKS), player -> ValentinesUtil.openTowerArea()));
 
     }
 }

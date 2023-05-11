@@ -1,11 +1,10 @@
 package io.github.mystievous.towerchallenge.gods;
 
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
-import io.github.mystievous.towerchallenge.magic.MagicItems;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
 import io.github.mystievous.towerchallenge.gods.godgui.GodGui;
+import io.github.mystievous.towerchallenge.magic.MagicItems;
+import io.github.mystievous.towerchallenge.quests.QuestManager;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
 import org.bukkit.Bukkit;
 
@@ -18,9 +17,9 @@ public class GodManager {
      *
      * @param teamManager   Team Manager for the event
      */
-    public GodManager(TowerChallenge plugin, TeamManager teamManager, FerrisWheel ferrisWheel, EvilTowerManager evilTowerManager, MagicItems magicItems) {
+    public GodManager(TowerChallenge plugin, QuestManager questManager, TeamManager teamManager, MagicItems magicItems) {
         TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(plugin, this);
-        godGui = new GodGui(plugin, this, ferrisWheel, teleportHistoryManager, teamManager, evilTowerManager, magicItems);
+        godGui = new GodGui(plugin, this, questManager, teleportHistoryManager, teamManager, magicItems);
 
         GodMenuCommand command = new GodMenuCommand(this);
         Bukkit.getPluginCommand("godmenu").setExecutor(command);

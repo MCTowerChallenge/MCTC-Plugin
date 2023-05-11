@@ -26,8 +26,8 @@ import java.util.Map;
 
 public class SpawnCompass implements Listener {
 
-    public static final Location OVERWORLD_LOCATION = new Location(Worlds.WORLD(), 141, 64, -2131);
-    public static final Location NETHER_LOCATION = new Location(Worlds.NETHER(), -23.5,41,-388.5);
+    public static final Location OVERWORLD_LOCATION = new Location(Worlds.Apr2023(), -669.5, 65, -2432.5);
+    public static final Location NETHER_LOCATION = new Location(Worlds.Apr2023_nether(), -87.5,43,-284.5);
     public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
     public static ItemStack refreshPlayerDestination(Player player, ItemStack compass) {

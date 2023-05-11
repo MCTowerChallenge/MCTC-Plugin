@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class Quest implements Openable {
 
-    private final TowerChallenge plugin;
-    private final TeamManager teamManager;
+    protected final TowerChallenge plugin;
+    protected final TeamManager teamManager;
     private final String id;
     private final String friendlyName;
     private @Nullable String description;
@@ -24,6 +24,12 @@ public class Quest implements Openable {
         this.description = null;
     }
 
+    public Quest copy() {
+        Quest quest = new Quest(plugin, teamManager, id, friendlyName);
+        quest.setDescription(description);
+        return quest;
+    }
+
     public String getId() {
         return id;
     }
@@ -34,6 +40,10 @@ public class Quest implements Openable {
 
     public void setDescription(@Nullable String description) {
         this.description = description;
+    }
+
+    public @Nullable String getDescription() {
+        return description;
     }
 
     @Override

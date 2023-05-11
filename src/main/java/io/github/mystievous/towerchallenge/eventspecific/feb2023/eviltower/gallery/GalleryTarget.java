@@ -26,7 +26,6 @@ import java.util.HashSet;
 class GalleryTarget implements Listener {
 
     private final TowerChallenge plugin;
-    private final ShootingGallery shootingGallery;
 
     private final Location targetLocation;
     private final Location targetUpLocation;
@@ -43,9 +42,8 @@ class GalleryTarget implements Listener {
     private boolean active;
     private boolean hit;
 
-    public GalleryTarget(TowerChallenge plugin, ShootingGallery shootingGallery, Location location, int pointValue, double time) {
+    public GalleryTarget(TowerChallenge plugin, Location location, int pointValue, double time) {
         this.plugin = plugin;
-        this.shootingGallery = shootingGallery;
         this.targetLocation = location;
         this.targetUpLocation = location.clone().add(0, 1, 0);
         this.pistonLocation = location.clone().add(0, -1, 0);
@@ -147,10 +145,8 @@ class GalleryTarget implements Listener {
             ProjectileSource source = projectile.getShooter();
             if (source instanceof Player player) {
                 hit = true;
-                shootingGallery.addPoints(getPointValue());
-                shootingGallery.playerShot(player);
                 player.playSound(target.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100.0f, 1.0f);
-                player.sendActionBar(Component.text(String.format("+%d Points (%d total)", getPointValue(), shootingGallery.getPoints())).color(Palette.PRIMARY.toTextColor()));
+                player.sendActionBar(Component.text(String.format("+%d Points", getPointValue())).color(Palette.PRIMARY.toTextColor()));
                 tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     target.setType(Material.DIRT);
                     target.setType(getTargetMaterial(true));

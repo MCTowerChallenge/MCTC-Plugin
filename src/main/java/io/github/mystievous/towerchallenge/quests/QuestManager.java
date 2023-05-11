@@ -2,59 +2,115 @@ package io.github.mystievous.towerchallenge.quests;
 
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
+import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.page.Gui;
 import io.github.mystievous.mystigui.page.Openable;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.ValentinesUtil;
-import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.mystimer.TimerUnsetException;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.*;
 import io.github.mystievous.towerchallenge.quests.entities.GodMountNPC;
 import io.github.mystievous.towerchallenge.quests.entities.NPC;
+import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.timer.TowerTimer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SoundCategory;
+import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.plugin.Plugin;
+import org.checkerframework.checker.units.qual.K;
 import org.jetbrains.annotations.Nullable;
 
-import java.security.SecureRandom;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class QuestManager implements Openable {
-
-    public static final SecureRandom RANDOM = new SecureRandom();
+public class QuestManager implements Openable, Listener {
 
     public static final String GUI_ID = "questgui";
 
     public static final String NO_QUEST = "no-quest";
 
-    public static final String BUTTSTALLION_START = "buttstallion-start";
-    public static final String INVESTIGATE_TOWER = "investigate-tower";
-    public static final String PICK_TOWER_ROOM = "pick-tower-room";
-    public static final String SHOOTING_GALLERY = "shooting-gallery";
-    public static final String LIBRARY_MAZE = "library-maze";
-    public static final String OCEAN_SEARCH = "ocean-search";
-    public static final String TALK_TO_STEVE = "talk-to-steve";
-    public static final String BUTTSTALLION_RETURN = "buttstallion-return";
+    public static final String PENELOPE_START = "penelope-start";
+    public static final String STEVE_HOUSE = "steve-house";
+    public static final String PARTY_INVITE = "party-invite";
+    public static final String BOTTLE_PUZZLE = "bottle-puzzle";
+    public static final String RESTORED_TAVERN = "restored-tavern";
+    public static final String ENJOY = "enjoy";
+    public static final String HELP_STEVE = "help-steve";
+    public static final String MAKE_POTION = "make-potion";
+
+    public static final String ANTIDOTE_TAG = "antidote";
 
     public static final String STEVE = "steve";
+    public static final Color STEVE_COLOR = new Color(0xf9b6f4);
     public static final String PENELOPE = "penelope";
     public static final String BUTT_STALLION = "buttstallion";
     public static final String SPIRIT = "evil-spirit";
+    public static final String MYSTI = "mystievous";
+    public static final String APPLE = "apple270";
 
-    public static final QuestGui NO_QUEST_GUI = new QuestGui(TowerChallenge.getInstance(), "No more quests!", "Enjoy the rest of the event!");
+    public static final QuestGui NO_QUEST_GUI = new QuestGui(TowerChallenge.getInstance(), "Quests Done!", "Enjoy the rest of the event!");
+
+    public static final String recipeBook = "H4sIAAAAAAAA/62VzW4TMRDHHUpLGsSVCwdGe+JQVaUNBSLl0A+pXFpVFNEDRcjZnd019drBnm2aVpU4IJ6BN8h75FF4AF6AC+NNP5JU5QCJFHnt8Xz9/F9vQ4g58XBbknyPzitrhHi0WBf3VCIeF8pg7GRKrZ5TRGg+daw9bog5ktmimO/KDH1dCLFQe3IeEZ5S1IpgONjat8pbAwdaFQgbhlRiCY/McPCiPRxst2cxHpkQb/3nj++ccGUdNrU8Q9i3vQQdTBqfwx5SzsuH0tG0bQUOyky6ydU12NHKEzplMthFbc0dEd8gh5y27WjpPWxaIs1NRxfidBzOy3FXeIux6lZoXnNbnfYsxhAt/fX1W3RRe3aTufoNB/E4qKpu9sH2LMZJDhvxl1I5TCB1trhO7INJGWAEYXPzEsY2C8UE8bF1eTLOu1x5yJB88IGe5FMBo2IEaRKeumKpemL30nF4RdBTWoMn2WcPydPqwdkyy21JVRRkSTqErrMxer8MTGrzFqnmmGqODHcY87/53+PfKTVT64j78P9KSo04pcp5YgjYBZtCYXmSWZtA1xL7emZWobqidoM2lgZyq5NqqZCZiqXmbeiyfnBwqFGG4kb+nC12yI7JMjN8OsGQC7v9Fg0Hq0xBtmcx3kGy0wduis/bJCGxZONqlT3cR6wb3ttTlFf1caNoYK/MgsCmcB4iy+jY2J4BPpTAQznIUeoQlaXTRUcKGWXpw0phWVGV9EZQOXFF3GFsT9D1GZD4PSWyEaa1yxtoOHjFfb1sz2K8m03s+vxuaHUWig6H/LkMVLgsJ2O6UeJqVRVsSYO3pbbLgtJ97pz3s0YvVQVkWTLHGMIWQJLPHjrI3w3HzTfEg0T5rpb9uri/JwsU6+dRlTVqfTiPVKgpjlqp1B6XrjCNrsfo4uP1ClOsi3lSfLeKhZG5LhZkSbl1orHLvSk8saUXNTG/xRqgmvgDnBheH+IGAAA=";
+
+    private final Dialogue steveFind;
+    private final Dialogue intermissionDialogue;
+
+    public static Component getRewards(ItemStack... items) {
+        TextComponent.Builder builder = Component.text();
+        builder.append(TextUtil.formatText("Rewards: ")).appendNewline();
+
+        for (ItemStack item : items) {
+            builder.append(TextUtil.formatText(String.format("+ %dx [", item.getAmount())).append(TextUtil.getItemName(item).hoverEvent(item.asHoverEvent()).color(NamedTextColor.WHITE)).append(Component.text("]")).appendNewline());
+        }
+
+        return builder.build();
+    }
+
+    public static Component playerThoughts(Component text) {
+        return TextUtil.formatText(text).decoration(TextDecoration.ITALIC, true);
+    }
+
+    public static Component playerThoughts(String text) {
+        return playerThoughts(Component.text(text));
+    }
+
+    public static Component appleChat(Component text) {
+        return Component.text("[").append(Component.text("God", new Color(16247171).toTextColor())).append(Component.text("] <apple270> "))
+                .append(text);
+    }
+
+    public static Component appleChat(String text) {
+        return appleChat(Component.text(text));
+    }
 
     public void setTeamQuest(TowerTeam team, String questId) {
         QuestChangeEvent event = new QuestChangeEvent(team, getQuest(team, questId), getQuest(team, getTeamQuest(team)));
@@ -62,11 +118,13 @@ public class QuestManager implements Openable {
         if (event.isCancelled())
             return;
 
-        try {
-            teamManager.getDatabase().setTeamQuest(team, questId);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                teamManager.getDatabase().setTeamQuest(team, questId);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
+            }
+        });
     }
 
     public String getTeamQuest(TowerTeam team) {
@@ -77,14 +135,21 @@ public class QuestManager implements Openable {
         return NO_QUEST;
     }
 
+    private final Plugin plugin;
+    private final TowerTimer timer;
+    private final Apr2023QuestManager apr2023QuestManager;
+    private final QuestItems questItems;
     private final Map<String, Quest> quests;
     private final GuiHeldItem questBook;
     private final TeamManager teamManager;
 
     private final NPC spirit;
 
-    public QuestManager(TowerChallenge plugin, TeamManager teamManager) {
+    public QuestManager(TowerChallenge plugin, TowerTimer timer, TeamManager teamManager) {
+        this.plugin = plugin;
+        this.timer = timer;
         this.teamManager = teamManager;
+        this.questItems = new QuestItems(plugin);
         quests = new HashMap<>();
 
         ItemStack book = new ItemStack(Material.BOOK);
@@ -98,16 +163,19 @@ public class QuestManager implements Openable {
         book.setItemMeta(bookMeta);
         questBook = new GuiHeldItem(plugin, GUI_ID, book, this);
 
+        // Event Specific Quest Stuff
+        apr2023QuestManager = new Apr2023QuestManager(plugin, this, teamManager);
+
         // Declare Quests
 
-        Quest buttStallionStart;
-        Quest investigateTower;
-        Quest pickTowerRoom;
-        Quest shootingGallery;
-        Quest libraryMaze;
-        Quest oceanSearch;
-        Quest talkToSteve;
-        Quest buttStallionReturn;
+        Quest penelopeStart;
+        Quest steveHouse;
+        Quest partyInvite;
+        Quest bottlePuzzle;
+        Quest mysteriousTavern;
+        Quest enjoy;
+        Quest helpSteve;
+        RequirementsQuest makePotion;
 
         // Create NPCs
 
@@ -123,364 +191,623 @@ public class QuestManager implements Openable {
         spirit = new NPC(teamManager, "Evil Spirit", SPIRIT, new Color(0x610b1f), new Color(0x870f2b));
         spirit.addDisallowedRegion(".*");
 
-        // Configure Quests
+        NPC mysti = new NPC(teamManager, "Mystievous", MYSTI, new Color(0xc73858), new Color(0xd2607a));
 
-        Dialogue steveGetUpHere1 = new Dialogue(teamManager, steve.formatMessage("How the #&!% did you get up here?"), 3.0f);
-        steveGetUpHere1.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.get_up_here.1"));
-        Dialogue steveGetUpHere2 = new Dialogue(teamManager, steve.formatMessage("How in the blazes did you get up here?"), 3.5f);
-        steveGetUpHere2.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.get_up_here.2"));
-        Dialogue steveGetUpHere3 = new Dialogue(teamManager, steve.formatMessage("How the fuck did you get up here?"), 3.0f);
-        steveGetUpHere3.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.get_up_here.3"));
+        // Quest Interaction NPCs
 
-        Dialogue steveGetUpHere4 = steveGetUpHere1.duplicate();
-        Dialogue steveGetUpHere5 = steveGetUpHere2.duplicate();
-        Dialogue steveGetUpHere6 = steveGetUpHere3.duplicate();
-
-        Dialogue steveNotTimeYet = new Dialogue(teamManager, steve.formatMessage("It's not time yet!"), 2.5f);
-        steveNotTimeYet.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.not_time_yet"));
-        {
-            Dialogue steveCheater = new Dialogue(teamManager, steve.formatMessage("Are you a little cheater?"), 2.5f);
-            steveCheater.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.little_cheater"));
-            steveNotTimeYet.setNext(steveCheater);
-            Dialogue steveHowDareYou = new Dialogue(teamManager, steve.formatMessage("How dare you..."), 3.5f);
-            steveHowDareYou.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.how_dare_you"));
-            steveCheater.setNext(steveHowDareYou);
-        }
-        steveGetUpHere1.setNext(steveNotTimeYet);
-        steveGetUpHere2.setNext(steveNotTimeYet);
-        steveGetUpHere3.setNext(steveNotTimeYet);
-
-        Dialogue steveDoorNotOpen = new Dialogue(teamManager, steve.formatMessage("The door isn't open yet,"), 2.75f);
-        steveDoorNotOpen.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.door_not_open"));
-        {
-            Dialogue steveCantGetDown = new Dialogue(teamManager, steve.formatMessage("I can't get down that way."), 2.75f);
-            steveCantGetDown.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.cant_get_down"));
-            steveDoorNotOpen.setNext(steveCantGetDown);
-            Dialogue steveOldBones = new Dialogue(teamManager, steve.formatMessage("My old bones don't hop over a fence like they used to you know!"), 4.5);
-            steveOldBones.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.old_bones"));
-            steveCantGetDown.setNext(steveOldBones);
-        }
-
-        steveGetUpHere4.setNext(steveDoorNotOpen);
-        steveGetUpHere5.setNext(steveDoorNotOpen);
-        steveGetUpHere6.setNext(steveDoorNotOpen);
-
-        Consumer<PlayerInteractAtEntityEvent> getUpHereRandom = playerInteractAtEntityEvent -> {
-            Player player = playerInteractAtEntityEvent.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                Dialogue dialogue;
-                float rand = RANDOM.nextFloat();
-                if (rand <= 0.05f) {
-                    dialogue = steveGetUpHere3;
-                } else if (rand <= 0.1f) {
-                    dialogue = steveGetUpHere6;
-                } else if (rand <= 0.25f) {
-                    dialogue = steveGetUpHere2;
-                } else if (rand <= 0.4f) {
-                    dialogue = steveGetUpHere5;
-                } else if (rand <= 0.7f) {
-                    dialogue = steveGetUpHere1;
-                } else {
-                    dialogue = steveGetUpHere4;
-                }
-                dialogue.play(team, () -> team.setInDialogue(false));
-            }
+        Dialogue doorNoOpen = new Dialogue(teamManager, playerThoughts("The door won't open..."), 0.0);
+        Consumer<PlayerInteractAtEntityEvent> doorNoOpenEvent = event -> {
+            Player player = event.getPlayer();
+            doorNoOpen.play(player);
         };
 
+        NPC houseEnter = new NPC(teamManager, "Enter House", House.ENTER_DOOR);
+        houseEnter.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> instance.house.teleport(player));
+            }
+        });
 
-        buttStallionStart = new Quest(plugin, teamManager, BUTTSTALLION_START, "Butt Stallion");
-        buttStallionStart.setDescription("Go talk to Butt Stallion in the Stables to the North- East of the spawn islands!");
-        quests.put(BUTTSTALLION_START, buttStallionStart);
+        NPC houseInvite = new NPC(teamManager, "Party Invitation", House.INVITE);
+
+        NPC houseLeave = new NPC(teamManager, "Leave House", House.LEAVE_DOOR);
+        houseLeave.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> instance.house.leave(player));
+            }
+        });
+
+        NPC tavernEnter = new NPC(teamManager, "Enter Tavern", BadTavern.ENTER_DOOR);
+        tavernEnter.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> instance.badTavern.teleport(player));
+            }
+        });
+
+        NPC tavernCrate = new NPC(teamManager, "Crate", BadTavern.CRATE_INTERACT);
+        tavernCrate.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    instance.badTavern.moveCrate();
+                    player.playSound(instance.offsetLocation(BadTavern.baseCrate), org.bukkit.Sound.BLOCK_CHEST_CLOSE, SoundCategory.RECORDS, 1f, 1f);
+                });
+            }
+        });
+
+        NPC tavernTrapdoor = new NPC(teamManager, "Trapdoor", BadTavern.TRAPDOOR_INTERACT);
+        tavernTrapdoor.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> instance.badCellar.teleport(player));
+            }
+        });
+
+        NPC goodTavernTrapdoor = new NPC(teamManager, "Trapdoor", GoodTavern.GOOD_TRAPDOOR_INTERACT);
+        goodTavernTrapdoor.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> instance.goodCellar.trapdoorTeleport(player));
+            }
+        });
+
+        NPC tavernChair = new NPC(teamManager, "Chair", GoodTavern.CHAIR_INTERACT);
+        tavernChair.setDefaultHandler(event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    instance.goodTavern.moveChair();
+                    player.playSound(instance.offsetLocation(GoodTavern.baseChair), org.bukkit.Sound.BLOCK_CHEST_CLOSE, SoundCategory.RECORDS, 1f, 1.5f);
+                });
+            }
+        });
+
+        NPC cauldron = new NPC(teamManager, "Cauldron", MAKE_POTION);
+
+        // Configure Quests
 
         Key ambient = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.ambient");
         Key angry = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.angry");
         Key breathe = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.breathe");
+        Key land = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.land");
+        Key eat = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.eat");
 
-        Dialogue bsGiveQuest = new Dialogue(teamManager, buttStallion.formatMessage("Hey, you!"), 3.5f);
-        bsGiveQuest.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f, 1.25f));
-        bsGiveQuest.setFriendlyName("Butt Stallion Give Quest");
+        penelopeStart = new Quest(plugin, teamManager, PENELOPE_START, "Penelope");
+        penelopeStart.setDescription("Penelope needs some help! Go talk to her by the wedding venue.");
+        quests.put(PENELOPE_START, penelopeStart);
+
+        // Oh no no no no, what do I do?
+        Dialogue pennOhNo = new Dialogue(teamManager, penelope.formatMessage("Oh no no no no, what do I do?"), 4.5f);
+        pennOhNo.setSound(Sound.sound(land, Sound.Source.RECORD, 1f ,1f));
         {
-            Dialogue situation = new Dialogue(teamManager, buttStallion.formatMessage("Listen, I've got a li'l… situation here."), 6.5f);
-            bsGiveQuest.setNext(situation);
+            // The wedding is tonight and he's still missing!
+            Dialogue wedding = new Dialogue(teamManager, penelope.formatMessage("The wedding is tonight and he's still missing!"), 4.5f);
+            pennOhNo.setNext(wedding);
 
-            Dialogue beautiful = new Dialogue(teamManager, buttStallion.formatMessage("See, I've got this beautiful mare, Penelope. You might've met before."), 7.5);
-            beautiful.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1.5f));
-            situation.setNext(beautiful);
+            //- What if something horrible's happened
+            Dialogue horrible = new Dialogue(teamManager, penelope.formatMessage("What if something horrible's happened?"), 3.0f);
+            horrible.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f ,1f));
+            wedding.setNext(horrible);
 
-            Dialogue softens = new Dialogue(teamManager, buttStallion.formatMessage("She softens my little horse heart more than anything else in this world."), 5.5f);
-            beautiful.setNext(softens);
+            //- What if- Oh!
+            Dialogue whatIf = new Dialogue(teamManager, penelope.formatMessage("What if- Oh!"), 2.5f);
+            horrible.setNext(whatIf);
 
-            Dialogue question = new Dialogue(teamManager, buttStallion.formatMessage("An' I think today, I finally got the nerve to pop the question."), 7.5f);
-            question.setSound(Sound.sound(breathe, Sound.Source.RECORD, 1f, 1f));
-            softens.setNext(question);
+            //- I'm sorry, I didn't see you there.
+            Dialogue sorry = new Dialogue(teamManager, penelope.formatMessage("I'm sorry, I didn't see you there."), 3.5f);
+            whatIf.setNext(sorry);
 
-            Dialogue problem = new Dialogue(teamManager, buttStallion.formatMessage("Only problem is, I left my special diamond horseshoe in the care of our friend..."), 6.0f);
-            question.setNext(problem);
-            Dialogue bones = new Dialogue(teamManager, buttStallion.formatMessage("the one with the bones, y'know? Sven or something?"), 6.0f);
-            problem.setNext(bones);
+            //- Butt Stallion and I are supposed to get married tonight, but no one's seen him or steve skellington all day!
+            Dialogue married = new Dialogue(teamManager, penelope.formatMessage("Butt Stallion and I are supposed to get married tonight, but no one has seen him or steve skellington all day!"), 8.0f);
+            married.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f ,1.5f));
+            sorry.setNext(married);
 
-            Dialogue fool = new Dialogue(teamManager, buttStallion.formatMessage(Component.text("But that old fool hasn't shown his face in ").append(Component.text("months.").decoration(TextDecoration.ITALIC, true))), 5.0f);
-            fool.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1.25f));
-            bones.setNext(fool);
+            //- I'm really getting worried about them.
+            Dialogue worried = new Dialogue(teamManager, penelope.formatMessage("I'm really getting worried about them..."), 4.0f);
+            married.setNext(worried);
 
-            Dialogue thoughtless = new Dialogue(teamManager, buttStallion.formatMessage("And y'know, it's pretty thoughtless of him."), 3.0f);
-            fool.setNext(thoughtless);
-            Dialogue worried = new Dialogue(teamManager, buttStallion.formatMessage("Today was supposed to be my day with Penn, and now he’s making me go and be all worried 'bout him."), 6.0f);
-            worried.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f, 1.4f));
-            thoughtless.setNext(worried);
+            //- I know that you're all busy with your event today but would you be able to help a mar out?
+            Dialogue busy = new Dialogue(teamManager, penelope.formatMessage("I know that you're all busy with your event today, but would you be able to help a mare out?"), 6.0f);
+            worried.setNext(busy);
 
-            Dialogue find = new Dialogue(teamManager, buttStallion.formatMessage("I know you've got that little shindig thing going on, but if you can find that horseshoe for me I might jus' have a good day yet."), 8.5f);
-            find.setSound(Sound.sound(breathe, Sound.Source.RECORD, 1f, 1f));
-            worried.setNext(find);
+            // I would check at steve's house up in the village, there might be something there.
+            Dialogue house = new Dialogue(teamManager, penelope.formatMessage("I would check steve's house up in the village, there might be something there."), 5.5f);
+            house.setSound(Sound.sound(breathe, Sound.Source.RECORD, 1f, 1f));
+            busy.setNext(house);
 
-            Dialogue tower = new Dialogue(teamManager, buttStallion.formatMessage("Penelope seemed a li'l suspicious of that tower on the hill above the fairgrounds, so you can start by goin' to check that out."), 8.0f);
-            find.setNext(tower);
+            // Just keep following the path, you can't miss it.
+            Dialogue path = new Dialogue(teamManager, penelope.formatMessage("Just keep following the path up, you can't miss it."), 0.0);
+            house.setNext(path);
         }
-        buttStallion.addQuestHandler(BUTTSTALLION_START, playerInteractAtEntityEvent -> {
+        penelope.addQuestHandler(PENELOPE_START, playerInteractAtEntityEvent -> {
             Player player = playerInteractAtEntityEvent.getPlayer();
             TowerTeam team = teamManager.getPlayerTeam(player);
             if (team == null) return;
 
             if (!team.isInDialogue()) {
                 team.setInDialogue(true);
-                bsGiveQuest.play(team, () -> {
+                pennOhNo.play(team, () -> {
                     team.setInDialogue(false);
-                    setTeamQuest(team, INVESTIGATE_TOWER);
+                    setTeamQuest(team, STEVE_HOUSE);
                 });
             }
         });
-        steve.addQuestHandler(BUTTSTALLION_START, getUpHereRandom);
+        houseEnter.addQuestHandler(PENELOPE_START, doorNoOpenEvent);
+        tavernEnter.addQuestHandler(PENELOPE_START, doorNoOpenEvent);
 
 
-        investigateTower = new Quest(plugin, teamManager, INVESTIGATE_TOWER, "Ominous Tower");
-        investigateTower.setDescription("Investigate the Tower on the hill above the Love Fair!");
-        quests.put(INVESTIGATE_TOWER, investigateTower);
+        steveHouse = new Quest(plugin, teamManager, STEVE_HOUSE, "steve's house");
+        steveHouse.setDescription("Butt Stallion and steve are missing! Head to steve's house to look for clues.");
+        quests.put(STEVE_HOUSE, steveHouse);
 
-        Dialogue bsInvestigateTower = new Dialogue(teamManager, buttStallion.formatMessage("Hey, don't forget to check out that tower. I need my horseshoe by the end of the day!"), 0);
-        bsInvestigateTower.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
-        buttStallion.addQuestHandler(INVESTIGATE_TOWER, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
+        ItemStack invitePaper = ItemStack.deserializeBytes(Base64.getDecoder().decode(Apr2023QuestManager.INVITE_BOOK));
+        BookMeta inviteMeta = (BookMeta) invitePaper.getItemMeta();
+        inviteMeta.displayName(null);
+        inviteMeta.title(Component.text("Party Invite"));
+        inviteMeta.author(Component.text("steve skellington"));
+        inviteMeta.setCustomModelData(2);
+        invitePaper.setItemMeta(inviteMeta);
 
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsInvestigateTower.play(team, () -> team.setInDialogue(false));
-            }
-        });
-        steve.addQuestHandler(INVESTIGATE_TOWER, getUpHereRandom);
-
-        pickTowerRoom = new Quest(plugin, teamManager, PICK_TOWER_ROOM, "Tower Rooms");
-        pickTowerRoom.setDescription("Pick your next room to complete in the Tower above the Love Fair.");
-        quests.put(PICK_TOWER_ROOM, pickTowerRoom);
-
-        Dialogue bsPickRoom = new Dialogue(teamManager, buttStallion.formatMessage("Challenges? Well I can't help much but you definitely got this."), 0);
-        bsPickRoom.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
-        buttStallion.addQuestHandler(PICK_TOWER_ROOM, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsPickRoom.play(team, () -> team.setInDialogue(false));
-            }
-        });
-        steve.addQuestHandler(PICK_TOWER_ROOM, getUpHereRandom);
-
-
-        shootingGallery = new Quest(plugin, teamManager, SHOOTING_GALLERY, "The Gallery");
-        shootingGallery.setDescription("Complete the shooting gallery in the tower above the Love Fair.");
-        quests.put(SHOOTING_GALLERY, shootingGallery);
-
-        Dialogue bsShootingGallery = new Dialogue(teamManager, buttStallion.formatMessage("A shooting gallery? Well my days of shootin' are long past me but that don’t sound too bad."), 0);
-        bsShootingGallery.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
-        buttStallion.addQuestHandler(SHOOTING_GALLERY, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsShootingGallery.play(team, () -> team.setInDialogue(false));
-            }
-        });
-        steve.addQuestHandler(SHOOTING_GALLERY, getUpHereRandom);
-
-        libraryMaze = new Quest(plugin, teamManager, LIBRARY_MAZE, "The Maze");
-        libraryMaze.setDescription("Make your way through the maze in the Tower above the Love Fair.");
-        quests.put(LIBRARY_MAZE, libraryMaze);
-
-        Dialogue bsMaze = new Dialogue(teamManager, buttStallion.formatMessage("A maze?! Oh no no no that's not my cuppa tea there. You can handle that one on your own."), 0);
-        bsMaze.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
-        buttStallion.addQuestHandler(LIBRARY_MAZE, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsMaze.play(team, () -> team.setInDialogue(false));
-            }
-        });
-        steve.addQuestHandler(LIBRARY_MAZE, getUpHereRandom);
-
-        oceanSearch = new Quest(plugin, teamManager, OCEAN_SEARCH, "The Sea");
-        oceanSearch.setDescription("Find 9 key fragments in the Mermaid's Grove, in the tower above the Love Fair.");
-        quests.put(OCEAN_SEARCH, oceanSearch);
-
-        Dialogue bsOcean = new Dialogue(teamManager, buttStallion.formatMessage("Underwater? Well I'm not such a great swimmer myself but I'm sure you can handle yourself well."), 0);
-        bsOcean.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
-        buttStallion.addQuestHandler(OCEAN_SEARCH, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsOcean.play(team, () -> team.setInDialogue(false));
-            }
-        });
-        steve.addQuestHandler(OCEAN_SEARCH, getUpHereRandom);
-
-        talkToSteve = new Quest(plugin, teamManager, TALK_TO_STEVE, "steve");
-        talkToSteve.setDescription("Talk to steve skellington at the top of the tower above the Love Fair.");
-        quests.put(TALK_TO_STEVE, talkToSteve);
-
-        Dialogue bsTalkSteve = new Dialogue(teamManager, buttStallion.formatMessage("Who's Steve?"), 2.5f);
-        bsMaze.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1f));
+        Dialogue findInvite = new Dialogue(teamManager, playerThoughts("This looks like an invite to a party! Maybe that's where they were...?"), 6.0);
         {
-            Dialogue bsBones = new Dialogue(teamManager, buttStallion.formatMessage("Oh, Sven! I'm glad ya found that old bag of bones."), 6.5f);
-            bsTalkSteve.setNext(bsBones);
-
-            Dialogue bsHorseshoe = new Dialogue(teamManager, buttStallion.formatMessage("Did he have my diamond horseshoe?"), 4.0f);
-            bsBones.setNext(bsHorseshoe);
-
-            Dialogue bsWhaddya = new Dialogue(teamManager, buttStallion.formatMessage("Whaddya mean you haven’t talked to him yet?! Well get back up there!"), 4.0f);
-            bsWhaddya.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f, 1.4f));
-            bsHorseshoe.setNext(bsWhaddya);
+            Dialogue check = new Dialogue(teamManager, playerThoughts("I think that village is just on the east side of this mountain, I should go check it out."), 0.0);
+            findInvite.setNext(check);
+            Dialogue instruction = new Dialogue(teamManager, playerThoughts(Component.text("[Press ").append(Component.keybind("key.use")).append(Component.text(" to open invite]"))), 1.0f);
+            check.setNext(instruction);
         }
-        buttStallion.addQuestHandler(TALK_TO_STEVE, event -> {
+        tavernEnter.addQuestHandler(STEVE_HOUSE, doorNoOpenEvent);
+        houseInvite.addQuestHandler(STEVE_HOUSE, event -> {
             Player player = event.getPlayer();
             TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                bsTalkSteve.play(team, () -> team.setInDialogue(false));
+            if (team == null) {
+                return;
             }
-        });
-
-        Dialogue steveTalkSteve = new Dialogue(teamManager, steve.formatMessage("Thank you, friends, for saving me."), 2.5f);
-        steveTalkSteve.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.saving_me"));
-        {
-            Dialogue stevePickle = new Dialogue(teamManager, steve.formatMessage("That was quite a sea pickle I was in."), 3.5f);
-            stevePickle.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.sea_pickle"));
-            steveTalkSteve.setNext(stevePickle);
-
-            Dialogue steveDoor = new Dialogue(teamManager, steve.formatMessage("I've been trying to open that door for months!"), 6.0f);
-            steveDoor.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.open_door_for_months"));
-            stevePickle.setNext(steveDoor);
-
-            Dialogue steveForgor = new Dialogue(teamManager, steve.formatMessage("Ah! I almost forgot..."), 2.5f);
-            steveForgor.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.almost_forgor"));
-            steveDoor.setNext(steveForgor);
-
-            Dialogue steveHorseshoe = new Dialogue(teamManager, steve.formatMessage("Here is the horseshoe for Butt Stallion."), 4.0f);
-            steveHorseshoe.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.horseshoe"));
-            steveForgor.setNext(steveHorseshoe);
-
-            Dialogue steveShiny = new Dialogue(teamManager, steve.formatMessage("You can assure them it is still in the shiny state I got it in."), 5.5f);
-            steveShiny.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.shiny_state"));
-            steveHorseshoe.setNext(steveShiny);
-
-            Dialogue steveBoney = new Dialogue(teamManager, steve.formatMessage("I would have never let anything happen to it in my boney fingers."), 6.0f);
-            steveBoney.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.boney_fingers"));
-            steveShiny.setNext(steveBoney);
-        }
-        steve.addQuestHandler(TALK_TO_STEVE, event -> {
-            Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                steveTalkSteve.play(team, () -> {
-                    team.setInDialogue(false);
-                    FullInventory.givePlayerItems(player, ValentinesUtil.diamondHorseshoe);
-                    setTeamQuest(team, BUTTSTALLION_RETURN);
-                });
-            }
-        });
-
-
-        buttStallionReturn = new Quest(plugin, teamManager, BUTTSTALLION_RETURN, "Butt Stallion");
-        buttStallionReturn.setDescription("Return to Butt Stallion with the Diamond Horseshoe from steve!");
-        quests.put(BUTTSTALLION_RETURN, buttStallionReturn);
-
-        Dialogue bsButtStallion = new Dialogue(teamManager, buttStallion.formatMessage("Oh you're finally back!"), 3.5f);
-        bsButtStallion.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1.25f));
-        {
-            Dialogue bsHorseshoe = new Dialogue(teamManager, buttStallion.formatMessage("Thank you so much for findin' the diamond horseshoe for me!"), 5.0f);
-            bsButtStallion.setNext(bsHorseshoe);
-
-            Dialogue bsSven = new Dialogue(teamManager, buttStallion.formatMessage("Oh and for saving Sve- I mean steve, too."), 5.0f);
-            bsSven.setSound(Sound.sound(breathe, Sound.Source.RECORD, 1f, 1.4f));
-            bsHorseshoe.setNext(bsSven);
-
-            Dialogue bsReward = new Dialogue(teamManager, buttStallion.formatMessage("Here take this for savin' my big day, wish me luck later!"), 5.0f);
-            bsReward.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1.4f));
-            bsSven.setNext(bsReward);
-        }
-        buttStallion.addQuestHandler(BUTTSTALLION_RETURN, event -> {
-            Player player = event.getPlayer();
-            EquipmentSlot hand = event.getHand();
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-            ItemStack item = player.getInventory().getItem(hand);
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                if (NBTUtils.boolState(plugin, ValentinesUtil.HORSESHOE_TAG, item)) {
-                    player.getInventory().setItem(hand, item.subtract(1));
-                    bsButtStallion.play(team, () -> {
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                if (!team.isInDialogue()) {
+                    team.setInDialogue(true);
+                    findInvite.play(team, () -> {
+                        instance.house.collectInvite();
+                        FullInventory.givePlayerItems(player, invitePaper, BlockVoucher.getVouchers(1));
+                        team.sendMessage(getRewards(invitePaper, BlockVoucher.getVouchers(1)));
+                        setTeamQuest(team, PARTY_INVITE);
                         team.setInDialogue(false);
-                        setTeamQuest(team, NO_QUEST);
-                        FullInventory.givePlayerItems(player, ValentinesUtil.randomBlockBundle(), BlockVoucher.getVouchers(3));
                     });
-                } else {
-                    bsTalkSteve.play(team, () -> team.setInDialogue(false));
                 }
             }
         });
 
-        Dialogue steveButtStallion = new Dialogue(teamManager, steve.formatMessage("You need to get that horseshoe back to Butt Stallion!"), 4.0f);
-        steveButtStallion.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.back_to_buttstallion"));
+
+        partyInvite = new Quest(plugin, teamManager, PARTY_INVITE, "Party Invite");
+        partyInvite.setDescription("Follow the party invite you found at steve's house.");
+        quests.put(PARTY_INVITE, partyInvite);
+
+        Dialogue bottles = new Dialogue(teamManager, playerThoughts("The bottles on the shelf in this cellar seem suspicious."), 6.0f);
         {
-            Dialogue steveWorry = new Dialogue(teamManager, steve.formatMessage("Don't worry about me friends, I will get down on my own now that the door is open."), 7.0f);
-            steveWorry.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.on_my_own"));
-            steveButtStallion.setNext(steveWorry);
+            Dialogue maybe = new Dialogue(teamManager, playerThoughts("Maybe it has something to do with that book?"), 1.0f);
+            bottles.setNext(maybe);
         }
-        steve.addQuestHandler(BUTTSTALLION_RETURN, event -> {
+
+        tavernTrapdoor.addQuestHandler(PARTY_INVITE, event -> {
             Player player = event.getPlayer();
             TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team == null) return;
-
-            if (!team.isInDialogue()) {
-                team.setInDialogue(true);
-                steveButtStallion.play(team, () -> team.setInDialogue(false));
+            if (team == null) {
+                return;
+            }
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            if (instance != null) {
+                if (!team.isInDialogue()) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        setTeamQuest(team, BOTTLE_PUZZLE);
+                        instance.badCellar.teleport(player);
+                    });
+                    team.setInDialogue(true);
+                    bottles.play(team, () -> {
+                        team.setInDialogue(false);
+                    });
+                }
             }
         });
 
+        bottlePuzzle = new Quest(plugin, teamManager, BOTTLE_PUZZLE, "Cellar Bottles");
+        bottlePuzzle.setDescription("Figure out the bottles in the tavern cellar.");
+        quests.put(BOTTLE_PUZZLE, bottlePuzzle);
+
+        mysteriousTavern = new Quest(plugin, teamManager, RESTORED_TAVERN, "Changed");
+        mysteriousTavern.setDescription("Explore the newly changed tavern.");
+        quests.put(RESTORED_TAVERN, mysteriousTavern);
+
+
+        enjoy = new Quest(plugin, teamManager, ENJOY, "Rest Up");
+        enjoy.setDescription("Take a break from questing and enjoy the event!");
+        quests.put(ENJOY, enjoy);
+
+        steveFind = new Dialogue(teamManager, steve.formatMessage("Stay back!"), 2.5f);
+        steveFind.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.stay_back"));
+        {
+            Dialogue oh = new Dialogue(teamManager, steve.formatMessage("Oh, it's you!"), 2.5f);
+            oh.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.oh_its_you"));
+            steveFind.setNext(oh);
+
+            Dialogue thankHeavens = new Dialogue(teamManager, steve.formatMessage("Thank heavens you found me."), 3.0f);
+            thankHeavens.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.thank_heavens"));
+            oh.setNext(thankHeavens);
+
+            Dialogue buttStallionMissing = new Dialogue(teamManager, steve.formatMessage("Butt Stallion's missing as well?"), 3.5f);
+            buttStallionMissing.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.butt_stallion"));
+            thankHeavens.setNext(buttStallionMissing);
+
+            Dialogue notGood = new Dialogue(teamManager, steve.formatMessage("That's not good..."), 3.0f);
+            notGood.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.not_good"));
+            buttStallionMissing.setNext(notGood);
+
+            Dialogue betweenDimensions = new Dialogue(teamManager, steve.formatMessage("The tavern is split between dimensions?"), 4.0f);
+            betweenDimensions.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.between_dimensions"));
+            notGood.setNext(betweenDimensions);
+
+            Dialogue noSense = new Dialogue(teamManager, steve.formatMessage("That doesn't make any sense!"), 3.0f);
+            noSense.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.no_sense"));
+            betweenDimensions.setNext(noSense);
+
+            Dialogue unless = new Dialogue(teamManager, steve.formatMessage("Unless..."), 3.0f);
+            unless.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.unless"));
+            noSense.setNext(unless);
+
+            Dialogue doesntMatter = new Dialogue(teamManager, steve.formatMessage("It doesn't matter."), 1.5f);
+            doesntMatter.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.doesnt_matter"));
+            unless.setNext(doesntMatter);
+
+            Dialogue groupUpLater = new Dialogue(teamManager, steve.formatMessage("I'll find what I can and group up with you later."), 4.0f);
+            groupUpLater.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.group_up_later"));
+            doesntMatter.setNext(groupUpLater);
+
+            Dialogue rest = new Dialogue(teamManager, steve.formatMessage("You should take a bit to rest."), 3.0f);
+            rest.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.rest"));
+            groupUpLater.setNext(rest);
+
+            Dialogue needIt = new Dialogue(teamManager, steve.formatMessage("You look like you need it."), 2.5f);
+            needIt.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.need_it"));
+            rest.setNext(needIt);
+
+        }
+
+        helpSteve = new Quest(plugin, teamManager, HELP_STEVE, "Help steve");
+        helpSteve.setDescription("Help steve skellington make an antidote for Butt Stallion!");
+        quests.put(HELP_STEVE, helpSteve);
+        ItemStack recipeItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(recipeBook));
+        BookMeta recipeMeta = (BookMeta) recipeItem.getItemMeta();
+        recipeMeta.displayName(null);
+        recipeMeta.title(Component.text("Antidote Recipe"));
+        recipeMeta.author(Component.text("steve skellington"));
+        TextUtil.appendQuestItemLore(recipeMeta);
+        recipeItem.setItemMeta(recipeMeta);
+
+        Dialogue talkSteveHelp = new Dialogue(teamManager, steve.formatMessage("Antidotes are simple. The first things you learn as an apprentice making potions."), 6.5f);
+        talkSteveHelp.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.antidote_simple"));
+        {
+            Dialogue recipe = new Dialogue(teamManager, steve.formatMessage("For this specific one, I was able to find this recipe."), 5.5f);
+            recipe.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.recipe"));
+            talkSteveHelp.setNext(recipe);
+
+            Dialogue allNeedDo = new Dialogue(teamManager, steve.formatMessage("All you need to do is place those ingredients in the cauldron, scoop it into a bottle, and then you can hand me the finished potion."), 10);
+            allNeedDo.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.all_need_to_do"));
+            recipe.setNext(allNeedDo);
+        }
+
+        steve.addQuestHandler(HELP_STEVE, event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+
+            if (!team.isInDialogue()) {
+                team.setInDialogue(true);
+                talkSteveHelp.play(team, () -> {
+                    setTeamQuest(team, MAKE_POTION);
+                    FullInventory.givePlayerItems(player, recipeItem);
+                    team.sendMessage(getRewards(recipeItem));
+                    team.setInDialogue(false);
+                });
+            }
+        });
+
+
+
+        makePotion = new RequirementsQuest(plugin, teamManager, MAKE_POTION, "The Antidote");
+        makePotion.setDescription("Follow the recipe for the antidote, to save Butt Stallion!");
+        makePotion.addRequirement(new MaterialRequirement(Material.BLAZE_POWDER, 6));
+        makePotion.addRequirement(new MaterialRequirement(Material.NETHER_WART, 1));
+        makePotion.addRequirement(new MaterialRequirement(Material.SUGAR, 10));
+        makePotion.addRequirement(new MaterialRequirement(Material.GLISTERING_MELON_SLICE, 3));
+        TagRequirement netherHeart = new TagRequirement(plugin, Material.NETHER_STAR, NetherHeart.NETHER_HEART, 1);
+        netherHeart.setName(NetherHeart.NAME);
+        makePotion.addRequirement(netherHeart);
+        quests.put(MAKE_POTION, makePotion);
+
+        ItemStack antidote = GuiUtil.formatItem("Antidote", Material.POTION, 0);
+        PotionMeta antidoteMeta = (PotionMeta) antidote.getItemMeta();
+        antidoteMeta.setColor(new Color(0xff0d45).toBukkitColor());
+        antidoteMeta.lore(TextUtil.formatTexts("Said to cure", "the strongest", "of poisons."));
+        antidoteMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_ATTRIBUTES);
+        TextUtil.appendQuestItemLore(antidoteMeta);
+        antidote.setItemMeta(antidoteMeta);
+        NBTUtils.setBool(plugin, ANTIDOTE_TAG, antidote);
+        NBTUtils.setNoUse(plugin, antidote);
+
+        QuestItems.putItem(ANTIDOTE_TAG, antidote);
+
+
+        Dialogue steveGiveAntidote = new Dialogue(teamManager, steve.formatMessage("Wonderful job!"), 2.5f);
+        steveGiveAntidote.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.wonderful_job"));
+        {
+            Dialogue everything = new Dialogue(teamManager, steve.formatMessage("I will take care of everything from here."), 5.0f);
+            everything.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.take_care_everything"));
+            steveGiveAntidote.setNext(everything);
+        }
+        cauldron.addQuestHandler(MAKE_POTION, event -> {
+            Player player = event.getPlayer();
+            ItemStack item = player.getInventory().getItem(event.getHand());
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team != null) {
+                RequirementsQuest quest = (RequirementsQuest) team.getQuest(MAKE_POTION);
+                if (quest != null) {
+                    if (item.getType().equals(Material.GLASS_BOTTLE)) {
+                        if (quest.isComplete()) {
+                            item.subtract(1);
+                            FullInventory.givePlayerItems(player, antidote);
+                            team.sendMessage(playerThoughts("The potion is finished! I should give this to steve now."));
+                        } else {
+                            player.sendMessage(playerThoughts("The potion isn't ready yet, I'm still missing some ingredients..."));
+                        }
+                    } else {
+                        quest.turnIn(item);
+                    }
+                }
+            }
+        });
+        steve.addQuestHandler(MAKE_POTION, event -> {
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            if (team == null) {
+                return;
+            }
+
+            ItemStack item = event.getPlayer().getInventory().getItem(event.getHand());
+
+            if (!team.isInDialogue() && NBTUtils.boolState(plugin, ANTIDOTE_TAG, item)) {
+                item.subtract(1);
+                team.setInDialogue(true);
+                steveGiveAntidote.play(team, () -> {
+                    teamManager.giveTeamHatgroup(13, team);
+                    FullInventory.givePlayerItems(player, BlockVoucher.getVouchers(4));
+                    team.sendMessage(getRewards(BlockVoucher.getVouchers(4)));
+                    team.sendMessage(Component.text("You've unlocked the ")
+                            .append(Component.text("[Potion Goggles]", team.getColor().toTextColor())
+                                    .clickEvent(ClickEvent.runCommand("/hat")))
+                            .append(Component.text(" hat for this and future events!"))
+                    );
+                    setTeamQuest(team, NO_QUEST);
+                    team.setInDialogue(false);
+                });
+            }
+        });
+
+
+        intermissionDialogue = new Dialogue(teamManager, spirit.formatMessage("So you found steve skellington, in the tavern down the street."), 6.0f);
+        intermissionDialogue.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.found-steve"));
+        {
+            Dialogue notDifficult = new Dialogue(teamManager, spirit.formatMessage("That was not too difficult. I admit, I was not discrete."), 5.0f);
+            notDifficult.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.not-discrete"));
+            intermissionDialogue.setNext(notDifficult);
+
+            Dialogue groom = new Dialogue(teamManager, spirit.formatMessage("But as for the groom, their mane so bold,"), 4.5f);
+            groom.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.as-for-groom"));
+            notDifficult.setNext(groom);
+
+            Dialogue cold = new Dialogue(teamManager, spirit.formatMessage("You must work quickly, before his eyes go cold."), 4.5f);
+            cold.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.work-quickly"));
+            groom.setNext(cold);
+
+            Dialogue biteApple = new Dialogue(teamManager, spirit.formatMessage("With a bite from this apple, dipped in poison slime..."), 3.75f);
+            biteApple.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.bite-apple"));
+            cold.setNext(biteApple);
+
+            Dialogue chomp = new Dialogue(teamManager, 1.0f);
+            chomp.setSound(Sound.sound(eat, Sound.Source.RECORD, 1f ,1.2f));
+            biteApple.setNext(chomp);
+
+            Dialogue limitedTime = new Dialogue(teamManager, spirit.formatMessage("The stallion himself is quite limited on time."), 6.5f);
+            limitedTime.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.limited-time"));
+            chomp.setNext(limitedTime);
+
+            Dialogue enough = new Dialogue(teamManager, appleChat("That's enough."), 4.0f);
+            limitedTime.setNext(enough);
+
+            Dialogue gone = new Dialogue(teamManager, appleChat("This has gone too far."), 2.5f);
+            enough.setNext(gone);
+
+            Dialogue laugh = new Dialogue(teamManager, 2.9f);
+            laugh.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.too-far"));
+            gone.setNext(laugh);
+
+            Dialogue tooFar = new Dialogue(teamManager, spirit.formatMessage("Too far?"), 13.2f);
+            laugh.setNext(tooFar);
+
+            Dialogue okay = new Dialogue(teamManager, mysti.formatMessage("Okay, okay."), 2.0f);
+            tooFar.setNext(okay);
+
+            Dialogue carried = new Dialogue(teamManager, mysti.formatMessage("Maybe, yeah, maybe I got a little carried away there."), 3.0f);
+            carried.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.carried-away"));
+            okay.setNext(carried);
+
+            Dialogue goodRun = new Dialogue(teamManager, mysti.formatMessage("We had a good run though, like we were going for what like 6 months?"), 4.5f);
+            goodRun.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.good-run"));
+            carried.setNext(goodRun);
+
+            Dialogue hints = new Dialogue(teamManager, mysti.formatMessage("We were even leaving hints and stuff all over the place, and y'all just did not have a clue."), 5.0f);
+            hints.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.leaving-hints"));
+            goodRun.setNext(hints);
+
+            Dialogue steveActing = new Dialogue(teamManager, mysti.formatMessage("Not to mention, steve's acting? Perfection the whole time."), 5.5f);
+            steveActing.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.steve-acting"));
+            hints.setNext(steveActing);
+
+            Dialogue grabAntidote = new Dialogue(teamManager, mysti.formatMessage("But let me just grab the antidote real qui- Hey apple?"), 6.0f);
+            grabAntidote.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.grab-antidote"));
+            steveActing.setNext(grabAntidote);
+
+            Dialogue grocery = new Dialogue(teamManager, mysti.formatMessage("Did we put the antidote on the grocery list...?"), 3.5f);
+            grocery.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.grocery-list"));
+            grabAntidote.setNext(grocery);
+
+            Dialogue person_standing = new Dialogue(teamManager, appleChat(">->o"), 1.5f);
+            grocery.setNext(person_standing);
+
+            Dialogue umm = new Dialogue(teamManager, mysti.formatMessage("Uhhhh okay ummm mmmmm mmmm uhhhhh ju- gi- give m- give me just one second..."), 13.0f);
+            umm.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.one-second"));
+            person_standing.setNext(umm);
+
+            Dialogue door = new Dialogue(teamManager, 0.0f);
+            door.setSoundKey(Key.key(Key.MINECRAFT_NAMESPACE, "entity.zombie.attack_wooden_door"));
+            umm.setNext(door);
+
+            Dialogue noAntidote = new Dialogue(teamManager, steve.formatMessage("What do you mean you don't have the antidote?!?"), 3.5f);
+            noAntidote.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.dont_have_antidote"), Sound.Source.RECORD, 0.75f ,1f));
+            door.setNext(noAntidote);
+
+            Dialogue mushroomLamp = new Dialogue(teamManager, mysti.formatMessage("Look. Mistakes happen, sometimes a silly little mushroom lamp catches my eye more than a boring bottle of liquid."), 6.5f);
+            mushroomLamp.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.mushroom-lamp"));
+            noAntidote.setNext(mushroomLamp);
+
+            Dialogue willYouHelp = new Dialogue(teamManager, mysti.formatMessage("Just- Will you help me?"), 2.5f);
+            willYouHelp.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.will-you-help"));
+            mushroomLamp.setNext(willYouHelp);
+
+            Dialogue ofCourse = new Dialogue(teamManager, steve.formatMessage("Yes of course I'll help, but I can't keep bailing you out of these situations!"), 8.0f);
+            ofCourse.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.bailing_out"), Sound.Source.RECORD, 0.75f ,1f));
+            willYouHelp.setNext(ofCourse);
+
+            Dialogue steveHelp = new Dialogue(teamManager, mysti.formatMessage("Ok. Steve knows how to make the antidote, but he can't gather the materials himself. So he'll need some help."), 6.0f);
+            steveHelp.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.gather-materials"));
+            ofCourse.setNext(steveHelp);
+
+            Dialogue enchanting = new Dialogue(teamManager, mysti.formatMessage("He'll be standing over at the cauldron by the enchantment area."), 3.0f);
+            enchanting.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.enchantment-area"));
+            steveHelp.setNext(enchanting);
+
+            Dialogue beforeWorse = new Dialogue(teamManager, mysti.formatMessage(Component.text("So if you have any time at all, ")
+                    .append(Component.text("please").decoration(TextDecoration.ITALIC, true))
+                    .append(Component.text(" go talk to him and help us before this gets worse."))), 7.0f);
+            beforeWorse.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "spirit.any-time"));
+            enchanting.setNext(beforeWorse);
+
+        }
+
+
+        // Questbook Commands
+
         QuestCommands commands = new QuestCommands(this);
         plugin.getCommand("questbook").setExecutor(commands);
+
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler
+    public void onInteract(final PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        TowerTeam team = teamManager.getPlayerTeam(player);
+        if (team != null && team.getCurrentQuestId().equals(RESTORED_TAVERN)) {
+            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
+            Block block = event.getClickedBlock();
+            if (instance != null && block != null) {
+                if (instance.goodTavern.getInstanceDoorClicks().contains(block.getLocation())) {
+                    if (!team.isInDialogue()) {
+                        team.setInDialogue(true);
+                        steveFind.play(team, () -> {
+                            FullInventory.givePlayerItems(player, BlockVoucher.getVouchers(2));
+                            team.sendMessage(getRewards(BlockVoucher.getVouchers(2)));
+                            setTeamQuest(team, ENJOY);
+                            team.setInDialogue(false);
+                        });
+                    }
+                }
+            }
+        }
+
+    }
+
+    public static final Location steveLocation = new Location(Worlds.Apr2023(), -591, 65, -2446);
+
+    public void triggerIntermission() {
+        intermissionDialogue.play(Bukkit.getServer(), () -> {
+            try {
+                apr2023QuestManager.removeSteve();
+                Skeleton steve = (Skeleton) steveLocation.getWorld().spawnEntity(steveLocation, EntityType.SKELETON, false);
+                steve.addScoreboardTag(QuestManager.STEVE);
+                steve.addScoreboardTag(Apr2023QuestManager.REMOVE_TAG);
+                steve.setPersistent(true);
+                steve.setInvulnerable(true);
+                steve.customName(Component.text("steve skellington"));
+                ItemStack goggles = GuiUtil.formatItem("Potion Goggles", Material.LEATHER_HORSE_ARMOR, 30);
+                LeatherArmorMeta meta = (LeatherArmorMeta) goggles.getItemMeta();
+                meta.setColor(STEVE_COLOR.toBukkitColor());
+                goggles.setItemMeta(meta);
+                steve.getEquipment().setHelmet(goggles);
+                timer.start(true);
+                for (TowerTeam team : teamManager.getParticipantTeams()) {
+                    setTeamQuest(team, HELP_STEVE);
+                }
+            } catch (TimerUnsetException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public NPC getSpirit() {
         return spirit;
+    }
+
+    public QuestItems getQuestItems() {
+        return questItems;
     }
 
     public GuiHeldItem getQuestBook() {
@@ -507,3 +834,4 @@ public class QuestManager implements Openable {
         return NO_QUEST_GUI;
     }
 }
+

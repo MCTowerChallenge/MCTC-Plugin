@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Duration implements Comparable<Duration> {
+public class DurationOld implements Comparable<DurationOld> {
 
     private long years;
     private long months;
@@ -15,7 +15,7 @@ public class Duration implements Comparable<Duration> {
     private long seconds;
     private long nanos;
 
-    public Duration (long years, long months, long days, long hours, long minutes, long seconds, long nanos) {
+    public DurationOld(long years, long months, long days, long hours, long minutes, long seconds, long nanos) {
         this.years = years;
         this.months = months;
         this.days = days;
@@ -25,11 +25,11 @@ public class Duration implements Comparable<Duration> {
         this.nanos = nanos;
     }
 
-    public Duration (Duration input) {
+    public DurationOld(DurationOld input) {
         this(input.years, input.months, input.days, input.hours, input.minutes, input.seconds, input.nanos);
     }
 
-    public Duration (LocalDateTime fromDateTime, LocalDateTime toDateTime) {
+    public DurationOld(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
         LocalDateTime tempDateTime = LocalDateTime.from( fromDateTime );
 
         this.years = tempDateTime.until( toDateTime, ChronoUnit.YEARS );
@@ -138,7 +138,7 @@ public class Duration implements Comparable<Duration> {
     }
 
     @Override
-    public int compareTo(@NotNull Duration o) {
+    public int compareTo(@NotNull DurationOld o) {
         return Long.compare(this.getTime(), o.getTime());
     }
 }

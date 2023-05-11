@@ -235,7 +235,7 @@ public class Database {
     }
 
     public static final String FRAME_TAG = "portal-frame-colorborder";
-    private static final int FRAME_CUSTOM_MODEL = 1006;
+    private static final int FRAME_CUSTOM_MODEL = 1000;
     private static final org.bukkit.util.Vector FRAME_OFFSET = new Vector(0.5, -1.31, 0.5);
 
     public void placePortalBorders() throws SQLException {
@@ -359,9 +359,8 @@ public class Database {
         )) {
             statement.setString(1, tag);
             statement.setInt(2, team.getDatabaseId());
-            if (statement.executeUpdate() > 0) {
-                team.setCurrentQuestId(tag);
-            }
+            statement.executeUpdate();
+            team.setCurrentQuestId(tag);
         }
     }
 
@@ -516,6 +515,25 @@ public class Database {
                 if (rowCount == 0) {
                     Bukkit.getLogger().warning(String.format("Failed to set winner:\n    user: %s", userId));
                     return;
+                }
+            }
+        }
+    }
+
+    public void giveTeamHatGroup(int hatGroupId, @NotNull TowerTeam team) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+            """
+                INSERT INTO user_hatgroups (user_uuid, hatgroup_id)
+                VALUES (?, ?)
+                """
+        )) {
+            for (OfflinePlayer player : team.getPlayers()) {
+                if (player.isOnline() || player.hasPlayedBefore()) {
+                    String userId = player.getUniqueId().toString();
+//                    Bukkit.getLogger().info(String.format("Giving hatgroup %d to user %s", hatGroupId, userId));
+                    statement.setString(1, userId);
+                    statement.setInt(2, hatGroupId);
+                    statement.executeUpdate();
                 }
             }
         }

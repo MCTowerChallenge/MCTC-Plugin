@@ -1,15 +1,20 @@
 package io.github.mystievous.towerchallenge.timer;
 
+import io.github.mystievous.mystimer.TimerUnsetException;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
+
 public class TimerCommands implements CommandExecutor {
 
-    private final Timer timer;
+    private final TowerTimer timer;
 
-    public TimerCommands(Timer timer) {
+    public TimerCommands(TowerTimer timer) {
         this.timer = timer;
     }
 
@@ -20,28 +25,36 @@ public class TimerCommands implements CommandExecutor {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
                     case ("set") -> {
-                        String[] times = args[1].split(":");
-                        if (times.length == 1) {
-                            timer.setDuration(new Duration(0, 0, 0, 0, 0, Integer.parseInt(times[0]), 0));
-                        } else if (times.length == 2) {
-                            timer.setDuration(new Duration(0, 0, 0, 0, Integer.parseInt(times[0]), Integer.parseInt(times[1]), 0));
-                        } else if (times.length == 3) {
-                            timer.setDuration(new Duration(0, 0, 0, Integer.parseInt(times[0]), Integer.parseInt(times[1]), Integer.parseInt(times[2]), 0));
-                        } else {
-                            sender.sendMessage("Invalid Time");
+                        try {
+                            String[] times = args[1].split(":");
+                            if (times.length == 1) {
+                                timer.setTimeLeft(Duration.ofSeconds(Integer.parseInt(times[0])));
+                            } else if (times.length == 2) {
+                                timer.setTimeLeft(Duration.ofMinutes(Integer.parseInt(times[0])).plusSeconds(Integer.parseInt(times[1])));
+                            } else if (times.length == 3) {
+                                timer.setTimeLeft(Duration.ofHours(Integer.parseInt(times[0])).plusMinutes(Integer.parseInt(times[1])).plusSeconds(Integer.parseInt(times[2])));
+                            } else {
+                                sender.sendMessage("Invalid Time");
+                            }
+                            timer.pause(false);
+                        } catch (IllegalArgumentException e) {
+                            sender.sendMessage(CommandUtils.errorMessage("Unable to set timer: " + e.getMessage()));
                         }
-                        timer.pause();
                     }
                     case ("show") -> timer.showBossBar();
-                    case ("hide") -> timer.removeBossBar();
+                    case ("hide") -> timer.hideBossBar();
                     case ("reset") -> {
-                        timer.setStarted(false);
-                        timer.setDuration(new Duration(0, 0, 0, 5, 0, 0, 0));
-                        timer.pause();
+                        timer.reset();
                     }
-                    case ("pause") -> timer.pause();
-                    case ("start"), ("resume") -> timer.resume();
-
+                    case ("pause") -> timer.pause(true);
+                    case ("start"), ("resume") -> {
+                        try {
+                            timer.start(true);
+                        } catch (TimerUnsetException e) {
+                            Bukkit.getLogger().warning(e.getMessage());
+                            sender.sendMessage(CommandUtils.errorMessage("Timer is not initialized"));
+                        }
+                    }
                 }
             }
         }

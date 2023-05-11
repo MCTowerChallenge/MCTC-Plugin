@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.misc;
 
 import io.github.mystievous.mysticore.DefaultFontInfo;
+import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.mysticore.Palette;
@@ -43,7 +44,7 @@ public class BroadcastCommand implements CommandExecutor {
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text();
 
         // \uF801 is the -1 character width from the resource pack
-        message.append(Component.text("------ \uF801ANNOUNCEMENT\uF801 ------").color(Palette.PRIMARY.toTextColor()))
+        message.append(Component.text("------ ").append(TextUtil.space(-1)).append(Component.text("ANNOUNCEMENT")).append(TextUtil.space(-1)).append(Component.text(" ------"))).color(Palette.PRIMARY.toTextColor())
                 .append(Component.text("\n\n"));
 
         int pixelCount = 0;

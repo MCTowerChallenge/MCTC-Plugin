@@ -2,15 +2,14 @@ package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.WaterDrips;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.Plushies;
+import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHeart;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
+import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
+import io.github.mystievous.towerchallenge.magic.WandCommands;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
@@ -20,13 +19,13 @@ import io.github.mystievous.towerchallenge.quests.FullInventory;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.quests.TeamItemListener;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.timer.Timer;
+import io.github.mystievous.towerchallenge.timer.CraftingTimer;
 import io.github.mystievous.towerchallenge.timer.TimerCommands;
 import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
+import io.github.mystievous.towerchallenge.timer.TowerTimer;
 import io.github.mystievous.towerchallenge.towering.ChatHandler;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
-import io.github.mystievous.towerchallenge.magic.WandCommands;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,8 +42,6 @@ public final class TowerChallenge extends JavaPlugin {
         return me;
     }
 
-    private FerrisWheel ferrisWheel;
-
     public static void log(String text) {
         Bukkit.getLogger().info(text);
     }
@@ -59,12 +56,18 @@ public final class TowerChallenge extends JavaPlugin {
 
         Database database = new Database(this, config.getDBConfig());
 
+        // Timer
+        TowerTimer timer = new TowerTimer(this);
+        CraftingTimer craftingTimer = new CraftingTimer(this);
+        TimerCommands timerCommands = new TimerCommands(timer);
+        TimerTabComplete timerTabComplete = new TimerTabComplete();
+
         TeamManager teamManager = new TeamManager(this, database);
         new TeamItemListener(this, teamManager);
 
         ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
 
-        QuestManager questManager = new QuestManager(this, teamManager);
+        QuestManager questManager = new QuestManager(this, timer, teamManager);
         DialogueCommands dialogueCommands = new DialogueCommands(teamManager);
         PluginCommand stopDialogue = this.getCommand("stopdialogue");
         if (stopDialogue != null) {
@@ -72,15 +75,16 @@ public final class TowerChallenge extends JavaPlugin {
             stopDialogue.setTabCompleter(dialogueCommands);
         }
 
-        EvilTowerManager evilTowerManager = new EvilTowerManager(this, teamManager, questManager);
-        ferrisWheel = new FerrisWheel(this);
+//        EvilTowerManager evilTowerManager = new EvilTowerManager(this, teamManager, questManager);
+//        ferrisWheel = new FerrisWheel(this);
         new Lovebot(this, teamManager, database);
-        new Plushies(this, teamManager, database);
+//        new Plushies(this, teamManager, database);
 
-        // Timer
-        Timer timer = new Timer(this);
-        TimerCommands timerCommands = new TimerCommands(timer);
-        TimerTabComplete timerTabComplete = new TimerTabComplete();
+//        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
+
+//        new BottleManager(this, new Location(Worlds.Apr2023_quest(), -32, 66, 37));
+
+        new NetherHeart(this);
 
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
@@ -89,9 +93,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         MagicItems magicItems = new MagicItems(this, database, waterDrips);
 
-        new GodManager(this, teamManager, ferrisWheel, evilTowerManager, magicItems);
+        new GodManager(this, questManager, teamManager, magicItems);
 
-        TowerCommands towerCommands = new TowerCommands(this, challengeManager, teamManager, ferrisWheel);
+        TowerCommands towerCommands = new TowerCommands(this, challengeManager, teamManager);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
@@ -150,7 +154,7 @@ public final class TowerChallenge extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         Bukkit.getScheduler().cancelTasks(this);
-        ferrisWheel.unloadCars();
+//        ferrisWheel.unloadCars();
         Database.unloadPortalBorders();
     }
 

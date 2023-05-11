@@ -9,8 +9,6 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.*;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.EvilTowerManager;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
@@ -60,7 +58,7 @@ public class GodGui extends PresetGui implements Openable {
      * <p>
      * This is opened generally through the GuiHeldItem.
      */
-    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, FerrisWheel ferrisWheel, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, EvilTowerManager evilTowerManager, MagicItems magicItems) {
+    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, QuestManager questManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems) {
         super(plugin, COMPONENT_NAME, ROWS);
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
@@ -128,7 +126,7 @@ public class GodGui extends PresetGui implements Openable {
         devMeta.displayName(TextUtil.noItalic("Developer Menu"));
         devMeta.setCustomModelData(4);
         devItem.setItemMeta(devMeta);
-        DeveloperGui devGui = new DeveloperGui(plugin, teamManager, evilTowerManager);
+        DeveloperGui devGui = new DeveloperGui(plugin, teamManager);
         Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
         /*
@@ -137,11 +135,7 @@ public class GodGui extends PresetGui implements Openable {
             portal block boundaries
          */
         Vector[][] portalBlocks = new Vector[][]{
-                {new Vector(97, 66, -2119), new Vector(97, 66, -2111)},
-                {new Vector(97, 67, -2118), new Vector(97, 68, -2112)},
-                {new Vector(97, 69, -2117), new Vector(97, 70, -2113)},
-                {new Vector(97, 71, -2116), new Vector(97, 72, -2114)},
-                {new Vector(97, 73, -2115), new Vector(97, 74, -2115)},
+                {new Vector(-690, 67, -2414), new Vector(-690, 69, -2413)}
         };
 
         ItemStack netherItem = GuiUtil.formatItem("Nether Portal", Material.PAPER, 9);
@@ -152,7 +146,7 @@ public class GodGui extends PresetGui implements Openable {
                                 for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
                                     for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
                                         for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                            Location location = new Location(Worlds.Feb2023(), x, y, z);
+                                            Location location = new Location(Worlds.Apr2023(), x, y, z);
                                             Block block = location.getBlock();
                                             block.setType(Material.NETHER_PORTAL);
                                             Orientable blockData = (Orientable) block.getBlockData();
@@ -169,7 +163,7 @@ public class GodGui extends PresetGui implements Openable {
                         for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
                             for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
                                 for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                    Location location = new Location(Worlds.Feb2023(), x, y, z);
+                                    Location location = new Location(Worlds.Apr2023(), x, y, z);
                                     Block block = location.getBlock();
                                     block.setType(Material.AIR);
                                 }
@@ -184,9 +178,9 @@ public class GodGui extends PresetGui implements Openable {
         ConfirmationGUI endGui = new ConfirmationGUI(plugin, Component.text("Confirm RESETTING end portal?"), player -> teamManager.resetEndPortal(), this::openInventory);
         ButtonElement endPortal = new ButtonElement(endItem, endGui::openInventory);
 
-        ItemStack ferrisItem = GuiUtil.formatItem("Reload Ferris Wheel", Material.PAPER, 14);
-        ConfirmationGUI ferrisGui = new ConfirmationGUI(plugin, Component.text("Will kick all players off of ferris wheel."), player -> ferrisWheel.reload(), this::openInventory);
-        ButtonElement ferrisElement = new ButtonElement(ferrisItem, ferrisGui::openInventory);
+//        ItemStack ferrisItem = GuiUtil.formatItem("Reload Ferris Wheel", Material.PAPER, 14);
+//        ConfirmationGUI ferrisGui = new ConfirmationGUI(plugin, Component.text("Will kick all players off of ferris wheel."), player -> ferrisWheel.reload(), this::openInventory);
+//        ButtonElement ferrisElement = new ButtonElement(ferrisItem, ferrisGui::openInventory);
 
         ItemStack addPlayerItem = new ItemStack(Material.PAPER);
         ItemMeta addPlayerMeta = addPlayerItem.getItemMeta();
@@ -216,13 +210,31 @@ public class GodGui extends PresetGui implements Openable {
                 new ButtonElement(Icons.exitItem(), this::openInventory));
         ButtonElement addPlayerElement = new ButtonElement(addPlayerItem, addPlayerGui::openInventory);
 
-        ButtonElement evilTower = new ButtonElement(new ItemStack(Material.PAPER) {{
-            ItemMeta meta = getItemMeta();
-            meta.setCustomModelData(15);
-            meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
-            setItemMeta(meta);
-        }}, player -> evilTowerManager.getGui(player).openInventory(player));
+//        ButtonElement evilTower = new ButtonElement(new ItemStack(Material.PAPER) {{
+//            ItemMeta meta = getItemMeta();
+//            meta.setCustomModelData(15);
+//            meta.displayName(TextUtil.noItalic("Evil Tower Manager"));
+//            setItemMeta(meta);
+//        }}, player -> evilTowerManager.getGui(player).openInventory(player));
 
+        ItemStack questBook = questManager.getQuestBook().getItem();
+        ButtonElement questItems = new ButtonElement(questBook, player -> questManager.getQuestItems().getGui(player).openInventory(player));
+
+        ItemStack intermissionItem = GuiUtil.formatItem("WARNING WARNING WARNING", Material.END_CRYSTAL, 0);
+        ItemMeta intermissionMeta = intermissionItem.getItemMeta();
+        intermissionMeta.lore(TextUtil.formatTexts("Triggers intermission", "", "PLEASE FOR THE LOVE", "OF EVERYTHING, KNOW", "WHAT YOU'RE DOING :panik:"));
+        intermissionItem.setItemMeta(intermissionMeta);
+
+        ConfirmationGUI intermissionGui = new ConfirmationGUI(plugin, Component.text("Start intermission?"),
+                confirmPlayer -> {
+                    questManager.triggerIntermission();
+                    confirmPlayer.closeInventory();
+                },
+                denyPlayer -> {
+                    denyPlayer.closeInventory();
+                }
+        );
+        ButtonElement intermission = new ButtonElement(intermissionItem, intermissionGui::openInventory);
 
         // Add Player to Team
         // End Portal
@@ -257,7 +269,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(3, 3, Icons.blankSlot);
         placeElement(3, 4, netherPortal);
         placeElement(3, 5, Icons.blankSlot);
-        placeElement(3, 6, ferrisElement);
+        placeElement(3, 6, questItems);
         placeElement(3, 7, Icons.blankSlot);
         placeElement(3, 8, hatElement);
         placeElement(3, 9, Icons.blankSlot);
@@ -267,7 +279,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(4, 3, Icons.blankSlot);
         placeElement(4, 4, Icons.blankSlot);
         placeElement(4, 5, Icons.blankSlot);
-        placeElement(4, 6, evilTower);
+        placeElement(4, 6, Icons.blankSlot);
         placeElement(4, 7, Icons.blankSlot);
         placeElement(4, 8, magicElement);
         placeElement(4, 9, Icons.blankSlot);
@@ -277,7 +289,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endPortal);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, Icons.blankSlot);
+        placeElement(5, 6, intermission);
         placeElement(5, 7, Icons.blankSlot);
         try {
             ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());

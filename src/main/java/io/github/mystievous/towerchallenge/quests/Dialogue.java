@@ -36,6 +36,10 @@ public class Dialogue {
         this.delay = (long) (delay * 20L);
     }
 
+    public Dialogue(TeamManager teamManager, double delay) {
+        this(teamManager, null, delay);
+    }
+
     public Dialogue(Dialogue dialogue) {
         this.teamManager = dialogue.teamManager;
         this.friendlyName = dialogue.friendlyName;
@@ -72,7 +76,9 @@ public class Dialogue {
     }
 
     public void play(Audience audience, Runnable callback) {
-        audience.sendMessage(message);
+        if (message != null) {
+            audience.sendMessage(message);
+        }
         if (sound != null) {
             audience.playSound(sound);
         }

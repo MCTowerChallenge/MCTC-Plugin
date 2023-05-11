@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.magic;
 
 import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.page.Gui;
@@ -9,9 +10,7 @@ import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.WaterDrips;
-import io.github.mystievous.towerchallenge.eventspecific.dec2022.presents.PresentEntityHandler;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
-import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
@@ -20,11 +19,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Cow;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -41,21 +36,19 @@ import java.util.UUID;
 public class MagicItems implements Openable {
 
     private final Plugin plugin;
-    private final Database database;
 
     public final ItemStack speedBoots;
     public final ItemStack greaterSpeedBoots;
     public final Wand snowballWand;
     public final Wand cowWand;
     public final Wand lightningWand;
-    public final Wand presentWand;
     public final Wand goatHat;
     public final Wand portalReplaceWand;
     public final Wand waterWand;
+//    public final Wand raftWand;
 
     public MagicItems(Plugin plugin, Database database, WaterDrips waterDrips) {
         this.plugin = plugin;
-        this.database = database;
 
         speedBoots = new ItemStack(Material.LEATHER_BOOTS) {{
             ItemMeta meta = getItemMeta();
@@ -125,16 +118,6 @@ public class MagicItems implements Openable {
             }
         });
 
-        presentWand = new Wand(plugin, "present-wand", new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
-            LeatherArmorMeta meta = (LeatherArmorMeta) getItemMeta();
-            meta.displayName(TextUtil.noItalic("Present Summoner"));
-            meta.setCustomModelData(1001);
-            meta.setColor(Color.WHITE);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.MENDING, 1, false);
-            setItemMeta(meta);
-        }}, playerInteractEvent -> PresentEntityHandler.summonPresent(playerInteractEvent.getPlayer()));
-
         goatHat = new Wand(plugin, GoatHat.GOAT_HAT, NBTUtils.setBool(TowerChallenge.getInstance(), GoatHat.GOAT_HAT, new ItemStack(Material.LEATHER_HORSE_ARMOR) {{
             LeatherArmorMeta meta = (LeatherArmorMeta) getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_DYE);
@@ -162,7 +145,7 @@ public class MagicItems implements Openable {
             setItemMeta(meta);
         }}, playerInteractEvent -> {
             Player player = playerInteractEvent.getPlayer();
-            Block lookBlock = player.getTargetBlock(10);
+            Block lookBlock = player.getTargetBlockExact(10);
             if (lookBlock != null) {
                 lookBlock.setType(Material.END_GATEWAY);
                 lookBlock = lookBlock.getLocation().getBlock();
@@ -199,6 +182,16 @@ public class MagicItems implements Openable {
                 }
             });
         });
+
+//        raftWand = new Wand(plugin, "raft-wand", GuiUtil.formatItem("Raft Wand", Material.BAMBOO, 0), event -> {
+//            Player player = event.getPlayer();
+//            if (player.isSneaking()) {
+//                player.getWorld().spawnEntity(player.getLocation(), EntityType.)
+//            } else {
+//
+//            }
+//        });
+
     }
 
     public ItemStack randomUUID(ItemStack itemStack) {
@@ -211,7 +204,6 @@ public class MagicItems implements Openable {
         gui.placeElement(1, 1, new ButtonElement(snowballWand.getItem(), player -> player.getInventory().addItem(randomUUID(snowballWand.getItem()))));
         gui.placeElement(1, 2, new ButtonElement(cowWand.getItem(), player -> player.getInventory().addItem(randomUUID(cowWand.getItem()))));
         gui.placeElement(1, 3, new ButtonElement(lightningWand.getItem(), player -> player.getInventory().addItem(randomUUID(lightningWand.getItem()))));
-        gui.placeElement(1, 4, new ButtonElement(presentWand.getItem(), player -> player.getInventory().addItem(randomUUID(presentWand.getItem()))));
         gui.placeElement(3, 1, new ButtonElement(speedBoots, player -> player.getInventory().addItem(speedBoots)));
         gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> player.getInventory().addItem(greaterSpeedBoots)));
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));

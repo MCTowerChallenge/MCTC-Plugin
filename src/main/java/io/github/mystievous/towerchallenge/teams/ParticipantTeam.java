@@ -32,23 +32,60 @@ import java.util.Map;
 
 public class ParticipantTeam extends TowerTeam {
 
-    public static final Location towerLocation = new Location(Worlds.Feb2023_tower(), -60, -63, 3);
+    public static final Location towerLocation = new Location(Worlds.Apr2023_tower(), -60, -63, 3);
     public static final Location[] towerBounds = new Location[]{
-            new Location(Worlds.Feb2023_tower(), -60, -62, 3),
-            new Location(Worlds.Feb2023_tower(), -62, 319, 1)
+            new Location(Worlds.Apr2023_tower(), -60, -62, 3),
+            new Location(Worlds.Apr2023_tower(), -62, 319, 1)
     };
 
-    public static final Map<Integer, Location> towerLocations = new HashMap<>();
+    public static final Map<Integer, Location> towerLocations = new HashMap<>(){{
+        put(2,new Location(Worlds.Apr2023_tower(), -60, -62, 3));    // Red
+        put(3,new Location(Worlds.Apr2023_tower(), -53, -63, 10));    // Orange
+        put(4,new Location(Worlds.Apr2023_tower(), -60, -63, 17));    // Yellow
+        put(5,new Location(Worlds.Apr2023_tower(), -67, -63, 10));    // Lime
+        put(6,new Location(Worlds.Apr2023_tower(), -68, -63, 2));    // Green
+        put(7,new Location(Worlds.Apr2023_tower(), -63, -63, -3));    // Cyan
+        put(8,new Location(Worlds.Apr2023_tower(), -57, -63, -3));    // Light Blue
+        put(9,new Location(Worlds.Apr2023_tower(), -52, -63, 2));    // Blue
+        put(10,new Location(Worlds.Apr2023_tower(), -47, -63, 7));   // Purple
+        put(11,new Location(Worlds.Apr2023_tower(), -47, -63, 13));   // Magenta
+        put(12,new Location(Worlds.Apr2023_tower(), -52, -63, 18));   // Pink
+        put(13,new Location(Worlds.Apr2023_tower(), -57, -63, 23));   // White
+        put(14,new Location(Worlds.Apr2023_tower(), -63, -63, 23));   // Light Gray
+        put(15,new Location(Worlds.Apr2023_tower(), -68, -63, 18));   // Gray
+        put(16,new Location(Worlds.Apr2023_tower(), -73, -63, 13));   // Black
+        put(17,new Location(Worlds.Apr2023_tower(), -73, -63, 7));   // Brown
+    }};
 
-    public static final Location spawnLocation = new Location(Worlds.Feb2023(), 136, 63, -2100, 0, 0);
+    // block on base spawn that will be selected for all other spawns
+    // Back right corner glazed terracotta
+    public static final Location baseSpawn = new Location(Worlds.Apr2023(), -682, 98, -2470, 0, 0);
 
-    public static final Location baseSpawn = new Location(Worlds.Feb2023(), 142, 64, -2094);
+    // spawnpoint in the base spawn for the team players to spawn
+    public static final Location baseSpawnpoint = new Location(Worlds.Apr2023(), -679, 98, -2467);
     public static final Location[] spawnBounds = new Location[]{
-            new Location(Worlds.Feb2023(), 133, 64, -2103),
-            new Location(Worlds.Feb2023(), 150, 319, -2086)
+            new Location(Worlds.Apr2023(), -690, 97, -2478),
+            new Location(Worlds.Apr2023(), -669, 319, -2457)
     };
 
-    public static final Map<Integer, Location> spawnLocations = new HashMap<>();
+    public static final Map<Integer, Location> spawnLocations = new HashMap<>(){{
+        put(2,new Location(Worlds.Apr2023(), -704, 98, -2355, 180, 0));    // Red
+        put(3,new Location(Worlds.Apr2023(), -712, 98, -2418, -90, 0));    // Orange
+        put(4,new Location(Worlds.Apr2023(), -669, 98, -2400, 90, 0));    // Yellow
+        put(5,new Location(Worlds.Apr2023(), -607, 98, -2458, 90, 0));    // Lime
+        put(6,new Location(Worlds.Apr2023(), -680, 98, -2349, 180, 0));    // Green
+        put(7,new Location(Worlds.Apr2023(), -704, 98, -2395, -90, 0));    // Cyan
+        put(8,new Location(Worlds.Apr2023(), -702, 98, -2443, -90, 0));    // Light Blue
+        put(9,new Location(Worlds.Apr2023(), -623, 98, -2426, 180, 0));    // Blue
+        put(10,new Location(Worlds.Apr2023(), -596, 98, -2431, 90, 0));   // Purple
+        put(11,new Location(Worlds.Apr2023(), -633, 98, -2475, 0, 0));   // Magenta
+        put(12,new Location(Worlds.Apr2023(), -649, 98, -2424, 180, 0));   // Pink
+        put(13,new Location(Worlds.Apr2023(), -682, 98, -2376, 90, 0));   // White
+        put(14,new Location(Worlds.Apr2023(), -657, 98, -2462, 0, 0));   // Light Gray
+        put(15,new Location(Worlds.Apr2023(), -675, 98, -2427, 180, 0));   // Gray
+        put(16,new Location(Worlds.Apr2023(), -682, 98, -2470, 0, 0));   // Black
+        put(17,new Location(Worlds.Apr2023(), -632, 98, -2449, 90, 0));   // Brown
+    }};
 
     private SpawnRegion spawnRegion;
     private TowerRegion towerRegion;
@@ -74,11 +111,12 @@ public class ParticipantTeam extends TowerTeam {
 
         if (spawnLocations.containsKey(getDatabaseId())) {
             Location teamLocation = spawnLocations.get(getDatabaseId());
-            Vector offset = teamLocation.clone().subtract(spawnLocation).toVector();
-            Location[] bounds = Arrays.stream(spawnBounds).map(location -> location.clone().add(offset).setDirection(teamLocation.getDirection())).toArray(Location[]::new);
+            Vector spawnOffset = teamLocation.clone().subtract(baseSpawn).toVector();
+            Location[] bounds = Arrays.stream(spawnBounds).map(location -> location.clone().add(spawnOffset).setDirection(teamLocation.getDirection())).toArray(Location[]::new);
 
-            Location spawnLocation = baseSpawn.clone().add(offset).setDirection(teamLocation.getDirection());
-            this.spawnRegion = new SpawnRegion(getPlugin(), bounds, spawnLocation, this);
+            Location spawnpointLocation = baseSpawnpoint.clone().add(spawnOffset).setDirection(teamLocation.getDirection());
+
+            this.spawnRegion = new SpawnRegion(getPlugin(), bounds, spawnpointLocation, this);
         }
 
 
@@ -129,21 +167,24 @@ public class ParticipantTeam extends TowerTeam {
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(true);
         frame.setBlockData(frameData);
-        teamManager.setPortalFrameFilled(this, true);
 
-        int remainingEyes = teamManager.getRemainingPortalFrames();
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+            teamManager.setPortalFrameFilled(this, true);
 
-        final Component chatMessage = getDisplayName().color(getColor().toTextColor())
-                .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
-                .append(Component.text(remainingEyes + " remain... ").color(Palette.PRIMARY.toTextColor()));
+            int remainingEyes = teamManager.getRemainingPortalFrames();
 
-        // Send the title to your audience
-        Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
-        Bukkit.getServer().sendMessage(chatMessage);
+            final Component chatMessage = getDisplayName().color(getColor().toTextColor())
+                    .append(Component.text(" has contributed to the End Portal! ").color(NamedTextColor.WHITE))
+                    .append(Component.text(remainingEyes + " remain... ").color(Palette.PRIMARY.toTextColor()));
 
-        if (remainingEyes == 0) {
-            teamManager.openEndPortal();
-        }
+            // Send the title to your audience
+            Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
+            Bukkit.getServer().sendMessage(chatMessage);
+
+            if (remainingEyes == 0) {
+                teamManager.openEndPortal();
+            }
+        });
 
     }
 

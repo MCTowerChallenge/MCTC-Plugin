@@ -3,7 +3,6 @@ package io.github.mystievous.towerchallenge.towering;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.FerrisWheel;
 import io.github.mystievous.towerchallenge.quests.QuestGui;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
@@ -32,13 +31,11 @@ public class TowerCommands implements CommandExecutor {
     private final TowerChallenge plugin;
     private final ChallengeManager challengeManager;
     private final TeamManager teamManager;
-    private final FerrisWheel ferrisWheel;
 
-    public TowerCommands(TowerChallenge plugin, ChallengeManager challengeManager, TeamManager teamManager, FerrisWheel ferrisWheel) {
+    public TowerCommands(TowerChallenge plugin, ChallengeManager challengeManager, TeamManager teamManager) {
         this.plugin = plugin;
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
-        this.ferrisWheel = ferrisWheel;
     }
 
     @Override
@@ -69,7 +66,6 @@ public class TowerCommands implements CommandExecutor {
                             questGui.openInventory(player);
                         }
                     }
-                    case ("reloadferriswheel") -> ferrisWheel.reload();
                     case ("addplayer") -> {
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
                         StringBuilder teamNameBuilder = new StringBuilder();

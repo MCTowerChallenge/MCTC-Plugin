@@ -128,7 +128,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -141,7 +141,7 @@
             <groupId>com.onarandombox.multiversecore
             </groupId> <!--com.onarandombox.multiverse[MODULE (in lowercase)]-->
             <artifactId>Multiverse-Core</artifactId> <!--Multiverse-[MODULE]-->
-            <version>4.2.1</version> <!--[VERSION]-->
+            <version>4.3.1</version> <!--[VERSION]-->
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -155,7 +155,7 @@
             <groupId>com.onarandombox.multiversenetherportals
             </groupId> <!--com.onarandombox.multiverse[MODULE (in lowercase)]-->
             <artifactId>Multiverse-NetherPortals</artifactId> <!--Multiverse-[MODULE]-->
-            <version>4.2.1</version> <!--[VERSION]-->
+            <version>4.2.2</version> <!--[VERSION]-->
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -178,6 +178,12 @@
         <dependency>
             <groupId>io.github.mystievous</groupId>
             <artifactId>MystiGui</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.mystievous</groupId>
+            <artifactId>Mystimer</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>

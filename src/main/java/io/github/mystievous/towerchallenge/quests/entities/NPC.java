@@ -12,6 +12,7 @@ import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -53,6 +54,10 @@ public class NPC implements Listener {
         this.questHandlers = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
         addNPCTag(tag);
+    }
+
+    public NPC(TeamManager teamManager, String name, String tag) {
+        this(teamManager, name, tag, new Color(NamedTextColor.WHITE.value()), new Color(NamedTextColor.WHITE.value()));
     }
 
     public void addQuestHandler(String quest, Consumer<PlayerInteractAtEntityEvent> handler) {
@@ -110,8 +115,8 @@ public class NPC implements Listener {
                         consumer.accept(event);
                         return;
                     }
+                    runDefaultHandler(event);
                 }
-                runDefaultHandler(event);
             }
         });
     }
@@ -126,7 +131,7 @@ public class NPC implements Listener {
 
         if (hasTag(entity) && !allowedRegions.isEmpty()) {
             event.setCancelled(true);
-            RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(Worlds.WORLD()));
+            RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(location.getWorld()));
             if (worldContainer != null) {
                 ApplicableRegionSet regionSet = worldContainer.getApplicableRegions(BukkitAdapter.adapt(location).toVector().toBlockPoint());
                 for (ProtectedRegion region : regionSet.getRegions()) {

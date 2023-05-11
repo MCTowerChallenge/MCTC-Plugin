@@ -92,7 +92,9 @@ public abstract class TowerTeam implements Audience, Listener {
     }
 
     public void setQuests(Map<String, Quest> quests) {
-        this.quests = quests;
+        for (Map.Entry<String, Quest> questEntry : quests.entrySet()) {
+            this.quests.put(questEntry.getKey(), questEntry.getValue().copy());
+        }
     }
 
     public void setCurrentQuestId(String currentQuest) {
@@ -356,58 +358,8 @@ public abstract class TowerTeam implements Audience, Listener {
     }
 
     @Override
-    public void sendMessage(@NotNull Identified source, @NotNull ComponentLike message) {
-        getAudience().sendMessage(source, message);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identity source, @NotNull ComponentLike message) {
-        getAudience().sendMessage(source, message);
-    }
-
-    @Override
     public void sendMessage(@NotNull Component message) {
         getAudience().sendMessage(message);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identified source, @NotNull Component message) {
-        getAudience().sendMessage(source, message);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identity source, @NotNull Component message) {
-        getAudience().sendMessage(source, message);
-    }
-
-    @Override
-    public void sendMessage(@NotNull ComponentLike message, @NotNull MessageType type) {
-        getAudience().sendMessage(message, type);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identified source, @NotNull ComponentLike message, @NotNull MessageType type) {
-        getAudience().sendMessage(source, message, type);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identity source, @NotNull ComponentLike message, @NotNull MessageType type) {
-        getAudience().sendMessage(source, message, type);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Component message, @NotNull MessageType type) {
-        getAudience().sendMessage(message, type);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identified source, @NotNull Component message, @NotNull MessageType type) {
-        getAudience().sendMessage(source, message, type);
-    }
-
-    @Override
-    public void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
-        getAudience().sendMessage(source, message, type);
     }
 
     @Override

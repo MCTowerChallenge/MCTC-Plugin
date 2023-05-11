@@ -77,11 +77,13 @@ public class TeamManager implements Listener {
     }
 
     public void loadPlayers() {
-        try {
-            database.setGameTeamPlayers(this.allTeams);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("SQL Error setting player teams: " + e.getMessage());
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                database.setGameTeamPlayers(this.allTeams);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("SQL Error setting player teams: " + e.getMessage());
+            }
+        });
     }
 
     public TowerChallenge getPlugin() {
@@ -136,6 +138,16 @@ public class TeamManager implements Listener {
         }
     }
 
+    public void giveTeamHatgroup(int hatGroupId, TowerTeam team) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                database.giveTeamHatGroup(hatGroupId, team);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Failed to give team hatgroup: " + e.getMessage());
+            }
+        });
+    }
+
     public boolean setPlayerTeam(OfflinePlayer player, TowerTeam team) {
         try {
             return database.upsertUserTeam(player.getUniqueId(), team);
@@ -173,36 +185,38 @@ public class TeamManager implements Listener {
     }
 
     public void showTowerScores(Audience audience) {
-        Map<Integer, Integer> addedScores = new HashMap<>();
-        try {
-            addedScores.putAll(database.getAddedScores());
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error retrieving added team scores");
-        }
-        Map<Integer, Integer> totalScores = new HashMap<>();
-        Objective objective = ChallengeManager.getScoreObjective();
-        for (ParticipantTeam team : getParticipantTeams()) {
-            int score = objective.getScore(team.getTextName()).getScore();
-            if (addedScores.containsKey(team.getDatabaseId())) {
-                score += addedScores.get(team.getDatabaseId());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Map<Integer, Integer> addedScores = new HashMap<>();
+            try {
+                addedScores.putAll(database.getAddedScores());
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Error retrieving added team scores");
             }
-            totalScores.put(team.getDatabaseId(), score);
-        }
+            Map<Integer, Integer> totalScores = new HashMap<>();
+            Objective objective = ChallengeManager.getScoreObjective();
+            for (ParticipantTeam team : getParticipantTeams()) {
+                int score = objective.getScore(team.getTextName()).getScore();
+                if (addedScores.containsKey(team.getDatabaseId())) {
+                    score += addedScores.get(team.getDatabaseId());
+                }
+                totalScores.put(team.getDatabaseId(), score);
+            }
 
-        List<ParticipantTeam> sortedTeams = getParticipantTeams();
-        sortedTeams.sort((o1, o2) -> {
-            int score1 = totalScores.get(o1.getDatabaseId());
-            int score2 = totalScores.get(o2.getDatabaseId());
-            return Integer.compare(score2, score1);
+            List<ParticipantTeam> sortedTeams = getParticipantTeams();
+            sortedTeams.sort((o1, o2) -> {
+                int score1 = totalScores.get(o1.getDatabaseId());
+                int score2 = totalScores.get(o2.getDatabaseId());
+                return Integer.compare(score2, score1);
+            });
+
+            for (ParticipantTeam team : sortedTeams) {
+                audience.sendMessage(team.getDisplayName().color(team.getColor().toTextColor())
+                        .append(Component.text(" has ").color(NamedTextColor.WHITE)
+                                .append(Component.text(totalScores.get(team.getDatabaseId()))
+                                        .color(Palette.PRIMARY.toTextColor()))
+                                .append(Component.text(" blocks"))));
+            }
         });
-
-        for (ParticipantTeam team : sortedTeams) {
-            audience.sendMessage(team.getDisplayName().color(team.getColor().toTextColor())
-                    .append(Component.text(" has ").color(NamedTextColor.WHITE)
-                            .append(Component.text(totalScores.get(team.getDatabaseId()))
-                                    .color(Palette.PRIMARY.toTextColor()))
-                            .append(Component.text(" blocks"))));
-        }
     }
 
     public void dealAllItems() {
@@ -220,11 +234,13 @@ public class TeamManager implements Listener {
 
 
     public void setPortalFrameFilled(ParticipantTeam team, boolean filled) {
-        try {
-            database.setPortalFrameFilled(team, filled);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                database.setPortalFrameFilled(team, filled);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
+            }
+        });
     }
 
     public Location getPortalFrame(ParticipantTeam team) {

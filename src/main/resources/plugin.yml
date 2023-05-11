@@ -11,6 +11,7 @@ depend:
   - ProtocolLib
   - MystiCore
   - MystiGui
+  - Mystimer
 commands:
   tower:
     description: Commands relating to the towers

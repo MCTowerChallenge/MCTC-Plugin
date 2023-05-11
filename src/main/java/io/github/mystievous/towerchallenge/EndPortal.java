@@ -25,8 +25,8 @@ public class EndPortal implements Listener {
 
     private final TeamManager teamManager;
 
-    public static final Location PORTAL_MIN = new Location(Worlds.Feb2023(), 108, 64, -2109);
-    public static final Location PORTAL_MAX = new Location(Worlds.Feb2023(), 111, 64, -2106);
+    public static final Location PORTAL_MIN = new Location(Worlds.Apr2023(), -657, 65, -2443);
+    public static final Location PORTAL_MAX = new Location(Worlds.Apr2023(), -654, 65, -2440);
 
     public EndPortal(TowerChallenge plugin, TeamManager teamManager) {
         this.teamManager = teamManager;
