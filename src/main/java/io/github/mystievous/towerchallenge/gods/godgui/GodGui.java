@@ -115,7 +115,7 @@ public class GodGui extends PresetGui implements Openable {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
                     ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
-                    hatGui.openInventory(player);
+                    Bukkit.getScheduler().runTask(plugin, () -> hatGui.openInventory(player));
                 } catch (SQLException e) {
                     e.printStackTrace();
                     player.sendMessage(CommandUtils.errorMessage("Error getting hats."));

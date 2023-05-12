@@ -66,7 +66,7 @@ public class ParticipantTeam extends TowerTeam {
     public static final Location basePlayerSpawn = new Location(Worlds.Jun2023(), 164.5, 65, -2235.5, 0, 16);
     public static final Location[] baseSpawnBounds = new Location[]{
             new Location(Worlds.Jun2023(), 158, 64, -2242),
-            new Location(Worlds.Jun2023(), 170, 75, -2230)
+            new Location(Worlds.Jun2023(), 170, 319, -2230)
     };
 
     public static final Map<Integer, Location> teamSpawnLocations = new HashMap<>(){{

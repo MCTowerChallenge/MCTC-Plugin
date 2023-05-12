@@ -77,7 +77,7 @@ public class HatCommands implements CommandExecutor {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.blank());
-                hatGui.openInventory(player);
+                Bukkit.getScheduler().runTask(plugin, () -> hatGui.openInventory(player));
             } catch (SQLException e) {
     //            e.printStackTrace();
                 player.sendMessage(CommandUtils.errorMessage("Error getting hats."));

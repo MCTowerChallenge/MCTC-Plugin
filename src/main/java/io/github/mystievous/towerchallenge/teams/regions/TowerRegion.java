@@ -56,7 +56,7 @@ public class TowerRegion extends EventRegion {
 
     @Override
     public String parentRegionName() {
-        return "towers";
+        return "tower-area";
     }
 
     @Override
