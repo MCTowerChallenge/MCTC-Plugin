@@ -157,14 +157,12 @@ public class TeamManager implements Listener {
     }
 
     public @Nullable TowerTeam getPlayerTeam(OfflinePlayer player) {
-        try {
-            Integer teamId = database.getPlayerTeamId(player.getUniqueId());
-            if (teamId == null) return null;
-            return getTeam(teamId);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("SQLException grabbing team: " + player.getUniqueId());
-            return null;
+        for (TowerTeam team : allTeams) {
+            if (team.getPlayers().contains(player)) {
+                return team;
+            }
         }
+        return null;
     }
 
     public void resetTeams() {

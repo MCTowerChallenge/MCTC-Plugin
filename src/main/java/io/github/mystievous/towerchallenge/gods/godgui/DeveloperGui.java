@@ -94,13 +94,15 @@ public class DeveloperGui extends PresetGui {
 
         ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.DIAMOND_HELMET, 0);
         Element hatElement = new ButtonElement(hatItem, player -> {
-            try {
-                ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
-                hatGui.openInventory(player);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
-            }
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
+                    hatGui.openInventory(player);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
+                }
+            });
         });
 
         try {

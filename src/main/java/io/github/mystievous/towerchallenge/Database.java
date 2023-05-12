@@ -405,7 +405,7 @@ public class Database {
         }
     }
 
-    public boolean addObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
+    public void addObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         INSERT INTO objectives (team_id, quest_tag_id, name, value)
@@ -417,7 +417,7 @@ public class Database {
             statement.setString(2, tag);
             statement.setString(3, name);
             statement.setInt(4, value);
-            return statement.executeUpdate() > 0;
+            statement.executeUpdate();
         }
     }
 

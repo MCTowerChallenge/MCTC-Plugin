@@ -9,6 +9,7 @@ import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -73,13 +74,15 @@ public class HatCommands implements CommandExecutor {
                 }
             }
         }
-        try {
-            ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.blank());
-            hatGui.openInventory(player);
-        } catch (SQLException e) {
-//            e.printStackTrace();
-            player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.blank());
+                hatGui.openInventory(player);
+            } catch (SQLException e) {
+    //            e.printStackTrace();
+                player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
+            }
+        });
         return true;
     }
 
