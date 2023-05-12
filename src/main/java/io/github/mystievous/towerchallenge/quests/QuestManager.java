@@ -43,7 +43,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
-import org.checkerframework.checker.units.qual.K;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;

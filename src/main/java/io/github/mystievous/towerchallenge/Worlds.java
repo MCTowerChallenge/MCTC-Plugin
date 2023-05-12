@@ -48,6 +48,14 @@ public class Worlds {
         return Bukkit.getWorld("Apr2023_quest");
     }
 
+    public static World Jun2023() {
+        return Bukkit.getWorld("Jun2023");
+    }
+
+    public static World Jun2023_tower() {
+        return Bukkit.getWorld("Jun2023_tower");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }
