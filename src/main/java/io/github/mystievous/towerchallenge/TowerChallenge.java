@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.eventspecific.apr2023.WaterDrips;
+import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHeart;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
@@ -14,12 +14,11 @@ import io.github.mystievous.towerchallenge.messaging.MessageCommands;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePackListener;
-import io.github.mystievous.towerchallenge.quests.DialogueCommands;
-import io.github.mystievous.towerchallenge.quests.FullInventory;
+import io.github.mystievous.towerchallenge.quests.npcs.DialogueCommands;
+import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.quests.TeamItemListener;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.timer.CraftingTimer;
+import io.github.mystievous.towerchallenge.timer.OrganizationTimer;
 import io.github.mystievous.towerchallenge.timer.TimerCommands;
 import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
 import io.github.mystievous.towerchallenge.timer.TowerTimer;
@@ -58,12 +57,11 @@ public final class TowerChallenge extends JavaPlugin {
 
         // Timer
         TowerTimer timer = new TowerTimer(this);
-        CraftingTimer craftingTimer = new CraftingTimer(this);
+        OrganizationTimer organizationTimer = new OrganizationTimer(this);
         TimerCommands timerCommands = new TimerCommands(timer);
         TimerTabComplete timerTabComplete = new TimerTabComplete();
 
         TeamManager teamManager = new TeamManager(this, database);
-        new TeamItemListener(this, teamManager);
 
         ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
 

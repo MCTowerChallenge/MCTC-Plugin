@@ -25,6 +25,13 @@ public class SpawnRegion extends EventRegion {
         setFlags(getRegion());
     }
 
+    /**
+     * Gets the {@link Location} of the
+     * player spawn tag of
+     * this region.
+     *
+     * @return the {@link Location}.
+     */
     public @Nullable Location getSpawnpoint() {
         com.sk89q.worldedit.util.Location spawnLocation = getRegion().getFlag(Flags.SPAWN_LOC);
         if (spawnLocation != null) {
@@ -34,6 +41,13 @@ public class SpawnRegion extends EventRegion {
         }
     }
 
+    /**
+     * When a player respawns, makes them
+     * respawn at this region's spawnpoint
+     * if they are a member of the region.
+     *
+     * @param event The respawn event.
+     */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         if (isMember(event.getPlayer())) {

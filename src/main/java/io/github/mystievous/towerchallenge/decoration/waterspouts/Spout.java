@@ -22,19 +22,16 @@ import java.time.Instant;
 public class Spout {
 
     private static final SecureRandom RANDOM = new SecureRandom();
+
+    /**
+     * Seconds it takes for the spout to reach maximum/minimum height
+     */
     public static final int SECONDS_RAMP = 3;
 
     private final Location location;
     private final World world;
 
     /**
-     * Water Spout, looks best when created
-     * on an upwards-facing dispenser.
-     * <p>
-     * By default, sprays up and down at random
-     * intervals, mimicking the ones usually
-     * at water parks and such
-     *
      * @param location the location to create the water spout
      */
     public Spout(@NotNull Location location) {

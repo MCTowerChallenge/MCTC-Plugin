@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.npcs;
 
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;

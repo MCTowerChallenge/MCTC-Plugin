@@ -11,9 +11,14 @@ import io.github.mystievous.mystimer.TimerUnsetException;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.*;
-import io.github.mystievous.towerchallenge.quests.entities.GodMountNPC;
-import io.github.mystievous.towerchallenge.quests.entities.NPC;
-import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
+import io.github.mystievous.towerchallenge.quests.npcs.Dialogue;
+import io.github.mystievous.towerchallenge.quests.npcs.GodMountNPC;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
+import io.github.mystievous.towerchallenge.quests.requirements.MaterialRequirement;
+import io.github.mystievous.towerchallenge.quests.requirements.RequirementsQuest;
+import io.github.mystievous.towerchallenge.quests.requirements.TagRequirement;
+import io.github.mystievous.towerchallenge.quests.utils.BlockVoucher;
+import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.timer.TowerTimer;
@@ -83,6 +88,14 @@ public class QuestManager implements Openable, Listener {
     private final Dialogue steveFind;
     private final Dialogue intermissionDialogue;
 
+    /**
+     * Makes a {@link Component} that
+     * displays the given items
+     * in a "rewards" list format
+     *
+     * @param items The items to list.
+     * @return The formatted {@link Component}
+     */
     public static Component getRewards(ItemStack... items) {
         TextComponent.Builder builder = Component.text();
         builder.append(TextUtil.formatText("Rewards: ")).appendNewline();
@@ -94,23 +107,55 @@ public class QuestManager implements Openable, Listener {
         return builder.build();
     }
 
+    /**
+     * Formats text to look like a player's thoughts.
+     *
+     * @param text The message to format.
+     * @return The formatted {@link Component}.
+     */
     public static Component playerThoughts(Component text) {
         return TextUtil.formatText(text).decoration(TextDecoration.ITALIC, true);
     }
 
+    /**
+     * Formats text to look like a player's thoughts.
+     *
+     * @param text The message to format.
+     * @return The formatted {@link Component}.
+     */
     public static Component playerThoughts(String text) {
         return playerThoughts(Component.text(text));
     }
 
+    /**
+     * Formats a message as if Apple sends it in chat.
+     *
+     * @param text The message to format.
+     * @return The formatted {@link Component}.
+     */
     public static Component appleChat(Component text) {
         return Component.text("[").append(Component.text("God", new Color(16247171).toTextColor())).append(Component.text("] <apple270> "))
                 .append(text);
     }
 
+    /**
+     * Formats a message as if Apple sends it in chat.
+     *
+     * @param text The message to format.
+     * @return The formatted {@link Component}.
+     */
     public static Component appleChat(String text) {
         return appleChat(Component.text(text));
     }
 
+    /**
+     * Sets a team's quest to
+     * the one with the given
+     * id.
+     *
+     * @param team    The team that's changing quests.
+     * @param questId The quest to change to.
+     */
     public void setTeamQuest(TowerTeam team, String questId) {
         QuestChangeEvent event = new QuestChangeEvent(team, getQuest(team, questId), getQuest(team, getTeamQuest(team)));
         Bukkit.getPluginManager().callEvent(event);
@@ -126,8 +171,16 @@ public class QuestManager implements Openable, Listener {
         });
     }
 
+    /**
+     * Gets a team's current quest.
+     *
+     * @param team The team to get.
+     * @return The quest, or the
+     * default no quest if the team
+     * has none.
+     */
     public String getTeamQuest(TowerTeam team) {
-        String quest = team.getCurrentQuestId();
+        String quest = team.getCurrentQuestTag();
         if (quest != null) {
             return quest;
         }
@@ -144,6 +197,17 @@ public class QuestManager implements Openable, Listener {
 
     private final NPC spirit;
 
+    /**
+     * Initializes the Quest Manager.
+     * <p></p>
+     * This is where all quests should be created,
+     * and added to {@link #quests} for the plugin
+     * to register them.
+     *
+     * @param plugin      The current plugin instance.
+     * @param timer       The event timer.
+     * @param teamManager The current team manager instance.
+     */
     public QuestManager(TowerChallenge plugin, TowerTimer timer, TeamManager teamManager) {
         this.plugin = plugin;
         this.timer = timer;
@@ -315,7 +379,7 @@ public class QuestManager implements Openable, Listener {
 
         // Oh no no no no, what do I do?
         Dialogue pennOhNo = new Dialogue(teamManager, penelope.formatMessage("Oh no no no no, what do I do?"), 4.5f);
-        pennOhNo.setSound(Sound.sound(land, Sound.Source.RECORD, 1f ,1f));
+        pennOhNo.setSound(Sound.sound(land, Sound.Source.RECORD, 1f, 1f));
         {
             // The wedding is tonight and he's still missing!
             Dialogue wedding = new Dialogue(teamManager, penelope.formatMessage("The wedding is tonight and he's still missing!"), 4.5f);
@@ -323,7 +387,7 @@ public class QuestManager implements Openable, Listener {
 
             //- What if something horrible's happened
             Dialogue horrible = new Dialogue(teamManager, penelope.formatMessage("What if something horrible's happened?"), 3.0f);
-            horrible.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f ,1f));
+            horrible.setSound(Sound.sound(angry, Sound.Source.RECORD, 1f, 1f));
             wedding.setNext(horrible);
 
             //- What if- Oh!
@@ -336,7 +400,7 @@ public class QuestManager implements Openable, Listener {
 
             //- Butt Stallion and I are supposed to get married tonight, but no one's seen him or steve skellington all day!
             Dialogue married = new Dialogue(teamManager, penelope.formatMessage("Butt Stallion and I are supposed to get married tonight, but no one has seen him or steve skellington all day!"), 8.0f);
-            married.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f ,1.5f));
+            married.setSound(Sound.sound(ambient, Sound.Source.RECORD, 1f, 1.5f));
             sorry.setNext(married);
 
             //- I'm really getting worried about them.
@@ -550,7 +614,6 @@ public class QuestManager implements Openable, Listener {
         });
 
 
-
         makePotion = new RequirementsQuest(plugin, teamManager, MAKE_POTION, "The Antidote");
         makePotion.setDescription("Follow the recipe for the antidote, to save Butt Stallion!");
         makePotion.addRequirement(new MaterialRequirement(Material.BLAZE_POWDER, 6));
@@ -651,7 +714,7 @@ public class QuestManager implements Openable, Listener {
             cold.setNext(biteApple);
 
             Dialogue chomp = new Dialogue(teamManager, 1.0f);
-            chomp.setSound(Sound.sound(eat, Sound.Source.RECORD, 1f ,1.2f));
+            chomp.setSound(Sound.sound(eat, Sound.Source.RECORD, 1f, 1.2f));
             biteApple.setNext(chomp);
 
             Dialogue limitedTime = new Dialogue(teamManager, spirit.formatMessage("The stallion himself is quite limited on time."), 6.5f);
@@ -710,7 +773,7 @@ public class QuestManager implements Openable, Listener {
             umm.setNext(door);
 
             Dialogue noAntidote = new Dialogue(teamManager, steve.formatMessage("What do you mean you don't have the antidote?!?"), 3.5f);
-            noAntidote.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.dont_have_antidote"), Sound.Source.RECORD, 0.75f ,1f));
+            noAntidote.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.dont_have_antidote"), Sound.Source.RECORD, 0.75f, 1f));
             door.setNext(noAntidote);
 
             Dialogue mushroomLamp = new Dialogue(teamManager, mysti.formatMessage("Look. Mistakes happen, sometimes a silly little mushroom lamp catches my eye more than a boring bottle of liquid."), 6.5f);
@@ -722,7 +785,7 @@ public class QuestManager implements Openable, Listener {
             mushroomLamp.setNext(willYouHelp);
 
             Dialogue ofCourse = new Dialogue(teamManager, steve.formatMessage("Yes of course I'll help, but I can't keep bailing you out of these situations!"), 8.0f);
-            ofCourse.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.bailing_out"), Sound.Source.RECORD, 0.75f ,1f));
+            ofCourse.setSound(Sound.sound(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.bailing_out"), Sound.Source.RECORD, 0.75f, 1f));
             willYouHelp.setNext(ofCourse);
 
             Dialogue steveHelp = new Dialogue(teamManager, mysti.formatMessage("Ok. Steve knows how to make the antidote, but he can't gather the materials himself. So he'll need some help."), 6.0f);
@@ -754,7 +817,7 @@ public class QuestManager implements Openable, Listener {
     public void onInteract(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         TowerTeam team = teamManager.getPlayerTeam(player);
-        if (team != null && team.getCurrentQuestId().equals(RESTORED_TAVERN)) {
+        if (team != null && team.getCurrentQuestTag().equals(RESTORED_TAVERN)) {
             Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
             Block block = event.getClickedBlock();
             if (instance != null && block != null) {
@@ -774,8 +837,14 @@ public class QuestManager implements Openable, Listener {
 
     }
 
+    /**
+     * Position in spawn for steve to spawn after intermission
+     */
     public static final Location steveLocation = new Location(Worlds.Apr2023(), -591, 65, -2446);
 
+    /**
+     * Plays the intermission sequence.
+     */
     public void triggerIntermission() {
         intermissionDialogue.play(Bukkit.getServer(), () -> {
             try {
@@ -801,10 +870,6 @@ public class QuestManager implements Openable, Listener {
         });
     }
 
-    public NPC getSpirit() {
-        return spirit;
-    }
-
     public QuestItems getQuestItems() {
         return questItems;
     }
@@ -813,6 +878,13 @@ public class QuestManager implements Openable, Listener {
         return questBook;
     }
 
+    /**
+     * Gets a team's specific copy of a quest.
+     *
+     * @param team The team of the copy to grab.
+     * @param tag  The id of the quest.
+     * @return The quest object.
+     */
     public @Nullable Quest getQuest(TowerTeam team, String tag) {
         if (!team.hasQuests()) {
             team.setQuests(quests);
@@ -824,7 +896,7 @@ public class QuestManager implements Openable, Listener {
     public Gui getGui(Player player) {
         TowerTeam team = teamManager.getPlayerTeam(player);
         if (team != null) {
-            String currentQuestId = team.getCurrentQuestId();
+            String currentQuestId = team.getCurrentQuestTag();
             Quest currentQuest = getQuest(team, currentQuestId);
             if (currentQuest != null) {
                 return currentQuest.getGui(player);

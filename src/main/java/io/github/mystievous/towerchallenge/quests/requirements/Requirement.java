@@ -1,10 +1,12 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.requirements;
 
 import io.github.mystievous.mystigui.element.Representable;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * A requirement for a {@link RequirementsQuest}
+ */
 public abstract class Requirement implements Representable {
 
     private final int required;
@@ -18,6 +20,11 @@ public abstract class Requirement implements Representable {
 
     }
 
+    /**
+     * Makes a copy of this requirement.
+     *
+     * @return the new {@link Requirement}
+     */
     public abstract Requirement copy();
 
     public void setName(Component name) {
@@ -47,10 +54,17 @@ public abstract class Requirement implements Representable {
             taken = amount - (current-required);
             current = required;
         }
-//        Bukkit.getServer().sendMessage(Component.text(taken).appendSpace().append(Component.text(amount)).appendSpace().append(Component.text(current)));
         return taken;
     }
 
+    /**
+     * Checks whether the given item can
+     * contribute to this requirement.
+     *
+     * @param item The item to check
+     * @return True, if it matches
+     *         the requirement
+     */
     public abstract boolean matchItem(ItemStack item);
 
     /**

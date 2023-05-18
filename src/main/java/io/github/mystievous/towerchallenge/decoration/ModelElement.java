@@ -19,8 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A Gui Element for an item of the given model properties
+ */
 public class ModelElement extends ButtonElement {
 
+    /**
+     * @param name            Display Name for the item
+     * @param material        Item Type
+     * @param customModelData Model ID
+     * @param color           Color, for dye-able items
+     * @param author          Model author
+     * @param debug           Whether the item should have material and model id in the lore
+     */
     public ModelElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
         super(NBTUtils.setNoUse(TowerChallenge.getInstance(), new ItemStack(material) {{
             ItemMeta meta = getItemMeta();
@@ -28,7 +39,7 @@ public class ModelElement extends ButtonElement {
             meta.setCustomModelData(customModelData);
             List<Component> lore = new ArrayList<>();
             if (author != null) {
-                lore.add(TextUtil.formatText("Model by "+author));
+                lore.add(TextUtil.formatText("Model by " + author));
             }
             if (debug) {
                 lore.add(TextUtil.formatText(String.format("%s#%d", material.name().toLowerCase(), customModelData)));
@@ -50,6 +61,14 @@ public class ModelElement extends ButtonElement {
         });
     }
 
+    /**
+     * @param name            Display Name for the item
+     * @param material        Item Type
+     * @param customModelData Model ID
+     * @param color           Color, for dye-able items
+     * @param author          Model author
+     * @param debug           Whether the item should have material and model id in the lore
+     */
     public ModelElement(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
         this(TextUtil.noItalic(name), material, customModelData, color, author, debug);
     }

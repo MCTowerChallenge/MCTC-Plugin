@@ -12,11 +12,15 @@ import org.bukkit.plugin.Plugin;
 
 import java.time.Duration;
 
-public class CraftingTimer extends Timer {
+/**
+ * Timer for the organization phase
+ * of the event.
+ */
+public class OrganizationTimer extends Timer {
 
-    public static final String TIMER_ID = "craft";
+    public static final String TIMER_ID = "organization";
 
-    public CraftingTimer(Plugin plugin) {
+    public OrganizationTimer(Plugin plugin) {
         super(plugin, TIMER_ID, Duration.ofMinutes(15));
 
         setOnStart(() -> {

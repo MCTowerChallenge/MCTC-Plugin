@@ -22,7 +22,7 @@ public class BadTavern {
 
     public static final Location baseEnterTeleport = new Location(Worlds.Apr2023_quest(), 3, 65, 32);
 
-    public static final Location[] baseLeavePortalBounds = new Location[]{new Location(Worlds.Apr2023_quest(), 2, 65,31), new Location(Worlds.Apr2023_quest(), 3, 67, 31)};
+    public static final Location[] baseLeavePortalBounds = new Location[]{new Location(Worlds.Apr2023_quest(), 2, 65, 31), new Location(Worlds.Apr2023_quest(), 3, 67, 31)};
     public static final Location leaveTeleport = new Location(Worlds.Apr2023(), -402, 63, -2541.5, 90, 0);
 
 

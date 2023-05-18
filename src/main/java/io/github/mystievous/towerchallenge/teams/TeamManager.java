@@ -51,7 +51,7 @@ public class TeamManager implements Listener {
     }
 
     /**
-     * Loads all teams and assigns their players
+     * Loads and creates all teams and assigns their players.
      */
     public void loadTeams() {
         try {
@@ -76,6 +76,10 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * Assigns all players to
+     * their correct teams.
+     */
     public void loadPlayers() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -94,6 +98,12 @@ public class TeamManager implements Listener {
         return database;
     }
 
+    /**
+     * Gets the team with the specified name.
+     *
+     * @param name The team to get.
+     * @return The {@link TowerTeam} instance.
+     */
     public @Nullable TowerTeam getTeam(@NotNull String name) {
         if (!name.equalsIgnoreCase(godTeam.getTextName())) {
             Optional<ParticipantTeam> teamOptional = this.teams.stream().filter(team -> team.getTextName().equals(name)).findFirst();
@@ -106,6 +116,12 @@ public class TeamManager implements Listener {
         return null;
     }
 
+    /**
+     * Gets the team with the specified id.
+     *
+     * @param databaseId The team id to get.
+     * @return The {@link TowerTeam} instance.
+     */
     public @Nullable TowerTeam getTeam(int databaseId) {
         if (databaseId != godTeam.getDatabaseId()) {
             Optional<ParticipantTeam> teamOptional = this.teams.stream().filter(team -> team.getDatabaseId() == databaseId).findFirst();
@@ -118,18 +134,38 @@ public class TeamManager implements Listener {
         return null;
     }
 
+    /**
+     * Gets the god team instance.
+     *
+     * @return The god team.
+     */
     public GodTeam getGodTeam() {
         return godTeam;
     }
 
+    /**
+     * Gets all participant teams.
+     *
+     * @return A list of the Participant teams.
+     */
     public List<ParticipantTeam> getParticipantTeams() {
         return teams;
     }
 
+    /**
+     * Returns all teams, participant and god.
+     *
+     * @return A list of all teams.
+     */
     public List<TowerTeam> getAllTeams() {
         return allTeams;
     }
 
+    /**
+     * Updates the winning team in the database.
+     *
+     * @param team The team to make the winners.
+     */
     public void updateWinningTeam(TowerTeam team) {
         try {
             database.updateWinningTeam(team);
@@ -138,6 +174,13 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * Gives a team a specific hatgroup.
+     *
+     * @param hatGroupId The database id of the
+     *                   hatgroup to give the team.
+     * @param team       The team to give the hatgroup to.
+     */
     public void giveTeamHatgroup(int hatGroupId, TowerTeam team) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -148,6 +191,16 @@ public class TeamManager implements Listener {
         });
     }
 
+    /**
+     * Assigns the player to
+     * the given team.
+     *
+     * @param player The player to assign.
+     * @param team   The team to assign
+     *               the player to.
+     * @return True, if the player was
+     * assigned successfully.
+     */
     public boolean setPlayerTeam(OfflinePlayer player, TowerTeam team) {
         try {
             return database.upsertUserTeam(player.getUniqueId(), team);
@@ -156,6 +209,14 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * Retrieves the team of the
+     * specified player.
+     *
+     * @param player The player to check.
+     * @return The team the player belongs
+     * to, or null if they have no team.
+     */
     public @Nullable TowerTeam getPlayerTeam(OfflinePlayer player) {
         for (TowerTeam team : allTeams) {
             if (team.getPlayers().contains(player)) {
@@ -165,6 +226,10 @@ public class TeamManager implements Listener {
         return null;
     }
 
+    /**
+     * Empties all teams and
+     * reloads players.
+     */
     public void resetTeams() {
         for (ParticipantTeam team : getParticipantTeams()) {
             team.clearPlayers();
@@ -182,6 +247,15 @@ public class TeamManager implements Listener {
         return database.getTeamScore(participantTeam);
     }
 
+    /**
+     * Grabs all team scores from
+     * the scoreboard and database
+     * and displays them in chat
+     * to the given audience.
+     *
+     * @param audience The audience to
+     *                 show the scores to.
+     */
     public void showTowerScores(Audience audience) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Map<Integer, Integer> addedScores = new HashMap<>();
@@ -217,12 +291,23 @@ public class TeamManager implements Listener {
         });
     }
 
+    /**
+     * Deals starting items to all
+     * players on participant teams.
+     */
     public void dealAllItems() {
         for (TowerTeam team : getParticipantTeams()) {
             team.dealItemsAllPlayers();
         }
     }
 
+    /**
+     * Deals starting items only
+     * to the given player.
+     *
+     * @param player The player to give
+     *               starting items to.
+     */
     public void dealPlayerItems(Player player) {
         TowerTeam team = getPlayerTeam(player);
         if (team != null) {
@@ -230,7 +315,14 @@ public class TeamManager implements Listener {
         }
     }
 
-
+    /**
+     * Sets the end portal frame state for
+     * the given team.
+     *
+     * @param team   The team to set.
+     * @param filled The state to set
+     *               the frame to.
+     */
     public void setPortalFrameFilled(ParticipantTeam team, boolean filled) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -241,6 +333,13 @@ public class TeamManager implements Listener {
         });
     }
 
+    /**
+     * Initializes and gets the location
+     * of a team's end portal frame.
+     *
+     * @param team The team to make the
+     *             frame for.
+     */
     public Location getPortalFrame(ParticipantTeam team) {
         try {
             return database.getPortalFrame(team);
@@ -250,6 +349,13 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * Counts how many portal frames are
+     * left incomplete.
+     *
+     * @return The number of portal frames
+     * left.
+     */
     public int getRemainingPortalFrames() {
         try {
             return database.getRemainingPortalFrames();
@@ -263,6 +369,11 @@ public class TeamManager implements Listener {
         endPortal.openPortal();
     }
 
+    /**
+     * Closes the end portal and
+     * resets all current teams'
+     * portal frames.
+     */
     public void resetEndPortal() {
         Bukkit.getLogger().info("Resetting End Portal");
         endPortal.resetPortal();
@@ -273,6 +384,14 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * When a player joins, sets them to
+     * the proper team, and, if it is their
+     * first time joining, sets them to their
+     * team spawn.
+     *
+     * @param event The player join event.
+     */
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -291,6 +410,12 @@ public class TeamManager implements Listener {
         }
     }
 
+    /**
+     * When a player tries to create a portal,
+     * cancels the event and notifies the gods >:)
+     *
+     * @param event The portal create event.
+     */
     @EventHandler
     public void onPortalCreate(final PortalCreateEvent event) {
         if (event.isCancelled())

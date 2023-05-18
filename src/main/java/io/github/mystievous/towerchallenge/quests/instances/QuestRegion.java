@@ -11,8 +11,19 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 
+/**
+ * {@link EventRegion} for a specific {@link QuestInstance}
+ */
 public class QuestRegion extends EventRegion {
 
+    /**
+     * Creates or updates a new region, offset for this instance.
+     *
+     * @param plugin   Current plugin instance
+     * @param instance {@link QuestInstance} this region is associated with
+     * @param area     Area for the region to cover
+     * @param tag      Tag to name the region with
+     */
     public QuestRegion(Plugin plugin, QuestInstance instance, Location[] area, String tag) {
         super(plugin, Arrays.stream(area).map(instance::offsetLocation).toArray(Location[]::new), instance.getTeam(), tag);
         setFlags(getRegion());

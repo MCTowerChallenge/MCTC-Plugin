@@ -29,6 +29,13 @@ public class HatCommands implements CommandExecutor {
         this.database = database;
     }
 
+    /**
+     * Sets the color of a specific player
+     *
+     * @param player The player to set
+     * @param color  The color to set the player to
+     * @throws SQLException If there's an error when writing to the database
+     */
     public void setPlayerColor(Player player, Color color) throws SQLException {
         database.updatePlayerColor(player.getUniqueId(), color);
     }
@@ -79,7 +86,7 @@ public class HatCommands implements CommandExecutor {
                 ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), database.getPlayerHats(player.getUniqueId()), Element.blank());
                 Bukkit.getScheduler().runTask(plugin, () -> hatGui.openInventory(player));
             } catch (SQLException e) {
-    //            e.printStackTrace();
+                //            e.printStackTrace();
                 player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
             }
         });

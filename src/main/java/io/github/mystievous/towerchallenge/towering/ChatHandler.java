@@ -15,6 +15,8 @@ import org.bukkit.scoreboard.Team;
 
 public class ChatHandler implements Listener {
 
+    // TODO: clean up this mess
+
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
         Team playerTeam = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getPlayerTeam(event.getPlayer());

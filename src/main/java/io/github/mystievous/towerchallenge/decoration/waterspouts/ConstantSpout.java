@@ -13,8 +13,8 @@ public class ConstantSpout extends Spout {
     private final double height;
 
     /**
-     * Same as the other Spout class, but runs at
-     * a constant height instead of a variable one
+     * @param location base location for the spout
+     * @param height   height the spout should spray at
      */
     public ConstantSpout(Location location, double height) {
         super(location);
@@ -22,7 +22,7 @@ public class ConstantSpout extends Spout {
     }
 
     /**
-     * Runs the spout, with constant height
+     * Runs the spout, at the height set in the constructor
      */
     @Override
     public void runSpout() {

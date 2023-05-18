@@ -22,7 +22,7 @@ public class StartingItemsGui extends PresetGui {
      * A Gui that shows all the starting
      * items from the specified team.
      *
-     * @param team   The team to show the items from.
+     * @param team The team to show the items from.
      */
     public StartingItemsGui(TowerChallenge plugin, @NotNull ParticipantTeam team) {
         super(plugin, Component.text("Starting Items for " + team.getTextName()), 5);

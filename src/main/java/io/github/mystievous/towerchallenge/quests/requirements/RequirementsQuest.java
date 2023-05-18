@@ -1,11 +1,11 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.requirements;
 
 import io.github.mystievous.mystigui.page.Gui;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.quests.Quest;
+import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,6 +41,13 @@ public class RequirementsQuest extends Quest {
         }
     }
 
+    /**
+     * Checks whether all {@link Requirement}'s
+     * for this quest have nothing remaining.
+     *
+     * @return True, if all requirements
+     *         are complete
+     */
     public boolean isComplete() {
         for (Requirement requirement : requirements) {
             if (requirement.getRemaining() > 0) {

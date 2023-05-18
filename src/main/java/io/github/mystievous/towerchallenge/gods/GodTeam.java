@@ -24,8 +24,11 @@ public class GodTeam extends TowerTeam {
         super(plugin, teamManager, databaseId, name, color, dye);
     }
 
+    /**
+     * @return The item representation of this team
+     */
     @Override
-    public ItemStack getItem() {
+    public ItemStack getRepresentation() {
         ItemStack item = new ItemStack(Material.valueOf(getDye() + "_CONCRETE"));
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(getDisplayName().decoration(TextDecoration.ITALIC, false));
@@ -34,6 +37,12 @@ public class GodTeam extends TowerTeam {
         return item;
     }
 
+    /**
+     * Tells the gods when a team
+     * completes a quest
+     *
+     * @param event the event of the quest being changed
+     */
     @EventHandler
     public void onQuestChange(final QuestChangeEvent event) {
         if (event.isCancelled())

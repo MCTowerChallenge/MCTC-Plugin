@@ -67,6 +67,18 @@ public class TowerRegion extends EventRegion {
         region.setFlag(Flags.EXIT_DENY_MESSAGE, null);
     }
 
+    /**
+     * Checks if a block should be
+     * excluded from the tower checking.
+     * <p></p>
+     * Used for shulker boxes provided
+     * to players, so they can place
+     * them freely and not have them
+     * count towards the tower points.
+     *
+     * @param block The block to check.
+     * @return True, if the block should be excluded.
+     */
     private boolean exclude(BlockState block) {
         if (block instanceof ShulkerBox box) {
             Component boxName = box.customName();
@@ -76,10 +88,10 @@ public class TowerRegion extends EventRegion {
     }
 
     /**
-     * Stores the block to the tower, as it is at the moment it's added.
+     * Stores the block in the tower, as it is at the moment it's added.
      *
-     * @param block Block to be added
-     * @return true, if the tower already has that block
+     * @param block Block to be added.
+     * @return True, if the tower already has that block.
      */
     private boolean addBlock(Audience audience, BlockState block) {
         Material material = block.getType();
@@ -142,17 +154,27 @@ public class TowerRegion extends EventRegion {
     }
 
     /**
-     * Checks whether a block is in the region
+     * Checks whether a block is
+     * in the list of full blocks.
      *
-     * @param block block to check
-     * @return true, if the block is in the region
+     * @param block The block to check.
+     * @return True, if the block is
+     * a full block
+     * @see BlockSets#FULL_BLOCKS
      */
-
-
     private boolean checkFullBlock(BlockState block) {
         return BlockSets.FULL_BLOCKS.contains(block.getType());
     }
 
+    /**
+     * Adds players as members of the
+     * region when towering starts,
+     * so they can place blocks.
+     * When towering ends, removes
+     * them again.
+     *
+     * @param event The challenge phase change event.
+     */
     @EventHandler
     public void onChallengePhaseChange(ChallengePhaseChangeEvent event) {
         ChallengeManager.ChallengePhase phase = event.getChallengePhase();

@@ -88,7 +88,7 @@ public class MessageCommands implements CommandExecutor {
                         if (apple != null && apple.isOnline()) {
                             send(apple, formatFromMessage(player, body));
                         }
-                        sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{
+                        sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>() {{
                             add(mysti);
                             add(apple);
                         }}, body));
@@ -101,7 +101,9 @@ public class MessageCommands implements CommandExecutor {
                     sendFrom.sendMessage(formatFromToMessage(player, targetTeam.getOnlinePlayers(), body));
                 } else {
                     send(target, formatFromMessage(player, body));
-                    sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>(){{add(target);}}, body));
+                    sendFrom.sendMessage(formatFromToMessage(player, new HashSet<>() {{
+                        add(target);
+                    }}, body));
                 }
             } else {
                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
@@ -160,12 +162,11 @@ public class MessageCommands implements CommandExecutor {
             Component prefix;
 
 
-
             if (i > 0) {
                 if (i > 1) {
                     output.append(Component.text(","));
                 }
-                if (i == playersArr.length-1) {
+                if (i == playersArr.length - 1) {
                     output.append(Component.text(" and"));
                 }
                 output.append(Component.space());
@@ -184,7 +185,9 @@ public class MessageCommands implements CommandExecutor {
     }
 
     private Component formatPlayer(Player player) {
-        return formatPlayers(new HashSet<>(){{add(player);}});
+        return formatPlayers(new HashSet<>() {{
+            add(player);
+        }});
     }
 
     private Component formatFromToMessage(Player sender, Collection<Player> recipients, String[] body) {
@@ -209,7 +212,7 @@ public class MessageCommands implements CommandExecutor {
                 .append(Component.text(" whispers to your team: "));
 
         for (String string : body) {
-            message.append(Component.text(string+" "));
+            message.append(Component.text(string + " "));
         }
 
         return message.build();
@@ -222,7 +225,7 @@ public class MessageCommands implements CommandExecutor {
                 .append(Component.text(" whispers to the Gods: "));
 
         for (String string : body) {
-            message.append(Component.text(string+" "));
+            message.append(Component.text(string + " "));
         }
 
         return message.build();

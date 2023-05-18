@@ -6,6 +6,12 @@ public class TargetAlreadyActivateException extends Exception {
 
     private final Location location;
 
+    /**
+     * Exception for when a target is attempted to activate
+     * but is already active
+     *
+     * @param location Location of the target
+     */
     public TargetAlreadyActivateException(Location location) {
         super("Target is already active and cannot be activated until it is done.");
         this.location = location;

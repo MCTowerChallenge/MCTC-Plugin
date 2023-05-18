@@ -3,16 +3,14 @@ package io.github.mystievous.towerchallenge.teams;
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mystigui.GuiHeldItem;
+import io.github.mystievous.mystigui.element.Representable;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -43,10 +41,21 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public abstract class TowerTeam implements Audience, Listener {
+/**
+ * A team for the tower challenge event.
+ */
+public abstract class TowerTeam implements Audience, Listener, Representable {
 
-    // Server's scoreboard
+    /**
+     * Main scoreboard, used to create teams
+     * if they are not already.
+     */
     public static final Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+
+    /**
+     * Name of the shulker boxes given
+     * to teams by Gods.
+     */
     public static final String SHULKER_NAME = "Starting Shulker Box";
 
     private final int databaseId;
@@ -56,11 +65,31 @@ public abstract class TowerTeam implements Audience, Listener {
     private final Color color;
     private final String dye;
 
-    private Map<String, Quest> quests;
+    private final Map<String, Quest> quests;
     private String currentQuest;
+    /**
+     * Whether the team is currently
+     * listening to dialogue.
+     */
     private boolean inDialogue;
+    /**
+     * If true, the next dialogue
+     * playing for this team
+     * will not trigger.
+     */
     private boolean stopDialogue;
 
+    /**
+     * Creates a server team with the
+     * given values if one does not exist.
+     *
+     * @param plugin      The current plugin instance.
+     * @param teamManager The current team manager instance.
+     * @param databaseId  The ID of this team in the database.
+     * @param displayName The name to display in game for this team.
+     * @param color       The color to make this team.
+     * @param dye         The name of the in-game dye to use for this team. i.e. {@code MAGENTA}
+     */
     public TowerTeam(TowerChallenge plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
         this.teamManager = teamManager;
         this.databaseId = databaseId;
@@ -83,28 +112,73 @@ public abstract class TowerTeam implements Audience, Listener {
 
     public abstract void unregisterEvents();
 
+    /**
+     * Whether this team has existing
+     * quest instances.
+     *
+     * @return True, if the team has
+     * its quests set.
+     */
     public boolean hasQuests() {
         return !quests.isEmpty();
     }
 
+    /**
+     * Gets a specific quest instance
+     * for this team.
+     *
+     * @param tag The quest tag to retrieve.
+     * @return The instance of the Quest.
+     */
     public @Nullable Quest getQuest(String tag) {
         return quests.get(tag);
     }
 
+    /**
+     * Sets the quest instances for this
+     * team based on the given quests.
+     *
+     * @param quests The quests to copy
+     *               to this team.
+     */
     public void setQuests(Map<String, Quest> quests) {
         for (Map.Entry<String, Quest> questEntry : quests.entrySet()) {
             this.quests.put(questEntry.getKey(), questEntry.getValue().copy());
         }
     }
 
-    public void setCurrentQuestId(String currentQuest) {
+    /**
+     * Sets the current quest for this team.
+     * <p></p>
+     * Team members will automatically be
+     * shown the new quest when they reopen
+     * the quest book.
+     *
+     * @param currentQuest The new quest to set.
+     */
+    public void setCurrentQuestTag(String currentQuest) {
         this.currentQuest = currentQuest;
     }
 
-    public String getCurrentQuestId() {
+    /**
+     * Gets the tag of the current quest
+     * for this team.
+     *
+     * @return The quest tag.
+     */
+    public String getCurrentQuestTag() {
         return currentQuest;
     }
 
+    /**
+     * Adds to a quest objective
+     * score for this team.
+     *
+     * @param tag   The quest tag.
+     * @param name  The name of the
+     *              objective.
+     * @param value The value to add.
+     */
     public void addObjectiveScore(String tag, String name, int value) {
         try {
             teamManager.getDatabase().addObjectiveScore(this, tag, name, value);
@@ -113,6 +187,16 @@ public abstract class TowerTeam implements Audience, Listener {
         }
     }
 
+    /**
+     * Gets the value of a quest
+     * objective for this team.
+     *
+     * @param tag  The quest tag.
+     * @param name The name of the
+     *             objective.
+     * @return The value of the quest
+     * objective.
+     */
     public int getObjective(String tag, String name) {
         try {
             return teamManager.getDatabase().getObjective(this, tag, name);
@@ -122,17 +206,44 @@ public abstract class TowerTeam implements Audience, Listener {
         return 0;
     }
 
+    /**
+     * Sets the team to trigger
+     * or not trigger more
+     * dialogues.
+     *
+     * @param inDialogue The value to set.
+     */
     public void setInDialogue(boolean inDialogue) {
         this.inDialogue = inDialogue;
     }
 
+    /**
+     * Gets whether the team is
+     * currently in a dialogue.
+     *
+     * @return True, if they are
+     * listening to a dialogue.
+     */
     public boolean isInDialogue() {
         return inDialogue;
     }
 
+    /**
+     * Sets whether the team's
+     * current dialogue should
+     * not continue.
+     *
+     * @param shouldStop Whether the dialogue
+     *                   should stop.
+     */
     public void setStopDialogue(boolean shouldStop) {
         stopDialogue = shouldStop;
     }
+
+    /**
+     * @return Whether the team's next
+     * dialogue should not trigger.
+     */
     public boolean shouldStopDialogue() {
         return stopDialogue;
     }
@@ -145,10 +256,25 @@ public abstract class TowerTeam implements Audience, Listener {
         return team;
     }
 
+    /**
+     * Serializes the team's display
+     * name to a plain string.
+     *
+     * @return the display name.
+     */
     public String getTextName() {
         return PlainTextComponentSerializer.plainText().serialize(team.displayName());
     }
 
+    /**
+     * Gets the server/technical name
+     * for this team.
+     * <p></p>
+     * i.e. if the team is {@code Light Blue},
+     * this returns {@code LightBlue}.
+     *
+     * @return The team name.
+     */
     public String getServerTeamName() {
         return team.getName();
     }
@@ -157,8 +283,17 @@ public abstract class TowerTeam implements Audience, Listener {
         return color;
     }
 
-    public abstract ItemStack getItem();
+    @Override
+    public abstract ItemStack getRepresentation();
 
+    /**
+     * Gets the dye color name for
+     * this team.
+     * <p></p>
+     * i.e. {@code MAGENTA}
+     *
+     * @return The dye name.
+     */
     public String getDye() {
         return dye;
     }
@@ -167,14 +302,33 @@ public abstract class TowerTeam implements Audience, Listener {
         return Audience.audience(getOnlinePlayers());
     }
 
+    /**
+     * Gets all players on this team,
+     * whether online or not.
+     *
+     * @return The list of players.
+     */
     public Collection<OfflinePlayer> getPlayers() {
         return team.getEntries().stream().map(Bukkit::getOfflinePlayer).toList();
     }
 
+    /**
+     * Gets online players on this
+     * team.
+     *
+     * @return The list of players
+     */
     public Collection<Player> getOnlinePlayers() {
         return team.getEntries().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).filter(Player::isOnline).toList();
     }
 
+    /**
+     * Gets the display name of the
+     * team, with the proper color
+     * applied.
+     *
+     * @return The display name.
+     */
     public Component getDisplayName() {
         return team.displayName().color(getColor().toTextColor());
     }
@@ -183,6 +337,18 @@ public abstract class TowerTeam implements Audience, Listener {
         return plugin;
     }
 
+    /**
+     * Adds a player to this team.
+     * <p></p>
+     * This method will not add
+     * the player to the database.
+     * To properly add a player,
+     * the {@link TeamManager}
+     * should be used.
+     *
+     * @param player The player to add.
+     * @see TeamManager#setPlayerTeam(OfflinePlayer, TowerTeam)
+     */
     public void addTeamPlayer(OfflinePlayer player) {
         try {
             getTeam().addPlayer(player);
@@ -191,12 +357,29 @@ public abstract class TowerTeam implements Audience, Listener {
         }
     }
 
+    /**
+     * Adds a list of players to
+     * this team.
+     * <p></p>
+     * This method will not add
+     * the players to the database.
+     * To properly add players,
+     * the {@link TeamManager}
+     * should be used.
+     *
+     * @param players The players to add.
+     * @see TeamManager#setPlayerTeam(OfflinePlayer, TowerTeam)
+     */
     public void addAllPlayers(@NotNull List<OfflinePlayer> players) {
         for (OfflinePlayer player : players) {
             addTeamPlayer(player);
         }
     }
 
+    /**
+     * Clears the players from
+     * this team.
+     */
     public void clearPlayers() {
         for (String name : team.getEntries()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(name);
@@ -206,20 +389,45 @@ public abstract class TowerTeam implements Audience, Listener {
         }
     }
 
+    /**
+     * Gets the starting shulker box
+     * for this team.
+     *
+     * @return The shulker box.
+     */
     public ItemStack getShulker() {
-        ItemStack shulker = new ItemStack(Material.valueOf(getDye().toUpperCase()+"_SHULKER_BOX"));
+        ItemStack shulker = new ItemStack(Material.valueOf(getDye().toUpperCase() + "_SHULKER_BOX"));
         ItemMeta shulkerMeta = shulker.getItemMeta();
         shulkerMeta.displayName(Component.text(SHULKER_NAME).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA));
         shulker.setItemMeta(shulkerMeta);
         return shulker;
     }
 
+    /**
+     * Gives a player the given
+     * number of shulker boxes
+     * from this team.
+     *
+     * @param player The player to give to.
+     * @param number The number of boxes.
+     */
     public void giveShulker(Player player, int number) {
         for (int i = 0; i < number; i++) {
             player.getInventory().addItem(getShulker());
         }
     }
 
+    /**
+     * Gets the starting equipment
+     * for this team.
+     * <p></p>
+     * To give items, {@link #dealItems(Player)}
+     * should be used.
+     *
+     * @return The starting equipment.
+     * @see #dealItems(Player)
+     * @see #dealItemsAllPlayers()
+     */
     public Map<EquipmentSlot, ItemStack> getStartingEquipment() {
 
         Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
@@ -251,6 +459,17 @@ public abstract class TowerTeam implements Audience, Listener {
         return equipment;
     }
 
+    /**
+     * Gets the starting items
+     * for this team.
+     * <p></p>
+     * To give items, {@link #dealItems(Player)}
+     * should be used.
+     *
+     * @return The starting items.
+     * @see #dealItems(Player)
+     * @see #dealItemsAllPlayers()
+     */
     public Map<Integer, ItemStack> getStartingItems() {
         Map<Integer, ItemStack> items = new HashMap<>();
 
@@ -308,6 +527,12 @@ public abstract class TowerTeam implements Audience, Listener {
 
     }
 
+    /**
+     * Deals starting items to
+     * all players on this team.
+     *
+     * @see #dealItems(Player)
+     */
     public void dealItemsAllPlayers() {
         for (OfflinePlayer offlinePlayer : getPlayers()) {
             if (offlinePlayer instanceof Player player) {
@@ -316,6 +541,13 @@ public abstract class TowerTeam implements Audience, Listener {
         }
     }
 
+    /**
+     * Deals starting items for
+     * this team to the given player.
+     *
+     * @param player The player to deal
+     *               items to.
+     */
     public void dealItems(Player player) {
         PlayerInventory inventory = player.getInventory();
         Map<EquipmentSlot, ItemStack> equipment = getStartingEquipment();
@@ -341,6 +573,10 @@ public abstract class TowerTeam implements Audience, Listener {
         }
 
     }
+
+    /*
+        Inherited Audience methods
+     */
 
     @Override
     public @NotNull Audience filterAudience(@NotNull Predicate<? super Audience> filter) {

@@ -6,6 +6,10 @@ import java.util.EnumSet;
 
 public class BlockSets {
 
+    /**
+     * Full list of blocks allowed in a tower
+     * in the event.
+     */
     public static final EnumSet<Material> FULL_BLOCKS = EnumSet.of(
             Material.ACACIA_LEAVES,
             Material.ACACIA_LOG,
@@ -381,6 +385,11 @@ public class BlockSets {
             Material.YELLOW_WOOL
     );
 
+    /**
+     * Full list of blocks allowed in a tower
+     * in the event that are obtainable in
+     * survival.
+     */
     public static final Material[] OBTAINABLE_BLOCKS = {
             Material.ACACIA_LEAVES,
             Material.ACACIA_LOG,

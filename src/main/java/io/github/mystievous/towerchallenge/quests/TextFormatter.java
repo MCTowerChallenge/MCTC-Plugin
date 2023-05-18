@@ -14,13 +14,22 @@ public class TextFormatter {
 
     private static final int LINE_MAX = 70;
 
+    /**
+     * Returns the input text but shifted
+     * onto the given quest book line,
+     * if the characters can be.
+     *
+     * @param line   The line to put the text on.
+     * @param string The text to put on the line.
+     * @return The shifted text.
+     */
     public static String toLine(int line, String string) {
         int offset = BASE_OFFSET + (LINE_OFFSET * line);
 
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < string.length(); i++) {
-            String charString = string.substring(i, i+1);
+            String charString = string.substring(i, i + 1);
             if (charString.matches(REGEX)) {
                 int charValue = charString.charAt(0);
                 result.append(Character.valueOf((char) (charValue + offset)));
@@ -31,7 +40,15 @@ public class TextFormatter {
     }
 
     // Function to return a completely formatted string using toLine and DefaultFontInfo
-    // Line Max = 68
+
+    /**
+     * Completely formats a string for the
+     * Quest Book body, splitting it
+     * between lines.
+     *
+     * @param string The string to format.
+     * @return The formatted {@link Component}
+     */
     public static Component toBookBodyFormat(@Nullable String string) {
         if (string != null) {
             String[] words = string.strip().split(" ");
@@ -39,7 +56,7 @@ public class TextFormatter {
             int currentLine = 0;
             int pixelCount = 0;
             for (String word : words) {
-                word = word+' ';
+                word = word + ' ';
                 int wordLength = DefaultFontInfo.getPixelLength(word);
                 if (pixelCount + wordLength > LINE_MAX) {
                     output.append(TextUtil.space(-pixelCount));

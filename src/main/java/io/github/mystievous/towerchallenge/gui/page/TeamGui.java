@@ -18,7 +18,7 @@ public class TeamGui extends TargetListGui<TowerTeam> {
 
     public TeamGui(TowerChallenge plugin, Component name, Function<TowerTeam, List<Component>> loreBuilder, List<TowerTeam> teamList, BiConsumer<Player, TowerTeam> biConsumer, Element lastElement) {
         super(plugin, TextUtil.noItalic(name), team -> {
-            ItemStack item = team.getItem();
+            ItemStack item = team.getRepresentation();
             ItemMeta meta = item.getItemMeta();
             meta.lore(loreBuilder.apply(team));
             item.setItemMeta(meta);

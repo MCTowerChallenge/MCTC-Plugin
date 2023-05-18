@@ -21,11 +21,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+/**
+ * Manages logic for the end portal.
+ */
 public class EndPortal implements Listener {
 
     private final TeamManager teamManager;
 
+    /**
+     * First corner of the inner-portal bounds.
+     * This is where the actual portal blocks
+     * are spawned.
+     */
     public static final Location PORTAL_MIN = new Location(Worlds.Apr2023(), -657, 65, -2443);
+
+    /**
+     * Second corner of the inner-portal bounds.
+     * This is where the actual portal blocks
+     * are spawned.
+     */
     public static final Location PORTAL_MAX = new Location(Worlds.Apr2023(), -654, 65, -2440);
 
     public EndPortal(TowerChallenge plugin, TeamManager teamManager) {
@@ -33,6 +47,10 @@ public class EndPortal implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Sets the portal blocks in the bounds,
+     * and announces it opening to the server.
+     */
     public void openPortal() {
         for (int x = PORTAL_MIN.getBlockX(); x <= PORTAL_MAX.getBlockX(); x++) {
             for (int z = PORTAL_MIN.getBlockZ(); z <= PORTAL_MAX.getBlockZ(); z++) {
@@ -47,6 +65,9 @@ public class EndPortal implements Listener {
         Bukkit.getServer().showTitle(title);
     }
 
+    /**
+     * Clears the portal blocks.
+     */
     public void resetPortal() {
         for (int x = PORTAL_MIN.getBlockX(); x <= PORTAL_MAX.getBlockX(); x++) {
             for (int z = PORTAL_MIN.getBlockZ(); z <= PORTAL_MAX.getBlockZ(); z++) {
@@ -56,6 +77,9 @@ public class EndPortal implements Listener {
         }
     }
 
+    /**
+     * Handles players placing an eye.
+     */
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -88,4 +112,4 @@ public class EndPortal implements Listener {
         }
     }
 
- }
+}

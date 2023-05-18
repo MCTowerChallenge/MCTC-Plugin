@@ -24,7 +24,7 @@ public class TeamElement extends Element implements Clickable {
      * Element representing a TowerTeam
      */
     public TeamElement(TowerTeam team, List<Component> lore, BiConsumer<Player, TowerTeam> biConsumer) {
-        super(team.getItem());
+        super(team.getRepresentation());
         ItemStack item = getItem();
         ItemMeta meta = item.getItemMeta();
         meta.displayName(TextUtil.noItalic(team.getDisplayName()));

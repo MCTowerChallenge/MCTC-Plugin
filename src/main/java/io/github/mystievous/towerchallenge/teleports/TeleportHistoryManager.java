@@ -15,6 +15,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * Manager for all players' teleport
+ * locations.
+ */
 public class TeleportHistoryManager implements Listener, Openable {
 
     private final Map<UUID, List<TeleportLocation>> teleports;
@@ -38,10 +42,17 @@ public class TeleportHistoryManager implements Listener, Openable {
         return teleports.getOrDefault(player.getUniqueId(), new ArrayList<>());
     }
 
+    /**
+     * Gets the last location a
+     * player teleported from.
+     *
+     * @param player The player to check.
+     * @return The location.
+     */
     @Nullable
     public TeleportLocation getLastLocation(OfflinePlayer player) {
         List<TeleportLocation> locations = get(player);
-        return locations.size() > 0 ? locations.get(locations.size()-1) : null;
+        return locations.size() > 0 ? locations.get(locations.size() - 1) : null;
     }
 
     @Override

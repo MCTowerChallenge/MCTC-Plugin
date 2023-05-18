@@ -53,6 +53,10 @@ public class BottleManager {
         }
     }
 
+    /**
+     * Checks all criteria for the bottle
+     * puzzle being complete
+     */
     public void checkBottles() {
 
         int redPos = -1;
@@ -88,7 +92,7 @@ public class BottleManager {
         }
 
         // Red must be not next to Blue, Green, or Yellow;
-        if (Math.abs(redPos-bluePos) <= 1 || Math.abs(redPos-greenPos) <= 1 || Math.abs(redPos-yellowPos) <= 1) {
+        if (Math.abs(redPos - bluePos) <= 1 || Math.abs(redPos - greenPos) <= 1 || Math.abs(redPos - yellowPos) <= 1) {
             return;
         }
 
@@ -103,7 +107,7 @@ public class BottleManager {
         }
 
         // Black must be next to green
-        if (Math.abs(blackPos-greenPos) > 1) {
+        if (Math.abs(blackPos - greenPos) > 1) {
             return;
         }
 
@@ -118,7 +122,7 @@ public class BottleManager {
         }
 
         // Green must not be at either end of the shelf
-        if (greenPos == 0 || greenPos == bottleDisplays.length-1) {
+        if (greenPos == 0 || greenPos == bottleDisplays.length - 1) {
             return;
         }
 

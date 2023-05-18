@@ -1,7 +1,8 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.requirements;
 
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.quests.QuestGui;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

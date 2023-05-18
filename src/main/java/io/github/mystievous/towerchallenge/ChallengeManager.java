@@ -18,21 +18,34 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChallengeManager {
 
-    public static final boolean DEBUG = true;
-
     /**
-     * The phases of the event
+     * The possible phases of the event
      */
     public enum ChallengePhase {
         IN_PROGRESS,
         TOWERING,
     }
 
+    /**
+     * Gets the global WorldGuard region container.
+     *
+     * @return The region container.
+     */
     public static RegionContainer regionContainer() {
         return WorldGuard.getInstance().getPlatform().getRegionContainer();
     }
 
+    /**
+     * Objective name to store the tower heights with.
+     */
     private static final String OBJECTIVE_NAME = "TowerHeight";
+
+    /**
+     * Gets the {@link Objective} for the tower
+     * heights.
+     *
+     * @return The objective.
+     */
     public static @Nullable Objective getScoreObjective() {
         return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(OBJECTIVE_NAME);
     }
@@ -61,12 +74,25 @@ public class ChallengeManager {
     public ChallengePhase getChallengePhase() {
         return challengePhase;
     }
+
+    /**
+     * Sets the current challenge phase.
+     * <p></p>
+     * Also calls {@link ChallengePhaseChangeEvent}.
+     *
+     * @param challengePhase The phase to change to.
+     */
     public void setChallengePhase(ChallengePhase challengePhase) {
         ChallengePhaseChangeEvent event = new ChallengePhaseChangeEvent(challengePhase);
         Bukkit.getPluginManager().callEvent(event);
         this.challengePhase = event.getChallengePhase();
     }
 
+    /**
+     * Adds a material to the full block list.
+     *
+     * @param material The material to add.
+     */
     public void addFullBlock(Material material) {
         if (material.isBlock()) {
             BlockSets.FULL_BLOCKS.add(material);
@@ -74,6 +100,12 @@ public class ChallengeManager {
             throw new IllegalArgumentException("Material must be a block!");
         }
     }
+
+    /**
+     * Removes a material from the full block list.
+     *
+     * @param material The material to remove.
+     */
     public void removeFullBlock(Material material) {
         BlockSets.FULL_BLOCKS.remove(material);
     }

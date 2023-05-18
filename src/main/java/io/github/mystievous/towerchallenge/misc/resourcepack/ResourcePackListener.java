@@ -32,7 +32,7 @@ public class ResourcePackListener implements Listener {
         if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD)) {
             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.RECORDS, 1f, 1f);
             attempts.putIfAbsent(uuid, 0);
-            attempts.put(uuid, attempts.get(uuid)+1); // increment attempts for player
+            attempts.put(uuid, attempts.get(uuid) + 1); // increment attempts for player
             int playerAttempts = attempts.get(uuid);
             if (playerAttempts > 3) {
                 player.sendMessage(

@@ -6,7 +6,7 @@ import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.entities.NPC;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -26,6 +26,9 @@ import java.util.UUID;
 
 public class Lovebot extends NPC {
 
+    /**
+     * Possible states for Lovebot to be in
+     */
     private enum State {
         IDLE(26, null),
         YES(27, 43),
@@ -36,6 +39,10 @@ public class Lovebot extends NPC {
         private final int modelId;
         private final Integer cookieId;
 
+        /**
+         * @param modelId  Model ID for Lovebot's Body
+         * @param cookieId Model ID for the Cookie item
+         */
         State(int modelId, Integer cookieId) {
             this.modelId = modelId;
             this.cookieId = cookieId;
@@ -70,6 +77,8 @@ public class Lovebot extends NPC {
         super(teamManager, NAME, TAG, NAME_COLOR, TEXT_COLOR);
         this.database = database;
         this.states = new HashMap<>();
+
+        // NPC Handler for Lovebot's interactions
         setDefaultHandler(playerInteractAtEntityEvent -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Player player = playerInteractAtEntityEvent.getPlayer();
             Entity entity = playerInteractAtEntityEvent.getRightClicked();
@@ -78,6 +87,9 @@ public class Lovebot extends NPC {
                     State state = getState(livingEntity);
                     switch (state) {
                         case IDLE -> {
+                            /*
+                                Switches Lovebot to a random state from the answers array
+                             */
                             setState(livingEntity, State.BAKE);
                             player.sendMessage(formatMessage(Component.text("Calculating... ")));
                             livingEntity.getWorld().playSound(livingEntity.getEyeLocation(), Sound.BLOCK_BEACON_AMBIENT, 1f, 1.5f);
@@ -95,6 +107,9 @@ public class Lovebot extends NPC {
                         }
                         case BAKE -> player.sendMessage(formatMessage(Component.text("Calculating... ")));
                         case YES, MAYBE, NO -> {
+                            /*
+                                Gives player the correct cookie and resets state to IDLE
+                             */
                             ItemStack cookie = database.getModel(state.getCookieId(), true, false).getItem();
                             NBTUtils.setUniqueID(plugin, cookie, null);
                             ItemMeta meta = cookie.getItemMeta();

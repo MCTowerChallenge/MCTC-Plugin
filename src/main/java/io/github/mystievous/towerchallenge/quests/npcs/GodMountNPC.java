@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.quests.entities;
+package io.github.mystievous.towerchallenge.quests.npcs;
 
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.towerchallenge.teams.TeamManager;

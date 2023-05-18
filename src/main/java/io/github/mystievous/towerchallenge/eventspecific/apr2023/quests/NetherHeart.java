@@ -22,7 +22,6 @@ public class NetherHeart {
     public NetherHeart(Plugin plugin) {
 
 
-
         ItemStack netherHeart = GuiUtil.formatItem(NAME, Material.NETHER_STAR, 0);
         TextUtil.appendQuestItemLore(netherHeart);
         NBTUtils.setNoUse(plugin, netherHeart);

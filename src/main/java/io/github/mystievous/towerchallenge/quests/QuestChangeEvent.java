@@ -25,6 +25,11 @@ public class QuestChangeEvent extends Event implements Cancellable {
     private final Quest quest;
     private final Quest prevQuest;
 
+    /**
+     * @param team      The team changing quests.
+     * @param quest     The new quest being changed to.
+     * @param prevQuest The quest being changed off of.
+     */
     public QuestChangeEvent(TowerTeam team, @Nullable Quest quest, @Nullable Quest prevQuest) {
         this.team = team;
         this.quest = quest;

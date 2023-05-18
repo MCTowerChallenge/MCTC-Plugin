@@ -34,10 +34,10 @@ public class HatElement extends ButtonElement {
             meta.setCustomModelData(customModelData);
             List<Component> lore = new ArrayList<>();
             if (author != null) {
-                lore.add(TextUtil.formatText("Model by "+author));
+                lore.add(TextUtil.formatText("Model by " + author));
             }
             if (referenced != null) {
-                lore.add(TextUtil.formatText("Inspiration from "+referenced));
+                lore.add(TextUtil.formatText("Inspiration from " + referenced));
             }
             meta.lore(lore);
             if (color != null && meta instanceof LeatherArmorMeta leatherArmorMeta) {

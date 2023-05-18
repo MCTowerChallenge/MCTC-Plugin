@@ -35,10 +35,14 @@ import java.util.List;
 
 public class BottleDisplay implements Listener {
 
-    private final CommandSender sender = Bukkit.createCommandSender(component -> {});
+    private final CommandSender sender = Bukkit.createCommandSender(component -> {
+    });
 
     // -748 114 -2568
 
+    /**
+     * All options for bottle colors
+     */
     public enum BottleColor {
         RED("Red Bottle", new Color(0x9e0303)),
         ORANGE("Orange Bottle", new Color(0xd88106)),
@@ -65,11 +69,23 @@ public class BottleDisplay implements Listener {
         }
     }
 
+    /**
+     * Offset from the bad cellar to the good cellar,
+     * so that the bottles can be placed in both and
+     * changed at the same time
+     */
     public static final Vector goodOffset = GoodCellar.basePotionTeleport.clone().subtract(BadCellar.basePotionEnterDestination.clone()).toVector();
+
 
     private static final Material MATERIAL = Material.POTION;
     private static final int CUSTOM_MODEL = 1;
 
+    /**
+     * Generates the 3d modelled potion for the given color
+     *
+     * @param color The color for the potion
+     * @return A potion item with the 3d custom model and the given color
+     */
     private static @Nullable ItemStack createPotion(@Nullable Color color) {
         if (color == null) {
             return null;
@@ -83,6 +99,14 @@ public class BottleDisplay implements Listener {
     }
 
     public static final String COLOR_TAG = "potion-color";
+
+    /**
+     * Generates the regular potion item for the given color
+     *
+     * @param plugin Instance of the plugin
+     * @param color  The color for the potion
+     * @return Vanilla potion item with the given color.
+     */
     public static @Nullable ItemStack createPotionItem(Plugin plugin, @Nullable BottleColor color) {
         if (color == null) {
             return null;
@@ -114,13 +138,19 @@ public class BottleDisplay implements Listener {
     private String label;
     private BottleColor color;
 
+    /**
+     * @param plugin   Current plugin instance
+     * @param manager  Bottle Manager this belongs to
+     * @param team     Team this belongs to
+     * @param number   Number in the bottle sequence
+     * @param location Location for the bottle to be generated at
+     */
     public BottleDisplay(Plugin plugin, BottleManager manager, TowerTeam team, int number, Location location) {
         this.plugin = plugin;
         this.manager = manager;
         this.team = team;
         this.number = number;
         this.tag = String.format("%s-T%s-%d", GENERIC_TAG, team.getDatabaseId(), number);
-//        unload();
 
         this.location = location;
 
@@ -131,6 +161,14 @@ public class BottleDisplay implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * @param plugin   Current plugin instance
+     * @param manager  Bottle Manager this belongs to
+     * @param team     Team this belongs to
+     * @param number   Number in the bottle sequence
+     * @param location Location for the bottle to be generated at
+     * @param color    Color to initialize a bottle in the display with
+     */
     public BottleDisplay(Plugin plugin, BottleManager manager, TowerTeam team, int number, Location location, @Nullable BottleColor color) {
         this(plugin, manager, team, number, location);
         setColor(color);
@@ -144,6 +182,11 @@ public class BottleDisplay implements Listener {
         return color;
     }
 
+    /**
+     * Sets the color of the bottle in the display
+     *
+     * @param color The color to set the display, or null to empty it.
+     */
     public void setColor(@Nullable BottleDisplay.BottleColor color) {
         if (color == null) {
             this.color = null;

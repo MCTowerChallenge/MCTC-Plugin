@@ -20,7 +20,6 @@ public class GoodCellar {
     public static final Location[] baseRegionBounds = new Location[]{new Location(Worlds.Apr2023_quest(), -22, 64, 10), new Location(Worlds.Apr2023_quest(), -11, 71, 20)};
 
 
-
     private final Apr2023QuestInstance instance;
 
     private final QuestRegion region;

@@ -15,7 +15,7 @@ public class GodManager {
     /**
      * Manager for everything pertaining to Gods
      *
-     * @param teamManager   Team Manager for the event
+     * @param teamManager Team Manager for the event
      */
     public GodManager(TowerChallenge plugin, QuestManager questManager, TeamManager teamManager, MagicItems magicItems) {
         TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(plugin, this);

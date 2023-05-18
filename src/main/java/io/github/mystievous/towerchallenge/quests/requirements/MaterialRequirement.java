@@ -1,33 +1,40 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.requirements;
 
-import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
-public class TagRequirement extends MaterialRequirement {
+public class MaterialRequirement extends Requirement {
 
-    private final Plugin plugin;
-    private final String tag;
+    private final Material material;
 
-    public TagRequirement(Plugin plugin, Material material, String tag, int required) {
-        super(material, required);
-        this.plugin = plugin;
-        this.tag = tag;
+    /**
+     * Requirement that needs a
+     * specific material
+     *
+     * @param material The material to require
+     * @param required How many of it are required
+     */
+    public MaterialRequirement(Material material, int required) {
+        super(required);
+        this.material = material;
     }
 
     @Override
     public Requirement copy() {
-        return new TagRequirement(plugin, getMaterial(), tag, getRequired());
+        return new MaterialRequirement(material, getRequired());
+    }
+
+    public Material getMaterial() {
+        return material;
     }
 
     @Override
     public boolean matchItem(ItemStack item) {
-        return NBTUtils.boolState(plugin, tag, item);
+        return item.getType().equals(material);
     }
 
     @Override
@@ -37,7 +44,7 @@ public class TagRequirement extends MaterialRequirement {
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(getName());
         item.setItemMeta(itemMeta);
-        Component itemName = TextUtil.noItalic("Nether Heart").append(TextUtil.formatText(String.format(" (%d/%d)", getCurrent(), getRequired())));
+        Component itemName = TextUtil.getItemName(item).append(TextUtil.formatText(String.format(" (%d/%d)", getCurrent(), getRequired())));
         if (remaining <= 0) {
             return GuiUtil.formatItem(itemName, Material.PAPER, 1);
         } else {

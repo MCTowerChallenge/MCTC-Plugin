@@ -41,7 +41,7 @@ public class ResourcePack implements CommandExecutor {
                         sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
                         return true;
                     }
-                    sender.sendMessage(Component.text("Sending resource pack to "+targetPlayer.getName()+"...").color(Palette.PRIMARY.toTextColor()));
+                    sender.sendMessage(Component.text("Sending resource pack to " + targetPlayer.getName() + "...").color(Palette.PRIMARY.toTextColor()));
                     sendResourcePack(targetPlayer);
                 } else {
                     sender.sendMessage(CommandUtils.errorMessage("Please specify a player to send the resource pack"));
@@ -56,7 +56,7 @@ public class ResourcePack implements CommandExecutor {
                     sender.sendMessage(Component.text(String.format("[RP] %s: %s", targetPlayer.getName(), targetPlayer.getResourcePackStatus()))
                             .append(Component.text(" [Send Reload]")
                                     .color(Palette.PRIMARY.toTextColor())
-                                    .clickEvent(ClickEvent.runCommand("/resourcepack reload "+targetPlayer.getName()))
+                                    .clickEvent(ClickEvent.runCommand("/resourcepack reload " + targetPlayer.getName()))
                                     .hoverEvent(Component.text("Click to Send"))));
                 }
             } else {
@@ -73,7 +73,7 @@ public class ResourcePack implements CommandExecutor {
                 sender.sendMessage(Component.text(String.format("%s's resource pack status is: %s;", targetPlayer.getName(), targetPlayer.getResourcePackStatus()))
                         .append(Component.text(" [Send Reload]")
                                 .color(Palette.PRIMARY.toTextColor())
-                                .clickEvent(ClickEvent.runCommand("/resourcepack reload "+targetPlayer.getName()))
+                                .clickEvent(ClickEvent.runCommand("/resourcepack reload " + targetPlayer.getName()))
                                 .hoverEvent(Component.text("Click to Send"))));
             }
         }

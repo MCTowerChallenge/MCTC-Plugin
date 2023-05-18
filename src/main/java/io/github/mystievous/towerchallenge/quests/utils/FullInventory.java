@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.quests;
+package io.github.mystievous.towerchallenge.quests.utils;
 
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
@@ -23,20 +23,50 @@ public class FullInventory implements CommandExecutor {
 
     private final static HashMap<UUID, Collection<ItemStack>> playerItems = new HashMap<>();
 
+    /**
+     * Gets all the currently stored
+     * items for the given {@link Player}.
+     *
+     * @param player The player to check.
+     * @return The items for the player.
+     */
     private static Collection<ItemStack> getPlayerItems(Player player) {
         return playerItems.getOrDefault(player.getUniqueId(), new ArrayList<>());
     }
 
-    public static void setPlayerItems(Player player, Collection<ItemStack> items) {
+    /**
+     * Overrides and sets the current stored
+     * collection of items for the player.
+     *
+     * @param player The player to set.
+     * @param items  The new items.
+     */
+    private static void setPlayerItems(Player player, Collection<ItemStack> items) {
         playerItems.put(player.getUniqueId(), items);
     }
 
-    public static void addPlayerItems(Player player, Collection<ItemStack> items) {
+    /**
+     * Appends the current list of items for
+     * the player with the items given.
+     *
+     * @param player Player to add items to.
+     * @param items  The items to add.
+     */
+    private static void addPlayerItems(Player player, Collection<ItemStack> items) {
         Collection<ItemStack> currentItems = getPlayerItems(player);
         currentItems.addAll(items);
         playerItems.put(player.getUniqueId(), currentItems);
     }
 
+    /**
+     * Will do the same as {@link #givePlayerItems(Player, ItemStack...)},
+     * but with the stored items that were
+     * previously unable to be given, attempting
+     * to give as many as possible.
+     *
+     * @param player The player to give items to.
+     * @return Whether there are still leftover items.
+     */
     public static boolean giveExcessItems(Player player) {
         Collection<ItemStack> currentItems = getPlayerItems(player);
         HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(currentItems.toArray(ItemStack[]::new));
@@ -44,6 +74,18 @@ public class FullInventory implements CommandExecutor {
         return leftOvers.isEmpty();
     }
 
+    /**
+     * Attempts to give a player the items
+     * specified, and stores them here
+     * if there is not enough space.
+     * <p></p>
+     * This should be used any time a player
+     * is being given items, rather than
+     * directly adding them to their inventory.
+     *
+     * @param player The player to give items.
+     * @param items  The items to give.
+     */
     public static void givePlayerItems(Player player, ItemStack... items) {
         HashMap<Integer, ItemStack> hashMap = player.getInventory().addItem(items);
 

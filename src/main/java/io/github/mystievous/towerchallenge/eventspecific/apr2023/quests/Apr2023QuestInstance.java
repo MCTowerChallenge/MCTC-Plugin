@@ -26,7 +26,7 @@ public class Apr2023QuestInstance extends QuestInstance implements Listener {
 
 
     // Anchor point is the composter directly to the right when entering the abandoned tavern
-    public static final Location baseLocation = new Location(Worlds.Apr2023_quest(), 1, 65 , 32);
+    public static final Location baseLocation = new Location(Worlds.Apr2023_quest(), 1, 65, 32);
 
     public static final String TP_POTION = "tp-potion";
 
@@ -61,6 +61,11 @@ public class Apr2023QuestInstance extends QuestInstance implements Listener {
         QuestItems.putItem(TP_POTION, tpPotion);
     }
 
+    /**
+     * Event handler for the teleport potion in the cellar
+     *
+     * @param event Event of the player consuming an item
+     */
     @EventHandler
     public void onPlayerConsume(final PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
@@ -77,7 +82,7 @@ public class Apr2023QuestInstance extends QuestInstance implements Listener {
             if (badCellar.getRegion().checkInRegion(player)) {
                 goodCellar.potionTeleport(player);
 
-                if (playerTeam.getCurrentQuestId().equals(QuestManager.BOTTLE_PUZZLE)) {
+                if (playerTeam.getCurrentQuestTag().equals(QuestManager.BOTTLE_PUZZLE)) {
                     questManager.setTeamQuest(getTeam(), QuestManager.RESTORED_TAVERN);
                 }
 

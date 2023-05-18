@@ -23,6 +23,9 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * Individual target for a shooting gallery.
+ */
 class GalleryTarget implements Listener {
 
     private final TowerChallenge plugin;
@@ -61,12 +64,14 @@ class GalleryTarget implements Listener {
     }
 
     public static final Long PISTON_TIME = 3L;
+
     /**
      * Activates the target for a number of seconds
      * <p/>
      * NOTE: This is the number of seconds that the
      * target is positioned up, not the number of seconds it is
      * activated in total.
+     *
      * @param seconds How long for the target to stay up
      * @throws TargetAlreadyActivateException if the target is currently active
      */
@@ -104,7 +109,7 @@ class GalleryTarget implements Listener {
                     hit = false;
                 }, PISTON_TIME);
                 tasks.add(disable);
-            }, Math.round((seconds*20)+PISTON_TIME));
+            }, Math.round((seconds * 20) + PISTON_TIME));
             tasks.add(task);
         } else {
             throw new TargetAlreadyActivateException(targetLocation);

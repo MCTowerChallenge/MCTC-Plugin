@@ -1,6 +1,5 @@
-package io.github.mystievous.towerchallenge.quests.legacy;
+package io.github.mystievous.towerchallenge.quests.utils;
 
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -10,12 +9,21 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * Utility class for Block Vouchers
+ */
 public class BlockVoucher extends ItemStack {
 
     public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor());
 
+    /**
+     * Gets a certain number of Block Voucher items in game
+     *
+     * @param number The amount of items to get
+     * @return The stack of vouchers
+     */
     public static ItemStack getVouchers(int number) {
-        ItemStack vouchers = QuestUtil.setVoucher(TowerChallenge.getInstance(), new ItemStack(Material.PAPER, number));
+        ItemStack vouchers = new ItemStack(Material.PAPER, number);
         ItemMeta voucherMeta = vouchers.getItemMeta();
         voucherMeta.displayName(VOUCHER_NAME);
         voucherMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

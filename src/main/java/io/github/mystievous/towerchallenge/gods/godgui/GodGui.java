@@ -60,6 +60,10 @@ public class GodGui extends PresetGui implements Openable {
      */
     public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, QuestManager questManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems) {
         super(plugin, COMPONENT_NAME, ROWS);
+
+        /*
+            God Book, the item given to access this gui
+         */
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.displayName(Component.text("God Menu").decoration(TextDecoration.ITALIC, false));
@@ -72,14 +76,21 @@ public class GodGui extends PresetGui implements Openable {
         guiBook = new GuiHeldItem(plugin, GUI_ID, book, this);
         guiBook.setPermission("towerchallenge.godgui");
 
-
+        /*
+            GUI for seeing all players' teleport history,
+            so that we can teleport them back to a
+            previous location if needed.
+         */
         ItemStack teleportHistory = new ItemStack(Material.ENDER_EYE);
         ItemMeta teleportHistoryMeta = teleportHistory.getItemMeta();
         teleportHistoryMeta.displayName(Component.text("Teleport History").decoration(TextDecoration.ITALIC, false));
         teleportHistory.setItemMeta(teleportHistoryMeta);
         ButtonElement teleportHistoryElement = new ButtonElement(teleportHistory, player -> teleportHistoryManager.getGui(player).openInventory(player));
 
-
+        /*
+            Shows the starting items for the selected team,
+            used for giving extra shulkers at the end
+         */
         Component startingItemsTitle = Component.text("Pick team to view items");
         BiConsumer<Player, TowerTeam> startingItemsBiconsumer = (player, team) -> (new StartingItemsGui(plugin, (ParticipantTeam) team)).openInventory(player);
         TeamGui startingItemsTeamGui = new TeamGui(plugin, startingItemsTitle,
@@ -94,7 +105,10 @@ public class GodGui extends PresetGui implements Openable {
         startingItemsItem.setItemMeta(startingItemsMeta);
         ButtonElement startingItemsElement = new ButtonElement(startingItemsItem, startingItemsTeamGui::openInventory);
 
-
+        /*
+            GUI with all the magic items,
+            equivalent to `/wand`
+         */
         Gui magicGui = magicItems.getGui(null);
         ItemStack magicItem = new ItemStack(Material.PAPER);
         ItemMeta magicMeta = magicItem.getItemMeta();
@@ -110,6 +124,11 @@ public class GodGui extends PresetGui implements Openable {
 
         ButtonElement crafting = new ButtonElement(new ItemStack(Material.CRAFTING_TABLE), player -> player.openWorkbench(null, true));
 
+        /*
+            Shows GUI with all the hats for
+            the player that opens it.
+            Equivalent to `/hat`
+         */
         ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.PAPER, 11);
         Element hatElement = new ButtonElement(hatItem, player -> {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -123,6 +142,11 @@ public class GodGui extends PresetGui implements Openable {
             });
         });
 
+        /*
+            Opens the Developer Menu,
+            a GUI for placing misc items
+            used for testing
+         */
         ItemStack devItem = new ItemStack(Material.PAPER);
         ItemMeta devMeta = devItem.getItemMeta();
         devMeta.displayName(TextUtil.noItalic("Developer Menu"));
@@ -132,14 +156,17 @@ public class GodGui extends PresetGui implements Openable {
         Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
         /*
-            Bottom to top,
-            Negative to positive Z
-            portal block boundaries
+            Portal layers:
+            Negative to Positive for all axes
          */
         Vector[][] portalBlocks = new Vector[][]{
                 {new Vector(-690, 67, -2414), new Vector(-690, 69, -2413)}
         };
 
+        /*
+            Opens/closes the nether portal
+            based on the portalBlocks above.
+         */
         ItemStack netherItem = GuiUtil.formatItem("Nether Portal", Material.PAPER, 9);
         ChoiceGUI netherGui = new ChoiceGUI(plugin, Component.text("Nether Portal"),
                 player -> new ConfirmationGUI(plugin, Component.text("Confirm opening portal?"),
@@ -176,14 +203,16 @@ public class GodGui extends PresetGui implements Openable {
         );
         ButtonElement netherPortal = new ButtonElement(netherItem, netherGui::openInventory);
 
+        /*
+            Controls End Portal
+         */
         ItemStack endItem = GuiUtil.formatItem("Reset End Portal", Material.PAPER, 10);
         ConfirmationGUI endGui = new ConfirmationGUI(plugin, Component.text("Confirm RESETTING end portal?"), player -> teamManager.resetEndPortal(), this::openInventory);
         ButtonElement endPortal = new ButtonElement(endItem, endGui::openInventory);
 
-//        ItemStack ferrisItem = GuiUtil.formatItem("Reload Ferris Wheel", Material.PAPER, 14);
-//        ConfirmationGUI ferrisGui = new ConfirmationGUI(plugin, Component.text("Will kick all players off of ferris wheel."), player -> ferrisWheel.reload(), this::openInventory);
-//        ButtonElement ferrisElement = new ButtonElement(ferrisItem, ferrisGui::openInventory);
-
+        /*
+            Allows setting what team a player is assigned to.
+         */
         ItemStack addPlayerItem = new ItemStack(Material.PAPER);
         ItemMeta addPlayerMeta = addPlayerItem.getItemMeta();
         addPlayerMeta.displayName(TextUtil.noItalic("Add Player to Team"));
@@ -219,9 +248,17 @@ public class GodGui extends PresetGui implements Openable {
 //            setItemMeta(meta);
 //        }}, player -> evilTowerManager.getGui(player).openInventory(player));
 
+        /*
+            GUI with all the special Items for the quests
+            so that gods can give them if a team loses them
+            or it bugs.
+         */
         ItemStack questBook = questManager.getQuestBook().getItem();
         ButtonElement questItems = new ButtonElement(questBook, player -> questManager.getQuestItems().getGui(player).openInventory(player));
 
+        /*
+            Button to trigger the intermission sequence.
+         */
         ItemStack intermissionItem = GuiUtil.formatItem("WARNING WARNING WARNING", Material.END_CRYSTAL, 0);
         ItemMeta intermissionMeta = intermissionItem.getItemMeta();
         intermissionMeta.lore(TextUtil.formatTexts("Triggers intermission", "", "PLEASE FOR THE LOVE", "OF EVERYTHING, KNOW", "WHAT YOU'RE DOING :panik:"));
@@ -237,19 +274,6 @@ public class GodGui extends PresetGui implements Openable {
                 }
         );
         ButtonElement intermission = new ButtonElement(intermissionItem, intermissionGui::openInventory);
-
-        // Add Player to Team
-        // End Portal
-        // Ferris Wheel Reload
-        // Hat Menu
-        // Magic Items
-        // Model Browser
-        // Nether Portal
-        // Starter Items
-
-        // Dev Menu
-        // Logistics Menu
-        // Tower Menu
 
 
         placeElement(1, 1, crafting);
@@ -294,6 +318,10 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 6, intermission);
         placeElement(5, 7, Icons.blankSlot);
         try {
+            /*
+                GUI with all the custom models in the database,
+                grouped by modelgroups
+             */
             ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());
             ItemStack modelItem = GuiUtil.formatItem("Models", Material.PAPER, 12);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);

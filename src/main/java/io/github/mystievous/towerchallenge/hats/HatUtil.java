@@ -10,8 +10,9 @@ public class HatUtil {
 
     /**
      * Sets the value of the "is_hat" NBT tag on an itemstack
+     *
      * @param itemStack ItemStack to change
-     * @param hatState State to change is_hat to
+     * @param hatState  State to change is_hat to
      * @return ItemStack, with the updated is_hat tag
      */
     public static ItemStack setHat(TowerChallenge plugin, ItemStack itemStack, Boolean hatState) {
@@ -20,6 +21,7 @@ public class HatUtil {
 
     /**
      * Tags an ItemStack as a hat
+     *
      * @param itemStack ItemStack to change
      * @return ItemStack, with the updated is_hat tag
      */
@@ -29,6 +31,7 @@ public class HatUtil {
 
     /**
      * Checks if an itemstack is a hat
+     *
      * @param itemStack item to check
      * @return whether the item is a hat
      */

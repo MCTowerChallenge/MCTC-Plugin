@@ -4,6 +4,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Called when the event phase changes.
+ */
 public class ChallengePhaseChangeEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();

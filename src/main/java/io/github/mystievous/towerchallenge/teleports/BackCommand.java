@@ -10,6 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Command for bringing the player to the
+ * location they last teleported from.
+ */
 public class BackCommand implements CommandExecutor {
 
     private final TeleportHistoryManager teleportHistoryManager;

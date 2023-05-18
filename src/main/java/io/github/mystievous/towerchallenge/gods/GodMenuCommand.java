@@ -8,6 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Command executor to get the god menu book
+ */
 public class GodMenuCommand implements CommandExecutor {
 
     private final GodManager godManager;

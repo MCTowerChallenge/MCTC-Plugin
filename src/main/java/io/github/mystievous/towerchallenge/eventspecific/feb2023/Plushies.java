@@ -7,7 +7,7 @@ import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.entities.NPC;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.*;
+
 public class Plushies extends NPC {
 
     public static final String TAG = "plushy-pile";
@@ -69,7 +70,8 @@ public class Plushies extends NPC {
                 Bukkit.getLogger().warning("Error getting Plushy model " + e.getMessage());
             }
         });
-        CommandSender sender = Bukkit.createCommandSender(component -> {});
+        CommandSender sender = Bukkit.createCommandSender(component -> {
+        });
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             List<Entity> entities = Bukkit.selectEntities(sender, String.format("@e[tag=%s]", TAG));
             for (Entity entity : entities) {

@@ -19,6 +19,13 @@ public class QuestItems implements Openable {
 
     private static final Map<String, ItemStack> items = new HashMap<>();
 
+    /**
+     * Adds an item to be used
+     * in the Quest Item gui.
+     *
+     * @param tag  {@link String} to tag the item.
+     * @param item The {@link ItemStack} to add.
+     */
     public static void putItem(String tag, ItemStack item) {
         items.put(tag, item);
     }
@@ -31,6 +38,14 @@ public class QuestItems implements Openable {
 
     }
 
+    /**
+     * Gets the Quest Item Gui.
+     * <p></p>
+     * Add items to this with {@link #putItem(String, ItemStack)}.
+     *
+     * @param player The player for the Gui.
+     * @return The Gui.
+     */
     @Override
     public Gui getGui(Player player) {
         List<Element> listItems = items.values().stream().map(itemStack -> new ButtonElement(itemStack, player1 -> player1.getInventory().addItem(itemStack))).collect(Collectors.toList());

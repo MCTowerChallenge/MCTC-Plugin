@@ -103,13 +103,7 @@ public class TrackedStatsGUI extends ListGui {
         public TrackedStatElement(TowerChallenge plugin, TeamManager teamManager, ItemStack icon, AbstractStatistic... statistics) {
             super(icon, playerInGui -> {
                 List<OfflinePlayer> players = new ArrayList<>(Arrays.stream(Bukkit.getOfflinePlayers())
-                        .filter(offlinePlayer -> {
-                            if (!ChallengeManager.DEBUG) {
-                                return !(teamManager.getPlayerTeam(offlinePlayer) instanceof GodTeam);
-                            } else {
-                                return true;
-                            }
-                        })
+                        .filter(offlinePlayer -> !(teamManager.getPlayerTeam(offlinePlayer) instanceof GodTeam))
                         .toList());
 
                 Map<UUID, Integer> playerStats = new HashMap<>();

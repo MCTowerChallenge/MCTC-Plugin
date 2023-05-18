@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.eventspecific.dec2022;
 
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.quests.entities.NPC;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
 
 public class Dec2022NPC {
 

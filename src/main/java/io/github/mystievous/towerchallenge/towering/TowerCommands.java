@@ -6,7 +6,7 @@ import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.quests.QuestGui;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.legacy.BlockVoucher;
+import io.github.mystievous.towerchallenge.quests.utils.BlockVoucher;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -44,29 +44,18 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
-                    case ("deserialize") -> {
+                    case ("deserialize") -> { // Deserializes the item in the player's hand, for use in the plugin.
                         if (sender instanceof Player player) {
                             ItemStack item = player.getInventory().getItemInMainHand();
                             byte[] bytes = item.serializeAsBytes();
                             String output = Base64.getEncoder().encodeToString(bytes);
                             player.sendMessage(output);
-                            Bukkit.getServer().getLogger().info("Map: " + output);
+                            Bukkit.getServer().getLogger().info(output);
                         } else {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
                     }
-                    case ("text") -> {
-                        if (sender instanceof Player player) {
-                            String[] words = Arrays.copyOfRange(args, 1, args.length);
-                            StringBuilder builder = new StringBuilder();
-                            for (String word : words) {
-                                builder.append(word).append(' ');
-                            }
-                            QuestGui questGui = new QuestGui(plugin, "Test a Quest!", builder.toString());
-                            questGui.openInventory(player);
-                        }
-                    }
-                    case ("addplayer") -> {
+                    case ("addplayer") -> { // Adds a player to a certain team.
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
                         StringBuilder teamNameBuilder = new StringBuilder();
                         for (int i = 2; i < args.length; i++) {
@@ -87,7 +76,7 @@ public class TowerCommands implements CommandExecutor {
                             sender.sendMessage(CommandUtils.errorMessage(String.format("Team %s does not exist", teamName)));
                         }
                     }
-                    case ("addfullblock") -> {
+                    case ("addfullblock") -> { // Adds the block in the player's hand to the full block list
                         if (args.length < 2) {
                             if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
@@ -120,7 +109,7 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                     }
-                    case ("removefullblock") -> {
+                    case ("removefullblock") -> { // Removes the block in the player's hand to the full block list.
                         if (args.length < 2) {
                             if (sender instanceof Player player) {
                                 ItemStack item = player.getInventory().getItemInMainHand();
@@ -153,14 +142,14 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                     }
-                    case ("reloadteams") -> {
+                    case ("reloadteams") -> { // Reloads the teams and players
                         sender.sendMessage(Component.text("Reloading Config"));
                         teamManager.loadTeams();
                         teamManager.loadPlayers();
                     }
-                    case ("resetendportal") -> teamManager.resetEndPortal();
-                    case ("showtowerscores") -> teamManager.showTowerScores(sender);
-                    case ("dealitems") -> {
+                    case ("resetendportal") -> teamManager.resetEndPortal(); // resets the end portal to empty
+                    case ("showtowerscores") -> teamManager.showTowerScores(sender); // displays the tower scores to the command sender
+                    case ("dealitems") -> { // deals items to all players, or the specified player.
                         if (args.length < 2) {
                             teamManager.dealAllItems();
                         } else {
@@ -172,8 +161,8 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                     }
-                    case ("resetteams") -> teamManager.resetTeams();
-                    case ("shulker") -> {
+                    case ("resetteams") -> teamManager.resetTeams(); // resets teams and re-adds players.
+                    case ("shulker") -> { // gives a certain player their team's shulker boxes.
                         if (args.length < 2) {
                             sender.sendMessage(CommandUtils.errorMessage("Please enter a player to give a shulker"));
                         } else {
@@ -194,14 +183,14 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                     }
-                    case ("pickwinner") -> {
+                    case ("pickwinner") -> { // Picks the winning team of the event; announces and gives them the crown.
                         if (sender instanceof Player player) {
                             challengeManager.getWinnersGUI().openInventory(player);
                         } else {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
                     }
-                    case ("voucher") -> {
+                    case ("voucher") -> { // Gives the sender the specified number of block vouchers.
                         if (sender instanceof Player player) {
                             int number = 1;
                             if (args.length > 1) {
@@ -217,7 +206,7 @@ public class TowerCommands implements CommandExecutor {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
                         }
                     }
-                    case ("toggletower") -> {
+                    case ("toggletower") -> { // Enables/disables the towering phase of the event so players can place blocks.
                         if (challengeManager.getChallengePhase().equals(ChallengeManager.ChallengePhase.TOWERING)) {
                             challengeManager.setChallengePhase(ChallengeManager.ChallengePhase.IN_PROGRESS);
                             sender.sendMessage(Component.text("Tower Phase Disabled").color(NamedTextColor.RED));

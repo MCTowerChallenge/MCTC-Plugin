@@ -13,6 +13,11 @@ public class DatabaseConfig {
         this.plugin = plugin;
     }
 
+    /**
+     * Gets the section of the plugin default config for the database
+     *
+     * @return the config section
+     */
     private @Nullable ConfigurationSection getConfigSection() {
         return plugin.getConfig().getConfigurationSection("database");
     }
@@ -67,7 +72,6 @@ public class DatabaseConfig {
             throw new InvalidConfigurationException("No database user set in the config.");
         }
     }
-
 
 
 }

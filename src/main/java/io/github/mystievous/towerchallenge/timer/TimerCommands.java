@@ -10,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
+/**
+ * Commands for handling the timer
+ */
 public class TimerCommands implements CommandExecutor {
 
     private final TowerTimer timer;

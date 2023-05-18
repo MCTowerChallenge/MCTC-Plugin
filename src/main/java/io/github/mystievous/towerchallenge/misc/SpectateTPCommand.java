@@ -24,7 +24,8 @@ public class SpectateTPCommand implements CommandExecutor {
                     if (entity != null) {
                         player.teleport(entity);
                     }
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
 

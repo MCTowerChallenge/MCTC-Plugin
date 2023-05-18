@@ -9,7 +9,7 @@ import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.eventspecific.apr2023.WaterDrips;
+import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;

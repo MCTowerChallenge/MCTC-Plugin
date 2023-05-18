@@ -13,13 +13,18 @@ import org.bukkit.Bukkit;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * A Gui which lists all players,
+ * linking to their individual
+ * teleport histories.
+ */
 public class TeleportHistoryOverviewGui extends PlayerGui {
 
     public static final String TITLE = "Teleport Histories:";
 
     public TeleportHistoryOverviewGui(TowerChallenge plugin, TeleportHistoryManager historyManager, Gui exitGui) {
         super(plugin, Component.text(TITLE),
-                player -> new ArrayList<>(){{
+                player -> new ArrayList<>() {{
                     add(Component.text(historyManager.get(player).size())
                             .append(Component.text(" teleports"))
                             .decoration(TextDecoration.ITALIC, false)

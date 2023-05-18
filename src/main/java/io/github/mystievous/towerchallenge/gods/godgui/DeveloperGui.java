@@ -145,7 +145,8 @@ public class DeveloperGui extends PresetGui {
             PresetGui testQuest = new PresetGui(plugin, text.build(), -15, '\uE003', -175, 6);
             Element questOpen = new ButtonElement(NBTUtils.setUniqueID(plugin, teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
             placeElement(1, 4, questOpen);
-        } catch (SQLException ignored) {}
+        } catch (SQLException ignored) {
+        }
 
         placeElement(1, 8, hatElement);
 

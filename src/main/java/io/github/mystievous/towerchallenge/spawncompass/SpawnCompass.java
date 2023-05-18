@@ -27,9 +27,23 @@ import java.util.Map;
 public class SpawnCompass implements Listener {
 
     public static final Location OVERWORLD_LOCATION = new Location(Worlds.Apr2023(), -669.5, 65, -2432.5);
-    public static final Location NETHER_LOCATION = new Location(Worlds.Apr2023_nether(), -87.5,43,-284.5);
+    public static final Location NETHER_LOCATION = new Location(Worlds.Apr2023_nether(), -87.5, 43, -284.5);
     public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
+    /**
+     * Sets the player's compass location
+     * to point to spawn.
+     * <p></p>
+     * If the player is in the overworld,
+     * will set the regular player compass
+     * target. Otherwise, will make the
+     * compass a lodestone compass
+     * targeted there.
+     *
+     * @param player  The player whose compass target to set.
+     * @param compass The compass to set the target of.
+     * @return The changed compass item.
+     */
     public static ItemStack refreshPlayerDestination(Player player, ItemStack compass) {
         String playerWorldName = player.getLocation().getWorld().getName();
         if (playerWorldName.equals(Worlds.NETHER().getName())) {
@@ -57,6 +71,13 @@ public class SpawnCompass implements Listener {
         return compass;
     }
 
+    /**
+     * Scans the inventory of a player
+     * for any compasses, and refreshes
+     * them if it finds any.
+     *
+     * @param player The player to check.
+     */
     public static void refreshAllPlayer(Player player) {
         HashMap<Integer, ? extends ItemStack> compasses = player.getInventory().all(Material.COMPASS);
 
@@ -66,11 +87,16 @@ public class SpawnCompass implements Listener {
 
     }
 
+    /**
+     * Gets a compass targeted at spawn.
+     *
+     * @return The compass.
+     */
     public static ItemStack getCompass() {
         ItemStack item = new ItemStack(Material.COMPASS);
         CompassMeta meta = (CompassMeta) item.getItemMeta();
         meta.displayName(Component.text("home home"));
-        meta.lore(new ArrayList<>(){{
+        meta.lore(new ArrayList<>() {{
             add(Component.keybind("key.use")
                     .append(Component.text(" to point home :)"))
                     .color(Palette.PRIMARY.toTextColor()).decoration(TextDecoration.ITALIC, false)
@@ -86,6 +112,11 @@ public class SpawnCompass implements Listener {
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
     }
 
+    /**
+     * Refreshes a player's compass when they right-click it.
+     *
+     * @param event The interact event.
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();

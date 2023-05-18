@@ -20,6 +20,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Teleport history GUI for a
+ * specific player.
+ */
 public class TeleportHistoryIndividualGui extends ListGui implements Openable {
 
     public TeleportHistoryIndividualGui(TowerChallenge plugin, TeleportHistoryManager teleportHistoryManager, OfflinePlayer player, Gui leaveGui) {

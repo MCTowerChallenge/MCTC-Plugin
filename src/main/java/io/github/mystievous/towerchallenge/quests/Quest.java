@@ -16,6 +16,15 @@ public class Quest implements Openable {
     private final String friendlyName;
     private @Nullable String description;
 
+    /**
+     * Creates a new quest.
+     *
+     * @param plugin       The current plugin instance.
+     * @param teamManager  The current team manager instance.
+     * @param id           The {@link String} ID for this quest, must match database.
+     * @param friendlyName The friendly name for this quest,
+     *                     to show up in the questbook.
+     */
     public Quest(TowerChallenge plugin, TeamManager teamManager, String id, String friendlyName) {
         this.plugin = plugin;
         this.teamManager = teamManager;
@@ -24,6 +33,11 @@ public class Quest implements Openable {
         this.description = null;
     }
 
+    /**
+     * Copies this quest instance
+     *
+     * @return The new quest
+     */
     public Quest copy() {
         Quest quest = new Quest(plugin, teamManager, id, friendlyName);
         quest.setDescription(description);
@@ -38,6 +52,13 @@ public class Quest implements Openable {
         return friendlyName;
     }
 
+    /**
+     * Sets the description,
+     * shows up in the body
+     * of the quest book
+     *
+     * @param description Description to set.
+     */
     public void setDescription(@Nullable String description) {
         this.description = description;
     }

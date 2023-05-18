@@ -1,16 +1,18 @@
 package io.github.mystievous.towerchallenge.gui;
 
+import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.Element;
-import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.quests.legacy.QuestUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class Icons {
+    /**
+     * Item that covers all of a slot
+     * with the blank inventory texture
+     */
     public static final Element blankSlot = new Element(new ItemStack(Material.PAPER) {{
         ItemMeta meta = getItemMeta();
         meta.displayName(Component.empty());
@@ -25,11 +27,7 @@ public class Icons {
      * @return the Item
      */
     public static ItemStack backItem() {
-        ItemStack exit = QuestUtil.setButton(TowerChallenge.getInstance(), new ItemStack(Material.REDSTONE_BLOCK));
-        ItemMeta exitMeta = exit.getItemMeta();
-        exitMeta.displayName(Component.text("Exit").decoration(TextDecoration.ITALIC, false));
-        exitMeta.setCustomModelData(1);
-        exit.setItemMeta(exitMeta);
+        ItemStack exit = GuiUtil.formatItem("Back", Material.REDSTONE_BLOCK, 1);
         return exit;
     }
 
@@ -39,11 +37,7 @@ public class Icons {
      * @return the Item
      */
     public static ItemStack exitItem() {
-        ItemStack exit = QuestUtil.setButton(TowerChallenge.getInstance(), new ItemStack(Material.REDSTONE_BLOCK));
-        ItemMeta exitMeta = exit.getItemMeta();
-        exitMeta.displayName(Component.text("Exit").decoration(TextDecoration.ITALIC, false));
-        exitMeta.setCustomModelData(2);
-        exit.setItemMeta(exitMeta);
+        ItemStack exit = GuiUtil.formatItem("Exit", Material.REDSTONE_BLOCK, 2);
         return exit;
     }
 }
