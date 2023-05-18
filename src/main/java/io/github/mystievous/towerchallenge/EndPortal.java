@@ -33,14 +33,14 @@ public class EndPortal implements Listener {
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MIN = new Location(Worlds.Apr2023(), -657, 65, -2443);
+    public static final Location PORTAL_MIN = new Location(Worlds.Jun2023(), 203, 67, -2256);
 
     /**
      * Second corner of the inner-portal bounds.
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MAX = new Location(Worlds.Apr2023(), -654, 65, -2440);
+    public static final Location PORTAL_MAX = new Location(Worlds.Jun2023(), 206, 67, -2253);
 
     public EndPortal(TowerChallenge plugin, TeamManager teamManager) {
         this.teamManager = teamManager;

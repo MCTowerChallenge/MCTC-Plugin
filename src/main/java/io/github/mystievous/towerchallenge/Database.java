@@ -418,6 +418,36 @@ public class Database {
     }
 
     /**
+     * Creates or updates a team's end portal frame location.
+     *
+     * @param team     The team to update.
+     * @param location The new location to set it to.
+     * @param facing   The direction the block is facing.
+     * @return the number of rows updated.
+     */
+    public int upsertPortalFrame(ParticipantTeam team, Location location, BlockFace facing) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        INSERT INTO portalframes (team_id, x, y, z, facing, world_id)
+                        VALUES (?, ?, ?, ?, ?, (SELECT worlds.id FROM worlds WHERE worlds.name = ?))
+                        ON DUPLICATE KEY UPDATE portalframes.x        = VALUES(x),
+                                                portalframes.y        = VALUES(y),
+                                                portalframes.z        = VALUES(z),
+                                                portalframes.facing   = VALUES(facing),
+                                                portalframes.world_id = VALUES(world_id);
+                        """
+        )) {
+            statement.setInt(1, team.getDatabaseId());
+            statement.setInt(2, location.getBlockX());
+            statement.setInt(3, location.getBlockY());
+            statement.setInt(4, location.getBlockZ());
+            statement.setString(5, facing.name());
+            statement.setString(6, location.getWorld().getName());
+            return statement.executeUpdate();
+        }
+    }
+
+    /**
      * Gets the number of remaining
      * unfilled portal frames.
      *
@@ -428,9 +458,9 @@ public class Database {
                 """
                         SELECT COUNT(DISTINCT p.id) AS count
                         FROM teams
-                        JOIN portalframes p on teams.id = p.team_id
+                                 JOIN portalframes p on teams.id = p.team_id
                         WHERE teams.disabled = 0
-                        AND p.filled = 0;
+                          AND p.filled = 0;
                         """
         )) {
             ResultSet resultSet = statement.executeQuery();

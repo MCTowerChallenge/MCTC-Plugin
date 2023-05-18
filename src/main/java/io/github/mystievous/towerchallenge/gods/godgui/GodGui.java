@@ -160,7 +160,7 @@ public class GodGui extends PresetGui implements Openable {
             Negative to Positive for all axes
          */
         Vector[][] portalBlocks = new Vector[][]{
-                {new Vector(-690, 67, -2414), new Vector(-690, 69, -2413)}
+                {new Vector(141, 69, -2222), new Vector(141, 71, -2222)}
         };
 
         /*
@@ -175,7 +175,7 @@ public class GodGui extends PresetGui implements Openable {
                                 for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
                                     for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
                                         for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                            Location location = new Location(Worlds.Apr2023(), x, y, z);
+                                            Location location = new Location(Worlds.Jun2023(), x, y, z);
                                             Block block = location.getBlock();
                                             block.setType(Material.NETHER_PORTAL);
                                             Orientable blockData = (Orientable) block.getBlockData();
@@ -192,7 +192,7 @@ public class GodGui extends PresetGui implements Openable {
                         for (int x = layer[0].getBlockX(); x <= layer[1].getBlockX(); x++) {
                             for (int y = layer[0].getBlockY(); y <= layer[1].getBlockY(); y++) {
                                 for (int z = layer[0].getBlockZ(); z <= layer[1].getBlockZ(); z++) {
-                                    Location location = new Location(Worlds.Apr2023(), x, y, z);
+                                    Location location = new Location(Worlds.Jun2023(), x, y, z);
                                     Block block = location.getBlock();
                                     block.setType(Material.AIR);
                                 }
@@ -259,21 +259,21 @@ public class GodGui extends PresetGui implements Openable {
         /*
             Button to trigger the intermission sequence.
          */
-        ItemStack intermissionItem = GuiUtil.formatItem("WARNING WARNING WARNING", Material.END_CRYSTAL, 0);
-        ItemMeta intermissionMeta = intermissionItem.getItemMeta();
-        intermissionMeta.lore(TextUtil.formatTexts("Triggers intermission", "", "PLEASE FOR THE LOVE", "OF EVERYTHING, KNOW", "WHAT YOU'RE DOING :panik:"));
-        intermissionItem.setItemMeta(intermissionMeta);
-
-        ConfirmationGUI intermissionGui = new ConfirmationGUI(plugin, Component.text("Start intermission?"),
-                confirmPlayer -> {
-                    questManager.triggerIntermission();
-                    confirmPlayer.closeInventory();
-                },
-                denyPlayer -> {
-                    denyPlayer.closeInventory();
-                }
-        );
-        ButtonElement intermission = new ButtonElement(intermissionItem, intermissionGui::openInventory);
+//        ItemStack intermissionItem = GuiUtil.formatItem("WARNING WARNING WARNING", Material.END_CRYSTAL, 0);
+//        ItemMeta intermissionMeta = intermissionItem.getItemMeta();
+//        intermissionMeta.lore(TextUtil.formatTexts("Triggers intermission", "", "PLEASE FOR THE LOVE", "OF EVERYTHING, KNOW", "WHAT YOU'RE DOING :panik:"));
+//        intermissionItem.setItemMeta(intermissionMeta);
+//
+//        ConfirmationGUI intermissionGui = new ConfirmationGUI(plugin, Component.text("Start intermission?"),
+//                confirmPlayer -> {
+//                    questManager.triggerIntermission();
+//                    confirmPlayer.closeInventory();
+//                },
+//                denyPlayer -> {
+//                    denyPlayer.closeInventory();
+//                }
+//        );
+//        ButtonElement intermission = new ButtonElement(intermissionItem, intermissionGui::openInventory);
 
 
         placeElement(1, 1, crafting);
@@ -315,7 +315,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endPortal);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, intermission);
+        placeElement(5, 6, Icons.blankSlot);
         placeElement(5, 7, Icons.blankSlot);
         try {
             /*

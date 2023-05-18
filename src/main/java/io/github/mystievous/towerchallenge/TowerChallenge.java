@@ -89,7 +89,7 @@ public final class TowerChallenge extends JavaPlugin {
 
         WaterDrips waterDrips = new WaterDrips(this, database);
 
-        MagicItems magicItems = new MagicItems(this, database, waterDrips);
+        MagicItems magicItems = new MagicItems(this, database, teamManager, waterDrips);
 
         new GodManager(this, questManager, teamManager, magicItems);
 

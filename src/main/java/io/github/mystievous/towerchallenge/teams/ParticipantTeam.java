@@ -219,7 +219,7 @@ public class ParticipantTeam extends TowerTeam {
             Bukkit.getServer().sendMessage(chatMessage);
 
             if (remainingEyes == 0) {
-                teamManager.openEndPortal();
+                Bukkit.getScheduler().runTask(getPlugin(), teamManager::openEndPortal);
             }
         });
 
@@ -233,7 +233,7 @@ public class ParticipantTeam extends TowerTeam {
         Block frame = frameLocation.getBlock();
         EndPortalFrame frameData = (EndPortalFrame) frame.getBlockData();
         frameData.setEye(false);
-        teamManager.setPortalFrameFilled(this, false);
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> teamManager.setPortalFrameFilled(this, false));
         frame.setBlockData(frameData);
         Bukkit.getLogger().info("Reset frame for " + getTextName());
     }

@@ -318,19 +318,20 @@ public class TeamManager implements Listener {
     /**
      * Sets the end portal frame state for
      * the given team.
+     * <p></p>
+     * Directly calls database, so
+     * should be called asynchronously.
      *
      * @param team   The team to set.
      * @param filled The state to set
      *               the frame to.
      */
     public void setPortalFrameFilled(ParticipantTeam team, boolean filled) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                database.setPortalFrameFilled(team, filled);
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
-            }
-        });
+        try {
+            database.setPortalFrameFilled(team, filled);
+        } catch (SQLException e) {
+            Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
+        }
     }
 
     /**

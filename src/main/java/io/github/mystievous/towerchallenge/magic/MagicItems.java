@@ -4,13 +4,19 @@ import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
+import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.Gui;
 import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
+import io.github.mystievous.towerchallenge.gui.Icons;
+import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
+import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
@@ -19,6 +25,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
+import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -45,9 +52,9 @@ public class MagicItems implements Openable {
     public final Wand goatHat;
     public final Wand portalReplaceWand;
     public final Wand waterWand;
-//    public final Wand raftWand;
+    public final Wand portalFrameWand;
 
-    public MagicItems(Plugin plugin, Database database, WaterDrips waterDrips) {
+    public MagicItems(Plugin plugin, Database database, TeamManager teamManager, WaterDrips waterDrips) {
         this.plugin = plugin;
 
         speedBoots = new ItemStack(Material.LEATHER_BOOTS) {{
@@ -183,15 +190,25 @@ public class MagicItems implements Openable {
             });
         });
 
-//        raftWand = new Wand(plugin, "raft-wand", GuiUtil.formatItem("Raft Wand", Material.BAMBOO, 0), event -> {
-//            Player player = event.getPlayer();
-//            if (player.isSneaking()) {
-//                player.getWorld().spawnEntity(player.getLocation(), EntityType.)
-//            } else {
-//
-//            }
-//        });
-
+        portalFrameWand = new Wand(plugin, "set-portal-frame", GuiUtil.formatItem("End Portal Frame Setter", Material.PRISMARINE_SHARD, 0), event -> {
+            Block block = event.getClickedBlock();
+            if (block != null && block.getBlockData() instanceof EndPortalFrame portalFrame) {
+                Gui teamGui = new TeamGui(plugin, Component.text("Set which team?"), team -> null, teamManager.getParticipantTeams(), (player, team) -> {
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                        try {
+                            String message = String.format("%d rows updated.", database.upsertPortalFrame((ParticipantTeam) team, block.getLocation(), portalFrame.getFacing()));
+                            player.sendMessage(TextUtil.formatText(message));
+                        } catch (SQLException e) {
+                            player.sendMessage(CommandUtils.errorMessage(e.getMessage()));
+                            Bukkit.getLogger().warning(e.getMessage());
+                        }
+                    });
+                }, new ButtonElement(Icons.exitItem(), HumanEntity::closeInventory));
+                teamGui.openInventory(event.getPlayer());
+            } else {
+                event.getPlayer().sendMessage(CommandUtils.errorMessage("You did not click on a portal frame."));
+            }
+        });
     }
 
     public ItemStack randomUUID(ItemStack itemStack) {
@@ -208,6 +225,7 @@ public class MagicItems implements Openable {
         gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> player.getInventory().addItem(greaterSpeedBoots)));
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));
 
+        gui.placeElement(3, 7, new ButtonElement(portalFrameWand.getItem(), player -> player.getInventory().addItem(portalFrameWand.getItem())));
         gui.placeElement(3, 8, new ButtonElement(waterWand.getItem(), player -> player.getInventory().addItem(waterWand.getItem())));
         gui.placeElement(3, 9, new ButtonElement(portalReplaceWand.getItem(), player -> player.getInventory().addItem(portalReplaceWand.getItem())));
         return gui;

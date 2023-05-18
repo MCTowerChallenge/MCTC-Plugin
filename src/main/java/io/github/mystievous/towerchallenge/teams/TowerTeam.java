@@ -80,8 +80,8 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     private boolean stopDialogue;
 
     /**
-     * Creates a server team with the
-     * given values if one does not exist.
+     * When initialized, creates a server team
+     * with the given values if one does not exist.
      *
      * @param plugin      The current plugin instance.
      * @param teamManager The current team manager instance.
