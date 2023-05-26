@@ -37,6 +37,19 @@ public class SpoutManager {
 //        new ConstantSpout(new Location(Worlds.Feb2023(), 102.5, 65, -2118.5), height).runSpout();
 
 
+        // Jun2023
+        List<Spout> spouts = new ArrayList<>();
+        spouts.add(new Spout(new Location(Worlds.Jun2023(), (242) + 0.5, 62, (-2209) + 0.5))); // 1
+        spouts.add(new Spout(new Location(Worlds.Jun2023(), (241) + 0.5, 62, (-2214) + 0.5))); // 4
+        spouts.add(new Spout(new Location(Worlds.Jun2023(), (243) + 0.5, 62, (-2212) + 0.5))); // 2
+        spouts.add(new Spout(new Location(Worlds.Jun2023(), (-823) + 0.5, 62, (-803) + 0.5))); // 3
+
+        int count = 0;
+        for (Spout spout : spouts) {
+            count++;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), spout::runSpout, count * 20L * 5);
+        }
+
     }
 
 }

@@ -52,6 +52,10 @@ public class Worlds {
         return Bukkit.getWorld("Jun2023");
     }
 
+    public static World Jun2023_nether() {
+        return Bukkit.getWorld("Jun2023_nether");
+    }
+
     public static World Jun2023_tower() {
         return Bukkit.getWorld("Jun2023_tower");
     }
