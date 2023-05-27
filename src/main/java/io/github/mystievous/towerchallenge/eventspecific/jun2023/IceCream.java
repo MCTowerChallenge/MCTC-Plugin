@@ -3,6 +3,7 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.security.SecureRandom;
 
@@ -40,6 +42,9 @@ public class IceCream implements Listener {
     public static final ItemStack STRAWBERRY_CARB = GuiUtil.formatItem(STRAWBERRY_NAME, Material.POTATO, 11);
     public static final ItemStack[] STRAWBERRY_ITEMS = {STRAWBERRY_GAY, STRAWBERRY_CARB};
 
+    public IceCream(Plugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
     // vanilla: 206 64 -2234
     // chocolate: 207 64 -2234
