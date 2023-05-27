@@ -5,6 +5,7 @@ import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHeart;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
@@ -77,6 +78,8 @@ public final class TowerChallenge extends JavaPlugin {
 //        ferrisWheel = new FerrisWheel(this);
         new Lovebot(this, teamManager, database);
 //        new Plushies(this, teamManager, database);
+
+        new IceCream(this);
 
 //        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
 

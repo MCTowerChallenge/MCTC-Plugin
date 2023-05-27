@@ -264,107 +264,6 @@ public class QuestManager implements Openable, Listener {
             doorNoOpen.play(player);
         };
 
-//        NPC houseEnter = new NPC(teamManager, "Enter House", House.ENTER_DOOR);
-//        houseEnter.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> instance.house.teleport(player));
-//            }
-//        });
-//
-//        NPC houseInvite = new NPC(teamManager, "Party Invitation", House.INVITE);
-//
-//        NPC houseLeave = new NPC(teamManager, "Leave House", House.LEAVE_DOOR);
-//        houseLeave.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> instance.house.leave(player));
-//            }
-//        });
-//
-//        NPC tavernEnter = new NPC(teamManager, "Enter Tavern", BadTavern.ENTER_DOOR);
-//        tavernEnter.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> instance.badTavern.teleport(player));
-//            }
-//        });
-//
-//        NPC tavernCrate = new NPC(teamManager, "Crate", BadTavern.CRATE_INTERACT);
-//        tavernCrate.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> {
-//                    instance.badTavern.moveCrate();
-//                    player.playSound(instance.offsetLocation(BadTavern.baseCrate), org.bukkit.Sound.BLOCK_CHEST_CLOSE, SoundCategory.RECORDS, 1f, 1f);
-//                });
-//            }
-//        });
-//
-//        NPC tavernTrapdoor = new NPC(teamManager, "Trapdoor", BadTavern.TRAPDOOR_INTERACT);
-//        tavernTrapdoor.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> instance.badCellar.teleport(player));
-//            }
-//        });
-//
-//        NPC goodTavernTrapdoor = new NPC(teamManager, "Trapdoor", GoodTavern.GOOD_TRAPDOOR_INTERACT);
-//        goodTavernTrapdoor.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> instance.goodCellar.trapdoorTeleport(player));
-//            }
-//        });
-//
-//        NPC tavernChair = new NPC(teamManager, "Chair", GoodTavern.CHAIR_INTERACT);
-//        tavernChair.setDefaultHandler(event -> {
-//            Player player = event.getPlayer();
-//            TowerTeam team = teamManager.getPlayerTeam(player);
-//            if (team == null) {
-//                return;
-//            }
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            if (instance != null) {
-//                Bukkit.getScheduler().runTask(plugin, () -> {
-//                    instance.goodTavern.moveChair();
-//                    player.playSound(instance.offsetLocation(GoodTavern.baseChair), org.bukkit.Sound.BLOCK_CHEST_CLOSE, SoundCategory.RECORDS, 1f, 1.5f);
-//                });
-//            }
-//        });
-
-        NPC cauldron = new NPC(teamManager, "Cauldron", MAKE_POTION);
-
         // Configure Quests
 
         Key ambient = Key.key(Key.MINECRAFT_NAMESPACE, "entity.horse.ambient");
@@ -645,27 +544,6 @@ public class QuestManager implements Openable, Listener {
             everything.setSoundKey(Key.key(TowerChallenge.MCTC_NAMESPACE, "steve.take_care_everything"));
             steveGiveAntidote.setNext(everything);
         }
-        cauldron.addQuestHandler(MAKE_POTION, event -> {
-            Player player = event.getPlayer();
-            ItemStack item = player.getInventory().getItem(event.getHand());
-            TowerTeam team = teamManager.getPlayerTeam(player);
-            if (team != null) {
-                RequirementsQuest quest = (RequirementsQuest) team.getQuest(MAKE_POTION);
-                if (quest != null) {
-                    if (item.getType().equals(Material.GLASS_BOTTLE)) {
-                        if (quest.isComplete()) {
-                            item.subtract(1);
-                            FullInventory.givePlayerItems(player, antidote);
-                            team.sendMessage(playerThoughts("The potion is finished! I should give this to steve now."));
-                        } else {
-                            player.sendMessage(playerThoughts("The potion isn't ready yet, I'm still missing some ingredients..."));
-                        }
-                    } else {
-                        quest.turnIn(item);
-                    }
-                }
-            }
-        });
         steve.addQuestHandler(MAKE_POTION, event -> {
             Player player = event.getPlayer();
             TowerTeam team = teamManager.getPlayerTeam(player);
@@ -812,63 +690,6 @@ public class QuestManager implements Openable, Listener {
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
-
-//    @EventHandler
-//    public void onInteract(final PlayerInteractEvent event) {
-//        Player player = event.getPlayer();
-//        TowerTeam team = teamManager.getPlayerTeam(player);
-//        if (team != null && team.getCurrentQuestTag().equals(RESTORED_TAVERN)) {
-//            Apr2023QuestInstance instance = apr2023QuestManager.getQuestInstance(team);
-//            Block block = event.getClickedBlock();
-//            if (instance != null && block != null) {
-//                if (instance.goodTavern.getInstanceDoorClicks().contains(block.getLocation())) {
-//                    if (!team.isInDialogue()) {
-//                        team.setInDialogue(true);
-//                        steveFind.play(team, () -> {
-//                            FullInventory.givePlayerItems(player, BlockVoucher.getVouchers(2));
-//                            team.sendMessage(getRewards(BlockVoucher.getVouchers(2)));
-//                            setTeamQuest(team, ENJOY);
-//                            team.setInDialogue(false);
-//                        });
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
-
-    /**
-     * Position in spawn for steve to spawn after intermission
-     */
-    public static final Location steveLocation = new Location(Worlds.Apr2023(), -591, 65, -2446);
-
-    /**
-     * Plays the intermission sequence.
-     */
-//    public void triggerIntermission() {
-//        intermissionDialogue.play(Bukkit.getServer(), () -> {
-//            try {
-//                apr2023QuestManager.removeSteve();
-//                Skeleton steve = (Skeleton) steveLocation.getWorld().spawnEntity(steveLocation, EntityType.SKELETON, false);
-//                steve.addScoreboardTag(QuestManager.STEVE);
-//                steve.addScoreboardTag(Apr2023QuestManager.REMOVE_TAG);
-//                steve.setPersistent(true);
-//                steve.setInvulnerable(true);
-//                steve.customName(Component.text("steve skellington"));
-//                ItemStack goggles = GuiUtil.formatItem("Potion Goggles", Material.LEATHER_HORSE_ARMOR, 30);
-//                LeatherArmorMeta meta = (LeatherArmorMeta) goggles.getItemMeta();
-//                meta.setColor(STEVE_COLOR.toBukkitColor());
-//                goggles.setItemMeta(meta);
-//                steve.getEquipment().setHelmet(goggles);
-//                timer.start(true);
-//                for (TowerTeam team : teamManager.getParticipantTeams()) {
-//                    setTeamQuest(team, HELP_STEVE);
-//                }
-//            } catch (TimerUnsetException e) {
-//                throw new RuntimeException(e);
-//            }
-//        });
-//    }
 
     public QuestItems getQuestItems() {
         return questItems;
