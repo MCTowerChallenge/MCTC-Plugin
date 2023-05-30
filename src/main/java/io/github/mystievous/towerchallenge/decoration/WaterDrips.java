@@ -7,14 +7,14 @@ import org.bukkit.Particle;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 public class WaterDrips {
 
-    private final static SecureRandom RANDOM = new SecureRandom();
+    private final static Random RANDOM = new Random();
 
     public final Plugin plugin;
     public final Database database;

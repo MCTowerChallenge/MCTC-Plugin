@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.eventspecific.feb2023.eviltower.gallery;
+package io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery;
 
 import org.bukkit.Location;
 

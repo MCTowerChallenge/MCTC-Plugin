@@ -110,7 +110,7 @@ public class BadTavern {
         Chunk crateChunk = instanceCrate.getChunk();
         Chunk crateMoveChunk = instanceCrate.getChunk();
         if ((crateChunk.isEntitiesLoaded() || crateChunk.load()) && (crateMoveChunk.isEntitiesLoaded() || crateMoveChunk.load())) {
-            List<Entity> entities = Bukkit.selectEntities(Apr2023QuestManager.sender, String.format("@e[tag=%s]", teamRoomTag));
+            List<Entity> entities = Bukkit.selectEntities(Apr2023QuestManager.sender, String.format("@e[TAG=%s]", teamRoomTag));
             for (Entity entity : entities) {
                 entity.remove();
             }

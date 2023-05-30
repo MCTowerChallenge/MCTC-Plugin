@@ -14,11 +14,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 public class IceCream implements Listener {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     private static ItemStack randomItem(ItemStack[] items) {
         return items[RANDOM.nextInt(items.length)];

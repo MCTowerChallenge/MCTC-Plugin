@@ -161,7 +161,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     }
 
     /**
-     * Gets the tag of the current quest
+     * Gets the TAG of the current quest
      * for this team.
      *
      * @return The quest tag.

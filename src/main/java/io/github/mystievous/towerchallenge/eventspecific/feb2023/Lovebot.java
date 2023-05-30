@@ -18,10 +18,10 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class Lovebot extends NPC {
@@ -67,7 +67,7 @@ public class Lovebot extends NPC {
             State.MAYBE,
             State.NO
     };
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     private final Map<UUID, State> states;
 

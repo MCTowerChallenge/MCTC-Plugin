@@ -50,7 +50,7 @@ public class NPC implements Listener {
     private final Set<String> disallowedRegions = new HashSet<>();
 
     /**
-     * Initializes an NPC, takes effect for any entities with the matching tag
+     * Initializes an NPC, takes effect for any entities with the matching TAG
      *
      * @param teamManager Current {@link TeamManager} instance
      * @param name        Name to show in chat messages
@@ -70,7 +70,7 @@ public class NPC implements Listener {
     }
 
     /**
-     * Initializes an NPC, takes effect for any entities with the matching tag
+     * Initializes an NPC, takes effect for any entities with the matching TAG
      *
      * @param teamManager Current {@link TeamManager} instance
      * @param name        Name to show in chat messages
@@ -146,7 +146,7 @@ public class NPC implements Listener {
 
     /**
      * Checks if an entity has a
-     * matching tag to this NPC
+     * matching TAG to this NPC
      *
      * @param entity The entity to check
      * @return True, if the entity matches this NPC

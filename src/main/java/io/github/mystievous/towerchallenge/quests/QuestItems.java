@@ -23,7 +23,7 @@ public class QuestItems implements Openable {
      * Adds an item to be used
      * in the Quest Item gui.
      *
-     * @param tag  {@link String} to tag the item.
+     * @param tag  {@link String} to TAG the item.
      * @param item The {@link ItemStack} to add.
      */
     public static void putItem(String tag, ItemStack item) {

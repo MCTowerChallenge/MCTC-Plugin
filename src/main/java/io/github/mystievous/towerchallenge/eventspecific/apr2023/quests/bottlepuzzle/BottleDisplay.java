@@ -251,7 +251,7 @@ public class BottleDisplay implements Listener {
     }
 
     public void unload() {
-        List<Entity> entities = Bukkit.selectEntities(sender, String.format("@e[tag=%s]", tag));
+        List<Entity> entities = Bukkit.selectEntities(sender, String.format("@e[TAG=%s]", tag));
         for (Entity entity : entities) {
             entity.remove();
         }

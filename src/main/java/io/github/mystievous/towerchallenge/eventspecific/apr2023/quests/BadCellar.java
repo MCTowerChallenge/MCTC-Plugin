@@ -61,7 +61,7 @@ public class BadCellar {
     public void init() {
         if (!entered) {
             entered = true;
-            List<Entity> entities = Bukkit.selectEntities(Apr2023QuestManager.sender, String.format("@e[tag=%s]", teamRoomTag));
+            List<Entity> entities = Bukkit.selectEntities(Apr2023QuestManager.sender, String.format("@e[TAG=%s]", teamRoomTag));
             for (Entity entity : entities) {
                 entity.remove();
             }

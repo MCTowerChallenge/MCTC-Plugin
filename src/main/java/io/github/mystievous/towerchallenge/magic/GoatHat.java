@@ -10,13 +10,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 public class GoatHat implements Listener {
 
     public static final String GOAT_HAT = "goat-hat";
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     public GoatHat() {
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());

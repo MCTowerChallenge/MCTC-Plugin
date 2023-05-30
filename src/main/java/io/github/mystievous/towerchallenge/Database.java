@@ -497,7 +497,7 @@ public class Database {
      * for the given team.
      *
      * @param team The team to select.
-     * @param tag  The quest tag.
+     * @param tag  The quest TAG.
      * @param name The objective name.
      * @return The value of the objective.
      */
@@ -526,7 +526,7 @@ public class Database {
      * for the team of the given quest.
      *
      * @param team The team.
-     * @param tag  The quest tag.
+     * @param tag  The quest TAG.
      * @return The objectives and values.
      */
     public Map<String, Integer> getObjectives(TowerTeam team, String tag) throws SQLException {
@@ -555,7 +555,7 @@ public class Database {
      * to the objective.
      *
      * @param team  The team to add to.
-     * @param tag   The quest tag.
+     * @param tag   The quest TAG.
      * @param name  The objective name.
      * @param value The value to add.
      */
@@ -581,7 +581,7 @@ public class Database {
      * objective.
      *
      * @param team  The team.
-     * @param tag   The quest tag.
+     * @param tag   The quest TAG.
      * @param name  The objective name.
      * @param value The value to set.
      */

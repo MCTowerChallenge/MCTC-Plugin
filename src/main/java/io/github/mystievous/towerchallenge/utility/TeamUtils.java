@@ -6,10 +6,10 @@ import org.bukkit.event.Listener;
 public class TeamUtils implements Listener {
 
     /**
-     * Formats a tag to be unique to the given team.
+     * Formats a TAG to be unique to the given team.
      *
      * @param team The team to format with.
-     * @param tag  The tag to format.
+     * @param tag  The TAG to format.
      * @return The resulting {@link String}
      */
     public static String toTeamTag(TowerTeam team, String tag) {

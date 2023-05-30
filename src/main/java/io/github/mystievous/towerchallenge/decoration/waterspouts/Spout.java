@@ -7,9 +7,9 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Random;
 
 /**
  * Water Spout, looks best when created
@@ -21,7 +21,7 @@ import java.time.Instant;
  */
 public class Spout {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     /**
      * Seconds it takes for the spout to reach maximum/minimum height
