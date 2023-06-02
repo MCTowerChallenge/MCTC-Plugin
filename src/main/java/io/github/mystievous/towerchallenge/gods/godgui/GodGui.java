@@ -256,6 +256,9 @@ public class GodGui extends PresetGui implements Openable {
         ItemStack questBook = questManager.getQuestBook().getItem();
         ButtonElement questItems = new ButtonElement(questBook, player -> questManager.getQuestItems().getGui(player).openInventory(player));
 
+        ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
+        ButtonElement questUtil = new ButtonElement(totem, player -> questManager.getJun2023QuestManager().getGui(player).openInventory(player));
+
         /*
             Button to trigger the intermission sequence.
          */
@@ -315,7 +318,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endPortal);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, Icons.blankSlot);
+        placeElement(5, 6, questUtil);
         placeElement(5, 7, Icons.blankSlot);
         try {
             /*

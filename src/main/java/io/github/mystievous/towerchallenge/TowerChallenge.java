@@ -6,6 +6,7 @@ import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHe
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.Gallery;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
@@ -80,6 +81,7 @@ public final class TowerChallenge extends JavaPlugin {
 //        new Plushies(this, teamManager, database);
 
         new IceCream(this);
+        new Gallery(this);
 
 //        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
 

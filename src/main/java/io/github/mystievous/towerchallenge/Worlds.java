@@ -60,6 +60,10 @@ public class Worlds {
         return Bukkit.getWorld("Jun2023_tower");
     }
 
+    public static World Jun2023_quest() {
+        return Bukkit.getWorld("Jun2023_quest");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }

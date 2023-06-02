@@ -11,6 +11,7 @@ import io.github.mystievous.mystimer.TimerUnsetException;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.*;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
 import io.github.mystievous.towerchallenge.quests.npcs.Dialogue;
 import io.github.mystievous.towerchallenge.quests.npcs.GodMountNPC;
 import io.github.mystievous.towerchallenge.quests.npcs.NPC;
@@ -189,7 +190,7 @@ public class QuestManager implements Openable, Listener {
 
     private final Plugin plugin;
     private final TowerTimer timer;
-//    private final Apr2023QuestManager apr2023QuestManager;
+    private final Jun2023QuestManager jun2023QuestManager;
     private final QuestItems questItems;
     private final Map<String, Quest> quests;
     private final GuiHeldItem questBook;
@@ -227,7 +228,8 @@ public class QuestManager implements Openable, Listener {
         questBook = new GuiHeldItem(plugin, GUI_ID, book, this);
 
         // Event Specific Quest Stuff
-//        apr2023QuestManager = new Apr2023QuestManager(plugin, this, teamManager);
+        jun2023QuestManager = new Jun2023QuestManager(plugin, this, teamManager);
+
 
         // Declare Quests
 
@@ -711,6 +713,10 @@ public class QuestManager implements Openable, Listener {
             team.setQuests(quests);
         }
         return team.getQuest(tag);
+    }
+
+    public Jun2023QuestManager getJun2023QuestManager() {
+        return jun2023QuestManager;
     }
 
     @Override

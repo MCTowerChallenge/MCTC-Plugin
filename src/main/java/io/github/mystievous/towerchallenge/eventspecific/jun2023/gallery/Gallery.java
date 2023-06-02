@@ -178,7 +178,7 @@ public class Gallery implements Listener {
                 long time = RANDOM.nextLong(Math.round(TOTAL_TIME * 20));
                 tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     try {
-                        target.activate(Math.min(TOTAL_TIME - (time / 20.0), pointTime(target.getPointValue())));
+                        target.activate(pointTime(target.getPointValue()));
                     } catch (TargetAlreadyActivateException e) {
                         Location location = e.getLocation();
                         String message = String.format("Target activated when already activated: %.2f, %.2f, %.2f", location.getX(), location.getY(), location.getZ());
