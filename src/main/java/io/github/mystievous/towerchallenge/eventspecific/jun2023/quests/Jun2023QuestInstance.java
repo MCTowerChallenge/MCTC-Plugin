@@ -46,22 +46,40 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
     private final TeamManager teamManager;
 
     private final Noteblocks noteblocks;
+    private final SimonSays simonSays;
 
     public Jun2023QuestInstance(Plugin plugin, QuestManager questManager, TeamManager teamManager, TowerTeam team, Location instanceLocation) {
         super(team, baseLocation, instanceLocation);
         this.plugin = plugin;
         this.questManager = questManager;
         this.teamManager = teamManager;
+
         this.noteblocks = new Noteblocks(plugin, this);
+        this.simonSays = new SimonSays(plugin, this);
+    }
+
+    public Noteblocks getNoteblocks() {
+        return noteblocks;
+    }
+
+    public boolean noteblocksCompleted() {
+        return noteblocks.isCompleted();
+    }
+
+    public boolean simonSaysCompleted() {
+        return simonSays.isCompleted();
     }
 
     @Override
     public Gui getGui(Player player) {
         PresetGui gui = new PresetGui(plugin, Component.text("Instance Utilities"), 3);
 
-        gui.placeElement(2, 2, new ButtonElement(new ItemStack(Material.NOTE_BLOCK), player1 -> noteblocks.openDoor()));
+        gui.placeElement(1, 1, new ButtonElement(GuiUtil.formatItem("Open Noteblock Door", Material.NOTE_BLOCK, 0), player1 -> noteblocks.openDoor()));
 
-        gui.placeElement(2, 4, new ButtonElement(new ItemStack(Material.BEDROCK), player1 -> noteblocks.closeDoor()));
+        gui.placeElement(3, 1, new ButtonElement(GuiUtil.formatItem("Close Noteblock Door", Material.BEDROCK, 0), player1 -> noteblocks.closeDoor()));
+
+        gui.placeElement(1, 3, new ButtonElement(GuiUtil.formatItem("Complete Simon Says", Material.REDSTONE_BLOCK, 0), player1 -> simonSays.completeRoom()));
+        gui.placeElement(3, 3, new ButtonElement(GuiUtil.formatItem("Reset Simon Says", Material.BEDROCK, 0), player1 -> simonSays.reset()));
 
         return gui;
     }

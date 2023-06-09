@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.magic;
 
 import io.github.mystievous.mysticore.NBTUtils;
+import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
@@ -10,6 +11,7 @@ import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
@@ -20,10 +22,13 @@ import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.EndGateway;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.*;
@@ -53,6 +58,7 @@ public class MagicItems implements Openable {
     public final Wand portalReplaceWand;
     public final Wand waterWand;
     public final Wand portalFrameWand;
+    public final Wand locationWand;
 
     public MagicItems(Plugin plugin, Database database, TeamManager teamManager, WaterDrips waterDrips) {
         this.plugin = plugin;
@@ -209,6 +215,26 @@ public class MagicItems implements Openable {
                 event.getPlayer().sendMessage(CommandUtils.errorMessage("You did not click on a portal frame."));
             }
         });
+
+        locationWand = new Wand(plugin, "java-location", GuiUtil.formatItem("Get Java Location", Material.PAPER, 12), event -> {
+            Block block = event.getClickedBlock();
+            Player player = event.getPlayer();
+            if (block != null) {
+                Location location;
+                if (player.isSneaking()) {
+                    BlockFace face = event.getBlockFace();
+                    location = block.getLocation().add(face.getDirection());
+                    player.sendMessage(TextUtil.formatText(String.format("Grabbed location on the %s side of the clicked block:", event.getBlockFace().name())));
+                } else {
+                    location = block.getLocation();
+                    player.sendMessage(TextUtil.formatText("Grabbed location of the clicked block:"));
+                }
+                String text = String.format("new Location(Worlds.%s(), %d, %d, %d)", location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                player.sendMessage(Component.text(text).color(Palette.SECONDARY.toTextColor())
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy!")))
+                        .clickEvent(ClickEvent.copyToClipboard(text)));
+            }
+        });
     }
 
     public ItemStack randomUUID(ItemStack itemStack) {
@@ -224,6 +250,8 @@ public class MagicItems implements Openable {
         gui.placeElement(3, 1, new ButtonElement(speedBoots, player -> player.getInventory().addItem(speedBoots)));
         gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> player.getInventory().addItem(greaterSpeedBoots)));
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));
+
+        gui.placeElement(2, 9, new ButtonElement(locationWand.getItem(), player -> player.getInventory().addItem(locationWand.getItem())));
 
         gui.placeElement(3, 7, new ButtonElement(portalFrameWand.getItem(), player -> player.getInventory().addItem(portalFrameWand.getItem())));
         gui.placeElement(3, 8, new ButtonElement(waterWand.getItem(), player -> player.getInventory().addItem(waterWand.getItem())));

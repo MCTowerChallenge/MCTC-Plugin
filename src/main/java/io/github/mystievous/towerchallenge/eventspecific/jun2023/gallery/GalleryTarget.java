@@ -4,6 +4,7 @@ import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.towerchallenge.utility.EntityUtil;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -32,6 +33,12 @@ public class GalleryTarget implements Listener {
 
     private static final Vector OFFSET = new Vector(-0.3125, -1.8125, 0.5);
     public static final String TAG = "Jun2023-gallery-target";
+
+    public static void errorNoise(Audience audience, Location location) {
+        audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 0.529732f), location.x(), location.y(), location.z());
+        audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 0.749154f), location.x(), location.y(), location.z());
+        audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 1.059463f), location.x(), location.y(), location.z());
+    }
 
     private final Plugin plugin;
 
@@ -143,9 +150,7 @@ public class GalleryTarget implements Listener {
                     gallery.getShooters().sendActionBar(TextUtil.formatText(String.format("+%d Points (%d total)", getPointValue(), points)));
                 } else {
                     int points = gallery.addPoints(-1 * getPointValue());
-                    gallery.getShooters().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 0.529732f), location.x(), location.y(), location.z());
-                    gallery.getShooters().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 0.749154f), location.x(), location.y(), location.z());
-                    gallery.getShooters().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 1.059463f), location.x(), location.y(), location.z());
+                    errorNoise(gallery.getShooters(), location);
                     gallery.getShooters().sendActionBar(Component.text(String.format("-%d Points (%d total)", getPointValue(), points)).color(Palette.NEGATIVE_COLOR.toTextColor()));
                 }
                 deactivate();

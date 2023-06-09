@@ -17,6 +17,7 @@ import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePackListener;
 import io.github.mystievous.towerchallenge.quests.npcs.DialogueCommands;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
 import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
@@ -82,6 +83,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         new IceCream(this);
         new Gallery(this);
+
+        NPC seat = new NPC(teamManager, "Seat", "seat");
+        seat.setDefaultHandler(event -> Bukkit.getScheduler().runTask(this, () -> event.getRightClicked().addPassenger(event.getPlayer())));
 
 //        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
 

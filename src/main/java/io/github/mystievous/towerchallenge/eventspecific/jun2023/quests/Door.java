@@ -14,12 +14,12 @@ import java.util.HashMap;
 
 public class Door {
 
-    private final QuestInstance instance;
     private final BlockSequence open;
     private final BlockSequence reset;
 
+    private boolean openState;
+
     public Door(QuestInstance instance, Vector offset) {
-        this.instance = instance;
 
         Piston northPiston = (Piston) Bukkit.createBlockData(Material.STICKY_PISTON);
         northPiston.setFacing(BlockFace.NORTH);
@@ -42,121 +42,121 @@ public class Door {
 
         BlockData air = Bukkit.createBlockData(Material.AIR);
 
-        open = new BlockSequence(4);
+        open = new InstanceBlockSequence(4, instance);
         open.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 7)).add(offset), glowstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 7)).add(offset), glowstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 63, 7)).add(offset), upPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 7)).add(offset), upPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 63, 7)).add(offset), upPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 62, 7)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 7)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 62, 7)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 9)).add(offset), northPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 10)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 10)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 10)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 10)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 10)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 10)).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 7).add(offset), glowstone);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 7).add(offset), glowstone);
+            put(new Location(Worlds.Jun2023_quest(), -3, 63, 7).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 7).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -1, 63, 7).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -3, 62, 7).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 7).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -1, 62, 7).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 9).add(offset), northPiston);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 10).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 10).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 10).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 10).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 10).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 10).add(offset), redstoneBlock);
         }});
 
-        BlockSequence pullBack = new BlockSequence(4);
+        BlockSequence pullBack = new InstanceBlockSequence(4, instance);
         pullBack.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 10)).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 10).add(offset), air);
         }});
         open.setNext(pullBack);
 
-        BlockSequence setupSplit = new BlockSequence(4);
+        BlockSequence setupSplit = new InstanceBlockSequence(4, instance);
         setupSplit.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -5, 66, 8)).add(offset), eastPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -6, 66, 8)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 1, 66, 8)).add(offset), westPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 2, 66, 8)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 64, 8)).add(offset), upPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 8)).add(offset), downPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 8)).add(offset), downPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 8)).add(offset), downPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 9)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 9)).add(offset), redstoneBlock);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 9)).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -3, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -5, 66, 8).add(offset), eastPiston);
+            put(new Location(Worlds.Jun2023_quest(), -6, 66, 8).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), 1, 66, 8).add(offset), westPiston);
+            put(new Location(Worlds.Jun2023_quest(), 2, 66, 8).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 64, 8).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 8).add(offset), downPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 8).add(offset), downPiston);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 8).add(offset), downPiston);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 9).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 9).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 9).add(offset), redstoneBlock);
         }});
         pullBack.setNext(setupSplit);
 
-        BlockSequence split = new BlockSequence(4);
+        BlockSequence split = new InstanceBlockSequence(4, instance);
         split.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -6, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 2, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 9)).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -6, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), 2, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 9).add(offset), air);
         }});
         setupSplit.setNext(split);
 
-        BlockSequence clearSplit = new BlockSequence(4);
+        BlockSequence clearSplit = new InstanceBlockSequence(4, instance);
         clearSplit.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -5, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 1, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 64, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -5, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), 1, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 64, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), upPiston);
         }});
         split.setNext(clearSplit);
 
-        BlockSequence setupFloor = new BlockSequence(4);
+        BlockSequence setupFloor = new InstanceBlockSequence(4, instance);
         setupFloor.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 8)).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 8).add(offset), redstoneBlock);
         }});
 
-        BlockSequence floor = new BlockSequence(4);
+        BlockSequence floor = new InstanceBlockSequence(4, instance);
         floor.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 8)).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 8).add(offset), air);
         }});
         clearSplit.setNext(floor);
 
-        BlockSequence setupFlush = new BlockSequence(4);
+        BlockSequence setupFlush = new InstanceBlockSequence(4, instance);
         setupFlush.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 64, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), upPiston);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 8)).add(offset), redstoneBlock);
+            put(new Location(Worlds.Jun2023_quest(), -2, 64, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), upPiston);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 8).add(offset), redstoneBlock);
         }});
         floor.setNext(setupFlush);
 
-        BlockSequence flush = new BlockSequence(4);
+        BlockSequence flush = new InstanceBlockSequence(4, instance);
         flush.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 8)).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 8).add(offset), air);
         }});
         setupFlush.setNext(flush);
 
-        BlockSequence clear = new BlockSequence(4);
+        BlockSequence clear = new InstanceBlockSequence(4, instance);
         clear.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), air);
         }});
         flush.setNext(clear);
 
@@ -165,65 +165,73 @@ public class Door {
         BlockData smoothSandstone = Bukkit.createBlockData(Material.SMOOTH_SANDSTONE);
         BlockData sandstone = Bukkit.createBlockData(Material.SANDSTONE);
 
-        reset = new BlockSequence(0);
+        reset = new InstanceBlockSequence(0, instance);
         reset.putAll(new HashMap<>(){{
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 63, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 62, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 10)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -5, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -6, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 1, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 2, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 63, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 69, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 69, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 69, 9)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 62, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 64, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), 0, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 64, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 64, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 64, 7)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -4, 66, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 68, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 68, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 68, 8)).add(offset), air);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 67, 7)).add(offset), cutSandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 67, 7)).add(offset), cutSandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 67, 7)).add(offset), cutSandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 66, 7)).add(offset), redstoneLamp);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 66, 7)).add(offset), smoothSandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 66, 7)).add(offset), redstoneLamp);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -3, 65, 7)).add(offset), sandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -2, 65, 7)).add(offset), sandstone);
-            put(instance.offsetLocation(new Location(Worlds.Jun2023_quest(), -1, 65, 7)).add(offset), sandstone);
+            put(new Location(Worlds.Jun2023_quest(), -3, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 63, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 62, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 10).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -5, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -6, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), 1, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), 2, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 63, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 69, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 69, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 69, 9).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 62, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 64, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), 0, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 64, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 64, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 64, 7).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -4, 66, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 68, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -2, 68, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -1, 68, 8).add(offset), air);
+            put(new Location(Worlds.Jun2023_quest(), -3, 67, 7).add(offset), cutSandstone);
+            put(new Location(Worlds.Jun2023_quest(), -2, 67, 7).add(offset), cutSandstone);
+            put(new Location(Worlds.Jun2023_quest(), -1, 67, 7).add(offset), cutSandstone);
+            put(new Location(Worlds.Jun2023_quest(), -3, 66, 7).add(offset), redstoneLamp);
+            put(new Location(Worlds.Jun2023_quest(), -2, 66, 7).add(offset), smoothSandstone);
+            put(new Location(Worlds.Jun2023_quest(), -1, 66, 7).add(offset), redstoneLamp);
+            put(new Location(Worlds.Jun2023_quest(), -3, 65, 7).add(offset), sandstone);
+            put(new Location(Worlds.Jun2023_quest(), -2, 65, 7).add(offset), sandstone);
+            put(new Location(Worlds.Jun2023_quest(), -1, 65, 7).add(offset), sandstone);
         }});
+
+        reset(null);
 
     }
 
+    public boolean isOpen() {
+        return openState;
+    }
+
     public void open(Runnable callback) {
+        openState = true;
         open.play(callback);
     }
 
     public void reset(Runnable callback) {
+        openState = false;
         reset.play(callback);
     }
 

@@ -59,6 +59,10 @@ public class Noteblocks implements Listener {
 
     }
 
+    public boolean isCompleted() {
+        return door.isOpen();
+    }
+
     private void checkSolution() {
         boolean incorrect = false;
         for (Map.Entry<Location, Note> entry : BASE_SOLUTION.entrySet()) {
@@ -78,7 +82,9 @@ public class Noteblocks implements Listener {
     }
 
     public void openDoor() {
-        door.open(null);
+        if (!door.isOpen()) {
+            door.open(null);
+        }
     }
 
     public void closeDoor() {
@@ -91,7 +97,7 @@ public class Noteblocks implements Listener {
         Block block = event.getBlock();
         int newCurrent = event.getNewCurrent();
 
-        if (block.getLocation().equals(CHECK_TRIGGER_LOCATION.toBlockLocation()) && newCurrent == 15) {
+        if (block.getLocation().equals(instance.offsetLocation(CHECK_TRIGGER_LOCATION.toBlockLocation())) && newCurrent == 15) {
             checkSolution();
         }
 

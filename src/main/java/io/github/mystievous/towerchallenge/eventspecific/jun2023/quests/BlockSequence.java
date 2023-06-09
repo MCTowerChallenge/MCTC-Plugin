@@ -6,6 +6,7 @@ import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,10 @@ public class BlockSequence {
         this(delay, new HashMap<>());
     }
 
+    public Map<Location, BlockData> getBlocks() {
+        return blocks;
+    }
+
     /**
      * Puts a block in this stage.
      *
@@ -54,7 +59,7 @@ public class BlockSequence {
         blocks.put(location, blockData);
     }
 
-    public void putAll(Map<Location, BlockData> blocks) {
+    public void putAll(@NotNull Map<Location, BlockData> blocks) {
         this.blocks.putAll(blocks);
     }
 
@@ -70,6 +75,15 @@ public class BlockSequence {
     }
 
     /**
+     * Places all blocks in this frame.
+     */
+    public void placeBlocks() {
+        for (Map.Entry<Location, BlockData> entry : blocks.entrySet()) {
+            entry.getKey().getBlock().setBlockData(entry.getValue());
+        }
+    }
+
+    /**
      * Plays this block sequence and
      * all ones after it.
      *
@@ -78,9 +92,7 @@ public class BlockSequence {
      *                 sequence is done.
      */
     public void play(Runnable callback) {
-        for (Map.Entry<Location, BlockData> entry : blocks.entrySet()) {
-            entry.getKey().getBlock().setBlockData(entry.getValue());
-        }
+        placeBlocks();
         Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), () -> {
             if (next != null) {
                 next.play(callback);
