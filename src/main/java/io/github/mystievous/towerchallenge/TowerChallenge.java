@@ -6,6 +6,7 @@ import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHe
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.flags.SelectionHandler;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.Gallery;
 import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
@@ -30,6 +31,7 @@ import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TowerChallenge extends JavaPlugin {
@@ -40,6 +42,7 @@ public final class TowerChallenge extends JavaPlugin {
     public static final String MCTC_NAMESPACE = "mctc";
 
     private static TowerChallenge me;
+
     public static TowerChallenge getInstance() {
         return me;
     }
@@ -81,11 +84,17 @@ public final class TowerChallenge extends JavaPlugin {
         new Lovebot(this, teamManager, database);
 //        new Plushies(this, teamManager, database);
 
+        new SelectionHandler(this, database);
         new IceCream(this);
         new Gallery(this);
 
         NPC seat = new NPC(teamManager, "Seat", "seat");
-        seat.setDefaultHandler(event -> Bukkit.getScheduler().runTask(this, () -> event.getRightClicked().addPassenger(event.getPlayer())));
+        seat.setDefaultHandler(event -> Bukkit.getScheduler().runTask(this, () -> {
+            Entity entity = event.getRightClicked();
+            if (entity.getPassengers().isEmpty()) {
+                entity.addPassenger(event.getPlayer());
+            }
+        }));
 
 //        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
 

@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
@@ -8,9 +9,11 @@ import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quests.utils.BlockVoucher;
 import io.github.mystievous.mysticore.TextUtil;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -44,6 +47,11 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
+                    case ("pronouns") -> {
+                        if (sender instanceof Player player) {
+                            player.displayName(player.name().append(Component.space()).append(Component.text("(She/they)").font(Key.key(Key.MINECRAFT_NAMESPACE, "uniform"))));
+                        }
+                    }
                     case ("deserialize") -> { // Deserializes the item in the player's hand, for use in the plugin.
                         if (sender instanceof Player player) {
                             ItemStack item = player.getInventory().getItemInMainHand();

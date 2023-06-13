@@ -6,7 +6,7 @@
 
     <groupId>io.github.mystievous</groupId>
     <artifactId>TowerChallenge</artifactId>
-    <version>1.1</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <name>TowerChallenge</name>
@@ -128,13 +128,13 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -172,19 +172,19 @@
         <dependency>
             <groupId>io.github.mystievous</groupId>
             <artifactId>MystiCore</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.github.mystievous</groupId>
             <artifactId>MystiGui</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.github.mystievous</groupId>
             <artifactId>Mystimer</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

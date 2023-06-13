@@ -26,7 +26,7 @@ public class ChatHandler implements Listener {
         }
 
         Component prefix = Component.empty();
-        Component name = Component.text(String.format("<%s> ", event.getPlayer().getName()));
+        Component name = Component.text("<").append(event.getPlayer().displayName()).append(Component.text("> "));
         Component body = event.message().replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement("\uE100").build())
                 .replaceText(TextReplacementConfig.builder().match(":benbyyPog:").replacement("\uE101").build())
                 .replaceText(TextReplacementConfig.builder().match(":LoveFonda:").replacement("\uE102").build())

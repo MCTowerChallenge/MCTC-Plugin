@@ -59,6 +59,7 @@ public class MagicItems implements Openable {
     public final Wand waterWand;
     public final Wand portalFrameWand;
     public final Wand locationWand;
+    public final EntityWand entityLocationWand;
 
     public MagicItems(Plugin plugin, Database database, TeamManager teamManager, WaterDrips waterDrips) {
         this.plugin = plugin;
@@ -235,6 +236,21 @@ public class MagicItems implements Openable {
                         .clickEvent(ClickEvent.copyToClipboard(text)));
             }
         });
+
+        entityLocationWand = new EntityWand(plugin, "entity-java-location", GuiUtil.formatItem("Get Entity Java Location", Material.PAPER, 12), event -> {
+            Entity entity = event.getRightClicked();
+            Player player = event.getPlayer();
+            Location location;
+
+            location = entity.getLocation();
+            player.sendMessage(TextUtil.formatText("Grabbed location of the clicked entity:"));
+
+            String text = String.format("new Location(Worlds.%s(), %fd, %fd, %fd, %ff, %ff)", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            player.sendMessage(Component.text(text).color(Palette.SECONDARY.toTextColor())
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy!")))
+                    .clickEvent(ClickEvent.copyToClipboard(text)));
+        });
+
     }
 
     public ItemStack randomUUID(ItemStack itemStack) {
@@ -252,6 +268,7 @@ public class MagicItems implements Openable {
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));
 
         gui.placeElement(2, 9, new ButtonElement(locationWand.getItem(), player -> player.getInventory().addItem(locationWand.getItem())));
+        gui.placeElement(2, 8, new ButtonElement(entityLocationWand.getItem(), player -> player.getInventory().addItem(entityLocationWand.getItem())));
 
         gui.placeElement(3, 7, new ButtonElement(portalFrameWand.getItem(), player -> player.getInventory().addItem(portalFrameWand.getItem())));
         gui.placeElement(3, 8, new ButtonElement(waterWand.getItem(), player -> player.getInventory().addItem(waterWand.getItem())));

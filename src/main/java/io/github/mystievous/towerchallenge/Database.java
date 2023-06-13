@@ -838,77 +838,8 @@ public class Database {
     public List<Element> getPlayerHats(@NotNull UUID uuid) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
-                        SELECT
-                        uuid as user_uuid,
-                            name,
-                            material,
-                            custom_model_data,
-                            color,
-                            author,
-                            referenced
-                        FROM
-                            (SELECT
-                                    users.uuid,
-                                    COALESCE(hat_hatgroups.color, hats.color, users.color, teams.color) AS color,
-                                    hats.name,
-                                    materials.name AS material,
-                                    hats.custom_model_data,
-                                    referenced_people.name AS referenced,
-                                    author_people.name AS author,
-                                    hats.priority AS hat_priority,
-                                    hatgroups.priority AS hatgroups_priority
-                            FROM
-                                users
-                            INNER JOIN teams ON users.team_id = teams.id
-                            JOIN global_hatgroups
-                            INNER JOIN hatgroups ON global_hatgroups.hatgroup_id = hatgroups.id
-                            INNER JOIN hat_hatgroups ON hatgroups.id = hat_hatgroups.hatgroup_id
-                            INNER JOIN hats ON hat_hatgroups.hat_id = hats.id
-                            INNER JOIN materials ON hats.material_id = materials.id
-                            LEFT JOIN hat_people AS author_people ON hats.author_id = author_people.id
-                            LEFT JOIN hat_people AS referenced_people ON hats.referenced_id = referenced_people.id UNION SELECT
-                                    users.uuid,
-                                    COALESCE(hat_hatgroups.color, hats.color, users.color, teams.color) AS color,
-                                    hats.name,
-                                    materials.name AS material,
-                                    hats.custom_model_data,
-                                    referenced_people.name AS referenced,
-                                    author_people.name AS author,
-                                    hats.priority AS hat_priority,
-                                    hatgroups.priority AS hatgroups_priority
-                            FROM
-                                users
-                            INNER JOIN teams ON users.team_id = teams.id
-                            INNER JOIN team_hatgroups ON teams.id = team_hatgroups.team_id
-                            INNER JOIN hatgroups ON team_hatgroups.hatgroup_id = hatgroups.id
-                            INNER JOIN hat_hatgroups ON hatgroups.id = hat_hatgroups.hatgroup_id
-                            INNER JOIN hats ON hat_hatgroups.hat_id = hats.id
-                            INNER JOIN materials ON hats.material_id = materials.id
-                            LEFT JOIN hat_people AS author_people ON hats.author_id = author_people.id
-                            LEFT JOIN hat_people AS referenced_people ON hats.referenced_id = referenced_people.id UNION SELECT
-                                    users.uuid,
-                                    COALESCE(hat_hatgroups.color, hats.color, users.color, teams.color) AS color,
-                                    hats.name,
-                                    materials.name AS material,
-                                    hats.custom_model_data,
-                                    referenced_people.name AS referenced,
-                                    author_people.name AS author,
-                                    hats.priority AS hat_priority,
-                                    hatgroups.priority AS hatgroups_priority
-                            FROM
-                                users
-                            INNER JOIN teams ON users.team_id = teams.id
-                            INNER JOIN user_hatgroups ON users.uuid = user_hatgroups.user_uuid
-                            INNER JOIN hatgroups ON user_hatgroups.hatgroup_id = hatgroups.id
-                            INNER JOIN hat_hatgroups ON hatgroups.id = hat_hatgroups.hatgroup_id
-                            INNER JOIN hats ON hat_hatgroups.hat_id = hats.id
-                            INNER JOIN materials ON hats.material_id = materials.id
-                            LEFT JOIN hat_people AS author_people ON hats.author_id = author_people.id
-                            LEFT JOIN hat_people AS referenced_people ON hats.referenced_id = referenced_people.id
-                            ORDER BY hat_priority) AS result
-                        WHERE
-                            result.uuid = ?
-                        ORDER BY hatgroups_priority DESC , hat_priority DESC , name ASC;
+                        SELECT * FROM user_hats
+                        WHERE user_hats.user_uuid = ?;
                         """
         )) {
             statement.setString(1, uuid.toString());
@@ -922,6 +853,65 @@ public class Database {
                 }
             }
             return hats;
+        }
+    }
+
+    /**
+     * Sets the pride flag associated with the player
+     *
+     * @param uuid   The player's uuid.
+     * @param flagId The database id of the flag.
+     * @return The flag id of the player after the update.
+     * @throws SQLException if there's an sql error.
+     */
+    public int setPlayerFlag(@NotNull UUID uuid, int flagId) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement update = conn.prepareStatement(
+                """
+                        UPDATE users
+                        SET flag_id = ?
+                        WHERE users.uuid = ?;
+                        """
+        )) {
+            update.setInt(1, flagId);
+            update.setString(2, uuid.toString());
+            update.executeUpdate();
+            return getPlayerFlag(uuid);
+        }
+    }
+
+    public int getPlayerFlag(@NotNull UUID uuid) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement select = conn.prepareStatement(
+                """
+                        SELECT users.flag_id
+                        FROM users
+                        WHERE users.uuid = ?;
+                        """
+        )) {
+            select.setString(1, uuid.toString());
+            ResultSet resultSet = select.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("flag_id");
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    public Map<UUID, Integer> getAllPlayerFlags() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+            """
+                SELECT users.uuid, users.flag_id
+                FROM users
+                """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            Map<UUID, Integer> selections = new HashMap<>();
+            while (resultSet.next()) {
+                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
+                int flagId = resultSet.getInt("flag_id");
+                selections.put(uuid, flagId);
+            }
+            return selections;
         }
     }
 
