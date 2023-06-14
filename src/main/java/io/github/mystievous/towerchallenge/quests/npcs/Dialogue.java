@@ -103,6 +103,19 @@ public class Dialogue {
     }
 
     /**
+     * Appends a dialogue to the end of this dialogue's sequence.
+     *
+     * @param dialogue The dialogue to append
+     */
+    public void append(Dialogue dialogue) {
+        if (next != null) {
+            next.append(dialogue);
+        } else {
+            setNext(dialogue);
+        }
+    }
+
+    /**
      * Sets the sound that plays along
      * with the dialogue.
      * <p></p>
@@ -183,7 +196,7 @@ public class Dialogue {
     }
 
     /**
-     * @see #play(Audience, Runnable) 
+     * @see #play(Audience, Runnable)
      */
     public void play(Audience audience) {
         play(audience, null);

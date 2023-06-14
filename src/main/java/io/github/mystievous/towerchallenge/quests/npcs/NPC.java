@@ -138,10 +138,10 @@ public class NPC implements Listener {
      * <p></p>
      * This overrides regions allowed with {@link #addAllowedRegion(String)}
      *
-     * @param regionName
+     * @param regex Regex pattern for region names to be matched with.
      */
-    public void addDisallowedRegion(String regionName) {
-        disallowedRegions.add(regionName);
+    public void addDisallowedRegion(String regex) {
+        disallowedRegions.add(regex);
     }
 
     /**
