@@ -9,6 +9,7 @@ import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.*;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.quests.QuestItems;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
@@ -47,6 +48,7 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
 
     private final Noteblocks noteblocks;
     private final SimonSays simonSays;
+    private final MineHandler mineHandler;
 
     public Jun2023QuestInstance(Plugin plugin, QuestManager questManager, TeamManager teamManager, TowerTeam team, Location instanceLocation) {
         super(team, baseLocation, instanceLocation);
@@ -56,6 +58,7 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
 
         this.noteblocks = new Noteblocks(plugin, this);
         this.simonSays = new SimonSays(plugin, this);
+        this.mineHandler = new MineHandler(plugin, this, teamManager);
     }
 
     public Noteblocks getNoteblocks() {
@@ -80,6 +83,9 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
 
         gui.placeElement(1, 3, new ButtonElement(GuiUtil.formatItem("Complete Simon Says", Material.REDSTONE_BLOCK, 0), player1 -> simonSays.completeRoom()));
         gui.placeElement(3, 3, new ButtonElement(GuiUtil.formatItem("Reset Simon Says", Material.BEDROCK, 0), player1 -> simonSays.reset()));
+
+        gui.placeElement(1, 5, new ButtonElement(GuiUtil.formatItem("Complete Minesweeper", Material.TNT, 0), player1 -> mineHandler.completeRoom()));
+        gui.placeElement(3, 5, new ButtonElement(GuiUtil.formatItem("Reset Minesweeper", Material.BEDROCK, 0), player1 -> mineHandler.load()));
 
         return gui;
     }
