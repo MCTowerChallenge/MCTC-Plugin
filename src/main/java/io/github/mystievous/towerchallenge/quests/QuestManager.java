@@ -14,8 +14,6 @@ import io.github.mystievous.towerchallenge.quests.requirements.RequirementsQuest
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.timer.TowerTimer;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,7 +30,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class QuestManager implements Openable, Listener {
@@ -41,7 +41,7 @@ public class QuestManager implements Openable, Listener {
 
     public static final String NO_QUEST = "no-quest";
 
-    public static final String DUB_START = "dub-start";
+    public static final String POLAR_START = "polar-start";
 
     public static final String STEVE = "steve";
     public static final Color STEVE_COLOR = new Color(0xf9b6f4);
@@ -50,7 +50,7 @@ public class QuestManager implements Openable, Listener {
     public static final String SPIRIT = "evil-spirit";
     public static final String MYSTI = "mystievous";
     public static final String APPLE = "apple270";
-    public static final String DUB = "dub";
+    public static final String POLAR = "polar";
     public static final String ENDI = "endi";
     public static final String ERIE = "erie";
     public static final String HENRY = "henry";
@@ -146,6 +146,8 @@ public class QuestManager implements Openable, Listener {
         return NO_QUEST;
     }
 
+    private final Set<NPC> npcSet;
+
     private final Plugin plugin;
     private final TowerTimer timer;
     private final Jun2023QuestManager jun2023QuestManager;
@@ -173,6 +175,7 @@ public class QuestManager implements Openable, Listener {
         this.teamManager = teamManager;
         this.questItems = new QuestItems(plugin);
         quests = new HashMap<>();
+        npcSet = new HashSet<>();
 
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta bookMeta = book.getItemMeta();
@@ -204,50 +207,70 @@ public class QuestManager implements Openable, Listener {
 
         GodMountNPC penelope = new GodMountNPC(teamManager, "Penelope", PENELOPE, new Color(0x932172), new Color(0xbc519c));
         penelope.addAllowedRegion("penelope-.*");
+        npcSet.add(penelope);
 
         GodMountNPC buttStallion = new GodMountNPC(teamManager, "Butt Stallion", BUTT_STALLION, new Color(0x70b5a6), new Color(0x508277));
         buttStallion.addAllowedRegion("buttstallion-.*");
+        npcSet.add(buttStallion);
 
-        NPC steve = new NPC(teamManager, "steve skellington", STEVE, new Color(0x1d4f4a), new Color(0x2b756d));
+        NPC steve = new NPC(teamManager, "steve skellington", STEVE, new Color(0x399c91), new Color(0x55b4aa));
         steve.addAllowedRegion("steve-.*");
+        npcSet.add(steve);
 
         NPC spirit = new NPC(teamManager, "Evil Spirit", SPIRIT, new Color(0x610b1f), new Color(0x870f2b));
         spirit.addDisallowedRegion(".*");
+        npcSet.add(spirit);
 
         NPC mysti = new NPC(teamManager, "Mystievous", MYSTI, new Color(0xc73858), new Color(0xd2607a));
+        npcSet.add(mysti);
 
-        NPC dub = new NPC(teamManager, "Dub", DUB);
-        dub.addDisallowedRegion("*");
+        NPC polar = new NPC(teamManager, "Polar W.", POLAR, new Color(0x70c8d4), new Color(0x96e4ee));
+        polar.addDisallowedRegion(".*");
+        npcSet.add(polar);
 
-        NPC endi = new NPC(teamManager, "Endi", ENDI);
-        endi.addDisallowedRegion("*");
+        NPC endi = new NPC(teamManager, "Endi", ENDI, new Color(0xc426d9), new Color(0xde44f2));
+        endi.addDisallowedRegion(".*");
+        npcSet.add(endi);
 
-        NPC erie = new NPC(teamManager, "Erie", ERIE);
-        erie.addDisallowedRegion("*");
+        NPC erie = new NPC(teamManager, "Erie", ERIE, new Color(0x89b847), new Color(0xa5d166));
+        erie.addDisallowedRegion(".*");
+        npcSet.add(erie);
 
-        NPC henry = new NPC(teamManager, "Henry", HENRY);
-        henry.addDisallowedRegion("*");
+        NPC henry = new NPC(teamManager, "Henry", HENRY, new Color(0xa9ab6a), new Color(0xc4c58e));
+        henry.addDisallowedRegion(".*");
+        npcSet.add(henry);
 
-        NPC percy = new NPC(teamManager, "Percy", PERCY);
-        percy.addDisallowedRegion("*");
+        NPC percy = new NPC(teamManager, "Percy", PERCY, new Color(0xc63d20), new Color(0xe0573a));
+        percy.addDisallowedRegion(".*");
+        npcSet.add(percy);
 
-        NPC boney = new NPC(teamManager, "Boney", BONEY);
-        boney.addDisallowedRegion("*");
+        NPC boney = new NPC(teamManager, "Boney", BONEY, new Color(0x7694a5), new Color(0x879aa5));
+        boney.addDisallowedRegion(".*");
+        npcSet.add(boney);
 
-        NPC moollicient = new NPC(teamManager, "Moollicient", MOOLLICIENT);
-        moollicient.addDisallowedRegion("*");
+        NPC moollicient = new NPC(teamManager, "Moollicient", MOOLLICIENT, new Color(0xffd632), new Color(0xe6c545));
+        moollicient.addDisallowedRegion(".*");
+        npcSet.add(moollicient);
 
-        NPC pete = new NPC(teamManager, "Pete", PETE);
-        pete.addDisallowedRegion("*");
+        NPC pete = new NPC(teamManager, "Pete", PETE, new Color(0xd92521), new Color(0xbe3430));
+        pete.addDisallowedRegion(".*");
+        npcSet.add(pete);
 
-        NPC ari = new NPC(teamManager, "Ari", ARI);
-        ari.addDisallowedRegion("*");
+        NPC ari = new NPC(teamManager, "Ari", ARI, new Color(0x118c9b), new Color(0x02a2b5));
+        ari.addDisallowedRegion(".*");
+        npcSet.add(ari);
 
-        NPC alice = new NPC(teamManager, "Alice", ALICE);
-        alice.addDisallowedRegion("*");
+        NPC soup = new NPC(teamManager, "Soup", SOUP, new Color(0xbc775d), new Color(0xd67856));
+        soup.addDisallowedRegion(".*");
+        npcSet.add(soup);
 
-        NPC dave = new NPC(teamManager, "Dave", DAVE);
-        dave.addDisallowedRegion("*");
+        NPC alice = new NPC(teamManager, "Alice", ALICE, new Color(0x0d5e84), new Color(0x006f9e));
+        alice.addDisallowedRegion(".*");
+        npcSet.add(alice);
+
+        NPC dave = new NPC(teamManager, "Dave", DAVE, new Color(0x663b5a), new Color(0x803d6d));
+        dave.addDisallowedRegion(".*");
+        npcSet.add(dave);
 
         // Quest Interaction NPCs
 
@@ -275,6 +298,10 @@ public class QuestManager implements Openable, Listener {
         plugin.getCommand("questbook").setExecutor(commands);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    public Set<NPC> getNPCs() {
+        return npcSet;
     }
 
     public QuestItems getQuestItems() {

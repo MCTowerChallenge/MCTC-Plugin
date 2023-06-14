@@ -150,5 +150,12 @@ public class DeveloperGui extends PresetGui {
 
         placeElement(1, 8, hatElement);
 
+        ArmorTrimsGui armorTrimsGui = new ArmorTrimsGui(plugin);
+        Element armorTrims = new ButtonElement(GuiUtil.formatItem("Armor Trims", Material.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, 0), player -> {
+            armorTrimsGui.getGui(player).openInventory(player);
+        });
+
+        placeElement(6, 9, armorTrims);
+
     }
 }

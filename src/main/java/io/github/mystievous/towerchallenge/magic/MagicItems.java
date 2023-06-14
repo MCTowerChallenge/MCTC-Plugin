@@ -7,6 +7,7 @@ import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Database;
@@ -16,14 +17,18 @@ import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
+import io.github.mystievous.towerchallenge.quests.QuestManager;
+import io.github.mystievous.towerchallenge.quests.npcs.NPC;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -48,6 +53,7 @@ import java.util.UUID;
 public class MagicItems implements Openable {
 
     private final Plugin plugin;
+    private final QuestManager questManager;
 
     public final ItemStack speedBoots;
     public final ItemStack greaterSpeedBoots;
@@ -60,9 +66,11 @@ public class MagicItems implements Openable {
     public final Wand portalFrameWand;
     public final Wand locationWand;
     public final EntityWand entityLocationWand;
+    public final Element setNPCs;
 
-    public MagicItems(Plugin plugin, Database database, TeamManager teamManager, WaterDrips waterDrips) {
+    public MagicItems(Plugin plugin, Database database, TeamManager teamManager, QuestManager questManager, WaterDrips waterDrips) {
         this.plugin = plugin;
+        this.questManager = questManager;
 
         speedBoots = new ItemStack(Material.LEATHER_BOOTS) {{
             ItemMeta meta = getItemMeta();
@@ -251,6 +259,40 @@ public class MagicItems implements Openable {
                     .clickEvent(ClickEvent.copyToClipboard(text)));
         });
 
+        setNPCs = new ButtonElement(GuiUtil.formatItem("Set Entities as NPC", Material.SKELETON_SPAWN_EGG, 0), player -> {
+            ListGui npcGui = new ListGui(plugin, Component.text("Choose an NPC"), new ButtonElement(Icons.backItem(), player1 -> getGui(player1).openInventory(player1)));
+            for (NPC newNPC : questManager.getNPCs()) {
+                EntityWand entityWand = new EntityWand(plugin, newNPC.getTag(), GuiUtil.formatItem(newNPC.getName(), Material.STICK, 0), event -> {
+                    Entity clickedEntity = event.getRightClicked();
+                    NPC currentNPC = null;
+                    for (NPC checkNPC : questManager.getNPCs()) {
+                        if (checkNPC.hasTag(clickedEntity)) {
+                            currentNPC = checkNPC;
+                            clickedEntity.removeScoreboardTag(checkNPC.getTag());
+                            break;
+                        }
+                    }
+
+                    clickedEntity.addScoreboardTag(newNPC.getTag());
+                    clickedEntity.customName(newNPC.getName());
+                    clickedEntity.setCustomNameVisible(true);
+                    clickedEntity.setSilent(true);
+                    clickedEntity.setInvulnerable(true);
+                    clickedEntity.setPersistent(true);
+
+                    TextComponent.Builder playerMessage = Component.text();
+                    if (currentNPC != null) {
+                        playerMessage.append(Component.text("removed ").append(currentNPC.getName()))
+                                .append(Component.text(", and "));
+                    }
+                    playerMessage.append(Component.text("set to ")).append(newNPC.getName());
+                    player.sendActionBar(playerMessage.build());
+                });
+                npcGui.addElement(new ButtonElement(entityWand.getItem(), player1 -> player1.getInventory().addItem(entityWand.getItem())));
+            }
+            npcGui.openInventory(player);
+        });
+
     }
 
     public ItemStack randomUUID(ItemStack itemStack) {
@@ -267,8 +309,9 @@ public class MagicItems implements Openable {
         gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> player.getInventory().addItem(greaterSpeedBoots)));
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));
 
-        gui.placeElement(2, 9, new ButtonElement(locationWand.getItem(), player -> player.getInventory().addItem(locationWand.getItem())));
+        gui.placeElement(1, 9, setNPCs);
         gui.placeElement(2, 8, new ButtonElement(entityLocationWand.getItem(), player -> player.getInventory().addItem(entityLocationWand.getItem())));
+        gui.placeElement(2, 9, new ButtonElement(locationWand.getItem(), player -> player.getInventory().addItem(locationWand.getItem())));
 
         gui.placeElement(3, 7, new ButtonElement(portalFrameWand.getItem(), player -> player.getInventory().addItem(portalFrameWand.getItem())));
         gui.placeElement(3, 8, new ButtonElement(waterWand.getItem(), player -> player.getInventory().addItem(waterWand.getItem())));

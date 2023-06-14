@@ -20,6 +20,8 @@ commands:
   hat:
     description: Opens the hat gui
     usage: /hat
+    aliases:
+      - accessories
   wand:
     description: Opens the wand gui
     usage: /wand

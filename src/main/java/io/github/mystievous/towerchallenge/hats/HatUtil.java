@@ -3,10 +3,16 @@ package io.github.mystievous.towerchallenge.hats;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 public class HatUtil {
 
     public static final String NBT_TAG = "is_hat";
+
+    public static ItemMeta setHat(Plugin plugin, ItemMeta itemMeta, boolean hatState) {
+        return NBTUtils.setNoUse(NBTUtils.setBool(plugin, NBT_TAG, itemMeta, hatState));
+    }
 
     /**
      * Sets the value of the "is_hat" NBT tag on an itemstack
@@ -15,8 +21,8 @@ public class HatUtil {
      * @param hatState  State to change is_hat to
      * @return ItemStack, with the updated is_hat tag
      */
-    public static ItemStack setHat(TowerChallenge plugin, ItemStack itemStack, Boolean hatState) {
-        return NBTUtils.setNoUse(plugin, NBTUtils.setBool(plugin, NBT_TAG, itemStack, hatState));
+    public static ItemStack setHat(Plugin plugin, ItemStack itemStack, Boolean hatState) {
+        return NBTUtils.setNoUse(NBTUtils.setBool(plugin, NBT_TAG, itemStack, hatState));
     }
 
     /**
@@ -25,7 +31,7 @@ public class HatUtil {
      * @param itemStack ItemStack to change
      * @return ItemStack, with the updated is_hat tag
      */
-    public static ItemStack setHat(TowerChallenge plugin, ItemStack itemStack) {
+    public static ItemStack setHat(Plugin plugin, ItemStack itemStack) {
         return setHat(plugin, itemStack, true);
     }
 

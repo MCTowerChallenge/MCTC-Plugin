@@ -40,32 +40,6 @@ import java.util.*;
 
 public class Database {
 
-    /**
-     * Takes the result set from getting player
-     * hats and returns the element for
-     * the current row.
-     *
-     * @param resultSet The result set from the
-     *                  hat query.
-     * @return The hat element.
-     * @throws IllegalArgumentException If the material of
-     *                                  the hat is invalid.
-     */
-    public static HatElement getHatFromResultSet(ResultSet resultSet) throws SQLException, IllegalArgumentException {
-        String name = resultSet.getString("name");
-        Material material;
-        material = Material.valueOf(resultSet.getString("material"));
-        int customModelData = resultSet.getInt("custom_model_data");
-        int colorInt = resultSet.getInt("color");
-        Color color = null;
-        if (!resultSet.wasNull()) {
-            color = new Color(colorInt);
-        }
-        String author = resultSet.getString("author");
-        String referenced = resultSet.getString("referenced");
-        return new HatElement(name, material, customModelData, color, author, referenced);
-    }
-
     private final TowerChallenge plugin;
     private final DatabaseConfig config;
     private DataSource dataSource;
@@ -792,6 +766,33 @@ public class Database {
     }
 
     /**
+     * Takes the result set from getting player
+     * hats and returns the element for
+     * the current row.
+     *
+     * @param resultSet The result set from the
+     *                  hat query.
+     * @return The hat element.
+     * @throws IllegalArgumentException If the material of
+     *                                  the hat is invalid.
+     */
+    public HatElement getHatFromResultSet(ResultSet resultSet) throws SQLException, IllegalArgumentException {
+        String name = resultSet.getString("name");
+        Material material;
+        material = Material.valueOf(resultSet.getString("material"));
+        int customModelData = resultSet.getInt("custom_model_data");
+        int colorInt = resultSet.getInt("color");
+        Color color = null;
+        if (!resultSet.wasNull()) {
+            color = new Color(colorInt);
+        }
+        String author = resultSet.getString("author");
+        String referenced = resultSet.getString("referenced");
+        boolean handheld = resultSet.getBoolean("handheld");
+        return new HatElement(plugin, name, material, customModelData, color, author, referenced, handheld);
+    }
+
+    /**
      * Gets a specific hat from
      * the database.
      *
@@ -808,7 +809,8 @@ public class Database {
                             hats.custom_model_data,
                             hats.color,
                             author_people.name AS author,
-                            referenced_people.name AS referenced
+                            referenced_people.name AS referenced,
+                            hats.handheld
                         FROM
                             hats
                                 INNER JOIN
@@ -828,7 +830,7 @@ public class Database {
             return null;
         }
     }
-
+    
     /**
      * Gets all hats for the given player.
      *

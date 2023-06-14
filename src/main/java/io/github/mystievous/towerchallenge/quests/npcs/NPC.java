@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.quests.npcs;
 
+import com.destroystokyo.paper.event.entity.EndermanEscapeEvent;
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -20,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
@@ -29,13 +31,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class NPC implements Listener {
-
-    // TODO: Use this to make wands for setting/removing npcs
-    private final static List<String> npcTags = new ArrayList<>();
-
-    private static void addNPCTag(String tag) {
-        npcTags.add(tag);
-    }
 
     private final TeamManager teamManager;
     private final String name;
@@ -66,7 +61,6 @@ public class NPC implements Listener {
         this.textColor = textColor;
         this.questHandlers = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
-        addNPCTag(tag);
     }
 
     /**
@@ -127,6 +121,10 @@ public class NPC implements Listener {
      */
     public void addAllowedRegion(String regex) {
         allowedRegions.add(regex);
+    }
+
+    public Component getName() {
+        return Component.text(name).color(nameColor.toTextColor());
     }
 
     public String getTag() {
@@ -242,24 +240,22 @@ public class NPC implements Listener {
         Entity entity = event.getEntity();
         Location location = event.getLoc();
 
-        if (hasTag(entity) && !allowedRegions.isEmpty()) {
+        if (hasTag(entity)) {
             event.setCancelled(true);
             RegionManager worldContainer = ChallengeManager.regionContainer().get(BukkitAdapter.adapt(location.getWorld()));
             if (worldContainer != null) {
                 ApplicableRegionSet regionSet = worldContainer.getApplicableRegions(BukkitAdapter.adapt(location).toVector().toBlockPoint());
                 for (ProtectedRegion region : regionSet.getRegions()) {
-                    for (String disallowedRegion : disallowedRegions) {
-                        if (region.getId().matches(disallowedRegion)) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-                for (ProtectedRegion region : regionSet.getRegions()) {
                     for (String allowedRegion : allowedRegions) {
                         if (region.getId().matches(allowedRegion)) {
                             event.setCancelled(false);
-                            return;
+                            break;
+                        }
+                    }
+                    for (String disallowedRegion : disallowedRegions) {
+                        if (region.getId().matches(disallowedRegion)) {
+                            event.setCancelled(true);
+                            break;
                         }
                     }
                 }

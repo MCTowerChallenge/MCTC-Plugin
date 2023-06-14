@@ -2,7 +2,6 @@ package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
-import io.github.mystievous.towerchallenge.eventspecific.apr2023.quests.NetherHeart;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
@@ -100,14 +99,12 @@ public final class TowerChallenge extends JavaPlugin {
 
 //        new BottleManager(this, new Location(Worlds.Apr2023_quest(), -32, 66, 37));
 
-        new NetherHeart(this);
-
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
         WaterDrips waterDrips = new WaterDrips(this, database);
 
-        MagicItems magicItems = new MagicItems(this, database, teamManager, waterDrips);
+        MagicItems magicItems = new MagicItems(this, database, teamManager, questManager, waterDrips);
 
         new GodManager(this, questManager, teamManager, magicItems);
 

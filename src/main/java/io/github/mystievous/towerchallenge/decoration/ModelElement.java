@@ -33,7 +33,7 @@ public class ModelElement extends ButtonElement {
      * @param debug           Whether the item should have material and model id in the lore
      */
     public ModelElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
-        super(NBTUtils.setNoUse(TowerChallenge.getInstance(), new ItemStack(material) {{
+        super(NBTUtils.setNoUse(new ItemStack(material) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(name);
             meta.setCustomModelData(customModelData);
