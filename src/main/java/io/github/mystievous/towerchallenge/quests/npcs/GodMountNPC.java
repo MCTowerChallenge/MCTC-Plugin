@@ -11,11 +11,12 @@ import org.spigotmc.event.entity.EntityMountEvent;
 
 public class GodMountNPC extends NPC {
 
-    private final TeamManager teamManager;
-
     public GodMountNPC(TeamManager teamManager, String name, String tag, Color nameColor, Color textColor) {
         super(teamManager, name, tag, nameColor, textColor);
-        this.teamManager = teamManager;
+    }
+
+    public GodMountNPC(TeamManager teamManager, String name, String tag) {
+        super(teamManager, name, tag);
     }
 
     /**
@@ -26,7 +27,7 @@ public class GodMountNPC extends NPC {
 
         if (event.getEntity() instanceof Player player) {
             if (event.getMount().getScoreboardTags().contains(getTag())) {
-                if (!(teamManager.getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(getTeamManager().getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }
@@ -42,7 +43,7 @@ public class GodMountNPC extends NPC {
         if (event.getInventory().getHolder() instanceof Entity entity &&
                 event.getPlayer() instanceof Player player) {
             if (entity.getScoreboardTags().contains(getTag())) {
-                if (!(teamManager.getPlayerTeam(player) instanceof GodTeam)) {
+                if (!(getTeamManager().getPlayerTeam(player) instanceof GodTeam)) {
                     event.setCancelled(true);
                 }
             }

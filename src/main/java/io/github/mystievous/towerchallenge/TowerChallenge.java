@@ -5,6 +5,7 @@ import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.Posters;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.flags.SelectionHandler;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.Gallery;
 import io.github.mystievous.towerchallenge.gods.GodManager;
@@ -28,6 +29,7 @@ import io.github.mystievous.towerchallenge.timer.TowerTimer;
 import io.github.mystievous.towerchallenge.towering.ChatHandler;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Entity;
@@ -39,6 +41,10 @@ public final class TowerChallenge extends JavaPlugin {
     //124f49
 
     public static final String MCTC_NAMESPACE = "mctc";
+
+    public static Key key(String value) {
+        return Key.key(MCTC_NAMESPACE, value);
+    }
 
     private static TowerChallenge me;
 
@@ -86,6 +92,7 @@ public final class TowerChallenge extends JavaPlugin {
         new SelectionHandler(this, database);
         new IceCream(this);
         new Gallery(this);
+        new Posters(teamManager);
 
         NPC seat = new NPC(teamManager, "Seat", "seat");
         seat.setDefaultHandler(event -> Bukkit.getScheduler().runTask(this, () -> {

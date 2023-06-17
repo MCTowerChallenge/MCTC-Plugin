@@ -119,7 +119,9 @@ public class GalleryTarget implements Listener {
         tasks.clear();
         if (target != null && active) {
             EntityUtil.raiseEntity(plugin, target, -1, 0.25, 8, () -> {
-                target.remove();
+                if (target != null) {
+                    target.remove();
+                }
                 target = null;
                 hit = false;
                 positive = true;

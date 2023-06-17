@@ -63,6 +63,9 @@ public class Worlds {
     public static World Jun2023_quest() {
         return Bukkit.getWorld("Jun2023_quest");
     }
+    public static World Jun2023_the_end() {
+        return Bukkit.getWorld("Jun2023_the_end");
+    }
 
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
@@ -73,14 +76,14 @@ public class Worlds {
 //    }
 
     public static World WORLD() {
-        return Apr2023();
+        return Jun2023();
     }
 
     public static World NETHER() {
-        return Apr2023_nether();
+        return Jun2023_nether();
     }
 
     public static World THE_END() {
-        return Apr2023_the_end();
+        return Jun2023_the_end();
     }
 }

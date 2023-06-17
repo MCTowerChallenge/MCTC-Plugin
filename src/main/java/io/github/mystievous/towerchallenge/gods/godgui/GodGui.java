@@ -13,6 +13,7 @@ import io.github.mystievous.towerchallenge.gods.GodManager;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
+import io.github.mystievous.towerchallenge.quests.Quest;
 import io.github.mystievous.towerchallenge.quests.QuestManager;
 import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
@@ -20,6 +21,7 @@ import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import io.github.mystievous.towerchallenge.teleports.TeleportHistoryManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
@@ -34,6 +36,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -253,11 +256,93 @@ public class GodGui extends PresetGui implements Openable {
             so that gods can give them if a team loses them
             or it bugs.
          */
-        ItemStack questBook = questManager.getQuestBook().getItem();
-        ButtonElement questItems = new ButtonElement(questBook, player -> questManager.getQuestItems().getGui(player).openInventory(player));
+        ItemStack questBook = GuiUtil.formatItem("Quest Manager", Material.BOOK, 2);
+        ButtonElement questButton = new ButtonElement(questBook, player -> {
+            PresetGui questGui = new PresetGui(plugin, Component.text("Quest Manager"), 3);
 
-        ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
-        ButtonElement questUtil = new ButtonElement(totem, player -> questManager.getJun2023QuestManager().getGui(player).openInventory(player));
+            ItemStack questItemsIcon = GuiUtil.formatItem("Quest Items", Material.PAPER, 6);
+            ButtonElement questItems = new ButtonElement(questItemsIcon, player1 -> questManager.getQuestItems().getGui(player).openInventory(player));
+            questGui.placeElement(2, 2, questItems);
+
+            ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
+            ButtonElement questUtil = new ButtonElement(totem, player1 -> questManager.getJun2023QuestManager().getGui(player).openInventory(player));
+            questGui.placeElement(2, 4, questUtil);
+
+            ItemStack writableBook = GuiUtil.formatItem("Set Team Quest", Material.WRITABLE_BOOK, 0);
+            ButtonElement setQuest = new ButtonElement(writableBook, player1 -> {
+                new TeamGui(plugin, Component.text("Select team to set the quest of:"), team -> {
+                    Quest currentQuest = questManager.getQuest(team, team.getCurrentQuestTag());
+                    if (currentQuest != null) {
+                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
+                    } else {
+                        return TextUtil.formatTexts("Current: None");
+                    }
+                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
+                    new TargetListGui<>(plugin, Component.text("Select a quest to set for " + selectedTeam.getTextName() + ":"), quest -> {
+                        ItemStack item = GuiUtil.formatItem(quest.getFriendlyName(), Material.WRITABLE_BOOK, 0);
+                        ItemMeta meta = item.getItemMeta();
+                        meta.lore(TextUtil.formatTexts(quest.getId()));
+                        item.setItemMeta(meta);
+                        return item;
+                    }, questManager.getQuests().values().stream().toList(), (questClickPlayer, questClicked) -> {
+                        questManager.setTeamQuest(selectedTeam, questClicked.getId());
+                    }, new ButtonElement(Icons.backItem())).openInventory(clickingPlayer);
+                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
+            });
+            questGui.placeElement(1, 6, setQuest);
+
+            ItemStack questBook2 = GuiUtil.formatItem("See Team Quest", Material.BOOK, 2);
+            ButtonElement getQuest = new ButtonElement(questBook2, player1 -> {
+                new TeamGui(plugin, Component.text("Select team to get the quest of:"), team -> {
+                    Quest currentQuest = questManager.getQuest(team, team.getCurrentQuestTag());
+                    if (currentQuest != null) {
+                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
+                    } else {
+                        return TextUtil.formatTexts("Current: None");
+                    }
+                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
+                    Quest quest = questManager.getQuest(selectedTeam, questManager.getTeamQuest(selectedTeam));
+                    if (quest != null) {
+                        quest.getGui(clickingPlayer).openInventory(clickingPlayer);
+                    }
+                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
+            });
+            questGui.placeElement(3, 6, getQuest);
+
+            ItemStack strider = GuiUtil.formatItem("Reset Dave", Material.STRIDER_SPAWN_EGG, 0);
+            ButtonElement resetDave = new ButtonElement(strider, player1 -> questManager.teleportDaveStage());
+            questGui.placeElement(1, 8, resetDave);
+
+            ItemStack eventStart = GuiUtil.formatItem("Start Event", Material.REINFORCED_DEEPSLATE, 0);
+            ButtonElement eventStartElement = new ButtonElement(eventStart, player1 -> {
+                new ConfirmationGUI(plugin, Component.text("!!! Confirm STARTING THE EVENT !!!").color(NamedTextColor.RED), player2 -> {
+                    questManager.triggerStart();
+                }, player2 -> {
+                    questGui.openInventory(player2);
+                }).openInventory(player1);
+            });
+
+            questGui.placeElement(1, 9, eventStartElement);
+
+            ItemStack strider2 = GuiUtil.formatItem("Taco Dave", Material.STRIDER_SPAWN_EGG, 0);
+            ButtonElement tacoDave = new ButtonElement(strider2, player1 -> questManager.teleportDaveTacos());
+            questGui.placeElement(3, 8, tacoDave);
+
+            ItemStack endIntermission = GuiUtil.formatItem("End Intermission", Material.BEDROCK, 0);
+            ButtonElement endIntermissionElement = new ButtonElement(endIntermission, player1 -> {
+                new ConfirmationGUI(plugin, Component.text("!!! Confirm ENDING INTERMISSION !!!").color(NamedTextColor.RED), player2 -> {
+                    questManager.triggerIntermission();
+                }, player2 -> {
+                    questGui.openInventory(player2);
+                }).openInventory(player1);
+            });
+
+            questGui.placeElement(3, 9,endIntermissionElement);
+
+            questGui.openInventory(player);
+        });
+
+//        ItemStack clock = GuiUtil.formatItem("Timer Controls", Material.CLOCK, )
 
         /*
             Button to trigger the intermission sequence.
@@ -298,7 +383,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(3, 3, Icons.blankSlot);
         placeElement(3, 4, netherPortal);
         placeElement(3, 5, Icons.blankSlot);
-        placeElement(3, 6, questItems);
+        placeElement(3, 6, questButton);
         placeElement(3, 7, Icons.blankSlot);
         placeElement(3, 8, hatElement);
         placeElement(3, 9, Icons.blankSlot);
@@ -318,7 +403,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endPortal);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, questUtil);
+        placeElement(5, 6, Icons.blankSlot);
         placeElement(5, 7, Icons.blankSlot);
         try {
             /*

@@ -124,8 +124,10 @@ public class ArmorTrimsGui implements Openable {
                                 }
                             }));
                         }
+                        giveGui.openInventory(player2);
                     }));
                 }
+                armorGui.openInventory(player1);
             }));
         }
         return listGui;

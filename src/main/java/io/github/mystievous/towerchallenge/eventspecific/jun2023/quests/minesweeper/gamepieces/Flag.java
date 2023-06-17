@@ -3,16 +3,33 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.mineswe
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+import java.util.HashSet;
 
 public class Flag {
 
     public static ItemStack makeItemFlag(Plugin plugin, ItemStack itemStack) {
-        return NBTUtils.setBool(plugin, Flag.FLAG_TAG, itemStack);
+        ItemMeta meta = makeItemFlag(plugin, itemStack.getItemMeta());
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    public static ItemMeta makeItemFlag(Plugin plugin, ItemMeta meta) {
+        meta.setPlaceableKeys(new HashSet<>(){{
+            add(NamespacedKey.minecraft("suspicious_sand"));
+            add(NamespacedKey.minecraft("suspicious_gravel"));
+        }});
+        meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+        NBTUtils.setBool(plugin, Flag.FLAG_TAG, meta, true);
+        return meta;
     }
 
     public static final String FLAG_TAG = "flag";

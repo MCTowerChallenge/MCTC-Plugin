@@ -89,9 +89,12 @@ public class GamePiece {
         return flag != null;
     }
 
-    public void placeFlag(ItemStack itemStack) {
+    public boolean placeFlag(ItemStack itemStack) {
         if (flag == null && !swept) {
             flag = new Flag(plugin, mineHandler, itemStack, location);
+            return true;
+        } else {
+            return false;
         }
     }
 

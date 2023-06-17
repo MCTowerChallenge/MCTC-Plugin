@@ -15,10 +15,12 @@ import io.github.mystievous.towerchallenge.gods.GodTeam;
 import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.utility.TeamUtils;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Brushable;
 import org.bukkit.entity.Entity;
@@ -30,6 +32,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -202,9 +205,10 @@ public class MineHandler implements Listener {
     }
 
     public void completeRoom() {
-        completed = true;
-        door.open(null);
-        //            SoundUtil.successNoise(Bukkit.getServer(), location);
+        if (!completed) {
+            completed = true;
+            door.open(null);
+        }
     }
 
     @EventHandler
@@ -242,33 +246,15 @@ public class MineHandler implements Listener {
             GamePiece gamePiece = vectorToGamePiece(block.getLocation().toVector());
             if (gamePiece != null) {
                 if (NBTUtils.boolState(plugin, Flag.FLAG_TAG, item)) {
-                    gamePiece.placeFlag(item);
-                    event.getPlayer().sendActionBar(TextUtil.formatText("Placed Flag"));
+                    if (gamePiece.placeFlag(item)) {
+                        event.getPlayer().sendActionBar(TextUtil.formatText("Placed Flag"));
+                    }
                     checkComplete();
                 } else if (gamePiece.isSwept() && item.getType().equals(Material.BRUSH)) {
                     clearSweep(gamePiece);
                     checkComplete();
                 }
             }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerInteractAtEntity(final PlayerInteractAtEntityEvent event) {
-        Entity entity = event.getRightClicked();
-        Player player = event.getPlayer();
-        if (entity.getScoreboardTags().contains(FLAG_TAG)) {
-            ItemStack flag = GuiUtil.formatItem("Flag", Material.SCUTE, 38);
-            Flag.makeItemFlag(plugin, flag);
-            FullInventory.givePlayerItems(player, flag);
-        }
-        if (entity.getScoreboardTags().contains(BRUSH_TAG) && (!brushPlayers.contains(player.getUniqueId()) || teamManager.getPlayerTeam(player) instanceof GodTeam)) {
-            ItemStack brush = new ItemStack(Material.BRUSH);
-            ItemMeta meta = brush.getItemMeta();
-            meta.setUnbreakable(true);
-            brush.setItemMeta(meta);
-            FullInventory.givePlayerItems(player, brush);
-            brushPlayers.add(player.getUniqueId());
         }
     }
 

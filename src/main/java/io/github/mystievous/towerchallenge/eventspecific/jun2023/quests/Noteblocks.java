@@ -44,11 +44,11 @@ public class Noteblocks implements Listener {
     }};
 
     private final Plugin plugin;
-    private final QuestInstance instance;
+    private final Jun2023QuestInstance instance;
 
     private final Door door;
 
-    public Noteblocks(Plugin plugin, QuestInstance instance) {
+    public Noteblocks(Plugin plugin, Jun2023QuestInstance instance) {
 
         this.plugin = plugin;
         this.instance = instance;
@@ -84,6 +84,7 @@ public class Noteblocks implements Listener {
     public void openDoor() {
         if (!door.isOpen()) {
             door.open(null);
+            instance.resetSimonSays();
         }
     }
 

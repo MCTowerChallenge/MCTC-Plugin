@@ -1,6 +1,5 @@
 package io.github.mystievous.towerchallenge.quests.npcs;
 
-import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
 import net.kyori.adventure.audience.Audience;
@@ -29,7 +28,6 @@ public class Dialogue {
         return displayDialogues;
     }
 
-    private final TeamManager teamManager;
     private String friendlyName;
     private Dialogue next;
     private final Component message;
@@ -41,16 +39,14 @@ public class Dialogue {
      * <p></p>
      * To add to a dialogue sequence, use {@link #setNext(Dialogue)}.
      *
-     * @param teamManager Current instance of {@link TeamManager}.
-     * @param message     {@link Component} to put in chat for this dialogue.
-     * @param delay       The delay, in seconds, to wait after the start of
-     *                    this dialogue, before playing the next one.
+     * @param message {@link Component} to put in chat for this dialogue.
+     * @param delay   The delay, in seconds, to wait after the start of
+     *                this dialogue, before playing the next one.
      * @see #setSound(Sound)
      * @see #setSoundKey(Key)
      * @see #setNext(Dialogue)
      */
-    public Dialogue(TeamManager teamManager, Component message, double delay) {
-        this.teamManager = teamManager;
+    public Dialogue(Component message, double delay) {
         this.message = message;
         this.delay = (long) (delay * 20L);
     }
@@ -63,16 +59,15 @@ public class Dialogue {
      * <p></p>
      * To add to a dialogue sequence, use {@link #setNext(Dialogue)}.
      *
-     * @param teamManager Current instance of {@link TeamManager}.
-     * @param message     {@link Component} to put in chat for this dialogue.
-     * @param delay       The delay, in seconds, to wait after the start of
-     *                    this dialogue, before playing the next one.
+     * @param message {@link Component} to put in chat for this dialogue.
+     * @param delay   The delay, in seconds, to wait after the start of
+     *                this dialogue, before playing the next one.
      * @see #setSound(Sound)
      * @see #setSoundKey(Key)
      * @see #setNext(Dialogue)
      */
-    public Dialogue(TeamManager teamManager, double delay) {
-        this(teamManager, null, delay);
+    public Dialogue(double delay) {
+        this(null, delay);
     }
 
     /**
@@ -84,7 +79,6 @@ public class Dialogue {
      * @see #setNext(Dialogue)
      */
     public Dialogue(Dialogue dialogue) {
-        this.teamManager = dialogue.teamManager;
         this.friendlyName = dialogue.friendlyName;
         this.next = dialogue.next;
         this.message = dialogue.message;
@@ -138,9 +132,11 @@ public class Dialogue {
      * default pitch, on {@link Sound.Source#RECORD}
      *
      * @param soundKey The sound key
+     * @return This same dialogue.
      */
-    public void setSoundKey(Key soundKey) {
+    public Dialogue setSoundKey(Key soundKey) {
         this.sound = Sound.sound(soundKey, Sound.Source.RECORD, 1f, 1f);
+        return this;
     }
 
     /**

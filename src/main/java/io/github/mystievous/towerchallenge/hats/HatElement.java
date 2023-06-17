@@ -72,7 +72,8 @@ public class HatElement extends ButtonElement {
                 lore.add(TextUtil.formatText("Handheld").decoration(TextDecoration.ITALIC, true));
             }
             if (handheld && material.equals(Material.SCUTE)) {
-                NBTUtils.setBool(plugin, Flag.FLAG_TAG, meta, true);
+//                NBTUtils.setBool(plugin, Flag.FLAG_TAG, meta, true);
+                Flag.makeItemFlag(plugin, meta);
             }
             meta.lore(lore);
             if (color != null && meta instanceof LeatherArmorMeta leatherArmorMeta) {

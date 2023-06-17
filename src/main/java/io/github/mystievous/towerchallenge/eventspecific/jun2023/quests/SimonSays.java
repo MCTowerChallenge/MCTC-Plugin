@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.GalleryTarget;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
 import io.github.mystievous.towerchallenge.quests.instances.QuestInstance;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -164,6 +165,8 @@ public class SimonSays implements Listener {
 
     public void completeRoom() {
         complete = true;
+
+        instance.resetMineSweeper();
 
         door.open(null);
 

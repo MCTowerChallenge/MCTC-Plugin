@@ -11,6 +11,7 @@ import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -123,6 +124,10 @@ public class NPC implements Listener {
         allowedRegions.add(regex);
     }
 
+    protected TeamManager getTeamManager() {
+        return teamManager;
+    }
+
     public Component getName() {
         return Component.text(name).color(nameColor.toTextColor());
     }
@@ -182,6 +187,12 @@ public class NPC implements Listener {
      */
     public Component formatMessage(String text) {
         return formatMessage(Component.text(text));
+    }
+
+    public Component actionMessage(String text) {
+        return Component.text("* ")
+                .append(getName()).append(Component.space())
+                .append(Component.text(text)).color(textColor.toTextColor());
     }
 
     /**
@@ -279,6 +290,20 @@ public class NPC implements Listener {
 
         if (hasTag(entity) && target instanceof HumanEntity) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityMove(final EntityMoveEvent event) {
+        if (event.isCancelled())
+            return;
+
+        Entity entity = event.getEntity();
+
+        if (hasTag(entity)) {
+            Location from = event.getFrom();
+            Location to = event.getTo();
+            event.setTo(from.setDirection(to.getDirection()));
         }
     }
 
