@@ -293,18 +293,18 @@ public class NPC implements Listener {
         }
     }
 
-    @EventHandler
-    public void onEntityMove(final EntityMoveEvent event) {
-        if (event.isCancelled())
-            return;
-
-        Entity entity = event.getEntity();
-
-        if (hasTag(entity)) {
-            Location from = event.getFrom();
-            Location to = event.getTo();
-            event.setTo(from.setDirection(to.getDirection()));
-        }
-    }
+//    @EventHandler
+//    public void onEntityMove(final EntityMoveEvent event) {
+//        if (event.isCancelled())
+//            return;
+//
+//        Entity entity = event.getEntity();
+//
+//        if (hasTag(entity)) {
+//            Location from = event.getFrom();
+//            Location to = event.getTo();
+//            event.setTo(from.setDirection(to.getDirection()));
+//        }
+//    }
 
 }

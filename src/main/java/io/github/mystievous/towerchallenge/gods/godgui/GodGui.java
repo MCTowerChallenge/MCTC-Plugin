@@ -221,28 +221,9 @@ public class GodGui extends PresetGui implements Openable {
         addPlayerMeta.displayName(TextUtil.noItalic("Add Player to Team"));
         addPlayerMeta.setCustomModelData(3);
         addPlayerItem.setItemMeta(addPlayerMeta);
-        TeamGui addPlayerGui = new TeamGui(
-                plugin,
-                Component.text("Team to add Player to:"),
-                team -> new ArrayList<>(),
-                teamManager.getAllTeams(),
-                (player, participantTeam) -> new PlayerGui(plugin, Component.text("Pick player to add:"),
-                        offlinePlayer -> TextUtil.formatTexts(Component.empty()), Arrays.stream(Bukkit.getOfflinePlayers()).toList(),
-                        (playerClicking, playerSelected) -> {
-                            if (teamManager.setPlayerTeam(playerSelected, participantTeam)) {
-                                assert playerSelected.getName() != null;
-                                playerClicking.sendMessage(Component.text(playerSelected.getName()).append(Component.text(" set to team ")).append(participantTeam.getDisplayName()));
-                                Bukkit.getScheduler().runTaskAsynchronously(plugin, teamManager::loadPlayers);
-                            } else {
-                                playerClicking.sendMessage(CommandUtils.errorMessage(Component.text("Could not set ")
-                                        .append(Component.text(playerSelected.getName())).append(Component.text(" to team "))
-                                        .append(participantTeam.getDisplayName())));
-                            }
-                            this.openInventory(playerClicking);
-                        },
-                        new ButtonElement(Icons.exitItem(), this::openInventory)).openInventory(player),
-                new ButtonElement(Icons.exitItem(), this::openInventory));
-        ButtonElement addPlayerElement = new ButtonElement(addPlayerItem, addPlayerGui::openInventory);
+        ButtonElement addPlayerElement = new ButtonElement(addPlayerItem, player -> {
+            new SetTeamGui(plugin, teamManager, Arrays.stream(Bukkit.getOfflinePlayers()).toList(), this).openInventory(player);
+        });
 
 //        ButtonElement evilTower = new ButtonElement(new ItemStack(Material.PAPER) {{
 //            ItemMeta meta = getItemMeta();
