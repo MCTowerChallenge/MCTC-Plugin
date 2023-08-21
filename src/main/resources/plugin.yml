@@ -1,7 +1,7 @@
 name: TowerChallenge
 version: '${project.version}'
 main: io.github.mystievous.towerchallenge.TowerChallenge
-api-version: 1.19
+api-version: 1.20
 prefix: TowerChallenge
 depend:
   - WorldEdit
@@ -13,8 +13,6 @@ depend:
   - MystiGui
   - Mystimer
   - Citizens
-libraries:
-  -
 commands:
   tower:
     description: Commands relating to the towers
@@ -38,10 +36,6 @@ commands:
     usage: /questbook
     aliases:
       - qb
-  god:
-    description: Toggles player invulnerability
-    usage: /god
-    permission: towerchallenge.god
   broadcast:
     description: Broadcasts a message to all players
     usage: /broadcast

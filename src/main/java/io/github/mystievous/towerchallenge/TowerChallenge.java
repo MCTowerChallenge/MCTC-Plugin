@@ -156,9 +156,6 @@ public final class TowerChallenge extends JavaPlugin {
 //        getServer().getPluginManager().registerEvents(wandListener, this);
 
         // Other
-        GodCommand godCommand = new GodCommand();
-        this.getCommand("god").setExecutor(godCommand);
-
         ResourcePack resourcePack = new ResourcePack();
         this.getCommand("resourcepack").setExecutor(resourcePack);
         new ResourcePackListener(challengeManager);
