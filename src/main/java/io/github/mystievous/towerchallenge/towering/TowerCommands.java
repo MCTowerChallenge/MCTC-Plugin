@@ -1,19 +1,18 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.quests.QuestGui;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.portal.EndPortal;
+import io.github.mystievous.towerchallenge.portal.PortalControllers;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.utils.BlockVoucher;
+import io.github.mystievous.towerchallenge.quest.util.BlockVoucher;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -24,21 +23,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Base64;
 
 public class TowerCommands implements CommandExecutor {
 
     public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
 
-    private final TowerChallenge plugin;
     private final ChallengeManager challengeManager;
     private final TeamManager teamManager;
+    private final EndPortal endPortal;
 
-    public TowerCommands(TowerChallenge plugin, ChallengeManager challengeManager, TeamManager teamManager) {
-        this.plugin = plugin;
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
+        this.endPortal = portalControllers.getEndPortal();
     }
 
     @Override
@@ -155,7 +153,7 @@ public class TowerCommands implements CommandExecutor {
                         teamManager.loadTeams();
                         teamManager.loadPlayers();
                     }
-                    case ("resetendportal") -> teamManager.resetEndPortal(); // resets the end portal to empty
+                    case ("resetendportal") -> endPortal.resetPortal(); // resets the end portal to empty
                     case ("showtowerscores") -> teamManager.showTowerScores(sender); // displays the tower scores to the command sender
                     case ("dealitems") -> { // deals items to all players, or the specified player.
                         if (args.length < 2) {

@@ -5,30 +5,6 @@ import org.bukkit.World;
 
 public class Worlds {
 
-//    public static World Oct2022() {
-//        return Bukkit.getWorld("Oct2022");
-//    }
-//    public static World Oct2022_nether() {
-//        return Bukkit.getWorld("Oct2022_nether");
-//    }
-
-//    public static World Dec2022() {
-//        return Bukkit.getWorld("Dec2022");
-//    }
-
-//    public static World Feb2023() {
-//        return Bukkit.getWorld("Feb2023");
-//    }
-//    public static World Feb2023_nether() {
-//        return Bukkit.getWorld("Feb2023_nether");
-//    }
-//    public static World Feb2023_the_end() {
-//        return Bukkit.getWorld("Feb2023_the_end");
-//    }
-//    public static World Feb2023_tower() {
-//        return Bukkit.getWorld("Feb2023_tower");
-//    }
-
     public static World Apr2023() {
         return Bukkit.getWorld("Apr2023");
     }
@@ -67,13 +43,17 @@ public class Worlds {
         return Bukkit.getWorld("Jun2023_the_end");
     }
 
+    public static World Oct2023() {
+        return Bukkit.getWorld("Oct2023");
+    }
+
+    public static World Oct2023_nether() {
+        return Bukkit.getWorld("Oct2023_nether");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }
-
-//    public static World eviltowers() {
-//        return Bukkit.getWorld("eviltowers");
-//    }
 
     public static World WORLD() {
         return Jun2023();

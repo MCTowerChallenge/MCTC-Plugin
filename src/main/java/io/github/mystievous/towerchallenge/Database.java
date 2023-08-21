@@ -9,11 +9,11 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.towerchallenge.configs.DatabaseConfig;
 import io.github.mystievous.towerchallenge.decoration.ModelElement;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.god.GodTeam;
 import io.github.mystievous.towerchallenge.hats.HatElement;
-import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.WorldNotStoredException;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -38,12 +38,23 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Manages database operations for the plugin.
+ * Handles interactions with the database for various functionalities.
+ */
 public class Database {
 
     private final TowerChallenge plugin;
     private final DatabaseConfig config;
     private DataSource dataSource;
 
+    /**
+     * Constructs a new Database instance.
+     * Initializes the database connection using the provided configuration.
+     *
+     * @param plugin         The main plugin instance.
+     * @param databaseConfig The database configuration.
+     */
     public Database(TowerChallenge plugin, DatabaseConfig databaseConfig) {
         this.plugin = plugin;
         this.config = databaseConfig;
@@ -59,6 +70,12 @@ public class Database {
         }
     }
 
+    /**
+     * Tests if the provided data source is valid by establishing a connection.
+     *
+     * @param dataSource The data source to test.
+     * @throws SQLException If the connection cannot be established.
+     */
     private void testDataSource(DataSource dataSource) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             if (!conn.isValid(1)) {
@@ -67,6 +84,13 @@ public class Database {
         }
     }
 
+    /**
+     * Initializes a MySQL data source using the database configuration.
+     *
+     * @return The initialized data source.
+     * @throws SQLException                  If there's an issue with the SQL connection.
+     * @throws InvalidConfigurationException If the configuration is invalid.
+     */
     private DataSource initMySQLDataSource() throws SQLException, InvalidConfigurationException {
         MysqlDataSource dataSource = new MysqlConnectionPoolDataSource();
         String host = config.getHost();
@@ -321,7 +345,7 @@ public class Database {
     }
 
     /**
-     * Unloads all portal frame borders
+     * Unloads all portal frame borders from the world.
      */
     public static void unloadPortalBorders() {
         CommandSender sender = Bukkit.createCommandSender(component -> {
@@ -392,12 +416,12 @@ public class Database {
     }
 
     /**
-     * Creates or updates a team's end portal frame location.
+     * Creates or updates a team's end portal frame location in the database.
      *
      * @param team     The team to update.
      * @param location The new location to set it to.
      * @param facing   The direction the block is facing.
-     * @return the number of rows updated.
+     * @return The number of rows updated.
      */
     public int upsertPortalFrame(ParticipantTeam team, Location location, BlockFace facing) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -422,8 +446,7 @@ public class Database {
     }
 
     /**
-     * Gets the number of remaining
-     * unfilled portal frames.
+     * Gets the number of remaining unfilled portal frames.
      *
      * @return The number of frames.
      */
@@ -446,7 +469,7 @@ public class Database {
     }
 
     /**
-     * Sets the current quest for a team.
+     * Sets the current quest for a team in the database.
      *
      * @param team The team to set.
      * @param tag  The quest to set the team to.
@@ -467,8 +490,7 @@ public class Database {
     }
 
     /**
-     * Gets the value of an objective
-     * for the given team.
+     * Gets the value of an objective for the given team.
      *
      * @param team The team to select.
      * @param tag  The quest TAG.
@@ -496,40 +518,10 @@ public class Database {
     }
 
     /**
-     * Gets the value of all objectives
-     * for the team of the given quest.
-     *
-     * @param team The team.
-     * @param tag  The quest TAG.
-     * @return The objectives and values.
-     */
-    public Map<String, Integer> getObjectives(TowerTeam team, String tag) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        SELECT objectives.name, value FROM objectives
-                        WHERE objectives.team_id = ? AND
-                            objectives.quest_tag_id = (SELECT id FROM tags WHERE tags.name = ?);
-                        """
-        )) {
-            statement.setInt(1, team.getDatabaseId());
-            statement.setString(2, tag);
-            ResultSet resultSet = statement.executeQuery();
-            Map<String, Integer> objectives = new HashMap<>();
-            while (resultSet.next()) {
-                String name = resultSet.getString("name");
-                int value = resultSet.getInt("value");
-                objectives.put(name, value);
-            }
-            return objectives;
-        }
-    }
-
-    /**
-     * Adds the given value
-     * to the objective.
+     * Adds the given value to the objective for a team.
      *
      * @param team  The team to add to.
-     * @param tag   The quest TAG.
+     * @param tag   The quest tag.
      * @param name  The objective name.
      * @param value The value to add.
      */
@@ -550,33 +542,12 @@ public class Database {
     }
 
     /**
-     * Sets the value of the
-     * given team for the
-     * objective.
+     * Checks whether an item is collected for a team.
      *
-     * @param team  The team.
-     * @param tag   The quest TAG.
-     * @param name  The objective name.
-     * @param value The value to set.
-     */
-    public void setObjectiveScore(TowerTeam team, String tag, String name, int value) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        INSERT INTO objectives (team_id, quest_tag_id, name, value)
-                        VALUES (?, (SELECT id FROM tags WHERE tags.name = ?), ?, ?)
-                        ON DUPLICATE KEY UPDATE value = VALUES(value);
-                        """
-        )) {
-            statement.setInt(1, team.getDatabaseId());
-            statement.setString(2, tag);
-            statement.setString(3, name);
-            statement.setInt(4, value);
-            statement.executeUpdate();
-        }
-    }
-
-    /**
-     * @see #getObjective(TowerTeam, String, String)
+     * @param team The team to check for.
+     * @param tag  The quest TAG.
+     * @param uuid The item UUID.
+     * @return True if the item is collected, false otherwise.
      */
     @Deprecated
     public boolean isItemCollected(TowerTeam team, String tag, String uuid) throws SQLException {
@@ -600,7 +571,13 @@ public class Database {
     }
 
     /**
-     * @see #setObjectiveScore(TowerTeam, String, String, int)
+     * Sets the collected state of an item for a team.
+     *
+     * @param team      The team to set for.
+     * @param tag       The quest TAG.
+     * @param uuid      The item UUID.
+     * @param collected The collected state.
+     * @return True if the update was successful, false otherwise.
      */
     @Deprecated
     public boolean setItemCollected(TowerTeam team, String tag, String uuid, boolean collected) throws SQLException {
@@ -620,34 +597,9 @@ public class Database {
     }
 
     /**
-     * Gets the team id that a
-     * player belongs to.
+     * Sets a team as the winners, granting access to the crown.
      *
-     * @param uuid the player's {@link UUID}
-     * @return the id of the team.
-     */
-    public @Nullable Integer getPlayerTeamId(@NotNull UUID uuid) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                "SELECT team_id FROM users WHERE users.uuid = ?"
-        )) {
-            statement.setString(1, uuid.toString());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                int teamId = resultSet.getInt("team_id");
-                if (!resultSet.wasNull()) {
-                    return teamId;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Sets a team as the winners,
-     * giving its players access
-     * to the crown.
-     *
-     * @param team The team to set.
+     * @param team The team to set as winners.
      */
     public void updateWinningTeam(@NotNull TowerTeam team) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement clearWinnersStatement = conn.prepareStatement(
@@ -664,7 +616,7 @@ public class Database {
         )) {
             clearWinnersStatement.executeUpdate();
             ItemStack hat = getHat(16).getItem();
-            for (OfflinePlayer player : team.getPlayers()) {
+            for (OfflinePlayer player : team.getOfflinePlayers()) {
                 String userId = player.getUniqueId().toString();
                 addWinnersStatement.setString(1, userId);
                 Player onlinePlayer = player.getPlayer();
@@ -693,7 +645,7 @@ public class Database {
                         VALUES (?, ?)
                         """
         )) {
-            for (OfflinePlayer player : team.getPlayers()) {
+            for (OfflinePlayer player : team.getOfflinePlayers()) {
                 if (player.isOnline() || player.hasPlayedBefore()) {
                     String userId = player.getUniqueId().toString();
 //                    Bukkit.getLogger().info(String.format("Giving hatgroup %d to user %s", hatGroupId, userId));
@@ -830,7 +782,7 @@ public class Database {
             return null;
         }
     }
-    
+
     /**
      * Gets all hats for the given player.
      *
@@ -859,12 +811,12 @@ public class Database {
     }
 
     /**
-     * Sets the pride flag associated with the player
+     * Sets the pride flag associated with the player.
      *
      * @param uuid   The player's uuid.
      * @param flagId The database id of the flag.
-     * @return The flag id of the player after the update.
-     * @throws SQLException if there's an sql error.
+     * @return The updated flag id of the player.
+     * @throws SQLException if there's an SQL error.
      */
     public int setPlayerFlag(@NotNull UUID uuid, int flagId) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement update = conn.prepareStatement(
@@ -881,6 +833,13 @@ public class Database {
         }
     }
 
+    /**
+     * Gets the pride flag associated with the player.
+     *
+     * @param uuid The player's uuid.
+     * @return The flag id of the player.
+     * @throws SQLException if there's an SQL error.
+     */
     public int getPlayerFlag(@NotNull UUID uuid) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement select = conn.prepareStatement(
                 """
@@ -899,12 +858,18 @@ public class Database {
         }
     }
 
+    /**
+     * Gets the pride flags of all players.
+     *
+     * @return A map of player UUIDs to their flag ids.
+     * @throws SQLException if there's an SQL error.
+     */
     public Map<UUID, Integer> getAllPlayerFlags() throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-            """
-                SELECT users.uuid, users.flag_id
-                FROM users
                 """
+                        SELECT users.uuid, users.flag_id
+                        FROM users
+                        """
         )) {
             ResultSet resultSet = statement.executeQuery();
             Map<UUID, Integer> selections = new HashMap<>();
@@ -918,11 +883,11 @@ public class Database {
     }
 
     /**
-     * Grabs the modelgroups from the database
+     * Retrieves model groups from the database.
      *
-     * @return A list of elements leading to the model groups
-     * @throws SQLException             If there is an error interacting with the database
-     * @throws IllegalArgumentException If the material name is invalid
+     * @return A list of elements representing the model groups.
+     * @throws SQLException             If there's an error interacting with the database.
+     * @throws IllegalArgumentException If the material name is invalid.
      */
     public List<Element> getModelGroups() throws SQLException, IllegalArgumentException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement modelGroups = conn.prepareStatement(
@@ -975,14 +940,13 @@ public class Database {
     }
 
     /**
-     * Turns the properites into
-     * the proper element for
-     * the model.
+     * Retrieves the model element for a specific model from the database.
      *
      * @param databaseId The database ID of the model.
      * @param showAuthor Whether the author of the model should be shown.
-     * @param debug      Whether to show the material and custom model ID.
+     * @param debug      Whether to show material and custom model ID.
      * @return The element for the model.
+     * @throws SQLException If there's an SQL error.
      */
     public ButtonElement getModel(int databaseId, boolean showAuthor, boolean debug) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -1011,11 +975,12 @@ public class Database {
     }
 
     /**
-     * Get the model ID for a specific custom model.
+     * Retrieves the model ID for a specific custom model.
      *
      * @param material        The material of the model.
      * @param customModelData The custom model id of the model.
-     * @return The database id for the model.
+     * @return The database ID for the model.
+     * @throws SQLException if there's an SQL error.
      */
     public @Nullable Integer getModelId(@NotNull Material material, int customModelData) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -1036,24 +1001,23 @@ public class Database {
     }
 
     /**
-     * Get the model id for the
-     * given item stack.
+     * Retrieves the model ID for the given item stack.
      *
      * @param itemStack The item stack to query.
-     * @return The id in the database.
+     * @return The database ID of the model.
+     * @throws SQLException if there's an SQL error.
      */
     public @Nullable Integer getModelId(ItemStack itemStack) throws SQLException {
         return getModelId(itemStack.getType(), itemStack.getItemMeta().getCustomModelData());
     }
 
     /**
-     * Gets the database id of the
-     * given world.
+     * Gets the database ID of the given world.
      *
-     * @param name the name of the world.
-     * @return The database id.
-     * @throws WorldNotStoredException if the world is not
-     *                                 in the database.
+     * @param name The name of the world.
+     * @return The database ID.
+     * @throws WorldNotStoredException If the world is not in the database.
+     * @throws SQLException            If there's an SQL error.
      */
     public Integer getWorldId(String name) throws SQLException, WorldNotStoredException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -1072,11 +1036,11 @@ public class Database {
     }
 
     /**
-     * Adds a waterdrip to the world.
+     * Adds a waterdrip to the world in the database.
      *
-     * @param location The location to put it at.
-     * @throws WorldNotStoredException if the world is not
-     *                                 in the database.
+     * @param location The location to add the waterdrip at.
+     * @throws WorldNotStoredException If the world is not in the database.
+     * @throws SQLException            If there's an SQL error.
      */
     public void addWaterDrip(Location location) throws SQLException, WorldNotStoredException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -1094,12 +1058,12 @@ public class Database {
     }
 
     /**
-     * Removes a waterdrip from the world.
+     * Removes a waterdrip from the world in the database.
      *
-     * @param location The location it is at.
-     * @return whether it was sucessful.
-     * @throws WorldNotStoredException if the world is not
-     *                                 in the database.
+     * @param location The location of the waterdrip to remove.
+     * @return True if the removal was successful, false otherwise.
+     * @throws WorldNotStoredException If the world is not in the database.
+     * @throws SQLException            If there's an SQL error.
      */
     public boolean removeWaterDrip(Location location) throws SQLException, WorldNotStoredException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
@@ -1117,11 +1081,10 @@ public class Database {
     }
 
     /**
-     * Gets all water drips from the
-     * database.
+     * Gets all water drips from the database.
      *
-     * @return The list of locations for
-     * water drips.
+     * @return The collection of locations for water drips.
+     * @throws SQLException If there's an SQL error.
      */
     public Collection<Location> getWaterDrips() throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(

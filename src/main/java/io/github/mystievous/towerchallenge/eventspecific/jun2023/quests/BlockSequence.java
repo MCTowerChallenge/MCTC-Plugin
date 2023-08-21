@@ -1,8 +1,6 @@
 package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
-import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
@@ -12,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A sequence of blocks, for "animation",
- * or redstone contraptions.
+ * Represents a sequence of blocks used for animations or redstone contraptions.
  */
 public class BlockSequence {
 
@@ -22,10 +19,9 @@ public class BlockSequence {
     private final Map<Location, BlockData> blocks;
 
     /**
-     * Creates a new block sequence stage.
+     * Creates a new block sequence stage with the specified delay and blocks.
      *
-     * @param delay  The time in ticks to wait *after*
-     *               this stage to play the next one.
+     * @param delay  The time in ticks to wait *after* this stage to play the next one.
      * @param blocks The blocks to use in this stage.
      * @see #putBlock(Location, BlockData)
      */
@@ -35,16 +31,20 @@ public class BlockSequence {
     }
 
     /**
-     * Creates a new block sequence stage.
+     * Creates a new block sequence stage with the specified delay.
      *
-     * @param delay  The time in ticks to wait *after*
-     *               this stage to play the next one.
+     * @param delay The time in ticks to wait *after* this stage to play the next one.
      * @see #putBlock(Location, BlockData)
      */
     public BlockSequence(long delay) {
         this(delay, new HashMap<>());
     }
 
+    /**
+     * Returns the map of blocks associated with this block sequence stage.
+     *
+     * @return The map of blocks.
+     */
     public Map<Location, BlockData> getBlocks() {
         return blocks;
     }
@@ -59,23 +59,26 @@ public class BlockSequence {
         blocks.put(location, blockData);
     }
 
+    /**
+     * Puts multiple blocks into this stage.
+     *
+     * @param blocks The map of block locations and block data to add.
+     */
     public void putAll(@NotNull Map<Location, BlockData> blocks) {
         this.blocks.putAll(blocks);
     }
 
     /**
-     * Sets the next stage in
-     * this sequence.
+     * Sets the next stage in this sequence.
      *
-     * @param next The next set of blocks
-     *             to go to.
+     * @param next The next set of blocks to go to.
      */
     public void setNext(BlockSequence next) {
         this.next = next;
     }
 
     /**
-     * Places all blocks in this frame.
+     * Places all blocks in this stage.
      */
     public void placeBlocks() {
         for (Map.Entry<Location, BlockData> entry : blocks.entrySet()) {
@@ -84,12 +87,9 @@ public class BlockSequence {
     }
 
     /**
-     * Plays this block sequence and
-     * all ones after it.
+     * Plays this block sequence and all subsequent stages.
      *
-     * @param callback A {@link Runnable} to
-     *                 run after the dialogue
-     *                 sequence is done.
+     * @param callback A {@link Runnable} to run after the sequence is completed.
      */
     public void play(Runnable callback) {
         placeBlocks();
@@ -105,8 +105,7 @@ public class BlockSequence {
     }
 
     /**
-     * Plays this block sequence and
-     * all ones after it.
+     * Plays this block sequence and all subsequent stages.
      */
     public void play() {
         play(null);

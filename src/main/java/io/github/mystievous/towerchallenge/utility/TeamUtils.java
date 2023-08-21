@@ -1,6 +1,6 @@
 package io.github.mystievous.towerchallenge.utility;
 
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import org.bukkit.event.Listener;
 
 public class TeamUtils implements Listener {

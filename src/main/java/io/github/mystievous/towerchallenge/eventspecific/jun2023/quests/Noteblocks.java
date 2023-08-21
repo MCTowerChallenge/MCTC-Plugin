@@ -1,16 +1,11 @@
 package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.quests.instances.QuestInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.NoteBlock;
-import org.bukkit.block.data.type.Piston;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
@@ -20,10 +15,19 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Handles the note block puzzle quest for the Jun 2023 event.
+ */
 public class Noteblocks implements Listener {
 
+    /**
+     * The location where the redstone signal is checked to solve the puzzle.
+     */
     private static final Location CHECK_TRIGGER_LOCATION = new Location(Worlds.Jun2023_quest(), -5, 63, -1);
 
+    /**
+     * The base solution map for the note block puzzle, mapping locations to note values.
+     */
     private static final Map<Location, Note> BASE_SOLUTION = new HashMap<>() {{
         put(new Location(Worlds.Jun2023_quest(), 1, 64, 0), new Note(8));
         put(new Location(Worlds.Jun2023_quest(), 1, 64, 1), new Note(15));
@@ -43,14 +47,18 @@ public class Noteblocks implements Listener {
         put(new Location(Worlds.Jun2023_quest(), -5, 64, 0), new Note(20));
     }};
 
-    private final Plugin plugin;
     private final Jun2023QuestInstance instance;
 
     private final Door door;
 
+    /**
+     * Constructs a new Noteblocks instance.
+     *
+     * @param plugin   The TowerChallenge plugin instance.
+     * @param instance The instance of the Jun2023QuestInstance associated with this puzzle.
+     */
     public Noteblocks(Plugin plugin, Jun2023QuestInstance instance) {
 
-        this.plugin = plugin;
         this.instance = instance;
 
         this.door = new Door(instance, new Vector(0, 0, 0));
@@ -59,10 +67,18 @@ public class Noteblocks implements Listener {
 
     }
 
+    /**
+     * Checks if the note block puzzle has been completed.
+     *
+     * @return True if the door is open and the puzzle is completed, false otherwise.
+     */
     public boolean isCompleted() {
         return door.isOpen();
     }
 
+    /**
+     * Checks the solution of the note block puzzle and opens the door if the solution is correct.
+     */
     private void checkSolution() {
         boolean incorrect = false;
         for (Map.Entry<Location, Note> entry : BASE_SOLUTION.entrySet()) {
@@ -81,6 +97,9 @@ public class Noteblocks implements Listener {
         }
     }
 
+    /**
+     * Opens the door and resets the associated Simon Says game/next room.
+     */
     public void openDoor() {
         if (!door.isOpen()) {
             door.open(null);
@@ -88,10 +107,18 @@ public class Noteblocks implements Listener {
         }
     }
 
+    /**
+     * Closes the door.
+     */
     public void closeDoor() {
         door.reset(null);
     }
 
+    /**
+     * Handles the BlockRedstoneEvent to trigger the solution check when the redstone signal changes.
+     *
+     * @param event The BlockRedstoneEvent.
+     */
     @EventHandler
     public void onBlockPower(final BlockRedstoneEvent event) {
 

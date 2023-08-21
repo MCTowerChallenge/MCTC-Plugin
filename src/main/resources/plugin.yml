@@ -4,14 +4,17 @@ main: io.github.mystievous.towerchallenge.TowerChallenge
 api-version: 1.19
 prefix: TowerChallenge
 depend:
-  - WorldGuard
   - WorldEdit
+  - WorldGuard
   - Multiverse-Core
   - Multiverse-Portals
   - ProtocolLib
   - MystiCore
   - MystiGui
   - Mystimer
+  - Citizens
+libraries:
+  -
 commands:
   tower:
     description: Commands relating to the towers

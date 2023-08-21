@@ -21,10 +21,19 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
+/**
+ * Manages the gallery shooting game for the Jun 2023 event.
+ */
 public class Gallery implements Listener {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Calculate the time taken for a point value.
+     *
+     * @param points The number of points.
+     * @return The time taken for the points.
+     */
     public static double pointTime(int points) {
         // (0.7+(-0.2 * z))^(x-4) + 1 + z
 
@@ -35,6 +44,13 @@ public class Gallery implements Listener {
         return pointTime(points, vary);
     }
 
+    /**
+     * Calculate the time taken for a point value with a modifier.
+     *
+     * @param points    The number of points.
+     * @param modifier  The modifier to apply.
+     * @return The time taken for the points with the modifier.
+     */
     private static double pointTime(int points, double modifier) {
         return Math.pow(0.7 + (-0.2 * modifier), points - 4) + 1 + modifier;
     }
@@ -78,8 +94,6 @@ public class Gallery implements Listener {
     private int points;
     private final Set<Audience> shooters;
 
-    private final List<BukkitTask> tasks;
-
     private boolean active;
 
     public Gallery(Plugin plugin) {
@@ -88,8 +102,6 @@ public class Gallery implements Listener {
         targets = new ArrayList<>();
         points = 0;
         shooters = new HashSet<>();
-
-        tasks = new ArrayList<>();
 
         for (Map.Entry<Integer, Location[]> entry : targetLocations.entrySet()) {
             for (Location location : entry.getValue()) {
@@ -101,23 +113,50 @@ public class Gallery implements Listener {
 
     }
 
+    /**
+     * Add points to the gallery game's current score.
+     *
+     * @param points The points to add.
+     * @return The updated total points.
+     */
     public int addPoints(int points) {
         this.points += points;
         return this.points;
     }
 
+    /**
+     * Get the current score of the gallery game.
+     *
+     * @return The current score.
+     */
     public int getPoints() {
         return points;
     }
 
+    /**
+     * Get the audience (players) participating in the gallery game.
+     *
+     * @return The audience.
+     */
     public Audience getShooters() {
         return Audience.audience(shooters);
     }
 
+    /**
+     * Add a player to the list of participants in the gallery game.
+     *
+     * @param audience The player to add.
+     */
     public void addShooter(Audience audience) {
         shooters.add(audience);
     }
 
+    /**
+     * Pick targets based on the total points to achieve and their respective point values.
+     *
+     * @param totalPoints The total points to achieve.
+     * @return A list of selected GalleryTargets.
+     */
     public List<GalleryTarget> pickTargets(int totalPoints) {
         List<GalleryTarget> allTargets = new ArrayList<>(targets);
         List<GalleryTarget> pickedTargets = new ArrayList<>();
@@ -144,7 +183,7 @@ public class Gallery implements Listener {
 
         negatives.addAll(allTargets);
 
-        if (negatives.size() > 0) {
+        if (!negatives.isEmpty()) {
             int negativeCount;
 
             if (negatives.size() > 3) {
@@ -166,17 +205,23 @@ public class Gallery implements Listener {
         return pickedTargets;
     }
 
+    /**
+     * Activate the gallery game.
+     *
+     * @throws GalleryAlreadyActiveException If the gallery is already active.
+     */
     public void activate() throws GalleryAlreadyActiveException {
         if (active) {
             throw new GalleryAlreadyActiveException();
         }
         active = true;
 
+        // Asynchronously pick targets and activate them with random delays
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             List<GalleryTarget> pickedTargets = pickTargets(TOTAL_SCORE);
             for (GalleryTarget target : pickedTargets) {
                 long time = RANDOM.nextLong(Math.round(TOTAL_TIME * 20));
-                tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     try {
                         target.activate(pointTime(target.getPointValue()));
                     } catch (TargetAlreadyActivateException e) {
@@ -184,17 +229,19 @@ public class Gallery implements Listener {
                         String message = String.format("Target activated when already activated: %.2f, %.2f, %.2f", location.getX(), location.getY(), location.getZ());
                         Bukkit.getLogger().warning(message);
                     }
-                }, time));
+                }, time);
                 BukkitTask ticking = Bukkit.getScheduler().runTaskTimer(plugin, () -> BUTTON_LOCATION.getWorld().playSound(BUTTON_LOCATION, Sound.BLOCK_NOTE_BLOCK_HAT, 0.6f, 0), 0, 20);
-                tasks.add(ticking);
-                tasks.add(Bukkit.getScheduler().runTaskLater(plugin, ticking::cancel, Math.round((TOTAL_TIME + pointTime(7, 1) - 1) * 20)));
-                tasks.add(Bukkit.getScheduler().runTaskLater(plugin, this::timeUp, Math.round((TOTAL_TIME + pointTime(7, 1)) * 20)));
+                Bukkit.getScheduler().runTaskLater(plugin, ticking::cancel, Math.round((TOTAL_TIME + pointTime(7, 1) - 1) * 20));
+                Bukkit.getScheduler().runTaskLater(plugin, this::timeUp, Math.round((TOTAL_TIME + pointTime(7, 1)) * 20));
             }
         });
 
 
     }
 
+    /**
+     * Deactivate the gallery game.
+     */
     public void deactivate() {
         for (GalleryTarget target : targets) {
             target.deactivate();
@@ -204,6 +251,9 @@ public class Gallery implements Listener {
         shooters.clear();
     }
 
+    /**
+     * Handle the time up event.
+     */
     private void timeUp() {
         int finalPoints = getPoints();
         Audience audience = getShooters();
@@ -214,6 +264,11 @@ public class Gallery implements Listener {
         deactivate();
     }
 
+    /**
+     * Handle player interaction with the gallery button.
+     *
+     * @param event The PlayerInteractEvent.
+     */
     @EventHandler
     public void onPushButton(final PlayerInteractEvent event) {
         EquipmentSlot hand = event.getHand();
@@ -233,6 +288,11 @@ public class Gallery implements Listener {
         }
     }
 
+    /**
+     * Handle plugin disable event by deactivating the gallery.
+     *
+     * @param event The PluginDisableEvent.
+     */
     @EventHandler
     public void onPluginDisable(final PluginDisableEvent event) {
         deactivate();

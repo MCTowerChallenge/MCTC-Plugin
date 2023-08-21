@@ -3,10 +3,10 @@ package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.towerchallenge.Database;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quests.npcs.NPC;
+import io.github.mystievous.towerchallenge.quest.npc.LegacyNPC;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -24,12 +24,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class Lovebot extends NPC {
+/**
+ * Represents the Lovebot NPC with various states and interactions.
+ */
+public class Lovebot extends LegacyNPC {
 
     /**
-     * Possible states for Lovebot to be in
+     * Possible states for Lovebot to be in.
      */
-    private enum State {
+    public enum State {
         IDLE(26, null),
         YES(27, 43),
         MAYBE(29, 45),
@@ -73,15 +76,22 @@ public class Lovebot extends NPC {
 
     private final Database database;
 
+    /**
+     * Creates a new instance of Lovebot NPC.
+     *
+     * @param plugin The TowerChallenge plugin instance.
+     * @param teamManager The TeamManager instance.
+     * @param database The Database instance.
+     */
     public Lovebot(TowerChallenge plugin, TeamManager teamManager, Database database) {
         super(teamManager, NAME, TAG, NAME_COLOR, TEXT_COLOR);
         this.database = database;
         this.states = new HashMap<>();
 
         // NPC Handler for Lovebot's interactions
-        setDefaultHandler(playerInteractAtEntityEvent -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Player player = playerInteractAtEntityEvent.getPlayer();
-            Entity entity = playerInteractAtEntityEvent.getRightClicked();
+        setDefaultHandler(playerInteractEntityEvent -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Player player = playerInteractEntityEvent.getPlayer();
+            Entity entity = playerInteractEntityEvent.getRightClicked();
             if (entity instanceof LivingEntity livingEntity) {
                 try {
                     State state = getState(livingEntity);
@@ -128,6 +138,13 @@ public class Lovebot extends NPC {
         }));
     }
 
+    /**
+     * Sets the state of the Lovebot NPC.
+     *
+     * @param entity The LivingEntity representing Lovebot.
+     * @param state The new state to set.
+     * @throws SQLException If a database operation fails.
+     */
     public void setState(LivingEntity entity, State state) throws SQLException {
         EntityEquipment equipment = entity.getEquipment();
         if (equipment != null) {
@@ -136,6 +153,12 @@ public class Lovebot extends NPC {
         this.states.put(entity.getUniqueId(), state);
     }
 
+    /**
+     * Gets the current state of the Lovebot NPC.
+     *
+     * @param entity The LivingEntity representing Lovebot.
+     * @return The current state.
+     */
     public State getState(LivingEntity entity) {
         return this.states.getOrDefault(entity.getUniqueId(), State.IDLE);
     }

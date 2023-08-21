@@ -1,22 +1,23 @@
 package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.mystigui.GuiUtil;
-import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.Gui;
 import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.gamepieces.Flag;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.god.GodTeam;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
-import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.quests.npcs.Sparkle;
-import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.interaction.InteractableTagManager;
+import io.github.mystievous.towerchallenge.interaction.InteractableTaggedEntity;
+import io.github.mystievous.towerchallenge.interaction.Sparkle;
+import io.github.mystievous.towerchallenge.interaction.npc.Dialogue;
+import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.quest.util.FullInventory;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.text.Component;
-import net.royawesome.jlibnoise.module.combiner.Min;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,7 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -34,7 +35,11 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
+/**
+ * Manages the specific quest instance for the June 2023 event.
+ */
 public class Jun2023QuestManager implements Listener, Openable {
 
     public static final CommandSender sender = Bukkit.createCommandSender(component -> {
@@ -57,8 +62,13 @@ public class Jun2023QuestManager implements Listener, Openable {
     private final TeamManager teamManager;
     private final Map<Integer, Jun2023QuestInstance> questInstances;
 
-
-    public Jun2023QuestManager(Plugin plugin, QuestManager questManager, TeamManager teamManager) {
+    /**
+     * Creates a Jun2023QuestManager instance.
+     *
+     * @param plugin      The plugin instance.
+     * @param teamManager The TeamManager instance.
+     */
+    public Jun2023QuestManager(Plugin plugin, TeamManager teamManager) {
         this.plugin = plugin;
         this.teamManager = teamManager;
 
@@ -66,25 +76,75 @@ public class Jun2023QuestManager implements Listener, Openable {
 
         questInstances = new HashMap<>();
         for (Map.Entry<Integer, Location> entry : teamLocations.entrySet()) {
-            questInstances.put(entry.getKey(), new Jun2023QuestInstance(plugin, questManager, teamManager, teamManager.getTeam(entry.getKey()), entry.getValue()));
+            questInstances.put(entry.getKey(), new Jun2023QuestInstance(plugin, teamManager.getTeam(entry.getKey()), entry.getValue()));
         }
 
         new Sparkle(plugin, new Location(Worlds.Jun2023(), 276, 62.5, -2034.55), 0.3f, 0.45f, 0.01f);
+
+        Dialogue doorNoOpen = new Dialogue(plugin, Dialogue.playerThoughts("The door won't open..."), 0.0);
+        BiConsumer<TowerTeam, PlayerInteractEntityEvent> doorNoOpenEvent = (team, event) -> {
+            Player player = event.getPlayer();
+            doorNoOpen.play(player);
+        };
+
+        InteractableTaggedEntity caveEnterDoor = new InteractableTaggedEntity(Jun2023QuestInstance.ENTER_DOOR);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.NO_QUEST, doorNoOpenEvent);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.BAND_TROUBLE, doorNoOpenEvent);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.TUNNEL, doorNoOpenEvent);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.OTHER_BAND, doorNoOpenEvent);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.WAIT, doorNoOpenEvent);
+        caveEnterDoor.addQuestInteractionHandler(QuestManager.MEETING, doorNoOpenEvent);
+        caveEnterDoor.setDefaultInteractionHandler((team, event) -> {
+            Player player = event.getPlayer();
+            Jun2023QuestInstance instance = getQuestInstance(team);
+            if (instance != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (team.getCurrentQuestTag().equals(QuestManager.RIDDLE)) {
+                        team.setQuest(QuestManager.CAVE);
+                    }
+                    instance.enterTeleport(player);
+                });
+            }
+        });
+        InteractableTagManager.registerTag(caveEnterDoor);
+
+        InteractableTaggedEntity caveExitDoor = new InteractableTaggedEntity(Jun2023QuestInstance.EXIT_DOOR);
+        caveExitDoor.setDefaultInteractionHandler((team, event) -> {
+            Player player = event.getPlayer();
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                exitTeleport(player);
+            });
+        });
+        InteractableTagManager.registerTag(caveExitDoor);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
     }
 
+    /**
+     * Gets the Jun2023QuestInstance associated with a specific team.
+     *
+     * @param team The TowerTeam to retrieve the quest instance for.
+     * @return The associated Jun2023QuestInstance, or null if not found.
+     */
     public @Nullable Jun2023QuestInstance getQuestInstance(TowerTeam team) {
         return questInstances.get(team.getDatabaseId());
     }
 
     public static final Location EXIT_LOCATION = new Location(Worlds.Jun2023(), 282.5, 61, -2212.5, 0, 0);
 
+    /**
+     * Teleports the player to the exit location.
+     *
+     * @param entity The player to teleport.
+     */
     public void exitTeleport(Entity entity) {
         entity.teleport(EXIT_LOCATION);
     }
 
+    /**
+     * Unloads all tagged entities with the REMOVE_TAG.
+     */
     public void unloadAll() {
         List<Entity> entities = Bukkit.selectEntities(sender, String.format("@e[tag=%s]", REMOVE_TAG));
         for (Entity entity : entities) {
@@ -104,7 +164,7 @@ public class Jun2023QuestManager implements Listener, Openable {
     }
 
     @EventHandler
-    public void onPlayerInteractAtEntity(final PlayerInteractAtEntityEvent event) {
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
         if (entity.getScoreboardTags().contains(MineHandler.FLAG_TAG)) {

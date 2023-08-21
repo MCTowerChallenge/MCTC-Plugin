@@ -3,7 +3,6 @@ package io.github.mystievous.towerchallenge.decoration;
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mystigui.element.ButtonElement;
-import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.text.Component;

@@ -1,10 +1,10 @@
 package io.github.mystievous.towerchallenge.messaging;
 
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
+import io.github.mystievous.towerchallenge.god.GodTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -25,10 +25,19 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A command executor that handles messaging related commands.
+ */
 public class MessageCommands implements CommandExecutor {
 
     private final TeamManager teamManager;
 
+    /**
+     * Constructs a new MessageCommands instance.
+     *
+     * @param plugin      The TowerChallenge plugin instance.
+     * @param teamManager The TeamManager instance.
+     */
     public MessageCommands(TowerChallenge plugin, TeamManager teamManager) {
         this.teamManager = teamManager;
         plugin.getCommand("msg").setExecutor(this);
@@ -140,15 +149,33 @@ public class MessageCommands implements CommandExecutor {
         return true;
     }
 
+    /**
+     * Sends a message to the given audience and plays a sound.
+     *
+     * @param audience The audience to receive the message and sound.
+     * @param message  The message to send.
+     */
     private void send(Audience audience, Component message) {
         audience.sendMessage(message);
         audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 100, 1.5f));
     }
 
+    /**
+     * Checks if the provided TowerTeam is not null and not a GodTeam.
+     *
+     * @param team The TowerTeam to check.
+     * @return True if the team is a valid team, false otherwise.
+     */
     private boolean checkTeam(TowerTeam team) {
         return team != null && !(team instanceof GodTeam);
     }
 
+    /**
+     * Formats a collection of players into a formatted Component.
+     *
+     * @param players The collection of players to format.
+     * @return The formatted Component.
+     */
     private Component formatPlayers(Collection<Player> players) {
 
         ComponentBuilder<TextComponent, TextComponent.Builder> output = Component.text();
@@ -184,12 +211,26 @@ public class MessageCommands implements CommandExecutor {
 
     }
 
+    /**
+     * Formats a single player into a formatted Component.
+     *
+     * @param player The player to format.
+     * @return The formatted Component.
+     */
     private Component formatPlayer(Player player) {
         return formatPlayers(new HashSet<>() {{
             add(player);
         }});
     }
 
+    /**
+     * Formats a message from the sender to a collection of recipients.
+     *
+     * @param sender     The sender of the message.
+     * @param recipients The recipients of the message.
+     * @param body       The message body.
+     * @return The formatted message Component.
+     */
     private Component formatFromToMessage(Player sender, Collection<Player> recipients, String[] body) {
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
@@ -205,6 +246,13 @@ public class MessageCommands implements CommandExecutor {
         return message.build();
     }
 
+    /**
+     * Formats a message from the sender to the team.
+     *
+     * @param sender The sender of the message.
+     * @param body   The message body.
+     * @return The formatted message Component.
+     */
     private Component formatFromMessage(Player sender, String[] body) {
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 
@@ -218,6 +266,13 @@ public class MessageCommands implements CommandExecutor {
         return message.build();
     }
 
+    /**
+     * Formats a message from the sender to the GodTeam.
+     *
+     * @param sender The sender of the message.
+     * @param body   The message body.
+     * @return The formatted message Component.
+     */
     private Component formatFromToGods(Player sender, String[] body) {
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text().color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true);
 

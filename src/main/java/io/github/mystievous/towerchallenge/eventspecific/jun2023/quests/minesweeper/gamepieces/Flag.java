@@ -14,14 +14,31 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;
 
+/**
+ * Represents a flag used in the Minesweeper game to mark cells.
+ */
 public class Flag {
 
+    /**
+     * Modifies an ItemStack to include the flag-related properties.
+     *
+     * @param plugin     The plugin instance.
+     * @param itemStack  The ItemStack to modify.
+     * @return The modified ItemStack.
+     */
     public static ItemStack makeItemFlag(Plugin plugin, ItemStack itemStack) {
         ItemMeta meta = makeItemFlag(plugin, itemStack.getItemMeta());
         itemStack.setItemMeta(meta);
         return itemStack;
     }
 
+    /**
+     * Modifies an ItemMeta to include the flag-related properties.
+     *
+     * @param plugin The plugin instance.
+     * @param meta   The ItemMeta to modify.
+     * @return The modified ItemMeta.
+     */
     public static ItemMeta makeItemFlag(Plugin plugin, ItemMeta meta) {
         meta.setPlaceableKeys(new HashSet<>(){{
             add(NamespacedKey.minecraft("suspicious_sand"));
@@ -40,6 +57,14 @@ public class Flag {
     private final Location location;
     private final Interaction interaction;
 
+    /**
+     * Constructs a Flag instance and places it in the world.
+     *
+     * @param plugin     The plugin instance.
+     * @param mineHandler The MineHandler associated with this flag.
+     * @param itemStack  The ItemStack to represent the flag.
+     * @param location   The location where the flag should be placed.
+     */
     public Flag(Plugin plugin, MineHandler mineHandler, ItemStack itemStack, Location location) {
         this.location = location;
 
@@ -59,18 +84,36 @@ public class Flag {
         this.interaction = interaction;
     }
 
+    /**
+     * Gets the location of the flag anchor.
+     *
+     * @return The location of the flag anchor.
+     */
     public Location getLocation() {
         return location;
     }
 
+    /**
+     * Gets the location of the flag display.
+     *
+     * @return The location of the flag display.
+     */
     private Location getDisplayLocation() {
         return location.clone().add(0.6, 1.5, 0.566);
     }
 
+    /**
+     * Gets the location of the flag interaction.
+     *
+     * @return The location of the flag interaction.
+     */
     private Location getInteractionLocation() {
         return location.clone().add(0.5, 1, 0.5);
     }
 
+    /**
+     * Removes the flag from the world.
+     */
     public void remove() {
         display.remove();
         interaction.remove();

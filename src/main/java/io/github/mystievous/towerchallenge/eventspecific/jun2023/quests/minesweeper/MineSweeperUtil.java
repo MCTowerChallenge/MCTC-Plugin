@@ -14,20 +14,39 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for handling Minesweeper-related tasks.
+ */
 public class MineSweeperUtil {
 
+    /**
+     * A map of integer values to corresponding colors for formatting text.
+     */
     public static final Map<Integer, Color> COLORS = new HashMap<>(){{
         put(1, new Color(0x0000ff));
         put(2, new Color(0x007b00));
         put(3, new Color(0xff0000));
     }};
 
+    /**
+     * Formats an integer value as colored text.
+     *
+     * @param value The value to format.
+     * @return A formatted Component containing the value in its corresponding color.
+     */
     public static Component formatText(int value) {
         Color color = COLORS.getOrDefault(value, new Color(0xffffff));
         return Component.translatable(String.format("space.-%d", String.valueOf(value).length()))
                 .append(Component.text(value)).color(color.toTextColor());
     }
 
+    /**
+     * Places formatted text above a block.
+     *
+     * @param block The block to place the text above.
+     * @param value The value to display in the text.
+     * @param tag   The scoreboard tag to apply to the displayed text entity.
+     */
     public static void placeText(Block block, int value, String tag) {
         Location textLocation = block.getLocation().clone().add(1, 1, 0);
         TextDisplay textDisplay = (TextDisplay) block.getWorld().spawnEntity(textLocation, EntityType.TEXT_DISPLAY);

@@ -6,20 +6,24 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.towerchallenge.decoration.waterspouts.SpoutManager;
 import io.github.mystievous.towerchallenge.magic.GoatHat;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.towering.TowerListener;
 import io.github.mystievous.towerchallenge.towering.WinnersGUI;
 import io.github.mystievous.towerchallenge.utility.BlockSets;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Manages various aspects of the Tower Challenge event, including phases, scoreboard objectives, listeners, and GUIs.
+ */
 public class ChallengeManager {
 
     /**
-     * The possible phases of the event
+     * The possible phases of the event.
      */
     public enum ChallengePhase {
         IN_PROGRESS,
@@ -41,8 +45,7 @@ public class ChallengeManager {
     private static final String OBJECTIVE_NAME = "TowerHeight";
 
     /**
-     * Gets the {@link Objective} for the tower
-     * heights.
+     * Gets the {@link Objective} for the tower heights.
      *
      * @return The objective.
      */
@@ -55,12 +58,17 @@ public class ChallengeManager {
     private ChallengePhase challengePhase;
     private final WinnersGUI winnersGUI;
 
-    // Constructor
+    /**
+     * Constructs a new ChallengeManager instance.
+     *
+     * @param plugin The main plugin instance.
+     * @param teamManager The team manager instance.
+     */
     public ChallengeManager(TowerChallenge plugin, TeamManager teamManager) {
         this.plugin = plugin;
         challengePhase = ChallengePhase.IN_PROGRESS;
         if (getScoreObjective() == null) {
-            Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective(OBJECTIVE_NAME, "dummy", Component.text("Tower Height"));
+            Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective(OBJECTIVE_NAME, Criteria.DUMMY, Component.text("Tower Height"));
         }
         TowerListener towerListener = new TowerListener(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
@@ -70,14 +78,17 @@ public class ChallengeManager {
         SpoutManager.runSpouts();
     }
 
-    // Accessors and Mutators
+    /**
+     * Gets the current challenge phase.
+     *
+     * @return The challenge phase.
+     */
     public ChallengePhase getChallengePhase() {
         return challengePhase;
     }
 
     /**
      * Sets the current challenge phase.
-     * <p></p>
      * Also calls {@link ChallengePhaseChangeEvent}.
      *
      * @param challengePhase The phase to change to.
@@ -110,10 +121,20 @@ public class ChallengeManager {
         BlockSets.FULL_BLOCKS.remove(material);
     }
 
+    /**
+     * Gets the main plugin instance.
+     *
+     * @return The main plugin instance.
+     */
     public TowerChallenge getPlugin() {
         return plugin;
     }
 
+    /**
+     * Gets the WinnersGUI instance managed by this manager.
+     *
+     * @return The WinnersGUI instance.
+     */
     public WinnersGUI getWinnersGUI() {
         return winnersGUI;
     }

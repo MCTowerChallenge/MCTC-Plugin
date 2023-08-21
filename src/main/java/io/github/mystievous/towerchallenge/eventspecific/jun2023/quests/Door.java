@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.quests.instances.QuestInstance;
+import io.github.mystievous.towerchallenge.quest.instance.QuestInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,6 +12,10 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 
+/**
+ * Represents a door with opening and resetting mechanisms using sequences of blocks.
+ * The door's state can be changed to open or reset using the provided methods.
+ */
 public class Door {
 
     private final BlockSequence open;
@@ -19,6 +23,13 @@ public class Door {
 
     private boolean openState;
 
+    /**
+     * Creates a new instance of {@code Door} with opening and resetting sequences based on the given
+     * {@link QuestInstance} and offset {@link Vector}.
+     *
+     * @param instance The associated {@link QuestInstance} for which the door operates.
+     * @param offset   The offset {@link Vector} to adjust the door's position.
+     */
     public Door(QuestInstance instance, Vector offset) {
 
         Piston northPiston = (Piston) Bukkit.createBlockData(Material.STICKY_PISTON);
@@ -221,15 +232,31 @@ public class Door {
 
     }
 
+    /**
+     * Checks whether the door is in the open state.
+     *
+     * @return {@code true} if the door is open, {@code false} otherwise.
+     */
     public boolean isOpen() {
         return openState;
     }
 
+    /**
+     * Opens the door using the associated opening sequence and executes the provided callback when done.
+     *
+     * @param callback A {@link Runnable} to run after the door opening sequence is complete.
+     */
     public void open(Runnable callback) {
         openState = true;
         open.play(callback);
     }
 
+    /**
+     * Resets the door to its closed state using the associated resetting sequence
+     * and executes the provided callback when done.
+     *
+     * @param callback A {@link Runnable} to run after the door resetting sequence is complete.
+     */
     public void reset(Runnable callback) {
         openState = false;
         reset.play(callback);

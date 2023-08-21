@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.towering;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
-import io.github.mystievous.towerchallenge.teams.ParticipantTeam;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -13,8 +13,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -112,19 +110,5 @@ public class TowerListener implements Listener {
             }
         }
     }
-
-//    @EventHandler
-//    public void onPlayerCommand(final PlayerCommandSendEvent event) {
-//        for (String command : event.getCommands()) {
-//            if (command.contains("locate")) {
-//                PluginCommand command1 = Bukkit.getPluginCommand(command);
-//                if (command1 != null) {
-//                    Bukkit.getServer().sendMessage(Component.text(String.format("%s: %s", command, command1.getPlugin().getName())));
-//                } else {
-//                    Bukkit.getServer().sendMessage(Component.text(String.format("%s: %s", command, "Null :(")));
-//                }
-//            }
-//        }
-//    }
 
 }

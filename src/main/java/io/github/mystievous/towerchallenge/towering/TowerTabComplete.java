@@ -1,7 +1,7 @@
 package io.github.mystievous.towerchallenge.towering;
 
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

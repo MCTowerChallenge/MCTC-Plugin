@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Called when the event phase changes.
+ * Represents an event that is called when the event phase changes.
  */
 public class ChallengePhaseChangeEvent extends Event {
 
@@ -21,10 +21,20 @@ public class ChallengePhaseChangeEvent extends Event {
         return HANDLERS;
     }
 
+    /**
+     * Constructs a new ChallengePhaseChangeEvent.
+     *
+     * @param challengePhase The new challenge phase.
+     */
     public ChallengePhaseChangeEvent(ChallengeManager.ChallengePhase challengePhase) {
         this.challengePhase = challengePhase;
     }
 
+    /**
+     * Gets the new challenge phase.
+     *
+     * @return The new challenge phase.
+     */
     public ChallengeManager.ChallengePhase getChallengePhase() {
         return challengePhase;
     }

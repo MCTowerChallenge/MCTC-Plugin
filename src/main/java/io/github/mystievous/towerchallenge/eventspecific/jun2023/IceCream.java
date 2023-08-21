@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023;
 
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.towerchallenge.Worlds;
-import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
+import io.github.mystievous.towerchallenge.quest.util.FullInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,10 +16,19 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Random;
 
+/**
+ * Handles interactions with ice cream dispensers for the Jun 2023 event.
+ */
 public class IceCream implements Listener {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Get a random item from an array of items.
+     *
+     * @param items The array of items.
+     * @return A randomly selected item from the array.
+     */
     private static ItemStack randomItem(ItemStack[] items) {
         return items[RANDOM.nextInt(items.length)];
     }
@@ -50,12 +59,19 @@ public class IceCream implements Listener {
     // chocolate: 207 64 -2234
     // strawberry: 208 64 -2234
 
+    /**
+     * Handle player interaction with ice cream dispensers.
+     *
+     * @param event The PlayerInteractEvent.
+     */
     @EventHandler
     public void onButtonPush(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
         if (block != null && event.getAction().isRightClick()) {
             Location location = block.getLocation();
+
+            // Check which dispenser button was clicked and give a random ice cream item
             if (location.equals(VANILLA_BUTTON)) {
                 FullInventory.givePlayerItems(player, randomItem(VANILLA_ITEMS));
             } else if (location.equals(CHOCOLATE_BUTTON)) {

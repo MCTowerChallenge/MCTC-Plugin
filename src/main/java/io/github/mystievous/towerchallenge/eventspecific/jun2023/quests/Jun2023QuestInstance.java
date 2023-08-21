@@ -7,10 +7,8 @@ import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
-import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.quests.instances.QuestInstance;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.quest.instance.QuestInstance;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,36 +16,40 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Represents an instance of the June 2023 quest.
+ */
 public class Jun2023QuestInstance extends QuestInstance implements Openable {
 
+    /**
+     * The tag for entering the cave door.
+     */
     public static final String ENTER_DOOR = "cave-door-enter";
+
+    /**
+     * The tag for exiting the cave door.
+     */
     public static final String EXIT_DOOR = "cave-door-exit";
 
     /**
      * Anchor block for the instance.
-     * <p></p>
-     * The block under the spruce door entrance
-     * to the first room.
+     * The block under the spruce door entrance to the first room.
      */
     public static final Location baseLocation = new Location(Worlds.Jun2023_quest(), -2, 64, -3);
 
     private final Plugin plugin;
-    private final QuestManager questManager;
-    private final TeamManager teamManager;
 
     private final Noteblocks noteblocks;
     private final SimonSays simonSays;
     private final MineHandler mineHandler;
 
-    public Jun2023QuestInstance(Plugin plugin, QuestManager questManager, TeamManager teamManager, TowerTeam team, Location instanceLocation) {
+    public Jun2023QuestInstance(Plugin plugin, TowerTeam team, Location instanceLocation) {
         super(team, baseLocation, instanceLocation);
         this.plugin = plugin;
-        this.questManager = questManager;
-        this.teamManager = teamManager;
 
         this.noteblocks = new Noteblocks(plugin, this);
         this.simonSays = new SimonSays(plugin, this);
-        this.mineHandler = new MineHandler(plugin, this, teamManager);
+        this.mineHandler = new MineHandler(plugin, this);
     }
 
     public Noteblocks getNoteblocks() {
@@ -76,6 +78,11 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
 
     public static final Location BASE_ENTER_LOCATION = new Location(Worlds.Jun2023_quest(), -1.5, 65, -1.5, 0, 0);
 
+    /**
+     * Teleports the given entity to the instance's entrance.
+     *
+     * @param entity The entity to teleport.
+     */
     public void enterTeleport(Entity entity) {
         entity.teleport(offsetLocation(BASE_ENTER_LOCATION));
     }

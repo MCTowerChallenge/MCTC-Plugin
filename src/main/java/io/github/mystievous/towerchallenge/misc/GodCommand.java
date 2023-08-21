@@ -12,8 +12,17 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A command executor that toggles God mode for a player or entity.
+ */
 public class GodCommand implements CommandExecutor {
 
+    /**
+     * Toggles God mode for the given entity and sends a message to the audience.
+     *
+     * @param entity   The entity for which to toggle God mode.
+     * @param audience The audience to receive the notification message.
+     */
     public void toggleGod(Entity entity, Audience audience) {
         entity.setInvulnerable(!entity.isInvulnerable());
         if (entity.isInvulnerable()) {

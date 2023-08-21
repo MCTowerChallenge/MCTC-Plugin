@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+/**
+ * Manages the visual effect of water drips at specific locations.
+ */
 public class WaterDrips {
 
     private final static Random RANDOM = new Random();
@@ -20,10 +23,16 @@ public class WaterDrips {
     public final Database database;
 
     /**
-     * Collection of all currently running drips.
+     * Collection of all currently running drip tasks.
      */
     public final Collection<BukkitTask> dripTasks;
 
+    /**
+     * Initializes a new instance of the WaterDrips class.
+     *
+     * @param plugin   The main plugin instance.
+     * @param database The database used to store drip locations.
+     */
     public WaterDrips(Plugin plugin, Database database) {
         this.plugin = plugin;
         this.database = database;
@@ -31,6 +40,10 @@ public class WaterDrips {
         loadDrips();
     }
 
+    /**
+     * Loads and activates water drips from the database.
+     * Existing drip tasks are cancelled before loading.
+     */
     public void loadDrips() {
         unloadDrips();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -46,6 +59,9 @@ public class WaterDrips {
         });
     }
 
+    /**
+     * Cancels all running drip tasks, effectively stopping the water drip visual effect.
+     */
     public void unloadDrips() {
         for (BukkitTask task : dripTasks) {
             task.cancel();

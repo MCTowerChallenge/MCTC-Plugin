@@ -31,7 +31,9 @@ import java.util.UUID;
  */
 public class GalleryTarget implements Listener {
 
+    // Offset for spawning the armor stand above the target
     private static final Vector OFFSET = new Vector(-0.3125, -1.8125, 0.5);
+    // Tag used to identify armor stands as gallery targets
     public static final String TAG = "Jun2023-gallery-target";
 
     public static void errorNoise(Audience audience, Location location) {
@@ -40,8 +42,9 @@ public class GalleryTarget implements Listener {
         audience.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.bit"), Sound.Source.PLAYER, 100.0f, 1.059463f), location.x(), location.y(), location.z());
     }
 
+    // Reference to the main plugin
     private final Plugin plugin;
-
+    // Reference to the parent Gallery instance
     private final Gallery gallery;
 
     private final Location location;
@@ -54,6 +57,14 @@ public class GalleryTarget implements Listener {
     private boolean active;
     private boolean hit;
 
+    /**
+     * Construct a GalleryTarget.
+     *
+     * @param plugin     The main plugin instance.
+     * @param gallery    The parent Gallery instance.
+     * @param location   The location of the target.
+     * @param pointValue The point value associated with the target.
+     */
     public GalleryTarget(Plugin plugin, Gallery gallery, Location location, int pointValue) {
         this.plugin = plugin;
         this.gallery = gallery;
@@ -67,16 +78,26 @@ public class GalleryTarget implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Get the point value associated with the target.
+     *
+     * @return The point value.
+     */
     public int getPointValue() {
         return pointValue;
     }
 
+    /**
+     * Set whether the target represents positive or negative points.
+     *
+     * @param positive True if positive points, false if negative.
+     */
     public void setPositive(boolean positive) {
         this.positive = positive;
     }
 
     /**
-     * Activates the target for a number of seconds
+     * Activates the target for a specified number of seconds
      * <p/>
      * NOTE: This is the number of seconds that the
      * target is positioned up, not the number of seconds it is
@@ -89,6 +110,7 @@ public class GalleryTarget implements Listener {
         if (!active) {
             active = true;
 
+            // Spawn an ArmorStand entity at the target location
             ArmorStand entity = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(OFFSET).setDirection(BlockFace.EAST.getDirection()), EntityType.ARMOR_STAND, false);
             entity.addScoreboardTag(TAG);
             if (positive) {
@@ -103,6 +125,7 @@ public class GalleryTarget implements Listener {
             NBTUtils.setUniqueID(plugin, NBTUtils.UNIQUE_ID, entity, uuid);
             target = entity;
 
+            // Raise the entity above the ground and set a timer for deactivation
             EntityUtil.raiseEntity(plugin, entity, 1, 0.25, 8, () -> {
                 BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, this::deactivate, Math.round(seconds * 20));
                 tasks.add(task);
@@ -112,6 +135,9 @@ public class GalleryTarget implements Listener {
         }
     }
 
+    /**
+     * Deactivate the target, removing it from the world.
+     */
     public void deactivate() {
         for (BukkitTask task : tasks) {
             task.cancel();
@@ -137,6 +163,11 @@ public class GalleryTarget implements Listener {
         }
     }
 
+    /**
+     * Handle the event when a projectile hits the target.
+     *
+     * @param event The ProjectileHitEvent.
+     */
     @EventHandler
     public void onTargetHit(final ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();

@@ -29,6 +29,9 @@ import org.joml.Vector3f;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Handles the selection of pride flags and their indicators for the Jun 2023 event.
+ */
 public class SelectionHandler implements Listener {
 
     public static final String SELECT_TAG = "pride-select";
@@ -58,6 +61,12 @@ public class SelectionHandler implements Listener {
         add(new Selection(23, 119, "Transgender", new Location(Worlds.Jun2023(), 175.031250d, 66.500000d, -2182.500000d, 270.000000f, 0.000000f)));
     }};
 
+    /**
+     * Get a Selection instance based on its icon model ID.
+     *
+     * @param modelId The custom model data of the icon.
+     * @return The corresponding Selection instance, or null if not found.
+     */
     public static @Nullable Selection getSelectionByModelId(int modelId) {
         for (Selection selection : selections) {
             if (selection.getIconModelId() == modelId) {
@@ -67,6 +76,12 @@ public class SelectionHandler implements Listener {
         return null;
     }
 
+    /**
+     * Get a Selection instance based on its database ID.
+     *
+     * @param databaseId The database ID of the flag.
+     * @return The corresponding Selection instance, or null if not found.
+     */
     public static @Nullable Selection getSelectionByDatabaseId(int databaseId) {
         for (Selection selection : selections) {
             if (selection.getDatabaseId() == databaseId) {
@@ -81,6 +96,12 @@ public class SelectionHandler implements Listener {
     private final Map<UUID, Selection> playerSelections;
     private final Map<UUID, Entity> playerIndicators;
 
+    /**
+     * Creates a new instance of the SelectionHandler class.
+     *
+     * @param plugin   The plugin instance.
+     * @param database The database instance.
+     */
     public SelectionHandler(Plugin plugin, Database database) {
         this.plugin = plugin;
         this.database = database;
@@ -90,6 +111,9 @@ public class SelectionHandler implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Load player selections from the database.
+     */
     public void load() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -108,6 +132,11 @@ public class SelectionHandler implements Listener {
         });
     }
 
+    /**
+     * Load a player's selection from the database.
+     *
+     * @param player The player to load the selection for.
+     */
     public void loadPlayer(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -129,6 +158,11 @@ public class SelectionHandler implements Listener {
         });
     }
 
+    /**
+     * Load indicators for a player.
+     *
+     * @param player The player to load indicators for.
+     */
     public void loadIndicatorsForPlayer(Player player) {
         Selection selection = playerSelections.get(player.getUniqueId());
         if (selection != null) {
@@ -156,12 +190,22 @@ public class SelectionHandler implements Listener {
         }
     }
 
+    /**
+     * Handle player join event.
+     *
+     * @param event The PlayerJoinEvent.
+     */
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         loadPlayer(player);
     }
 
+    /**
+     * Handle player interact entity event.
+     *
+     * @param event The PlayerInteractEntityEvent.
+     */
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
@@ -192,6 +236,11 @@ public class SelectionHandler implements Listener {
 
     }
 
+    /**
+     * Handle plugin disable event.
+     *
+     * @param event The PluginDisableEvent.
+     */
     @EventHandler
     public void onPluginDisable(final PluginDisableEvent event) {
         List<Entity> entities = Bukkit.selectEntities(Bukkit.getConsoleSender(), String.format("@e[tag=%s]", INDICATOR_TAG));
@@ -200,6 +249,9 @@ public class SelectionHandler implements Listener {
         }
     }
 
+    /**
+     * Represents a selection of a pride flag.
+     */
     public static class Selection {
 
         private final int databaseId;
@@ -207,6 +259,14 @@ public class SelectionHandler implements Listener {
         private final String name;
         private final Location itemFrameLocation;
 
+        /**
+         * Creates a new instance of the Selection class.
+         *
+         * @param databaseId        The database ID of the flag.
+         * @param iconModelId       The custom model data of the icon.
+         * @param name              The name of the flag.
+         * @param itemFrameLocation The location of the item frame.
+         */
         public Selection(int databaseId, int iconModelId, String name, Location itemFrameLocation) {
             this.databaseId = databaseId;
             this.iconModelId = iconModelId;
@@ -226,6 +286,11 @@ public class SelectionHandler implements Listener {
             return name;
         }
 
+        /**
+         * Spawn an indicator entity for the selection.
+         *
+         * @return The spawned indicator entity.
+         */
         public Entity spawnIndicator() {
             Location location = itemFrameLocation.clone().add(itemFrameLocation.getDirection().multiply(0.44375));
             ItemDisplay entity = (ItemDisplay) itemFrameLocation.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);

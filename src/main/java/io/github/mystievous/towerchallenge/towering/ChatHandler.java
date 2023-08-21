@@ -11,12 +11,28 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 public class ChatHandler implements Listener {
 
-    // TODO: clean up this mess
+    public final Plugin plugin;
 
+    /**
+     * Initializes a new instance of the ChatHandler class.
+     *
+     * @param plugin The main TowerChallenge plugin instance.
+     */
+    public ChatHandler(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    /**
+     * Handles player chat events, processes messages, and generates responses.
+     *
+     * @param event The AsyncChatEvent representing the player's chat event.
+     */
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
         Team playerTeam = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getPlayerTeam(event.getPlayer());
@@ -80,7 +96,7 @@ public class ChatHandler implements Listener {
             case ("!barson"), ("barson") -> dayBotMessage = Component.text("baha yea");
             case ("!carson"), ("carson") -> dayBotMessage = Component.text("committing haha yea");
             case ("fr") -> dayBotMessage = Component.text("frfr");
-            case ("frfr") -> dayBotMessage = Component.text("fr");
+            case ("frfr") -> dayBotMessage = Component.text("frfrfr");
             case ("smh") -> dayBotMessage = Component.text("smh my head");
             case ("creeper"), ("!creeper") -> dayBotMessage = Component.text("Awwwww man SSSsss");
             case ("!bonk"), ("bonk") -> {
@@ -97,25 +113,21 @@ public class ChatHandler implements Listener {
             }
         }
 
-        for (Audience audience : event.viewers()) {
-            audience.sendMessage(message);
-            if (dayBotMessage != null) {
-                Component finalDayBotMessage = dayBotMessage;
-                Thread t=new Thread(() -> {
-                    try {
-                        Thread.sleep(1000L);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+        Audience audience = Audience.audience(event.viewers());
+        audience.sendMessage(message);
+        if (dayBotMessage != null) {
+            Component finalDayBotMessage = dayBotMessage;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
                     audience.sendMessage(Component.text()
                             .append(Component.text("["))
                             .append(Component.text("God").color(TextColor.fromHexString("#F7E983")))
                             .append(Component.text("] "))
                             .append(Component.text("<Daybot> "))
                             .append(finalDayBotMessage));
-                });
-                t.start();
-            }
+                }
+            }.runTaskLater(plugin, 20L);
         }
 
         event.setCancelled(true);

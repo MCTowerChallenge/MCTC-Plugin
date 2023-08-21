@@ -1,14 +1,14 @@
 package io.github.mystievous.towerchallenge.eventspecific.feb2023;
 
-import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.quests.npcs.NPC;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.god.GodTeam;
+import io.github.mystievous.towerchallenge.interaction.InteractableTaggedEntity;
+import io.github.mystievous.towerchallenge.interaction.InteractableTagManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 import java.util.*;
 
-public class Plushies extends NPC {
+public class Plushies extends InteractableTaggedEntity {
 
     public static final String TAG = "plushy-pile";
     public static final String ITEM_TAG = "plushy";
@@ -40,20 +40,20 @@ public class Plushies extends NPC {
     private final TowerChallenge plugin;
 
     public Plushies(TowerChallenge plugin, TeamManager teamManager, Database database) {
-        super(teamManager, "plushie", TAG, new Color(0), new Color(0));
+        super(TAG);
         this.plugin = plugin;
         this.database = database;
         this.players = new HashSet<>();
-        setDefaultHandler(playerInteractAtEntityEvent -> {
-            Player player = playerInteractAtEntityEvent.getPlayer();
-            Entity entity = playerInteractAtEntityEvent.getRightClicked();
+        setDefaultInteractionHandler((team, playerInteractEntityEvent) -> {
+            Player player = playerInteractEntityEvent.getPlayer();
+            Entity entity = playerInteractEntityEvent.getRightClicked();
             try {
                 if (teamManager.getPlayerTeam(player) instanceof GodTeam || !players.contains(player.getUniqueId())) {
                     player.getInventory().addItem(randomPlushy(null));
                     players.add(player.getUniqueId());
                     player.playSound(entity.getLocation(), Sound.ENTITY_HORSE_SADDLE, 1f, 1.2f);
                 } else {
-                    EquipmentSlot hand = playerInteractAtEntityEvent.getHand();
+                    EquipmentSlot hand = playerInteractEntityEvent.getHand();
                     ItemStack currentItem = player.getInventory().getItem(hand);
                     if (NBTUtils.boolState(plugin, ITEM_TAG, currentItem)) {
                         player.getInventory().setItem(hand, randomPlushy(database.getModelId(currentItem)));
@@ -79,6 +79,7 @@ public class Plushies extends NPC {
                 }
             }
         }, 0, 20);
+        InteractableTagManager.registerTag(this);
     }
 
     public ItemStack randomPlushy(@Nullable Integer exclude) throws SQLException {

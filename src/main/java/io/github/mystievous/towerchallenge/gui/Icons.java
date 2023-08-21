@@ -17,7 +17,7 @@ public class Icons {
         ItemMeta meta = getItemMeta();
         meta.displayName(Component.empty());
         meta.setCustomModelData(2);
-        meta.addItemFlags(ItemFlag.HIDE_DYE, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_UNBREAKABLE);
+        meta.addItemFlags(ItemFlag.HIDE_DYE, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_UNBREAKABLE);
         setItemMeta(meta);
     }});
 
@@ -27,8 +27,7 @@ public class Icons {
      * @return the Item
      */
     public static ItemStack backItem() {
-        ItemStack exit = GuiUtil.formatItem("Back", Material.REDSTONE_BLOCK, 1);
-        return exit;
+        return GuiUtil.formatItem("Back", Material.REDSTONE_BLOCK, 1);
     }
 
     /**
@@ -37,7 +36,6 @@ public class Icons {
      * @return the Item
      */
     public static ItemStack exitItem() {
-        ItemStack exit = GuiUtil.formatItem("Exit", Material.REDSTONE_BLOCK, 2);
-        return exit;
+        return GuiUtil.formatItem("Exit", Material.REDSTONE_BLOCK, 2);
     }
 }

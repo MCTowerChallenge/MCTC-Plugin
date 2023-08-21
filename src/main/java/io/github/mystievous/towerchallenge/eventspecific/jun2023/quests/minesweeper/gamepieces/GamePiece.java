@@ -36,18 +36,38 @@ public class GamePiece {
 
     }
 
+    /**
+     * Gets the location of the game piece.
+     *
+     * @return The location of the game piece.
+     */
     public Location getLocation() {
         return location;
     }
 
+    /**
+     * Gets the number of mines adjacent to the game piece.
+     *
+     * @return The number of adjacent mines.
+     */
     public int getMines() {
         return mines;
     }
 
+    /**
+     * Checks if the game piece has been swept.
+     *
+     * @return True if the game piece has been swept, false otherwise.
+     */
     public boolean isSwept() {
         return swept;
     }
 
+    /**
+     * Sets the item displayed on the game piece.
+     *
+     * @param item The item to set.
+     */
     public void setItem(ItemStack item) {
         Block block = location.getBlock();
         if (block.getState() instanceof BrushableBlock brushableBlock && mines < 0) {
@@ -56,6 +76,10 @@ public class GamePiece {
         }
     }
 
+    /**
+     * Sweeps the game piece, revealing its content and performing appropriate actions.
+     * If the piece contains a mine, it triggers an explosion; otherwise, it updates the block and nearby pieces.
+     */
     public void sweep() {
         if (!swept && !hasFlag()) {
             swept = true;
@@ -85,10 +109,21 @@ public class GamePiece {
         }
     }
 
+    /**
+     * Checks if the game piece has a flag.
+     *
+     * @return True if the game piece has a flag, false otherwise.
+     */
     public boolean hasFlag() {
         return flag != null;
     }
 
+    /**
+     * Places a flag on the game piece using the provided item stack.
+     *
+     * @param itemStack The item stack representing the flag.
+     * @return True if the flag was placed successfully, false otherwise.
+     */
     public boolean placeFlag(ItemStack itemStack) {
         if (flag == null && !swept) {
             flag = new Flag(plugin, mineHandler, itemStack, location);
@@ -98,6 +133,9 @@ public class GamePiece {
         }
     }
 
+    /**
+     * Removes the flag from the game piece.
+     */
     public void removeFlag() {
         if (flag != null) {
             flag.remove();

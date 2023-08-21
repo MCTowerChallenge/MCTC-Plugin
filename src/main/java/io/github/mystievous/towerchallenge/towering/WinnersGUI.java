@@ -2,10 +2,10 @@ package io.github.mystievous.towerchallenge.towering;
 
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.ConfirmationGUI;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;

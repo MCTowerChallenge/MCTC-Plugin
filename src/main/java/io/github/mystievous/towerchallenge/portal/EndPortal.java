@@ -1,0 +1,136 @@
+package io.github.mystievous.towerchallenge.portal;
+
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.god.GodTeam;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.type.EndPortalFrame;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
+
+import static com.comphenix.protocol.ProtocolLibrary.getPlugin;
+
+/**
+ * Manages the logic for the end portal in the game.
+ */
+public class EndPortal implements Listener {
+
+    public static final Location overworldSpawn = new Location(Worlds.Oct2023(), 41, 64, -113);
+
+    private final TeamManager teamManager;
+
+    /**
+     * First corner of the inner-portal bounds.
+     * This is where the actual portal blocks
+     * are spawned.
+     */
+    public static final Location PORTAL_MIN = new Location(Worlds.Jun2023(), 203, 67, -2256);
+
+    /**
+     * Second corner of the inner-portal bounds.
+     * This is where the actual portal blocks
+     * are spawned.
+     */
+    public static final Location PORTAL_MAX = new Location(Worlds.Jun2023(), 206, 67, -2253);
+
+    /**
+     * Creates an EndPortal instance.
+     *
+     * @param plugin      The main plugin instance.
+     * @param teamManager The TeamManager instance.
+     */
+    public EndPortal(Plugin plugin, TeamManager teamManager) {
+        this.teamManager = teamManager;
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    /**
+     * Opens the end portal by setting the portal blocks in the specified bounds.
+     * Announces the opening to the server with a message and sound.
+     */
+    public void openPortal() {
+        for (int x = PORTAL_MIN.getBlockX(); x <= PORTAL_MAX.getBlockX(); x++) {
+            for (int z = PORTAL_MIN.getBlockZ(); z <= PORTAL_MAX.getBlockZ(); z++) {
+                Location block = new Location(PORTAL_MIN.getWorld(), x, PORTAL_MIN.getY(), z);
+                block.getBlock().setType(Material.END_PORTAL);
+            }
+        }
+        Bukkit.getServer().sendMessage(Component.text("End Portal ").color(TextColor.fromHexString("#f0ffd0"))
+                .append(Component.text("has been opened!").color(NamedTextColor.WHITE)));
+        Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.end_portal.spawn"), Sound.Source.MASTER, 100, 1));
+        final Title title = Title.title(Component.text("End Portal").color(TextColor.fromHexString("#f0ffd0")), Component.text("has been opened!").color(NamedTextColor.WHITE));
+        Bukkit.getServer().showTitle(title);
+    }
+
+    /**
+     * Resets the end portal by clearing the portal blocks and resetting team portal frames.
+     */
+    public void resetPortal() {
+        Bukkit.getLogger().info("Resetting End Portal");
+        for (int x = PORTAL_MIN.getBlockX(); x <= PORTAL_MAX.getBlockX(); x++) {
+            for (int z = PORTAL_MIN.getBlockZ(); z <= PORTAL_MAX.getBlockZ(); z++) {
+                Location block = new Location(PORTAL_MIN.getWorld(), x, PORTAL_MIN.getY(), z);
+                block.getBlock().setType(Material.AIR);
+            }
+        }
+        teamManager.resetTeamPortalFrames();
+    }
+
+    /**
+     * Handles the interaction of players with the end portal frames.
+     *
+     * @param event The PlayerInteractEvent.
+     */
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            Block block = event.getClickedBlock();
+            Player player = event.getPlayer();
+            TowerTeam team = teamManager.getPlayerTeam(player);
+            assert block != null;
+            if (block.getType().equals(Material.END_PORTAL_FRAME)) {
+                if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
+                    if (event.getItem().getType().equals(Material.ENDER_EYE)) {
+                        event.setCancelled(true);
+                        Location blockLocation = block.getLocation().toBlockLocation();
+                        if (team instanceof ParticipantTeam participantTeam) {
+                            Location teamBlockLocation = participantTeam.getFrameLocation().toBlockLocation();
+                            if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
+                                player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
+                                participantTeam.placeEye();
+                                if (teamManager.getRemainingPortalFrames() <= 0) {
+                                    openPortal();
+                                }
+                            }
+                        } else if (team instanceof GodTeam) {
+                            teamManager.getParticipantTeams().forEach(checkTeam -> {
+                                Location teamBlockLocation = checkTeam.getFrameLocation().toBlockLocation();
+                                if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
+                                    checkTeam.placeEye();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}

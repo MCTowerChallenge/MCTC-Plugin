@@ -8,20 +8,25 @@ import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.Posters;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.flags.SelectionHandler;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.Gallery;
-import io.github.mystievous.towerchallenge.gods.GodManager;
+import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
+import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
+import io.github.mystievous.towerchallenge.interaction.InteractableTaggedEntity;
+import io.github.mystievous.towerchallenge.interaction.InteractableTagManager;
+import io.github.mystievous.towerchallenge.interaction.npc.CharacterManager;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.magic.WandCommands;
 import io.github.mystievous.towerchallenge.messaging.MessageCommands;
 import io.github.mystievous.towerchallenge.misc.*;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePack;
 import io.github.mystievous.towerchallenge.misc.resourcepack.ResourcePackListener;
-import io.github.mystievous.towerchallenge.quests.npcs.DialogueCommands;
-import io.github.mystievous.towerchallenge.quests.npcs.NPC;
-import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
-import io.github.mystievous.towerchallenge.quests.QuestManager;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.portal.PortalControllers;
+import io.github.mystievous.towerchallenge.interaction.npc.DialogueCommands;
+import io.github.mystievous.towerchallenge.quest.QuestCommands;
+import io.github.mystievous.towerchallenge.quest.util.FullInventory;
+import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.timer.OrganizationTimer;
 import io.github.mystievous.towerchallenge.timer.TimerCommands;
 import io.github.mystievous.towerchallenge.timer.TimerTabComplete;
@@ -37,11 +42,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TowerChallenge extends JavaPlugin {
 
-    //d0608c
-    //124f49
-
     public static final String MCTC_NAMESPACE = "mctc";
 
+    // Get a key in the MCTC namespace
     public static Key key(String value) {
         return Key.key(MCTC_NAMESPACE, value);
     }
@@ -62,21 +65,33 @@ public final class TowerChallenge extends JavaPlugin {
 
         me = this;
 
+        // Load plugin configuration
         Config config = new Config(this);
 
+        // Initialize the plugin's database
         Database database = new Database(this, config.getDBConfig());
 
-        // Timer
-        TowerTimer timer = new TowerTimer(this);
+        // Initialize timers and timer-related commands
         OrganizationTimer organizationTimer = new OrganizationTimer(this);
-        TimerCommands timerCommands = new TimerCommands(timer);
+        TowerTimer timer = new TowerTimer(this);
+        TimerCommands timerCommands = new TimerCommands(timer, organizationTimer);
         TimerTabComplete timerTabComplete = new TimerTabComplete();
 
-        TeamManager teamManager = new TeamManager(this, database);
+        QuestManager questManager = new QuestManager(this);
+
+        TeamManager teamManager = new TeamManager(this, database, questManager);
+
+        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
+
+        QuestCommands commands = new QuestCommands(teamManager);
+        getCommand("questbook").setExecutor(commands);
+
+        PortalControllers portalControllers = new PortalControllers(this, teamManager);
 
         ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
 
-        QuestManager questManager = new QuestManager(this, timer, teamManager);
+        CharacterManager characterManager = new CharacterManager(this, teamManager);
+
         DialogueCommands dialogueCommands = new DialogueCommands(teamManager);
         PluginCommand stopDialogue = this.getCommand("stopdialogue");
         if (stopDialogue != null) {
@@ -84,38 +99,36 @@ public final class TowerChallenge extends JavaPlugin {
             stopDialogue.setTabCompleter(dialogueCommands);
         }
 
-//        EvilTowerManager evilTowerManager = new EvilTowerManager(this, teamManager, questManager);
-//        ferrisWheel = new FerrisWheel(this);
+        GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager);
+
+        InteractableTagManager tagManager = new InteractableTagManager(this, teamManager);
+
         new Lovebot(this, teamManager, database);
-//        new Plushies(this, teamManager, database);
 
         new SelectionHandler(this, database);
         new IceCream(this);
         new Gallery(this);
-        new Posters(teamManager);
+        Posters.registerPosterInteractables(teamManager);
 
-        NPC seat = new NPC(teamManager, "Seat", "seat");
-        seat.setDefaultHandler(event -> Bukkit.getScheduler().runTask(this, () -> {
+        InteractableTaggedEntity seat = new InteractableTaggedEntity("seat");
+        seat.setDefaultInteractionHandler((team, event) -> Bukkit.getScheduler().runTask(this, () -> {
             Entity entity = event.getRightClicked();
             if (entity.getPassengers().isEmpty()) {
                 entity.addPassenger(event.getPlayer());
             }
         }));
-
-//        new BottleDisplay(1, new Location(Worlds.Apr2023(), -747.5, 114, -2567.5));
-
-//        new BottleManager(this, new Location(Worlds.Apr2023_quest(), -32, 66, 37));
+        InteractableTagManager.registerTag(seat);
 
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
         WaterDrips waterDrips = new WaterDrips(this, database);
 
-        MagicItems magicItems = new MagicItems(this, database, teamManager, questManager, waterDrips);
+        MagicItems magicItems = new MagicItems(this, database, teamManager, characterManager, waterDrips);
 
-        new GodManager(this, questManager, teamManager, magicItems);
+        new GodManager(this, gameFlowManager, questManager, jun2023QuestManager, teamManager, magicItems, portalControllers);
 
-        TowerCommands towerCommands = new TowerCommands(this, challengeManager, teamManager);
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
@@ -132,10 +145,8 @@ public final class TowerChallenge extends JavaPlugin {
             fullInvCommand.setExecutor(fullInventory);
         }
 
-//        new SitEventHandler();
-
         // Teams
-        ChatHandler chatHandler = new ChatHandler();
+        ChatHandler chatHandler = new ChatHandler(this);
         getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Wands
@@ -166,15 +177,19 @@ public final class TowerChallenge extends JavaPlugin {
 
 
         // PAST EVENTS
-        new Dec2022NPC(teamManager);
+        Dec2022NPC.registerNPCs(teamManager);
 
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+
+        // Cancel all scheduled tasks.
         Bukkit.getScheduler().cancelTasks(this);
 //        ferrisWheel.unloadCars();
+
+        // Unload end portal borders.
         Database.unloadPortalBorders();
     }
 

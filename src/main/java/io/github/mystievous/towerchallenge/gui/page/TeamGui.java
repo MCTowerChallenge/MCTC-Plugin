@@ -3,7 +3,7 @@ package io.github.mystievous.towerchallenge.gui.page;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.TargetListGui;
-import io.github.mystievous.towerchallenge.teams.TowerTeam;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -2,8 +2,7 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests;
 
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.GalleryTarget;
-import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
-import io.github.mystievous.towerchallenge.quests.instances.QuestInstance;
+import io.github.mystievous.towerchallenge.quest.instance.QuestInstance;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
@@ -23,13 +22,18 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.plaf.IconUIResource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Handles the Simon Says puzzle quest for the Jun 2023 event.
+ */
 public class SimonSays implements Listener {
 
+    /**
+     * Enum representing different Simon Says options along with their display, input, and sound.
+     */
     public enum Option {
         KICK(new Location(Worlds.Jun2023_quest(), 7, 66, 25),
                 new Location(Worlds.Jun2023_quest(), 0, 66, 25),
@@ -125,6 +129,9 @@ public class SimonSays implements Listener {
         }
     }
 
+    /**
+     * The solution to the Simon Says puzzle.
+     */
     public static final Option[] SOLUTION = {
             Option.KICK,
             Option.HAT,
@@ -144,8 +151,14 @@ public class SimonSays implements Listener {
 
     private BukkitTask playTask;
 
-    private Door door;
+    private final Door door;
 
+    /**
+     * Constructs a new SimonSays instance.
+     *
+     * @param plugin   The TowerChallenge plugin instance.
+     * @param instance The instance of the Jun2023QuestInstance associated with this puzzle.
+     */
     public SimonSays(Plugin plugin, Jun2023QuestInstance instance) {
         this.plugin = plugin;
         this.instance = instance;
@@ -159,10 +172,18 @@ public class SimonSays implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Checks if the Simon Says puzzle has been completed.
+     *
+     * @return True if the puzzle is completed, false otherwise.
+     */
     public boolean isCompleted() {
         return complete;
     }
 
+    /**
+     * Completes the room by opening the door and resetting the next one (Minesweeper).
+     */
     public void completeRoom() {
         complete = true;
 
@@ -175,6 +196,10 @@ public class SimonSays implements Listener {
         }
 
     }
+
+    /**
+     * Resets the Simon Says puzzle.
+     */
     public void reset() {
         currentStage = 1;
         nextToPress = 0;
@@ -185,8 +210,18 @@ public class SimonSays implements Listener {
         play(currentStage, null, true);
     }
 
+    /**
+     * The number of ticks for each light to stay on in the Simon Says display.
+     */
     public static final Long TICKS_PER_LIGHT = 12L;
 
+    /**
+     * Plays the Simon Says puzzle.
+     *
+     * @param stagesToPlay The number of stages to play.
+     * @param callback     The callback to run after playing.
+     * @param repeat       Whether to repeat the puzzle.
+     */
     public void play(int stagesToPlay, Runnable callback, boolean repeat) {
         if (!playing) {
             playing = true;
@@ -214,6 +249,11 @@ public class SimonSays implements Listener {
         }
     }
 
+    /**
+     * Handles the PlayerInteractEvent to detect player interactions with the Simon Says puzzle.
+     *
+     * @param event The PlayerInteractEvent.
+     */
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEvent event) {
         Block block = event.getClickedBlock();

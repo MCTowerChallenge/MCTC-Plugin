@@ -21,10 +21,12 @@ public class TimerTabComplete implements TabCompleter {
                 strings.add("set");
                 strings.add("show");
                 strings.add("hide");
+                strings.add("phase");
                 strings.add("pause");
                 strings.add("resume");
                 strings.add("start");
                 strings.add("reset");
+                strings.add("help");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 

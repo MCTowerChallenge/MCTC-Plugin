@@ -2,7 +2,7 @@ package io.github.mystievous.towerchallenge.misc;
 
 import io.github.mystievous.mysticore.DefaultFontInfo;
 import io.github.mystievous.mysticore.TextUtil;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.key.Key;
@@ -62,7 +62,6 @@ public class BroadcastCommand implements CommandExecutor {
 
         Bukkit.getServer().sendMessage(message.build());
         Title title = Title.title(Component.text("ANNOUNCEMENT").color(Palette.PRIMARY.toTextColor()), Component.text("An event announcement has been posted in chat!").color(NamedTextColor.WHITE));
-//        Title title = Title.title(Component.empty(), Component.text("An event announcement has been posted in chat!"));
         Bukkit.getServer().showTitle(title);
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 100, 1f));
         Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 100, 0.6f));

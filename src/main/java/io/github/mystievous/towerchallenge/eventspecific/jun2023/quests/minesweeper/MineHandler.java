@@ -2,25 +2,17 @@ package io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.mineswe
 
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.Palette;
-import io.github.mystievous.mysticore.SoundUtil;
 import io.github.mystievous.mysticore.TextUtil;
-import io.github.mystievous.mystigui.GuiUtil;
-import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Door;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestInstance;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.gamepieces.Flag;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.gamepieces.GamePiece;
-import io.github.mystievous.towerchallenge.gods.GodTeam;
-import io.github.mystievous.towerchallenge.quests.utils.FullInventory;
-import io.github.mystievous.towerchallenge.teams.TeamManager;
 import io.github.mystievous.towerchallenge.utility.TeamUtils;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Brushable;
 import org.bukkit.entity.Entity;
@@ -30,21 +22,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
-import javax.xml.crypto.Data;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Handles the Minesweeper game mechanics and interactions for the Jun 2023 quest.
+ * This class includes methods to load the game grid, perform sweeping actions, place flags,
+ * check completion status, and handle player interactions.
+ */
 public class MineHandler implements Listener {
 
     public static final String MINESWEEPER_REMOVE_TAG = "jun2023-minesweeper-remove";
@@ -74,20 +67,22 @@ public class MineHandler implements Listener {
     };
 
     private final Plugin plugin;
-    private final Jun2023QuestInstance instance;
     private final Location location;
-    private final TeamManager teamManager;
     private final GamePiece[][] gamePieces;
     private final Door door;
     private boolean completed;
 
     private final String teamRemoveTag;
 
-    public MineHandler(Plugin plugin, Jun2023QuestInstance instance, TeamManager teamManager) {
+    /**
+     * Creates a new instance of the MineHandler for handling Minesweeper mechanics.
+     *
+     * @param plugin   The plugin instance.
+     * @param instance The associated Jun2023QuestInstance for this Minesweeper game.
+     */
+    public MineHandler(Plugin plugin, Jun2023QuestInstance instance) {
         this.plugin = plugin;
-        this.instance = instance;
         this.location = instance.offsetLocation(BASE_GRID_LOCATION);
-        this.teamManager = teamManager;
         this.gamePieces = new GamePiece[GRID_SIZE][GRID_SIZE];
         this.door = new Door(instance, DOOR_OFFSET);
         this.completed = false;
@@ -100,10 +95,19 @@ public class MineHandler implements Listener {
 
     }
 
+    /**
+     * Gets the team-specific tag used for removing Minesweeper entities associated with this handler.
+     *
+     * @return The team-specific tag for removing Minesweeper entities.
+     */
     public String getTeamRemoveTag() {
         return teamRemoveTag;
     }
 
+    /**
+     * Loads the Minesweeper game grid, game pieces, and initializes game mechanics.
+     * This method is called during initialization to set up the Minesweeper game.
+     */
     public void load() {
         List<Entity> entities = Bukkit.selectEntities(Bukkit.getConsoleSender(), String.format("@e[tag=%s]", teamRemoveTag));
         for (Entity entity : entities) {
@@ -117,9 +121,17 @@ public class MineHandler implements Listener {
                 gamePieces[x][z] = new GamePiece(plugin, this, location.clone().add(x, 0, z), value);
             }
         }
+
+        // Start the game by sweeping the initial game piece.
         gamePieces[0][0].sweep();
     }
 
+    /**
+     * Converts a vector to its corresponding game piece on the Minesweeper grid.
+     *
+     * @param vector The vector representing the location.
+     * @return The corresponding GamePiece, or null if the vector is outside the grid.
+     */
     public @Nullable GamePiece vectorToGamePiece(Vector vector) {
         Vector gridVector = vectorToGrid(vector);
         if (gridVector != null) {
@@ -129,6 +141,12 @@ public class MineHandler implements Listener {
         }
     }
 
+    /**
+     * Converts a vector to its corresponding grid position on the Minesweeper grid.
+     *
+     * @param vector The vector representing the location.
+     * @return The grid position vector, or null if the vector is outside the grid.
+     */
     public @Nullable Vector vectorToGrid(Vector vector) {
         int x = vector.getBlockX() - location.getBlockX();
         int y = vector.getBlockY() - location.getBlockY();
@@ -142,6 +160,12 @@ public class MineHandler implements Listener {
         }
     }
 
+    /**
+     * Clears the game pieces around the specified game piece.
+     *
+     * @param gamePiece The game piece to clear around.
+     * @param force     Whether to force the clearing of adjacent game pieces.
+     */
     public void clearAround(GamePiece gamePiece, boolean force) {
         Location cornerLocation = gamePiece.getLocation().clone().add(-1, 0, -1);
         for (int x = cornerLocation.getBlockX(); x < (cornerLocation.getBlockX() + 3); x++) {
@@ -161,10 +185,21 @@ public class MineHandler implements Listener {
         }
     }
 
+    /**
+     * Clears the game pieces around the specified game piece.
+     * Does not force non-zeros to clear.
+     *
+     * @param gamePiece The game piece to clear around.
+     */
     public void clearAround(GamePiece gamePiece) {
         clearAround(gamePiece, false);
     }
 
+    /**
+     * Clears the adjacent game pieces around a swept game piece when flagged game pieces match mines count.
+     *
+     * @param gamePiece The game piece to clear sweep around.
+     */
     public void clearSweep(GamePiece gamePiece) {
         Location cornerLocation = gamePiece.getLocation().clone().add(-1, 0, -1);
         int flags = 0;
@@ -181,6 +216,10 @@ public class MineHandler implements Listener {
         }
     }
 
+    /**
+     * Checks whether the Minesweeper game is completed.
+     * If all non-mined game pieces have been swept, completes the room.
+     */
     public void checkComplete() {
         boolean nowComplete = true;
         for (GamePiece[] row : gamePieces) {
@@ -200,10 +239,19 @@ public class MineHandler implements Listener {
         }
     }
 
+    /**
+     * Checks whether the Minesweeper game has been completed.
+     *
+     * @return {@code true} if the game is completed, {@code false} otherwise.
+     */
     public boolean isCompleted() {
         return completed;
     }
 
+    /**
+     * Completes the Minesweeper game by opening the associated door.
+     * This method is called when all game pieces have been successfully swept.
+     */
     public void completeRoom() {
         if (!completed) {
             completed = true;
