@@ -234,10 +234,11 @@ public abstract class QuestCharacter {
 //        lookClose.lookClose(true);
         lookClose.setLinkedBody(true);
 //        lookClose.setPerPlayer(true);
-        HologramTrait hologramTrait = npc.getTraitNullable(HologramTrait.class);
-        if (hologramTrait != null) {
-            hologramTrait.setUseTextDisplay(true);
-        }
+//        HologramTrait hologramTrait = npc.getTraitNullable(HologramTrait.class);
+//        if (hologramTrait != null) {
+//            hologramTrait.setUseTextDisplay(true);
+//        }
+//        TextDisplayTrait trait = npc.getOrAddTrait(TextDisplayTrait.class);
         return npc;
     }
 
@@ -248,7 +249,7 @@ public abstract class QuestCharacter {
      * @return The created NPC.
      */
     public NPC createNPC() {
-        NPC npc = CitizensAPI.getNPCRegistry().createNPC(entityType, getMiniMessageName());
+        NPC npc = CitizensAPI.getNPCRegistry().createNPC(entityType, getTextName());
         npc.getOrAddTrait(getTrait());
         return setNPCProperties(npc);
     }

@@ -127,6 +127,7 @@ public class CharacterManager implements Listener {
         registerCharacter(new Apple(plugin, teamManager.getGodTeam()));
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TeamTrait.class));
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TextDisplayTrait.class));
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
