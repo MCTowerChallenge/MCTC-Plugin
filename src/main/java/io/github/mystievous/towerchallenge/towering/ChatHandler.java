@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 public class ChatHandler implements Listener {
@@ -113,25 +112,31 @@ public class ChatHandler implements Listener {
             }
         }
 
-        Audience audience = Audience.audience(event.viewers());
-        audience.sendMessage(message);
-        if (dayBotMessage != null) {
-            Component finalDayBotMessage = dayBotMessage;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    audience.sendMessage(Component.text()
-                            .append(Component.text("["))
-                            .append(Component.text("God").color(TextColor.fromHexString("#F7E983")))
-                            .append(Component.text("] "))
-                            .append(Component.text("<Daybot> "))
-                            .append(finalDayBotMessage));
-                }
-            }.runTaskLater(plugin, 20L);
+        for (Audience audience : event.viewers()) {
+            audience.sendMessage(message);
+            if (dayBotMessage != null) {
+                daybotMessage(audience, dayBotMessage);
+            }
         }
-
         event.setCancelled(true);
 
+    }
+
+    private static void daybotMessage(Audience audience, Component dayBotMessage) {
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            audience.sendMessage(Component.text()
+                    .append(Component.text("["))
+                    .append(Component.text("God").color(TextColor.fromHexString("#F7E983")))
+                    .append(Component.text("] "))
+                    .append(Component.text("<Daybot> "))
+                    .append(dayBotMessage));
+        });
+        t.start();
     }
 
 }
