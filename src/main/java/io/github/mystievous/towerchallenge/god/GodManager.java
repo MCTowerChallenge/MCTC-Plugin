@@ -2,6 +2,7 @@ package io.github.mystievous.towerchallenge.god;
 
 import io.github.mystievous.towerchallenge.GameFlowManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
 import io.github.mystievous.towerchallenge.god.godgui.GodGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
@@ -29,9 +30,9 @@ public class GodManager {
      * @param magicItems          The manager for magical items.
      * @param portalControllers   The manager for portal controllers.
      */
-    public GodManager(TowerChallenge plugin, GameFlowManager gameFlowManager, QuestManager questManager, Jun2023QuestManager jun2023QuestManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodManager(TowerChallenge plugin, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Jun2023QuestManager jun2023QuestManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
         TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(plugin, this);
-        godGui = new GodGui(plugin, this, gameFlowManager, questManager, jun2023QuestManager, teleportHistoryManager, teamManager, magicItems, portalControllers);
+        godGui = new GodGui(plugin, this, gameFlowManager, customBlockManager, questManager, jun2023QuestManager, teleportHistoryManager, teamManager, magicItems, portalControllers);
 
         GodMenuCommand command = new GodMenuCommand(this);
         Bukkit.getPluginCommand("godmenu").setExecutor(command);

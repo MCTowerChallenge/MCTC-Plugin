@@ -10,6 +10,7 @@ import io.github.mystievous.mystigui.page.*;
 import io.github.mystievous.towerchallenge.GameFlowManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
 import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.gui.Icons;
@@ -71,7 +72,7 @@ public class GodGui extends PresetGui implements Openable {
      * @param magicItems            The manager for magic items.
      * @param portalControllers     The manager for controlling portals.
      */
-    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, QuestManager questManager, Jun2023QuestManager jun2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Jun2023QuestManager jun2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
         super(plugin, COMPONENT_NAME, ROWS);
 
         /*
@@ -287,6 +288,10 @@ public class GodGui extends PresetGui implements Openable {
             questGui.openInventory(player);
         });
 
+        ItemStack customBlockIcon = GuiUtil.formatItem("Custom Blocks", Material.BOOK, 0);
+        GuiHeldItem customBlockItem = new GuiHeldItem(plugin, CustomBlockManager.CUSTOM_BLOCK_TAG, customBlockIcon, customBlockManager);
+        ButtonElement customBlockElement = new ButtonElement(customBlockIcon, player -> player.getInventory().addItem(customBlockItem.getItem()));
+
         placeElement(1, 1, crafting);
         placeElement(1, 2, anvil);
         placeElement(1, 3, enderChest);
@@ -326,7 +331,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 3, Icons.blankSlot);
         placeElement(5, 4, endButton);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, Icons.blankSlot);
+        placeElement(5, 6, customBlockElement);
         placeElement(5, 7, Icons.blankSlot);
         try {
             /*

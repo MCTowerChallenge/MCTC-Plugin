@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
+import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
 import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
@@ -126,7 +127,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         MagicItems magicItems = new MagicItems(this, database, teamManager, characterManager, waterDrips);
 
-        new GodManager(this, gameFlowManager, questManager, jun2023QuestManager, teamManager, magicItems, portalControllers);
+        CustomBlockManager customBlockManager = new CustomBlockManager(this);
+
+        new GodManager(this, gameFlowManager, customBlockManager, questManager, jun2023QuestManager, teamManager, magicItems, portalControllers);
 
         TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
