@@ -21,7 +21,9 @@ import java.util.Map;
 /**
  * A Gui Element for an item of the given model properties
  */
-public class ModelElement extends ButtonElement {
+public class CustomModel {
+
+    private final ItemStack item;
 
     /**
      * @param name            Display Name for the item
@@ -31,8 +33,8 @@ public class ModelElement extends ButtonElement {
      * @param author          Model author
      * @param debug           Whether the item should have material and model id in the lore
      */
-    public ModelElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
-        super(NBTUtils.setNoUse(new ItemStack(material) {{
+    public CustomModel(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
+        item = NBTUtils.setNoUse(new ItemStack(material) {{
             ItemMeta meta = getItemMeta();
             meta.displayName(name);
             meta.setCustomModelData(customModelData);
@@ -49,15 +51,7 @@ public class ModelElement extends ButtonElement {
             }
             meta.addItemFlags(ItemFlag.HIDE_DYE);
             setItemMeta(meta);
-        }}));
-        setConsumer(player -> {
-            PlayerInventory inventory = player.getInventory();
-            Map<Integer, ItemStack> leftovers = inventory.addItem(getItem());
-            if (!leftovers.isEmpty()) {
-                player.sendMessage(CommandUtils.errorMessage("Your inventory is full!"));
-            }
-//            Bukkit.getScheduler().scheduleSyncDelayedTask(TowerChallenge.getInstance(), player::closeInventory, 1);
-        });
+        }});
     }
 
     /**
@@ -68,8 +62,16 @@ public class ModelElement extends ButtonElement {
      * @param author          Model author
      * @param debug           Whether the item should have material and model id in the lore
      */
-    public ModelElement(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
+    public CustomModel(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, boolean debug) {
         this(TextUtil.noItalic(name), material, customModelData, color, author, debug);
+    }
+
+    public ItemStack getItem() {
+        return item;
+    }
+
+    public ButtonElement getGiveElement() {
+        return ButtonElement.createGiveItemButton(item);
     }
 
 }

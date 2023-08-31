@@ -9,14 +9,12 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.*;
 import io.github.mystievous.towerchallenge.GameFlowManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
 import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
 import io.github.mystievous.towerchallenge.magic.MagicItems;
-import io.github.mystievous.towerchallenge.portal.EndPortal;
 import io.github.mystievous.towerchallenge.portal.PortalControllers;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestManager;
@@ -28,17 +26,12 @@ import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Axis;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -338,7 +331,7 @@ public class GodGui extends PresetGui implements Openable {
                 GUI with all the custom models in the database,
                 grouped by modelgroups
              */
-            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());
+            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroupGuis(), Element.blank());
             ItemStack modelItem = GuiUtil.formatItem("Models", Material.PAPER, 12);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
             placeElement(5, 8, modelElement);

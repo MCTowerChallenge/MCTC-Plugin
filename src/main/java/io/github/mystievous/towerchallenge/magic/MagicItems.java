@@ -304,7 +304,7 @@ public class MagicItems implements Openable {
 
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
             HologramTrait hologramTrait = npc.getOrAddTrait(HologramTrait.class);
-            hologramTrait.setUseTextDisplay(true);
+            hologramTrait.setUseDisplayEntities(true);
 
             player.sendMessage(TextUtil.formatText("Hologram Trait set to use Text Display"));
 

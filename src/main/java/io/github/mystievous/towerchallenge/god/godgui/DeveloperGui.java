@@ -86,7 +86,7 @@ public class DeveloperGui extends PresetGui {
         });
 
         try {
-            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroups(), Element.blank());
+            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroupGuis(), Element.blank());
             ItemStack modelItem = GuiUtil.formatItem("Models", Material.RED_MUSHROOM, 1);
             Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
             placeElement(1, 9, modelElement);

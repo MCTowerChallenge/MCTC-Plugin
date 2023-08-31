@@ -21,6 +21,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -29,8 +30,9 @@ import java.util.UUID;
 
 public class HatElement extends ButtonElement {
 
-    public HatElement(Plugin plugin, Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced, boolean handheld) {
+    public HatElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced, boolean handheld) {
         super(new ItemStack(material) {{
+            Plugin plugin = JavaPlugin.getPlugin(TowerChallenge.class);
             ItemMeta meta = getItemMeta();
             if (!handheld) {
                 HatUtil.setHat(plugin, meta, true);
@@ -70,7 +72,6 @@ public class HatElement extends ButtonElement {
                 lore.add(TextUtil.formatText("Handheld").decoration(TextDecoration.ITALIC, true));
             }
             if (handheld && material.equals(Material.SCUTE)) {
-//                NBTUtils.setBool(plugin, Flag.FLAG_TAG, meta, true);
                 Flag.makeItemFlag(plugin, meta);
             }
             meta.lore(lore);
@@ -95,16 +96,16 @@ public class HatElement extends ButtonElement {
         });
     }
 
-    public HatElement(Plugin plugin, Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
-        this(plugin, name, material, customModelData, color, author, referenced, false);
+    public HatElement(Component name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
+        this(name, material, customModelData, color, author, referenced, false);
     }
 
-    public HatElement(Plugin plugin, String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced, boolean handheld) {
-        this(plugin, TextUtil.noItalic(name), material, customModelData, color, author, referenced, handheld);
+    public HatElement(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced, boolean handheld) {
+        this(TextUtil.noItalic(name), material, customModelData, color, author, referenced, handheld);
     }
 
-    public HatElement(Plugin plugin, String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
-        this(plugin, TextUtil.noItalic(name), material, customModelData, color, author, referenced, false);
+    public HatElement(String name, Material material, @Nullable Integer customModelData, @Nullable Color color, @Nullable String author, @Nullable String referenced) {
+        this(TextUtil.noItalic(name), material, customModelData, color, author, referenced, false);
     }
 
 }

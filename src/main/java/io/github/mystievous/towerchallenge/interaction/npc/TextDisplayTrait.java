@@ -61,7 +61,7 @@ public class TextDisplayTrait extends HologramTrait {
     @Override
     public void onSpawn() {
         super.onSpawn();
-        setUseTextDisplay(true);
+        setUseDisplayEntities(true);
         reloadNameHologram();
         npc.removeTrait(HologramTrait.class);
     }
