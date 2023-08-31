@@ -8,7 +8,7 @@ import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.towerchallenge.configs.DatabaseConfig;
-import io.github.mystievous.towerchallenge.decoration.ModelElement;
+import io.github.mystievous.towerchallenge.decoration.CustomModel;
 import io.github.mystievous.towerchallenge.god.GodTeam;
 import io.github.mystievous.towerchallenge.hats.HatElement;
 import io.github.mystievous.towerchallenge.team.ParticipantTeam;
@@ -741,7 +741,7 @@ public class Database {
         String author = resultSet.getString("author");
         String referenced = resultSet.getString("referenced");
         boolean handheld = resultSet.getBoolean("handheld");
-        return new HatElement(plugin, name, material, customModelData, color, author, referenced, handheld);
+        return new HatElement(name, material, customModelData, color, author, referenced, handheld);
     }
 
     /**
@@ -889,7 +889,7 @@ public class Database {
      * @throws SQLException             If there's an error interacting with the database.
      * @throws IllegalArgumentException If the material name is invalid.
      */
-    public List<Element> getModelGroups() throws SQLException, IllegalArgumentException {
+    public List<Element> getModelGroupGuis() throws SQLException, IllegalArgumentException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement modelGroups = conn.prepareStatement(
                 """
                         SELECT id, name FROM modelgroups
@@ -920,7 +920,7 @@ public class Database {
                 Material material = Material.valueOf(modelsResultSet.getString("material"));
                 int customModelData = modelsResultSet.getInt("custom_model_data");
                 String author = modelsResultSet.getString("author");
-                groups.get(groupId).addElement(new ModelElement(name, material, customModelData, null, author, true));
+                groups.get(groupId).addElement(new CustomModel(name, material, customModelData, null, author, true).getGiveElement());
             }
             List<Element> elements = new ArrayList<>();
             for (ListGui listGui : groups.values()) {
@@ -948,7 +948,7 @@ public class Database {
      * @return The element for the model.
      * @throws SQLException If there's an SQL error.
      */
-    public ButtonElement getModel(int databaseId, boolean showAuthor, boolean debug) throws SQLException {
+    public CustomModel getModel(int databaseId, boolean showAuthor, boolean debug) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
                         SELECT models.name AS model, m.name AS material, models.custom_model_data, hp.name AS author
@@ -968,7 +968,7 @@ public class Database {
                 if (showAuthor) {
                     author = resultSet.getString("author");
                 }
-                return new ModelElement(name, material, customModelData, null, author, debug);
+                return new CustomModel(name, material, customModelData, null, author, debug);
             }
             return null;
         }
