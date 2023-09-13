@@ -1,6 +1,7 @@
 package io.github.mystievous.towerchallenge.interaction.npc;
 
 import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.interaction.npc.character.*;
 import io.github.mystievous.towerchallenge.team.TeamManager;
@@ -92,6 +93,7 @@ public class CharacterManager implements Listener {
     // Instance variables
     private final Plugin plugin;
     private final TeamManager teamManager;
+    private final Database database;
     private final QuestCharacter steve;
 
     /**
@@ -99,10 +101,12 @@ public class CharacterManager implements Listener {
      *
      * @param plugin The plugin instance.
      * @param teamManager The team manager instance.
+     * @param database The database instance
      */
-    public CharacterManager(Plugin plugin, TeamManager teamManager) {
+    public CharacterManager(Plugin plugin, TeamManager teamManager, Database database) {
         this.plugin = plugin;
         this.teamManager = teamManager;
+        this.database = database;
 
         // Character initialization and registration
         steve = new SteveSkellington(plugin);
@@ -125,6 +129,8 @@ public class CharacterManager implements Listener {
 
         registerCharacter(new Mystievous(plugin, teamManager.getGodTeam()));
         registerCharacter(new Apple(plugin, teamManager.getGodTeam()));
+
+        registerCharacter(new Lovebot(plugin, database));
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TeamTrait.class));
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TextDisplayTrait.class));

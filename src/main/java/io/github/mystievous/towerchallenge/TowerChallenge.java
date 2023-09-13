@@ -3,8 +3,6 @@ package io.github.mystievous.towerchallenge;
 import io.github.mystievous.towerchallenge.configs.Config;
 import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
-import io.github.mystievous.towerchallenge.eventspecific.dec2022.Dec2022NPC;
-import io.github.mystievous.towerchallenge.eventspecific.feb2023.Lovebot;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.Posters;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.flags.SelectionHandler;
@@ -91,7 +89,7 @@ public final class TowerChallenge extends JavaPlugin {
 
         ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
 
-        CharacterManager characterManager = new CharacterManager(this, teamManager);
+        CharacterManager characterManager = new CharacterManager(this, teamManager, database);
 
         DialogueCommands dialogueCommands = new DialogueCommands(teamManager);
         PluginCommand stopDialogue = this.getCommand("stopdialogue");
@@ -103,8 +101,6 @@ public final class TowerChallenge extends JavaPlugin {
         GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager);
 
         InteractableTagManager tagManager = new InteractableTagManager(this, teamManager);
-
-        new Lovebot(this, teamManager, database);
 
         new SelectionHandler(this, database);
         new IceCream(this);
@@ -155,8 +151,6 @@ public final class TowerChallenge extends JavaPlugin {
         // Wands
         WandCommands wandCommands = new WandCommands(magicItems);
         this.getCommand("wand").setExecutor(wandCommands);
-//        WandListener wandListener = new WandListener();
-//        getServer().getPluginManager().registerEvents(wandListener, this);
 
         // Other
         ResourcePack resourcePack = new ResourcePack();
@@ -174,10 +168,6 @@ public final class TowerChallenge extends JavaPlugin {
         new RenameCommand(this);
         new SpectateTPCommand();
         new MystiSkinListener(this);
-
-
-        // PAST EVENTS
-        Dec2022NPC.registerNPCs(teamManager);
 
     }
 

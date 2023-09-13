@@ -1,22 +1,28 @@
-package io.github.mystievous.towerchallenge.eventspecific.feb2023;
+package io.github.mystievous.towerchallenge.interaction.npc.character;
 
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mysticore.NBTUtils;
-import io.github.mystievous.towerchallenge.Database;
-import io.github.mystievous.towerchallenge.team.TeamManager;
-import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.utility.CommandUtils;
-import io.github.mystievous.towerchallenge.quest.npc.LegacyNPC;
 import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.Database;
+import io.github.mystievous.towerchallenge.interaction.npc.Dialogue;
+import io.github.mystievous.towerchallenge.interaction.npc.QuestCharacter;
+import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.Trait;
+import net.citizensnpcs.api.trait.TraitName;
+import net.citizensnpcs.trait.LookClose;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -24,10 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-/**
- * Represents the Lovebot NPC with various states and interactions.
- */
-public class Lovebot extends LegacyNPC {
+public class Lovebot extends QuestCharacter {
 
     /**
      * Possible states for Lovebot to be in.
@@ -59,12 +62,6 @@ public class Lovebot extends LegacyNPC {
             return cookieId;
         }
     }
-
-    public static final String NAME = "Lovebot";
-    public static final String TAG = "lovebot";
-    private static final Color NAME_COLOR = new Color(0x72a881);
-    private static final Color TEXT_COLOR = new Color(0x8bce9e);
-
     private final static State[] ANSWER_STATES = new State[]{
             State.YES,
             State.MAYBE,
@@ -73,25 +70,22 @@ public class Lovebot extends LegacyNPC {
     private static final Random RANDOM = new Random();
 
     private final Map<UUID, State> states;
-
     private final Database database;
 
-    /**
-     * Creates a new instance of Lovebot NPC.
-     *
-     * @param plugin The TowerChallenge plugin instance.
-     * @param teamManager The TeamManager instance.
-     * @param database The Database instance.
-     */
-    public Lovebot(TowerChallenge plugin, TeamManager teamManager, Database database) {
-        super(teamManager, NAME, TAG, NAME_COLOR, TEXT_COLOR);
+    public static final String NAME = "Lovebot";
+    private static final Color NAME_COLOR = new Color(0x72a881);
+    private static final Color TEXT_COLOR = new Color(0x8bce9e);
+    public static final String TRAIT_NAME = "lovebot";
+
+    public Lovebot(Plugin plugin, Database database) {
+        super(plugin, EntityType.ARMOR_STAND, NAME, NAME_COLOR, TEXT_COLOR);
         this.database = database;
         this.states = new HashMap<>();
 
         // NPC Handler for Lovebot's interactions
-        setDefaultHandler(playerInteractEntityEvent -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Player player = playerInteractEntityEvent.getPlayer();
-            Entity entity = playerInteractEntityEvent.getRightClicked();
+        setDefaultInteractionHandler((team, playerInteractEntityEvent) -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Player player = playerInteractEntityEvent.getClicker();
+            Entity entity = playerInteractEntityEvent.getNPC().getEntity();
             if (entity instanceof LivingEntity livingEntity) {
                 try {
                     State state = getState(livingEntity);
@@ -136,6 +130,7 @@ public class Lovebot extends LegacyNPC {
                 }
             }
         }));
+
     }
 
     /**
@@ -161,6 +156,32 @@ public class Lovebot extends LegacyNPC {
      */
     public State getState(LivingEntity entity) {
         return this.states.getOrDefault(entity.getUniqueId(), State.IDLE);
+    }
+
+    @Override
+    public @NotNull NPC setNPCProperties(NPC npc) {
+        super.setNPCProperties(npc);
+        return npc;
+    }
+
+    @Override
+    public @NotNull Class<? extends Trait> getTrait() {
+        return LovebotTrait.class;
+    }
+
+    @TraitName(TRAIT_NAME)
+    public static class LovebotTrait extends Trait {
+        public LovebotTrait() {
+            super(TRAIT_NAME);
+        }
+
+        @Override
+        public void onSpawn() {
+            super.onSpawn();
+            if (npc.getEntity() instanceof ArmorStand armorStand) {
+                armorStand.setInvisible(true);
+            }
+        }
     }
 
 }
