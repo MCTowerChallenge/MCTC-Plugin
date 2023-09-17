@@ -1,0 +1,45 @@
+package io.github.mystievous.towerchallenge.team.regions;
+
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.Worlds;
+import io.github.mystievous.towerchallenge.portal.EndPortal;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
+import org.bukkit.Location;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.jetbrains.annotations.Nullable;
+
+public class SpawnBorderRegion extends EventRegion {
+
+    public static final String REGION_TAG = "spawn_border";
+
+    public SpawnBorderRegion(TowerChallenge plugin, Location[] bounds, ParticipantTeam team) {
+        super(plugin, bounds, team, REGION_TAG);
+        setFlags(getRegion());
+    }
+
+    @Override
+    public void unregisterEvents() {
+        PlayerRespawnEvent.getHandlerList().unregister(this);
+    }
+
+    @Override
+    protected void setFlags(ProtectedRegion region) {
+        region.setPriority(0);
+        region.setFlag(Flags.DENY_MESSAGE, null);
+        region.setFlag(Flags.ENTRY_DENY_MESSAGE, null);
+        region.setFlag(Flags.EXIT_DENY_MESSAGE, null);
+        region.setFlag(Flags.USE, StateFlag.State.ALLOW);
+        region.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
+        region.setFlag(Flags.INTERACT, StateFlag.State.ALLOW);
+    }
+
+    @Override
+    public String parentRegionName() {
+        return null;
+    }
+}

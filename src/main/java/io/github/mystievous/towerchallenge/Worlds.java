@@ -51,19 +51,36 @@ public class Worlds {
         return Bukkit.getWorld("Oct2023_nether");
     }
 
+    public static World Oct2023_the_end() {
+        return Bukkit.getWorld("Oct2023_the_end");
+    }
+
+    public static World Oct2023_quest() {
+        return Bukkit.getWorld("Oct2023_quest");
+    }
+
+    public static World Oct2023_tower() {
+        return Bukkit.getWorld("Oct2023_tower");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }
 
     public static World WORLD() {
-        return Jun2023();
+        return Oct2023();
     }
 
     public static World NETHER() {
-        return Jun2023_nether();
+        return Oct2023_nether();
     }
 
     public static World THE_END() {
-        return Jun2023_the_end();
+        return Oct2023_the_end();
     }
+
+    public static World TOWER() {
+        return Oct2023_tower();
+    }
+
 }

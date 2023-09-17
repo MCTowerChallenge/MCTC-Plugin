@@ -19,10 +19,14 @@ public class SpawnRegion extends EventRegion {
 
     private final Location spawnLocation;
 
+    private final EventRegion borderRegion;
+
     public SpawnRegion(TowerChallenge plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
         super(plugin, bounds, team, REGION_TAG);
         this.spawnLocation = spawnLocation;
         setFlags(getRegion());
+        Location[] borderBounds = { bounds[0].add(0, -24, 0), bounds[1] };
+        this.borderRegion = new SpawnBorderRegion(plugin, borderBounds, team);
     }
 
     /**
@@ -54,7 +58,7 @@ public class SpawnRegion extends EventRegion {
             Location newSpawnLocation = event.getRespawnLocation();
             if (newSpawnLocation.getWorld().equals(spawnLocation.getWorld())) {
                 if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
-                    event.setRespawnLocation(EndPortal.overworldSpawn);
+                    return;
                 }
                 Location location = getSpawnpoint();
                 if (location != null) {

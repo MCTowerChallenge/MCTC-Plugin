@@ -14,10 +14,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.event.EventHandler;
@@ -38,77 +35,77 @@ public class ParticipantTeam extends TowerTeam {
     /**
      * The anchor location of the base tower.
      */
-    public static final Location baseTowerLocation = new Location(Worlds.Jun2023_tower(), -61, -63, 2); // Red
+    public static final Location baseTowerLocation = new Location(Worlds.TOWER(), -61, -63, 2); // Red
 
     /**
      * The bounds of the base tower.
      */
     public static final Location[] baseTowerBounds = new Location[]{
-            new Location(Worlds.Jun2023_tower(), -60, -62, 3),
-            new Location(Worlds.Jun2023_tower(), -62, 319, 1)
+            new Location(Worlds.TOWER(), -60, -62, 3),
+            new Location(Worlds.TOWER(), -62, 319, 1)
     };
 
     /**
      * The anchor locations for all the team towers.
      */
     public static final Map<Integer, Location> towerLocations = new HashMap<>() {{
-        put(2, new Location(Worlds.Jun2023_tower(), -61, -63, 2));    // Red
-        put(3, new Location(Worlds.Jun2023_tower(), -54, -63, 9));    // Orange
-        put(4, new Location(Worlds.Jun2023_tower(), -61, -63, 16));    // Yellow
-        put(5, new Location(Worlds.Jun2023_tower(), -68, -63, 9));    // Lime
-        put(6, new Location(Worlds.Jun2023_tower(), -69, -63, 1));    // Green
-        put(7, new Location(Worlds.Jun2023_tower(), -64, -63, -4));    // Cyan
-        put(8, new Location(Worlds.Jun2023_tower(), -58, -63, -4));    // Light Blue
-        put(9, new Location(Worlds.Jun2023_tower(), -53, -63, 1));    // Blue
-        put(10, new Location(Worlds.Jun2023_tower(), -48, -63, 6));   // Purple
-        put(11, new Location(Worlds.Jun2023_tower(), -48, -63, 12));   // Magenta
-        put(12, new Location(Worlds.Jun2023_tower(), -53, -63, 17));   // Pink
-        put(13, new Location(Worlds.Jun2023_tower(), -58, -63, 22));   // White
-        put(14, new Location(Worlds.Jun2023_tower(), -64, -63, 22));   // Light Gray
-        put(15, new Location(Worlds.Jun2023_tower(), -69, -63, 17));   // Gray
-        put(16, new Location(Worlds.Jun2023_tower(), -74, -63, 12));   // Black
-        put(17, new Location(Worlds.Jun2023_tower(), -74, -63, 7));   // Brown
+        put(2, new Location(Worlds.TOWER(), -61, -63, 2));    // Red
+        put(3, new Location(Worlds.TOWER(), -54, -63, 9));    // Orange
+        put(4, new Location(Worlds.TOWER(), -61, -63, 16));    // Yellow
+        put(5, new Location(Worlds.TOWER(), -68, -63, 9));    // Lime
+        put(6, new Location(Worlds.TOWER(), -69, -63, 1));    // Green
+        put(7, new Location(Worlds.TOWER(), -64, -63, -4));    // Cyan
+        put(8, new Location(Worlds.TOWER(), -58, -63, -4));    // Light Blue
+        put(9, new Location(Worlds.TOWER(), -53, -63, 1));    // Blue
+        put(10, new Location(Worlds.TOWER(), -48, -63, 6));   // Purple
+        put(11, new Location(Worlds.TOWER(), -48, -63, 12));   // Magenta
+        put(12, new Location(Worlds.TOWER(), -53, -63, 17));   // Pink
+        put(13, new Location(Worlds.TOWER(), -58, -63, 22));   // White
+        put(14, new Location(Worlds.TOWER(), -64, -63, 22));   // Light Gray
+        put(15, new Location(Worlds.TOWER(), -69, -63, 17));   // Gray
+        put(16, new Location(Worlds.TOWER(), -74, -63, 12));   // Black
+        put(17, new Location(Worlds.TOWER(), -74, -63, 7));   // Brown
     }};
 
     /**
      * The anchor location of the base team spawn.
      */
-    public static final Location baseSpawnLocation = new Location(Worlds.Jun2023(), 164, 64, -2236, 180, 0); // Red
+    public static final Location baseSpawnLocation = new Location(Worlds.Oct2023_the_end(), 0.5f, 80f, -59.5f, 180f, 16f); // Red
 
     /**
      * Location in the base team spawn that players
      * will spawn at.
      */
-    public static final Location basePlayerSpawn = new Location(Worlds.Jun2023(), 164.5, 65, -2235.5, 0, 16);
+    public static final Location basePlayerSpawn = new Location(Worlds.Oct2023_the_end(), 0.5f, 80f, -59.5f, 180f, 16f);
 
     /**
      * Bounds of the base spawn.
      */
     public static final Location[] baseSpawnBounds = new Location[]{
-            new Location(Worlds.Jun2023(), 158, 64, -2242),
-            new Location(Worlds.Jun2023(), 170, 319, -2230)
+            new Location(Worlds.Oct2023_the_end(), -8, 80, -68),
+            new Location(Worlds.Oct2023_the_end(), 8, 255, -52)
     };
 
     /**
      * The anchor locations of all the team spawns.
      */
     public static final Map<Integer, Location> teamSpawnLocations = new HashMap<>() {{
-        put(2, new Location(Worlds.Jun2023(), 164, 64, -2236, 180, 0));    // Red
-        put(3, new Location(Worlds.Jun2023(), 186, 64, -2214, -90, 0));    // Orange
-        put(4, new Location(Worlds.Jun2023(), 184, 64, -2235, -90, 0));    // Yellow
-        put(5, new Location(Worlds.Jun2023(), 206, 64, -2213, 180, 0));    // Lime
-        put(6, new Location(Worlds.Jun2023(), 205, 63, -2167, -90, 0));    // Green
-        put(7, new Location(Worlds.Jun2023(), 192, 64, -2194, 0, 0));    // Cyan
-        put(8, new Location(Worlds.Jun2023(), 225, 63, -2172, 0, 0));    // Light Blue
-        put(9, new Location(Worlds.Jun2023(), 216, 63, -2192, 90, 0));    // Blue
-        put(10, new Location(Worlds.Jun2023(), 245, 63, -2172, 90, 0));   // Purple
-        put(11, new Location(Worlds.Jun2023(), 167, 64, -2216, 90, 0));   // Magenta
-        put(12, new Location(Worlds.Jun2023(), 255, 63, -2194, -90, 0));   // Pink
-        put(13, new Location(Worlds.Jun2023(), 236, 63, -2192, 180, 0));   // White
-        put(14, new Location(Worlds.Jun2023(), 264, 63, -2174, 0, 0));   // Light Gray
-        put(15, new Location(Worlds.Jun2023(), 186, 63, -2157, 90, 0));   // Gray
-        put(16, new Location(Worlds.Jun2023(), 179, 64, -2255, -90, 0));   // Black
-        put(17, new Location(Worlds.Jun2023(), 230, 63, -2212, -90, 0));   // Brown
+        put(2, new Location(Worlds.Oct2023_the_end(), 0.5f, 80f, -59.5f, 180f, 16f));    // Red
+        put(3, new Location(Worlds.Oct2023_the_end(), 23.5f, 80f, -54.5f, 180f, 16f));    // Orange
+        put(4, new Location(Worlds.Oct2023_the_end(), 42.5f, 80f, -41.5f, 180f, 16f));    // Yellow
+        put(5, new Location(Worlds.Oct2023_the_end(), 55.5f, 80f, -22.5f, 180f, 16f));    // Lime
+        put(6, new Location(Worlds.Oct2023_the_end(), 60.5f, 80f, 0.5f, -90f, 16f));    // Green
+        put(7, new Location(Worlds.Oct2023_the_end(), 55.5f, 80f, 23.5f, -90f, 16f));    // Cyan
+        put(8, new Location(Worlds.Oct2023_the_end(), 42.5f, 80f, 42.5f, -90f, 16f));    // Light Blue
+        put(9, new Location(Worlds.Oct2023_the_end(), 23.5f, 80f, 55.5f, -90f, 16f));    // Blue
+        put(10, new Location(Worlds.Oct2023_the_end(), 0.5f, 80f, 60.5f, 0.0f, 16f));   // Purple
+        put(11, new Location(Worlds.Oct2023_the_end(), -22.5f, 80f, 56.5f, 0.0f, 16f));   // Magenta
+        put(12, new Location(Worlds.Oct2023_the_end(), -41.5f, 80f, 42.5f, 0.0f, 16f));   // Pink
+        put(13, new Location(Worlds.Oct2023_the_end(), -54.5f, 80f, 23.5f, 0.0f, 16f));   // White
+        put(14, new Location(Worlds.Oct2023_the_end(), -59.5f, 80f, 0.5f, 90.0f, 16f));   // Light Gray
+        put(15, new Location(Worlds.Oct2023_the_end(), -54.5f, 80f, -22.5f, 90.0f, 16f));   // Gray
+        put(16, new Location(Worlds.Oct2023_the_end(), -41.5f, 80f, -41.5f, 90.0f, 16f));   // Black
+        put(17, new Location(Worlds.Oct2023_the_end(), -22.5f, 80f, -54.5f, 90.0f, 16f));   // Brown
     }};
 
     private SpawnRegion spawnRegion;

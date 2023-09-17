@@ -94,6 +94,19 @@ public class EndPortal implements Listener {
     }
 
     /**
+     * Sets players to the overworld if they go through the end portal in the end
+     * @param event the player respawn event caused by the end portal
+     */
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
+            if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
+                event.setRespawnLocation(EndPortal.overworldSpawn);
+            }
+        }
+    }
+
+    /**
      * Handles the interaction of players with the end portal frames.
      *
      * @param event The PlayerInteractEvent.
