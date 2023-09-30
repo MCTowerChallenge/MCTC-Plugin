@@ -12,9 +12,10 @@ import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
-import io.github.mystievous.towerchallenge.quest.TextFormatter;
+import io.github.mystievous.towerchallenge.quest.QuestbookTextUtil;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
+import io.github.mystievous.towerchallenge.utility.FontUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
@@ -110,14 +111,14 @@ public class DeveloperGui extends PresetGui {
         try {
             text.append(Component.text(title));
             text.append(TextUtil.space(-DefaultFontInfo.getPixelLength(title)));
-            text.append(Component.text(TextFormatter.toLine(0, line1)));
+            text.append(QuestbookTextUtil.toLine(0, line1));
             text.append(TextUtil.space(-DefaultFontInfo.getPixelLength(line1)));
-            text.append(Component.text(TextFormatter.toLine(1, line2)));
+            text.append(QuestbookTextUtil.toLine(1, line2));
             text.append(TextUtil.space(-DefaultFontInfo.getPixelLength(line2)));
-            text.append(Component.text(TextFormatter.toLine(2, line3)));
+            text.append(QuestbookTextUtil.toLine(2, line3));
 
             // -15 -175
-            PresetGui testQuest = new PresetGui(plugin, text.build(), -15, '\uE003', -175, 6);
+            PresetGui testQuest = new PresetGui(plugin, text.build(), -15, FontUtils.toGuiFont("\uE003"), -175, 6);
             Element questOpen = new ButtonElement(NBTUtils.setUniqueID(plugin, teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
             placeElement(1, 4, questOpen);
         } catch (SQLException ignored) {

@@ -140,7 +140,7 @@
         <dependency>
             <groupId>io.github.mystievous</groupId>
             <artifactId>MystiGui</artifactId>
-            <version>1.1.2</version>
+            <version>1.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import io.github.mystievous.towerchallenge.utility.FontUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -42,11 +43,11 @@ public class ChatHandler implements Listener {
 
         Component prefix = Component.empty();
         Component name = Component.text("<").append(event.getPlayer().displayName()).append(Component.text("> "));
-        Component body = event.message().replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement("\uE100").build())
-                .replaceText(TextReplacementConfig.builder().match(":benbyyPog:").replacement("\uE101").build())
-                .replaceText(TextReplacementConfig.builder().match(":LoveFonda:").replacement("\uE102").build())
-                .replaceText(TextReplacementConfig.builder().match(":LaFlameda:").replacement("\uE103").build())
-                .replaceText(TextReplacementConfig.builder().match(":eyes:").replacement("\uE104").build());
+        Component body = event.message().replaceText(TextReplacementConfig.builder().match(":benbyyFire:").replacement(FontUtils.toEmoteFont("\uE004")).build())
+                .replaceText(TextReplacementConfig.builder().match(":benbyyPog:").replacement(FontUtils.toEmoteFont("\uE003")).build())
+                .replaceText(TextReplacementConfig.builder().match(":LoveFonda:").replacement(FontUtils.toEmoteFont("\uE002")).build())
+                .replaceText(TextReplacementConfig.builder().match(":LaFlameda:").replacement(FontUtils.toEmoteFont("\uE001")).build())
+                .replaceText(TextReplacementConfig.builder().match(":eyes:").replacement(FontUtils.toEmoteFont("\uE000")).build());
 
         if (playerTeam != null) {
             prefix = playerTeam.prefix();
