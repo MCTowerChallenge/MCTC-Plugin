@@ -4,7 +4,6 @@ import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
 import io.github.mystievous.mystigui.page.Gui;
-import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
@@ -44,6 +43,11 @@ import java.util.*;
  */
 public class TeamManager implements Listener {
 
+    private static TeamManager instance;
+    public static TeamManager getInstance() {
+        return instance;
+    }
+
     private List<TowerTeam> allTeams;
     private GodTeam godTeam;
     private List<ParticipantTeam> teams;
@@ -59,6 +63,7 @@ public class TeamManager implements Listener {
         loadTeams();
         loadPlayers();
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        instance = this;
     }
 
     /**

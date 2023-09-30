@@ -73,7 +73,7 @@ public class ChallengeManager {
         TowerListener towerListener = new TowerListener(this);
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         winnersGUI = new WinnersGUI(plugin, teamManager, Element.blank());
-        new SpawnCompass();
+        new SpawnCompass(plugin, teamManager);
         new GoatHat();
         SpoutManager.runSpouts();
     }

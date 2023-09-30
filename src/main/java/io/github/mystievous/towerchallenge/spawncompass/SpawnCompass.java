@@ -3,22 +3,31 @@ package io.github.mystievous.towerchallenge.spawncompass;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.towerchallenge.god.GodTeam;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
+import io.github.mystievous.towerchallenge.team.TeamManager;
+import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +53,7 @@ public class SpawnCompass implements Listener {
      * @param compass The compass to set the target of.
      * @return The changed compass item.
      */
-    public static ItemStack refreshPlayerDestination(Player player, ItemStack compass) {
+    public static ItemStack refreshPlayerDestination(@Nullable TowerTeam team, Player player, ItemStack compass) {
         String playerWorldName = player.getLocation().getWorld().getName();
         if (playerWorldName.equals(Worlds.NETHER().getName())) {
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
@@ -54,12 +63,16 @@ public class SpawnCompass implements Listener {
             }
             player.setCompassTarget(NETHER_LOCATION);
         } else if (playerWorldName.equals(Worlds.THE_END().getName())) {
+            Location location = THE_END_LOCATION;
+            if (team instanceof ParticipantTeam participantTeam) {
+                location = participantTeam.getSpawnpoint();
+            }
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
-                compassMeta.setLodestone(THE_END_LOCATION);
+                compassMeta.setLodestone(location);
                 compassMeta.setLodestoneTracked(false);
                 compass.setItemMeta(compassMeta);
             }
-            player.setCompassTarget(THE_END_LOCATION);
+            player.setCompassTarget(location);
         } else {
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
                 compassMeta.setLodestone(null);
@@ -78,11 +91,11 @@ public class SpawnCompass implements Listener {
      *
      * @param player The player to check.
      */
-    public static void refreshAllPlayer(Player player) {
+    public static void refreshAllPlayer(Player player, @Nullable TowerTeam team) {
         HashMap<Integer, ? extends ItemStack> compasses = player.getInventory().all(Material.COMPASS);
 
         for (Map.Entry<Integer, ? extends ItemStack> entry : compasses.entrySet()) {
-            player.getInventory().setItem(entry.getKey(), refreshPlayerDestination(player, entry.getValue()));
+            player.getInventory().setItem(entry.getKey(), refreshPlayerDestination(team, player, entry.getValue()));
         }
 
     }
@@ -108,8 +121,11 @@ public class SpawnCompass implements Listener {
         return item;
     }
 
-    public SpawnCompass() {
-        Bukkit.getPluginManager().registerEvents(this, TowerChallenge.getInstance());
+    private final TeamManager teamManager;
+
+    public SpawnCompass(Plugin plugin, TeamManager teamManager) {
+        this.teamManager = teamManager;
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     /**
@@ -127,13 +143,20 @@ public class SpawnCompass implements Listener {
                 || item == null)
             return;
         if (item.getType().equals(Material.COMPASS)) {
-            refreshAllPlayer(player);
+            TowerTeam towerTeam = teamManager.getPlayerTeam(player);
+            if (towerTeam != null) {
+                refreshAllPlayer(player, towerTeam);
+            }
+            if (towerTeam instanceof ParticipantTeam participantTeam) {
+                participantTeam.highlightSpawn(player);
+            }
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 100f, 1f);
         }
     }
 
     @EventHandler
-    public void onDimensionChange(PlayerPortalEvent event) {
-        refreshAllPlayer(event.getPlayer());
+    public void onDimensionChange(PlayerChangedWorldEvent event) {
+        refreshAllPlayer(event.getPlayer(), TeamManager.getInstance().getPlayerTeam(event.getPlayer()));
     }
 
 }

@@ -17,6 +17,9 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -154,6 +157,10 @@ public class ParticipantTeam extends TowerTeam {
         }
 
 
+    }
+
+    public void highlightSpawn(Player player) {
+        spawnRegion.showHighlight(player);
     }
 
     /**

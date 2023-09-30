@@ -11,6 +11,7 @@ import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023Q
 import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
+import io.github.mystievous.towerchallenge.hideentity.HiddenEntityManager;
 import io.github.mystievous.towerchallenge.interaction.InteractableTaggedEntity;
 import io.github.mystievous.towerchallenge.interaction.InteractableTagManager;
 import io.github.mystievous.towerchallenge.interaction.npc.CharacterManager;
@@ -119,6 +120,7 @@ public final class TowerChallenge extends JavaPlugin {
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
+        HiddenEntityManager hiddenEntityManager = new HiddenEntityManager();
         WaterDrips waterDrips = new WaterDrips(this, database);
 
         MagicItems magicItems = new MagicItems(this, database, teamManager, characterManager, waterDrips);
