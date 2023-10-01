@@ -8,6 +8,7 @@ import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.god.GodTeam;
+import io.github.mystievous.towerchallenge.hideentity.HiddenEntityManager;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestGui;
 import io.github.mystievous.towerchallenge.quest.QuestManager;
@@ -89,6 +90,7 @@ public class TeamManager implements Listener {
             for (TowerTeam team : allTeams) {
                 questManager.initTeamQuests(team);
             }
+            HiddenEntityManager.refreshAllEntities();
         } catch (SQLException e) {
             Bukkit.getLogger().warning("SQL Error retrieving teams: " + e.getMessage());
             e.printStackTrace();

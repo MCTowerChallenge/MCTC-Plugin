@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.hats.HatUtil;
@@ -63,6 +64,13 @@ public class TowerListener implements Listener {
                 event.setCancelled(true);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.getInventory().clear(slot), 1);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSpawnSet(final PlayerSetSpawnEvent event) {
+        if (!event.getCause().equals(PlayerSetSpawnEvent.Cause.PLAYER_RESPAWN)) {
+            event.setCancelled(true);
         }
     }
 

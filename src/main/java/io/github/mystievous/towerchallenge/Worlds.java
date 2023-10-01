@@ -67,6 +67,10 @@ public class Worlds {
         return Bukkit.getWorld("GodInterviews");
     }
 
+    public static World Waiting() {
+        return Bukkit.getWorld("Waiting");
+    }
+
     public static World WORLD() {
         return Oct2023();
     }

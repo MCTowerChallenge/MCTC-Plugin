@@ -172,6 +172,12 @@ public class SpawnRegion extends EventRegion {
     @Override
     public void unregisterEvents() {
         PlayerRespawnEvent.getHandlerList().unregister(this);
+        HiddenEntityManager.unregister(highlightEntity);
+        HiddenEntityManager.unregister(teleportHighlightEntity);
+        highlightEntity.getLocation().getChunk().load();
+        highlightEntity.remove();
+        teleportHighlightEntity.getLocation().getChunk().load();
+        teleportHighlightEntity.remove();
     }
 
     @Override

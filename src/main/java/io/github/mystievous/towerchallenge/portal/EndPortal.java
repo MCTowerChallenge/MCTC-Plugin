@@ -15,15 +15,22 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import static com.comphenix.protocol.ProtocolLibrary.getPlugin;
 
@@ -32,7 +39,7 @@ import static com.comphenix.protocol.ProtocolLibrary.getPlugin;
  */
 public class EndPortal implements Listener {
 
-    public static final Location overworldSpawn = new Location(Worlds.Oct2023(), 41, 64, -113);
+    public static final Location overworldSpawn = Worlds.Oct2023().getSpawnLocation();
 
     private final TeamManager teamManager;
 
@@ -91,6 +98,19 @@ public class EndPortal implements Listener {
             }
         }
         teamManager.resetTeamPortalFrames();
+    }
+
+    @EventHandler
+    public void onPlayerPortal(final PlayerPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        Player player = event.getPlayer();
+        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+            if (event.getTo().getWorld().equals(Worlds.Oct2023_the_end())) {
+                event.setCancelled(true);
+                player.teleport(PortalControllers.randomPointInFlatRing(new Vector(0.5, 63, 0.5), 6, 13).toLocation(Worlds.Oct2023_the_end()), PlayerTeleportEvent.TeleportCause.END_PORTAL);
+            }
+        }
     }
 
     /**

@@ -24,6 +24,17 @@ public class HiddenEntityManager implements Listener {
         refreshHiddenState(entity);
     }
 
+    public static void unregister(Entity entity) {
+        hiddenEntities.remove(entity.getUniqueId());
+        resetShownPlayers(entity);
+    }
+
+    public static void resetShownPlayers(Entity entity) {
+        NamespacedKey key = new NamespacedKey(TowerChallenge.getInstance(), PLAYERS_TO_SHOW);
+        NBTUtils.setUUIDSet(key, entity, null);
+        refreshHiddenState(entity);
+    }
+
     public static void showToPlayer(Entity entity, Player player) {
         Location location = hiddenEntities.get(entity.getUniqueId());
         if (location == null) {
@@ -85,6 +96,16 @@ public class HiddenEntityManager implements Listener {
                 player.showEntity(TowerChallenge.getInstance(), entity);
             } else {
                 player.hideEntity(TowerChallenge.getInstance(), entity);
+            }
+        }
+    }
+
+    public static void refreshAllEntities() {
+        for (Map.Entry<UUID, Location> entry : hiddenEntities.entrySet()) {
+            entry.getValue().getChunk().load();
+            Entity entity = Bukkit.getEntity(entry.getKey());
+            if (entity != null) {
+                refreshHiddenState(entity);
             }
         }
     }
