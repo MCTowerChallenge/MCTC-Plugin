@@ -6,6 +6,7 @@ import com.onarandombox.MultiversePortals.MultiversePortals;
 import com.onarandombox.MultiversePortals.PortalLocation;
 import com.onarandombox.MultiversePortals.utils.PortalManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
+import io.github.mystievous.towerchallenge.utility.MVPortalUtils;
 import io.github.mystievous.towerchallenge.utility.TeamUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -72,13 +73,7 @@ public class QuestInstance {
         if (team != null) {
             String teamPortalName = TeamUtils.toTeamTag(team, portalName);
             Location[] instanceCorners = Arrays.stream(baseCorners).map(this::offsetLocation).toArray(Location[]::new);
-            PortalManager portalManager = multiversePortals.getPortalManager();
-            MVWorldManager worldManager = multiversePortals.getCore().getMVWorldManager();
-            PortalLocation portalLocation = new PortalLocation(instanceCorners[0].toVector(), instanceCorners[1].toVector(), worldManager.getMVWorld(instanceCorners[0].getWorld()));
-            portalManager.addPortal(new MVPortal(multiversePortals, teamPortalName, "Mystievous", portalLocation));
-            MVPortal portal = portalManager.getPortal(teamPortalName);
-            portal.setPortalLocation(portalLocation);
-            portal.setExactDestination(destinationLocation);
+            MVPortalUtils.initPortal(teamPortalName, instanceCorners, destinationLocation);
         }
     }
 

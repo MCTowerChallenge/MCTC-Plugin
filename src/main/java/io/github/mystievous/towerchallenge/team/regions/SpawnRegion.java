@@ -1,5 +1,7 @@
 package io.github.mystievous.towerchallenge.team.regions;
 
+import com.onarandombox.MultiversePortals.MVPortal;
+import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -10,6 +12,9 @@ import io.github.mystievous.towerchallenge.hideentity.HiddenEntityManager;
 import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import io.github.mystievous.towerchallenge.utility.MVPortalUtils;
 import io.github.mystievous.towerchallenge.utility.TeamUtils;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -61,6 +66,7 @@ public class SpawnRegion extends EventRegion {
     private final BlockDisplay highlightEntity;
     private final BlockDisplay teleportHighlightEntity;
     private final Map<UUID, BukkitTask> highlighted;
+    private final MVPortal teleportPortal;
 
     public SpawnRegion(TowerChallenge plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
         super(plugin, bounds, team, REGION_TAG);
@@ -81,7 +87,7 @@ public class SpawnRegion extends EventRegion {
         HiddenEntityManager.register(highlightEntity);
         Location teleporterLocation = TeleporterLocations.get(team.getDatabaseId());
         if (teleporterLocation != null) {
-            MVPortalUtils.initPortal(TeamUtils.toTeamTag(team, "spawn-teleporter"), new Location[]{teleporterLocation.clone().add(0, 1, 0), teleporterLocation.clone().add(0.0, 2, 0.0)}, spawnLocation);
+            this.teleportPortal = MVPortalUtils.initPortal(TeamUtils.toTeamTag(team, "spawn-teleporter"), new Location[]{teleporterLocation.clone().add(0, 1, 0), teleporterLocation.clone().add(0.0, 2, 0.0)}, spawnLocation);
             Location teleportHighlightLocation = teleporterLocation.clone().add(0.5, 0.0, 0.5);
             teleportHighlightLocation.setPitch(0.0f);
             teleportHighlightLocation.setYaw(0.0f);
@@ -95,6 +101,7 @@ public class SpawnRegion extends EventRegion {
             HiddenEntityManager.register(teleportHighlightEntity);
         } else {
             teleportHighlightEntity = null;
+            this.teleportPortal = null;
         }
         highlighted = new HashMap<>();
     }
@@ -135,6 +142,28 @@ public class SpawnRegion extends EventRegion {
                 }
             }
         }.runTaskLater(plugin, 100));
+    }
+
+    @EventHandler
+    public void onPlayerPortal(final MVPortalEvent event) {
+        if (event.isCancelled())
+            return;
+        if (teleportPortal == null)
+            return;
+
+        if (event.getSendingPortal().getName().equals(teleportPortal.getName())) {
+            Sound sound = Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.enderman.teleport"), Sound.Source.PLAYER, 1f, 1.5f);
+            Location from = event.getFrom();
+            from.getWorld().playSound(sound, from.getX(), from.getY(), from.getZ());
+            Location to = event.getDestination().getLocation(event.getTeleportee());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    to.getWorld().playSound(sound, to.getX(), to.getY(), to.getZ());
+                }
+            }.runTaskLater(plugin, 1);
+        }
+
     }
 
     /**
@@ -200,6 +229,19 @@ public class SpawnRegion extends EventRegion {
         region.setFlag(Flags.CROP_GROWTH, StateFlag.State.ALLOW);
         region.setFlag(Flags.SOIL_DRY, StateFlag.State.ALLOW);
         region.setFlag(Flags.CORAL_FADE, StateFlag.State.ALLOW);
+        region.setFlag(Flags.COPPER_FADE, StateFlag.State.ALLOW);
+
+        region.setFlag(Flags.MOB_DAMAGE, StateFlag.State.DENY);
+        region.setFlag(Flags.CREEPER_EXPLOSION, StateFlag.State.DENY);
+        region.setFlag(Flags.ENDERDRAGON_BLOCK_DAMAGE, StateFlag.State.DENY);
+        region.setFlag(Flags.GHAST_FIREBALL, StateFlag.State.DENY);
+        region.setFlag(Flags.OTHER_EXPLOSION, StateFlag.State.DENY);
+        region.setFlag(Flags.WITHER_DAMAGE, StateFlag.State.DENY);
+        region.setFlag(Flags.ENDER_BUILD, StateFlag.State.DENY);
+        region.setFlag(Flags.RAVAGER_RAVAGE, StateFlag.State.DENY);
+        region.setFlag(Flags.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
+        region.setFlag(Flags.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
+
     }
 
     @Override

@@ -322,7 +322,8 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 1, Icons.blankSlot);
         placeElement(5, 2, addPlayerElement);
         placeElement(5, 3, Icons.blankSlot);
-        placeElement(5, 4, endButton);
+//        placeElement(5, 4, endButton);
+        placeElement(5, 4, Icons.blankSlot);
         placeElement(5, 5, Icons.blankSlot);
         placeElement(5, 6, customBlockElement);
         placeElement(5, 7, Icons.blankSlot);

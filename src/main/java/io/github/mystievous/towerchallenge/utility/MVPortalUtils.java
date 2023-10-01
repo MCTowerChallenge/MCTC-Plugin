@@ -8,6 +8,7 @@ import com.onarandombox.MultiversePortals.utils.PortalManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.Nullable;
 
 public class MVPortalUtils {
 
@@ -18,7 +19,7 @@ public class MVPortalUtils {
      * @param corners             Corners of the portal in the base instance.
      * @param destinationLocation Absolute location on the server to teleport the player to.
      */
-    public static void initPortal(String portalName, Location[] corners, Location destinationLocation) {
+    public static @Nullable MVPortal initPortal(String portalName, Location[] corners, Location destinationLocation) {
         if (Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals") instanceof MultiversePortals multiversePortals) {
             PortalManager portalManager = multiversePortals.getPortalManager();
             MVWorldManager worldManager = multiversePortals.getCore().getMVWorldManager();
@@ -27,7 +28,9 @@ public class MVPortalUtils {
             MVPortal portal = portalManager.getPortal(portalName);
             portal.setPortalLocation(portalLocation);
             portal.setExactDestination(destinationLocation);
+            return portal;
         }
+        return null;
     }
 
 }
