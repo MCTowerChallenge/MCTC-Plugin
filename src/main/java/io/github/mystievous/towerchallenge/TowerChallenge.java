@@ -34,6 +34,7 @@ import io.github.mystievous.towerchallenge.timer.TowerTimer;
 import io.github.mystievous.towerchallenge.towering.ChatHandler;
 import io.github.mystievous.towerchallenge.towering.TowerCommands;
 import io.github.mystievous.towerchallenge.towering.TowerTabComplete;
+import io.github.mystievous.towerchallenge.waitingroom.WaitingRoom;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -129,7 +130,9 @@ public final class TowerChallenge extends JavaPlugin {
 
         new GodManager(this, gameFlowManager, customBlockManager, questManager, jun2023QuestManager, teamManager, magicItems, portalControllers);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers);
+        WaitingRoom waitingRoom = new WaitingRoom(this);
+
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);

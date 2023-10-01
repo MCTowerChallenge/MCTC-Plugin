@@ -1,14 +1,17 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.portal.EndPortal;
 import io.github.mystievous.towerchallenge.portal.PortalControllers;
+import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quest.util.BlockVoucher;
 import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.towerchallenge.waitingroom.WaitingRoom;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -32,11 +35,13 @@ public class TowerCommands implements CommandExecutor {
     private final ChallengeManager challengeManager;
     private final TeamManager teamManager;
     private final EndPortal endPortal;
+    private final WaitingRoom waitingRoom;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers) {
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.endPortal = portalControllers.getEndPortal();
+        this.waitingRoom = waitingRoom;
     }
 
     @Override
@@ -219,6 +224,31 @@ public class TowerCommands implements CommandExecutor {
                         } else if (challengeManager.getChallengePhase().equals(ChallengeManager.ChallengePhase.IN_PROGRESS)) {
                             challengeManager.setChallengePhase(ChallengeManager.ChallengePhase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
+                        }
+                    }
+                    case ("waitingroom") -> {
+                        boolean isEnabled = waitingRoom.isEnabled();
+                        if (isEnabled) {
+                            waitingRoom.setEnabled(false);
+                            sender.sendMessage(Component.text("Waiting Room Disabled").color(Palette.NEGATIVE_COLOR.toTextColor()));
+                        } else {
+                            waitingRoom.setEnabled(true);
+                            sender.sendMessage(Component.text("Waiting Room Enabled").color(Palette.PRIMARY.toTextColor()));
+                        }
+                    }
+                    case ("tpallspawn") -> {
+                        teamManager.teleportAllSpawn();
+                    }
+                    case ("tptospawn") -> { // deals items to all players, or the specified player.
+                        if (args.length >= 2) {
+                            Player player = Bukkit.getPlayer(args[1]);
+                            if (player != null) {
+                                if (teamManager.getPlayerTeam(player) instanceof ParticipantTeam team) {
+                                    team.teleportToSpawn(player);
+                                }
+                            } else {
+                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                            }
                         }
                     }
                     default -> sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));

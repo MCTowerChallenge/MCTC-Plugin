@@ -207,6 +207,17 @@ public class ParticipantTeam extends TowerTeam {
         return spawnRegion.getSpawnpoint();
     }
 
+    public void teleportToSpawn(Player player) {
+        Location spawnpoint = getSpawnpoint();
+        player.teleport(spawnpoint);
+    }
+
+    public void teleportAllSpawn() {
+        for (Player player : getOnlinePlayers()) {
+            teleportToSpawn(player);
+        }
+    }
+
     /**
      * Retrieves the location of the end portal frame for this team.
      *

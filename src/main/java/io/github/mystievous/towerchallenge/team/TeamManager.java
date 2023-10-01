@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.team;
 
+import com.destroystokyo.paper.event.player.PlayerInitialSpawnEvent;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
@@ -27,6 +28,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.PortalCreateEvent;
@@ -35,6 +37,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -428,6 +431,12 @@ public class TeamManager implements Listener {
         }
     }
 
+    public void teleportAllSpawn() {
+        for (ParticipantTeam team : getParticipantTeams()) {
+            team.teleportAllSpawn();
+        }
+    }
+
     /**
      * When a player joins, sets them to
      * the proper team, and, if it is their
@@ -438,19 +447,17 @@ public class TeamManager implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
         loadPlayers();
+    }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerSpawn(final PlayerSpawnLocationEvent event) {
+        Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                if (getPlayerTeam(player) instanceof ParticipantTeam team) {
-                    Location spawnPoint = team.getSpawnpoint();
-                    if (spawnPoint != null) {
-                        player.teleport(team.getSpawnpoint());
-                    }
-                }
-            }, 1);
+            if (getPlayerTeam(player) instanceof ParticipantTeam team) {
+                Location spawnPoint = team.getSpawnpoint();
+                event.setSpawnLocation(spawnPoint);
+            }
         }
     }
 

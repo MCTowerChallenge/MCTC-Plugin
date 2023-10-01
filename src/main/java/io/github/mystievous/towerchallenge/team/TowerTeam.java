@@ -352,8 +352,14 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      */
     public Collection<Player> getOnlinePlayers() {
         Collection<Player> players = new ArrayList<>();
-        for (OfflinePlayer offlinePlayer : getOfflinePlayers()) {
-            if (offlinePlayer.isOnline() && offlinePlayer instanceof Player player) {
+        for (String entry : team.getEntries()) {
+            Player player;
+            try {
+                player = Bukkit.getPlayer(UUID.fromString(entry));
+            } catch (IllegalArgumentException e) {
+                player = Bukkit.getPlayer(entry);
+            }
+            if (player != null && player.isOnline()) {
                 players.add(player);
             }
         }

@@ -43,6 +43,9 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("removeScore");
                 strings.add("pickWinner");
                 strings.add("addPlayer");
+                strings.add("waitingRoom");
+                strings.add("tpAllSpawn");
+                strings.add("tpToSpawn");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
@@ -50,7 +53,7 @@ public class TowerTabComplete implements TabCompleter {
 
             } else if (args.length == 2) {
 
-                if (args[0].equalsIgnoreCase("addplayer") || args[0].equalsIgnoreCase("shulker") || args[0].equalsIgnoreCase("dealItems") || args[0].equalsIgnoreCase("addScore") || args[0].equalsIgnoreCase("removeScore")) {
+                if (args[0].equalsIgnoreCase("tpToSpawn") || args[0].equalsIgnoreCase("addplayer") || args[0].equalsIgnoreCase("shulker") || args[0].equalsIgnoreCase("dealItems") || args[0].equalsIgnoreCase("addScore") || args[0].equalsIgnoreCase("removeScore")) {
                     List<String> strings = new ArrayList<>(Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).toList());
 
                     Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[1].toLowerCase());

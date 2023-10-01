@@ -74,8 +74,8 @@ public class TowerListener implements Listener {
         }
     }
 
-    private final Location overworldPortalLocation = new Location(Worlds.Jun2023(), 141.5, 69, -2221.5, -90, 0);
-    private final Location netherPortalLocation = new Location(Worlds.Jun2023_nether(), 62.5, 72, -292.5, 90, 0);
+    private final Location spawnPortalLocation = new Location(Worlds.Oct2023_the_end(), -31.5, 73, 11.5, -90, 10);
+    private final Location netherPortalLocation = new Location(Worlds.Oct2023_nether(), -93.5, 68, 439.5);
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityPortal(final EntityPortalEvent event) {
@@ -86,10 +86,10 @@ public class TowerListener implements Listener {
             if (toLocation.getWorld().equals(netherPortalLocation.getWorld())) {
                 event.setCancelled(true);
                 event.getEntity().teleport(netherPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-            } else if (toLocation.getWorld().equals(overworldPortalLocation.getWorld())) {
+            } else if (toLocation.getWorld().equals(spawnPortalLocation.getWorld())) {
                 event.setCancelled(true);
-                event.setTo(overworldPortalLocation);
-                event.getEntity().teleport(overworldPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                event.setTo(spawnPortalLocation);
+                event.getEntity().teleport(spawnPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
             }
         }
     }
@@ -111,10 +111,10 @@ public class TowerListener implements Listener {
                         advancementProgress.awardCriteria(enterNetherCriteria);
                     }
                 }
-            } else if (event.getTo().getWorld().equals(overworldPortalLocation.getWorld())) {
+            } else if (event.getTo().getWorld().equals(spawnPortalLocation.getWorld())) {
                 event.setCancelled(true);
-                event.setTo(overworldPortalLocation);
-                player.teleport(overworldPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                event.setTo(spawnPortalLocation);
+                player.teleport(spawnPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
             }
         }
     }
