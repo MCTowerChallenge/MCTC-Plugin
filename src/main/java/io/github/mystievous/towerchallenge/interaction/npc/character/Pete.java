@@ -21,32 +21,6 @@ public class Pete extends QuestCharacter {
 
     public Pete(Plugin plugin) {
         super(plugin, EntityType.CAVE_SPIDER, NAME, NAME_COLOR, TEXT_COLOR);
-
-        Dialogue peteStart = new Dialogue(plugin, formatMessage("Oh hey, what're you doing down here?"), 3.0d);
-
-        Dialogue peteTunnel = new Dialogue(plugin, formatMessage("Oh woah hello there, way to make an entrance!"), 4.0d);
-        peteTunnel.append(new Dialogue(plugin, formatMessage("Didn't even know there was a tunnel behind that."), 2.5d));
-
-        addQuestInteractionHandler(QuestManager.NO_QUEST, (team, npcRightClickEvent) -> {
-        });
-        addQuestInteractionHandler(QuestManager.BAND_TROUBLE, (team, event) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                peteStart.play(team, () -> {
-                    team.setInDialogue(false);
-                });
-            }
-        });
-        setDefaultInteractionHandler((team, event) -> {
-            if (team != null) {
-                if (team.canStartDialogue()) {
-                    team.setInDialogue(true);
-                    peteTunnel.play(team, () -> {
-                        team.setInDialogue(false);
-                    });
-                }
-            }
-        });
     }
 
     @Override

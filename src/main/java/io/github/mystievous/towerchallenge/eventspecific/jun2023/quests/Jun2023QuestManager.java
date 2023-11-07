@@ -76,7 +76,7 @@ public class Jun2023QuestManager implements Listener, Openable {
 
         questInstances = new HashMap<>();
         for (Map.Entry<Integer, Location> entry : teamLocations.entrySet()) {
-            questInstances.put(entry.getKey(), new Jun2023QuestInstance(plugin, teamManager.getTeam(entry.getKey()), entry.getValue()));
+            questInstances.put(entry.getKey(), new Jun2023QuestInstance(plugin, teamManager, entry.getKey(), entry.getValue()));
         }
 
         new Sparkle(plugin, new Location(Worlds.Jun2023(), 276, 62.5, -2034.55), 0.3f, 0.45f, 0.01f);
@@ -88,20 +88,11 @@ public class Jun2023QuestManager implements Listener, Openable {
         };
 
         InteractableTaggedEntity caveEnterDoor = new InteractableTaggedEntity(Jun2023QuestInstance.ENTER_DOOR);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.NO_QUEST, doorNoOpenEvent);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.BAND_TROUBLE, doorNoOpenEvent);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.TUNNEL, doorNoOpenEvent);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.OTHER_BAND, doorNoOpenEvent);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.WAIT, doorNoOpenEvent);
-        caveEnterDoor.addQuestInteractionHandler(QuestManager.MEETING, doorNoOpenEvent);
         caveEnterDoor.setDefaultInteractionHandler((team, event) -> {
             Player player = event.getPlayer();
             Jun2023QuestInstance instance = getQuestInstance(team);
             if (instance != null) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (team.getCurrentQuestTag().equals(QuestManager.RIDDLE)) {
-                        team.setQuest(QuestManager.CAVE);
-                    }
                     instance.enterTeleport(player);
                 });
             }

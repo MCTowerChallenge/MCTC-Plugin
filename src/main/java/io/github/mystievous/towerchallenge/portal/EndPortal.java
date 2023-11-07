@@ -100,6 +100,10 @@ public class EndPortal implements Listener {
         teamManager.resetTeamPortalFrames();
     }
 
+    public static Location spawnLocation() {
+        return PortalControllers.randomPointInFlatRing(new Vector(0.5, 63, 0.5), 6, 13).toLocation(Worlds.Oct2023_the_end());
+    }
+
     @EventHandler
     public void onPlayerPortal(final PlayerPortalEvent event) {
         if (event.isCancelled())
@@ -108,7 +112,7 @@ public class EndPortal implements Listener {
         if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
             if (event.getTo().getWorld().equals(Worlds.Oct2023_the_end())) {
                 event.setCancelled(true);
-                player.teleport(PortalControllers.randomPointInFlatRing(new Vector(0.5, 63, 0.5), 6, 13).toLocation(Worlds.Oct2023_the_end()), PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                player.teleport(spawnLocation(), PlayerTeleportEvent.TeleportCause.END_PORTAL);
             }
         }
     }

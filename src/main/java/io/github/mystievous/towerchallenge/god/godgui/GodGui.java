@@ -9,8 +9,9 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.*;
 import io.github.mystievous.towerchallenge.GameFlowManager;
 import io.github.mystievous.towerchallenge.TowerChallenge;
-import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
+import io.github.mystievous.towerchallenge.decoration.customblock.CustomBlockManager;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
+import io.github.mystievous.towerchallenge.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.gui.Icons;
 import io.github.mystievous.towerchallenge.gui.page.TeamGui;
@@ -18,6 +19,7 @@ import io.github.mystievous.towerchallenge.magic.MagicItems;
 import io.github.mystievous.towerchallenge.portal.PortalControllers;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.quest.QuestTableOfContents;
 import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
@@ -59,13 +61,13 @@ public class GodGui extends PresetGui implements Openable {
      * @param godManager            The manager for God-related functionalities.
      * @param gameFlowManager       The manager for controlling the flow of the game.
      * @param questManager          The manager for quests in the game.
-     * @param jun2023QuestManager   The manager for June 2023 event-specific quests.
+     * @param oct2023QuestManager   The manager for October 2023 event-specific quests.
      * @param teleportHistoryManager The manager for teleport history.
      * @param teamManager           The manager for player teams.
      * @param magicItems            The manager for magic items.
      * @param portalControllers     The manager for controlling portals.
      */
-    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Jun2023QuestManager jun2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodGui(TowerChallenge plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Oct2023QuestManager oct2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
         super(plugin, COMPONENT_NAME, ROWS);
 
         /*
@@ -208,31 +210,31 @@ public class GodGui extends PresetGui implements Openable {
             questGui.placeElement(2, 2, questItems);
 
             ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
-            ButtonElement questUtil = new ButtonElement(totem, player1 -> jun2023QuestManager.getGui(player).openInventory(player));
+            ButtonElement questUtil = new ButtonElement(totem, player1 -> oct2023QuestManager.getGui(player).openInventory(player));
             questGui.placeElement(2, 4, questUtil);
 
-            ItemStack writableBook = GuiUtil.formatItem("Set Team Quest", Material.WRITABLE_BOOK, 0);
-            ButtonElement setQuest = new ButtonElement(writableBook, player1 -> {
-                new TeamGui(plugin, Component.text("Select team to set the quest of:"), team -> {
-                    Quest currentQuest = team.getCurrentQuest();
-                    if (currentQuest != null) {
-                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
-                    } else {
-                        return TextUtil.formatTexts("Current: None");
-                    }
-                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-                    new TargetListGui<>(plugin, Component.text("Select a quest to set for " + selectedTeam.getTextName() + ":"), quest -> {
-                        ItemStack item = GuiUtil.formatItem(quest.getFriendlyName(), Material.WRITABLE_BOOK, 0);
-                        ItemMeta meta = item.getItemMeta();
-                        meta.lore(TextUtil.formatTexts(quest.getId()));
-                        item.setItemMeta(meta);
-                        return item;
-                    }, questManager.getQuests().values().stream().toList(), (questClickPlayer, questClicked) -> {
-                        selectedTeam.setQuest(questClicked.getId());
-                    }, new ButtonElement(Icons.backItem())).openInventory(clickingPlayer);
-                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
-            });
-            questGui.placeElement(1, 6, setQuest);
+//            ItemStack writableBook = GuiUtil.formatItem("Set Team Quest", Material.WRITABLE_BOOK, 0);
+//            ButtonElement setQuest = new ButtonElement(writableBook, player1 -> {
+//                new TeamGui(plugin, Component.text("Select team to set the quest of:"), team -> {
+//                    Quest currentQuest = team.getCurrentQuest();
+//                    if (currentQuest != null) {
+//                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
+//                    } else {
+//                        return TextUtil.formatTexts("Current: None");
+//                    }
+//                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
+//                    new TargetListGui<>(plugin, Component.text("Select a quest to set for " + selectedTeam.getTextName() + ":"), quest -> {
+//                        ItemStack item = GuiUtil.formatItem(quest.getFriendlyName(), Material.WRITABLE_BOOK, 0);
+//                        ItemMeta meta = item.getItemMeta();
+//                        meta.lore(TextUtil.formatTexts(quest.getTag()));
+//                        item.setItemMeta(meta);
+//                        return item;
+//                    }, questManager.getQuests().values().stream().toList(), (questClickPlayer, questClicked) -> {
+//                        selectedTeam.setQuest(questClicked.getTag());
+//                    }, new ButtonElement(Icons.backItem())).openInventory(clickingPlayer);
+//                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
+//            });
+//            questGui.placeElement(1, 6, setQuest);
 
             ItemStack questBook2 = GuiUtil.formatItem("See Team Quest", Material.BOOK, 2);
             ButtonElement getQuest = new ButtonElement(questBook2, player1 -> {
@@ -244,17 +246,14 @@ public class GodGui extends PresetGui implements Openable {
                         return TextUtil.formatTexts("Current: None");
                     }
                 }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-                    Quest quest = selectedTeam.getCurrentQuest();
-                    if (quest != null) {
-                        quest.getGui(clickingPlayer).openInventory(clickingPlayer);
-                    }
+                    new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", selectedTeam).openInventory(clickingPlayer);
                 }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
             });
             questGui.placeElement(3, 6, getQuest);
 
-            ItemStack strider = GuiUtil.formatItem("Reset Dave", Material.STRIDER_SPAWN_EGG, 0);
-            ButtonElement resetDave = new ButtonElement(strider, player1 -> questManager.teleportDaveStage());
-            questGui.placeElement(1, 8, resetDave);
+//            ItemStack strider = GuiUtil.formatItem("Reset Dave", Material.STRIDER_SPAWN_EGG, 0);
+//            ButtonElement resetDave = new ButtonElement(strider, player1 -> questManager.teleportDaveStage());
+//            questGui.placeElement(1, 8, resetDave);
 
             ItemStack eventStart = GuiUtil.formatItem("Start Event", Material.REINFORCED_DEEPSLATE, 0);
             ButtonElement eventStartElement = new ButtonElement(eventStart, player1 -> {
@@ -265,9 +264,9 @@ public class GodGui extends PresetGui implements Openable {
 
             questGui.placeElement(1, 9, eventStartElement);
 
-            ItemStack strider2 = GuiUtil.formatItem("Taco Dave", Material.STRIDER_SPAWN_EGG, 0);
-            ButtonElement tacoDave = new ButtonElement(strider2, player1 -> questManager.teleportDaveTacos());
-            questGui.placeElement(3, 8, tacoDave);
+//            ItemStack strider2 = GuiUtil.formatItem("Taco Dave", Material.STRIDER_SPAWN_EGG, 0);
+//            ButtonElement tacoDave = new ButtonElement(strider2, player1 -> questManager.teleportDaveTacos());
+//            questGui.placeElement(3, 8, tacoDave);
 
             ItemStack endIntermission = GuiUtil.formatItem("End Intermission", Material.BEDROCK, 0);
             ButtonElement endIntermissionElement = new ButtonElement(endIntermission, player1 -> {

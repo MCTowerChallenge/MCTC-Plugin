@@ -26,7 +26,7 @@ public class StartingItemsGui extends PresetGui {
      */
     public StartingItemsGui(TowerChallenge plugin, @NotNull ParticipantTeam team) {
         super(plugin, Component.text("Starting Items for " + team.getTextName()), 5);
-        Map<Integer, ItemStack> startingItems = team.getStartingItems();
+        Map<Integer, ItemStack> startingItems = team.getStartingItems(null);
         Map<EquipmentSlot, ItemStack> startingEquipment = team.getStartingEquipment();
 
         for (Map.Entry<Integer, ItemStack> entry : startingItems.entrySet()) {

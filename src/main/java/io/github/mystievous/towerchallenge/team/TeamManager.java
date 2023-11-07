@@ -5,6 +5,7 @@ import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
 import io.github.mystievous.mystigui.page.Gui;
+import io.github.mystievous.mystigui.page.Openable;
 import io.github.mystievous.towerchallenge.ChallengeManager;
 import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
@@ -13,6 +14,7 @@ import io.github.mystievous.towerchallenge.hideentity.HiddenEntityManager;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestGui;
 import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.quest.QuestTableOfContents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -90,8 +92,9 @@ public class TeamManager implements Listener {
             this.allTeams = new ArrayList<>();
             this.allTeams.add(this.godTeam);
             this.allTeams.addAll(this.teams);
+            Map<Integer, Collection<String>> completedQuests = database.getCompletedQuests();
             for (TowerTeam team : allTeams) {
-                questManager.initTeamQuests(team);
+                questManager.initTeamQuests(team, completedQuests.get(team.getDatabaseId()));
             }
             HiddenEntityManager.refreshAllEntities();
         } catch (SQLException e) {
@@ -193,11 +196,12 @@ public class TeamManager implements Listener {
     public Gui getTeamQuestGui(Player player) {
         TowerTeam team = getPlayerTeam(player);
         if (team != null) {
-            String currentQuestId = team.getCurrentQuestTag();
-            Quest currentQuest = team.getQuest(currentQuestId);
-            if (currentQuest != null) {
-                return currentQuest.getGui(player);
-            }
+//            String currentQuestId = team.getCurrentQuestTag();
+//            Quest currentQuest = team.getQuest(currentQuestId);
+//            if (currentQuest != null) {
+//                return currentQuest.getGui(player);
+//            }
+            return new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", team);
         }
         return new QuestGui(plugin, "Error", "Error fetching quest.");
     }
@@ -432,7 +436,7 @@ public class TeamManager implements Listener {
     }
 
     public void teleportAllSpawn() {
-        for (ParticipantTeam team : getParticipantTeams()) {
+        for (TowerTeam team : getAllTeams()) {
             team.teleportAllSpawn();
         }
     }

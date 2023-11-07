@@ -105,7 +105,7 @@ public class SpawnCompass implements Listener {
      *
      * @return The compass.
      */
-    public static ItemStack getCompass() {
+    public static ItemStack getCompass(@Nullable TowerTeam team, @Nullable Player player) {
         ItemStack item = new ItemStack(Material.COMPASS);
         CompassMeta meta = (CompassMeta) item.getItemMeta();
         meta.displayName(Component.text("home home"));
@@ -118,6 +118,9 @@ public class SpawnCompass implements Listener {
         meta.addEnchant(Enchantment.MENDING, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
+        if (player != null && team != null) {
+            refreshPlayerDestination(team, player, item);
+        }
         return item;
     }
 

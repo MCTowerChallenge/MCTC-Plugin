@@ -1,13 +1,14 @@
 package io.github.mystievous.towerchallenge;
 
 import io.github.mystievous.towerchallenge.configs.Config;
-import io.github.mystievous.towerchallenge.decoration.CustomBlockManager;
+import io.github.mystievous.towerchallenge.decoration.customblock.CustomBlockManager;
 import io.github.mystievous.towerchallenge.decoration.WaterDrips;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.IceCream;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.Posters;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.flags.SelectionHandler;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.gallery.Gallery;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.Jun2023QuestManager;
+import io.github.mystievous.towerchallenge.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mystievous.towerchallenge.god.GodManager;
 import io.github.mystievous.towerchallenge.hats.HatCommands;
 import io.github.mystievous.towerchallenge.hats.HatTabComplete;
@@ -82,7 +83,8 @@ public final class TowerChallenge extends JavaPlugin {
 
         TeamManager teamManager = new TeamManager(this, database, questManager);
 
-        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
+//        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
+        Oct2023QuestManager oct2023QuestManager = new Oct2023QuestManager(this, teamManager);
 
         QuestCommands commands = new QuestCommands(teamManager);
         getCommand("questbook").setExecutor(commands);
@@ -100,7 +102,7 @@ public final class TowerChallenge extends JavaPlugin {
             stopDialogue.setTabCompleter(dialogueCommands);
         }
 
-        GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager);
+        GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager, portalControllers);
 
         InteractableTagManager tagManager = new InteractableTagManager(this, teamManager);
 
@@ -128,11 +130,11 @@ public final class TowerChallenge extends JavaPlugin {
 
         CustomBlockManager customBlockManager = new CustomBlockManager(this);
 
-        new GodManager(this, gameFlowManager, customBlockManager, questManager, jun2023QuestManager, teamManager, magicItems, portalControllers);
+        new GodManager(this, gameFlowManager, customBlockManager, questManager, oct2023QuestManager, teamManager, magicItems, portalControllers);
 
         WaitingRoom waitingRoom = new WaitingRoom(this);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom);
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom, oct2023QuestManager, database);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
@@ -167,6 +169,7 @@ public final class TowerChallenge extends JavaPlugin {
 
         new EnderChestCommand(this);
         new InvseeCommand(this);
+        new FlyCommand(this);
         new MessageCommands(this, teamManager);
         new AnvilCommand(this);
         new CraftCommand(this);

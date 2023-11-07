@@ -8,6 +8,7 @@ import io.github.mystievous.mystigui.page.PresetGui;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.eventspecific.jun2023.quests.minesweeper.MineHandler;
 import io.github.mystievous.towerchallenge.quest.instance.QuestInstance;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -43,8 +44,8 @@ public class Jun2023QuestInstance extends QuestInstance implements Openable {
     private final SimonSays simonSays;
     private final MineHandler mineHandler;
 
-    public Jun2023QuestInstance(Plugin plugin, TowerTeam team, Location instanceLocation) {
-        super(team, baseLocation, instanceLocation);
+    public Jun2023QuestInstance(Plugin plugin, TeamManager teamManager, int teamId, Location instanceLocation) {
+        super(teamManager, teamId, baseLocation, instanceLocation);
         this.plugin = plugin;
 
         this.noteblocks = new Noteblocks(plugin, this);

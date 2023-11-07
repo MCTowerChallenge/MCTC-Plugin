@@ -7,8 +7,10 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 public class Icons {
+
     /**
      * Item that covers all of a slot
      * with the blank inventory texture
@@ -20,6 +22,10 @@ public class Icons {
         meta.addItemFlags(ItemFlag.HIDE_DYE, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_UNBREAKABLE);
         setItemMeta(meta);
     }});
+
+    public static ItemStack completedQuest(@Nullable Component name) {
+        return GuiUtil.formatItem(name, Material.PAPER, 1);
+    }
 
     /**
      * Red left arrow item

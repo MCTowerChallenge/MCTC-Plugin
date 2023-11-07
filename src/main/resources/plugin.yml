@@ -60,6 +60,10 @@ commands:
     description: Opens a crafting inventory
     usage: /craft
     permission: towerchallenge.craft
+  fly:
+    description: Allows the player creative flight
+    usage: /fly
+    permission: towerchallenge.fly
   rename:
     description: Renames an item
     usage: /rename <Name>

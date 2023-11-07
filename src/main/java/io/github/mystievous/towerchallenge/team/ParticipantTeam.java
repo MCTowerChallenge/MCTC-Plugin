@@ -5,6 +5,7 @@ import io.github.mystievous.towerchallenge.TowerChallenge;
 import io.github.mystievous.towerchallenge.Worlds;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestChangeEvent;
+import io.github.mystievous.towerchallenge.quest.QuestCompleteEvent;
 import io.github.mystievous.towerchallenge.team.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.team.regions.TowerRegion;
 import io.github.mystievous.mysticore.Palette;
@@ -163,6 +164,10 @@ public class ParticipantTeam extends TowerTeam {
         spawnRegion.showHighlight(player);
     }
 
+    public SpawnRegion getSpawnRegion() {
+        return spawnRegion;
+    }
+
     /**
      * Loads the end portal frame for this team.
      */
@@ -207,15 +212,10 @@ public class ParticipantTeam extends TowerTeam {
         return spawnRegion.getSpawnpoint();
     }
 
+    @Override
     public void teleportToSpawn(Player player) {
         Location spawnpoint = getSpawnpoint();
         player.teleport(spawnpoint);
-    }
-
-    public void teleportAllSpawn() {
-        for (Player player : getOnlinePlayers()) {
-            teleportToSpawn(player);
-        }
     }
 
     /**
@@ -291,24 +291,41 @@ public class ParticipantTeam extends TowerTeam {
         }
     }
 
+//    /**
+//     * Handles the event when quests are completed/changed for this team.
+//     *
+//     * @param event The quest change event.
+//     */
+//    @EventHandler
+//    public void onQuestChange(final QuestChangeEvent event) {
+//        if (event.isCancelled())
+//            return;
+//        if (event.getTeam().getDatabaseId() != getDatabaseId())
+//            return;
+//
+//        Quest quest = event.getQuest();
+//        if (quest != null) {
+//            sendMessage(TextUtil.formatText("New Quest: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
+//        } else {
+//            sendMessage(TextUtil.formatText("No more quests!"));
+//        }
+//        playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
+//    }
+
     /**
-     * Handles the event when quests are completed/changed for this team.
+     * Handles the event when a quest is completed for this team.
      *
      * @param event The quest change event.
      */
     @EventHandler
-    public void onQuestChange(final QuestChangeEvent event) {
+    public void onQuestComplete(final QuestCompleteEvent event) {
         if (event.isCancelled())
             return;
         if (event.getTeam().getDatabaseId() != getDatabaseId())
             return;
 
         Quest quest = event.getQuest();
-        if (quest != null) {
-            sendMessage(TextUtil.formatText("New Quest: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
-        } else {
-            sendMessage(TextUtil.formatText("No more quests!"));
-        }
+        sendMessage(TextUtil.formatText("Quest Complete: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
         playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
     }
 

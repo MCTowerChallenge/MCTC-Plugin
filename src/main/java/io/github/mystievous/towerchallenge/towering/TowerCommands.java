@@ -1,13 +1,27 @@
 package io.github.mystievous.towerchallenge.towering;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.towerchallenge.ChallengeManager;
+import io.github.mystievous.towerchallenge.Database;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mystievous.towerchallenge.portal.EndPortal;
 import io.github.mystievous.towerchallenge.portal.PortalControllers;
+import io.github.mystievous.towerchallenge.quest.Quest;
+import io.github.mystievous.towerchallenge.quest.QuestItems;
+import io.github.mystievous.towerchallenge.quest.QuestManager;
+import io.github.mystievous.towerchallenge.quest.QuestUtil;
+import io.github.mystievous.towerchallenge.quest.util.FullInventory;
 import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
+import io.github.mystievous.towerchallenge.team.regions.SpawnRegion;
 import io.github.mystievous.towerchallenge.utility.CommandUtils;
 import io.github.mystievous.towerchallenge.quest.util.BlockVoucher;
 import io.github.mystievous.mysticore.TextUtil;
@@ -16,17 +30,24 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Base64;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -36,12 +57,16 @@ public class TowerCommands implements CommandExecutor {
     private final TeamManager teamManager;
     private final EndPortal endPortal;
     private final WaitingRoom waitingRoom;
+    private final Oct2023QuestManager oct2023QuestManager;
+    private final Database database;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom) {
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, Oct2023QuestManager oct2023QuestManager, Database database) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.endPortal = portalControllers.getEndPortal();
         this.waitingRoom = waitingRoom;
+        this.oct2023QuestManager = oct2023QuestManager;
+        this.database = database;
     }
 
     @Override
@@ -159,7 +184,8 @@ public class TowerCommands implements CommandExecutor {
                         teamManager.loadPlayers();
                     }
                     case ("resetendportal") -> endPortal.resetPortal(); // resets the end portal to empty
-                    case ("showtowerscores") -> teamManager.showTowerScores(sender); // displays the tower scores to the command sender
+                    case ("showtowerscores") ->
+                            teamManager.showTowerScores(sender); // displays the tower scores to the command sender
                     case ("dealitems") -> { // deals items to all players, or the specified player.
                         if (args.length < 2) {
                             teamManager.dealAllItems();
@@ -226,6 +252,48 @@ public class TowerCommands implements CommandExecutor {
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
                         }
                     }
+                    case ("whitelist") -> {
+                        if (args.length < 2) {
+                            sender.sendMessage(CommandUtils.errorMessage("Please specify whether to open or close the whitelist."));
+                        }
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (args[1].equalsIgnoreCase("open")) {
+                                    try {
+                                        for (UUID uuid : database.getAllPlayers()) {
+                                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                                            new BukkitRunnable() {
+                                                @Override
+                                                public void run() {
+                                                    offlinePlayer.setWhitelisted(true);
+                                                }
+                                            }.runTask(teamManager.getPlugin());
+                                        }
+                                        sender.sendMessage(TextUtil.formatText("Done opening whitelist"));
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                } else {
+                                    Collection<UUID> godUUIDs = teamManager.getGodTeam().getOfflinePlayers().stream().map(OfflinePlayer::getUniqueId).toList();
+                                    OfflinePlayer[] allPlayers = Bukkit.getOfflinePlayers();
+
+                                    for (OfflinePlayer player : allPlayers) {
+                                        if (!godUUIDs.contains(player.getUniqueId())) {
+                                            new BukkitRunnable() {
+                                                @Override
+                                                public void run() {
+                                                    player.setWhitelisted(false);
+                                                }
+                                            }.runTask(teamManager.getPlugin());
+                                        }
+                                    }
+                                    sender.sendMessage(TextUtil.formatText("Done closing whitelist"));
+                                }
+                            }
+                        }.runTaskAsynchronously(teamManager.getPlugin());
+                    }
                     case ("waitingroom") -> {
                         boolean isEnabled = waitingRoom.isEnabled();
                         if (isEnabled) {
@@ -248,6 +316,109 @@ public class TowerCommands implements CommandExecutor {
                                 }
                             } else {
                                 sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
+                            }
+                        }
+                    }
+                    case ("copyquestinstances") -> {
+                        oct2023QuestManager.copyTemplateToTeams();
+                    }
+                    case ("deletequestinstances") -> {
+                        oct2023QuestManager.deleteTeamInstances();
+                    }
+                    case ("collectblockvouchers") -> {
+                        if (!(sender instanceof Player player)) {
+                            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+                            return true;
+                        }
+
+                        Map<String, Integer> voucherAmounts = new HashMap<>();
+                        for (Player serverPlayer : Bukkit.getOnlinePlayers()) {
+                            TowerTeam team = teamManager.getPlayerTeam(serverPlayer);
+                            if (team == null) {
+                                continue;
+                            }
+
+                            PlayerInventory inventory = serverPlayer.getInventory();
+                            for (ItemStack itemStack : inventory.getContents()) {
+                                if (itemStack == null || !BlockVoucher.isVoucher(itemStack)) {
+                                    continue;
+                                }
+
+                                int amount = itemStack.getAmount();
+                                int voucherAmount = voucherAmounts.getOrDefault(team.getServerTeamName(), 0);
+                                voucherAmount += amount;
+                                voucherAmounts.put(team.getServerTeamName(), voucherAmount);
+                                inventory.removeItem(itemStack);
+                            }
+                        }
+
+                        for (ParticipantTeam team : teamManager.getParticipantTeams()) {
+                            SpawnRegion spawnRegion = team.getSpawnRegion();
+                            ProtectedRegion region = spawnRegion.getRegion();
+                            BlockVector3 minPoint = region.getMinimumPoint();
+                            BlockVector3 maxPoint = region.getMaximumPoint();
+                            for (int x = minPoint.getBlockX(); x < maxPoint.getBlockX(); x++) {
+                                for (int y = minPoint.getBlockY(); y < maxPoint.getBlockY(); y++) {
+                                    for (int z = minPoint.getBlockZ(); z < maxPoint.getBlockZ(); z++) {
+                                        Block block = new Location(spawnRegion.getSpawnpoint().getWorld(), x, y, z).getBlock();
+                                        if (block.getState() instanceof Container container) {
+                                            Inventory inventory = container.getInventory();
+                                            if (container instanceof Chest chest) {
+                                                inventory = chest.getBlockInventory();
+                                            }
+
+                                            for (ItemStack itemStack : inventory.getContents()) {
+                                                if (itemStack == null || !BlockVoucher.isVoucher(itemStack)) {
+                                                    continue;
+                                                }
+
+                                                int amount = itemStack.getAmount();
+                                                int voucherAmount = voucherAmounts.getOrDefault(team.getServerTeamName(), 0);
+                                                voucherAmount += amount;
+                                                voucherAmounts.put(team.getServerTeamName(), voucherAmount);
+                                                inventory.removeItem(itemStack);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                        for (Map.Entry<String, Integer> teamVouchers : voucherAmounts.entrySet()) {
+                            ItemStack bedrock = GuiUtil.formatItem(teamVouchers.getKey(), Material.BEDROCK, 0);
+                            bedrock.setAmount(teamVouchers.getValue());
+                            FullInventory.givePlayerItems(player, bedrock);
+                            sender.sendMessage(TextUtil.formatText("Done collecting vouchers"));
+                        }
+                    }
+                    case ("completetrivia") -> {
+                        // tower completetrivia team_id Oct2023_quest x y z x' y' z' destx desty destz
+                        TowerTeam team = teamManager.getTeam(Integer.parseInt(args[1]));
+                        if (team != null) {
+                            World world = Bukkit.getWorld(args[2]);
+                            if (world == null) {
+                                return true;
+                            }
+
+                            CuboidRegion cuboidRegion = new CuboidRegion(BukkitAdapter.adapt(world),
+                                    BlockVector3.at(Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5])),
+                                    BlockVector3.at(Double.parseDouble(args[6]), Double.parseDouble(args[7]), Double.parseDouble(args[8])));
+                            Location teleportLocation = new Location(world, Double.parseDouble(args[9]), Double.parseDouble(args[10]), Double.parseDouble(args[11]), Float.parseFloat(args[12]), Float.parseFloat(args[13]));
+                            boolean rewardGiven = false;
+                            Quest quest = team.getQuest(QuestManager.TRIVIA);
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                if (cuboidRegion.contains(BukkitAdapter.asBlockVector(player.getLocation()))) {
+                                    if (quest != null && !quest.isCompleted() && !rewardGiven && team.hasPlayer(player)) {
+                                        team.completeQuest(QuestManager.TRIVIA);
+                                        rewardGiven = true;
+                                        ItemStack bundle = QuestUtil.randomBlockBundle(5);
+                                        player.sendMessage(QuestManager.getRewards(bundle));
+                                        FullInventory.givePlayerItems(player, bundle);
+                                        Oct2023QuestManager.checkCompletedQuests(team, player);
+                                    }
+                                    player.teleport(teleportLocation);
+                                }
                             }
                         }
                     }

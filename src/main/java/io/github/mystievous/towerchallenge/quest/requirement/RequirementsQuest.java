@@ -20,7 +20,7 @@ public class RequirementsQuest extends Quest {
 
     @Override
     public Quest copy() {
-        RequirementsQuest quest = new RequirementsQuest(plugin, getId(), getFriendlyName());
+        RequirementsQuest quest = new RequirementsQuest(plugin, getTag(), getFriendlyName());
         quest.setDescription(getDescription());
         for (Requirement requirement : requirements) {
             quest.addRequirement(requirement.copy());

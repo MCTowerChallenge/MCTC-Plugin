@@ -1,4 +1,4 @@
-package io.github.mystievous.towerchallenge.decoration;
+package io.github.mystievous.towerchallenge.decoration.customblock;
 
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mystigui.GuiUtil;
@@ -10,9 +10,9 @@ import io.github.mystievous.towerchallenge.gui.Icons;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +20,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
+import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class CustomBlockManager implements Listener, Openable {
 
@@ -50,13 +50,13 @@ public class CustomBlockManager implements Listener, Openable {
 
     private final Plugin plugin;
 
-    private final List<ItemStack> blocks;
+    private final Map<String, CustomBlock> blocks;
 
     public CustomBlockManager(Plugin plugin) {
 
         this.plugin = plugin;
 
-        blocks = new ArrayList<>();
+        blocks = new HashMap<>();
 
         for (int i = 0; i < dyeColors.length; i++) {
             DyeColor dyeColor = dyeColors[i];
@@ -68,16 +68,25 @@ public class CustomBlockManager implements Listener, Openable {
                 name.append(word.charAt(0)).append(word.substring(1).toLowerCase());
             }
 
-            ItemStack obsidian = GuiUtil.formatItem(name + " Obsidian", Material.CRYING_OBSIDIAN, obsidianId);
-            NBTUtils.setBool(plugin, CUSTOM_BLOCK_TAG, obsidian);
+            String obsidianName = name + " Obsidian";
+            ItemStack obsidian = GuiUtil.formatItem(obsidianName, Material.CRYING_OBSIDIAN, obsidianId);
+            NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, obsidian, obsidianName);
+            blocks.put(obsidianName, new CustomBlock(obsidian));
 
-            ItemStack cryingObsidian = GuiUtil.formatItem(name + " Crying Obsidian", Material.CRYING_OBSIDIAN, cryingObsidianId);
-            NBTUtils.setBool(plugin, CUSTOM_BLOCK_TAG, cryingObsidian);
-
-            blocks.add(obsidian);
-            blocks.add(cryingObsidian);
+            String cryingObsidianName = name + " Crying Obsidian";
+            ItemStack cryingObsidian = GuiUtil.formatItem(cryingObsidianName, Material.CRYING_OBSIDIAN, cryingObsidianId);
+            NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, cryingObsidian, cryingObsidianName);
+            blocks.put(cryingObsidianName, new CustomBlock(cryingObsidian));
 
         }
+
+        String witherSkullName = "Wither Skull";
+        ItemStack witherSkull = GuiUtil.formatItem(witherSkullName, Material.WITHER_SKELETON_SKULL, 0);
+        NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, witherSkull, witherSkullName);
+        CustomBlock witherCustomBlock = new CustomBlock(witherSkull);
+        witherCustomBlock.setScale(new Vector3f(2, 2 , 2));
+        witherCustomBlock.setTranslation(new Vector3f(0, 0.5f, 0));
+        blocks.put(witherSkullName, witherCustomBlock);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
@@ -87,8 +96,8 @@ public class CustomBlockManager implements Listener, Openable {
     public Gui getGui(Player player) {
         Component guiName = Component.text("Custom Blocks:");
         return new TargetListGui<>(plugin, guiName,
-                itemStack -> itemStack, blocks,
-                (clickingPlayer, itemStack) -> clickingPlayer.getInventory().addItem(itemStack),
+                CustomBlock::getModel, blocks.values().stream().toList(),
+                (clickingPlayer, customBlock) -> clickingPlayer.getInventory().addItem(customBlock.getModel()),
                 new ButtonElement(Icons.exitItem(), HumanEntity::closeInventory)
         );
     }
@@ -96,16 +105,16 @@ public class CustomBlockManager implements Listener, Openable {
     @EventHandler
     public void onPlaceBlock(final BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
-        if (!item.getType().equals(Material.CRYING_OBSIDIAN) || !NBTUtils.boolState(plugin, CUSTOM_BLOCK_TAG, item)) {
+        String customBlockName = NBTUtils.getString(plugin, CUSTOM_BLOCK_TAG, item);
+        if (customBlockName == null) {
             return;
         }
 
-        Block placedBlock = event.getBlockPlaced();
-        placedBlock.setType(Material.BARRIER);
-        Location customLocation = placedBlock.getLocation().add(0.5, 0.5, 0.5);
-        ItemDisplay itemDisplay = (ItemDisplay) customLocation.getWorld().spawnEntity(customLocation, EntityType.ITEM_DISPLAY);
-        itemDisplay.setItemStack(item);
-        itemDisplay.addScoreboardTag(CUSTOM_BLOCK_TAG);
+        CustomBlock customBlock = blocks.get(customBlockName);
+        if (customBlock != null) {
+            BlockFace facing = event.getPlayer().getFacing();
+            customBlock.placeBlock(event.getBlock().getLocation().setDirection(facing.getDirection()));
+        }
     }
 
     @EventHandler

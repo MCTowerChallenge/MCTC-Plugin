@@ -17,12 +17,12 @@ public class QuestUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    public static ItemStack randomBlockBundle() {
+    public static ItemStack randomBlockBundle(int blocks) {
         ItemStack bundle = new ItemStack(Material.BUNDLE);
         BundleMeta bundleMeta = (BundleMeta) bundle.getItemMeta();
 
         Map<Material, Integer> chosenBlocks = new HashMap<>();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < blocks; i++) {
             Material block = BlockSets.OBTAINABLE_BLOCKS[RANDOM.nextInt(BlockSets.OBTAINABLE_BLOCKS.length)];
             int amount = chosenBlocks.getOrDefault(block, 0);
             chosenBlocks.put(block, amount + 1);
@@ -51,8 +51,8 @@ public class QuestUtil {
                 }
             }
         }
-        Location center = area[0].clone().add(area[1]).multiply(0.5);
-        center.getWorld().playSound(center, Sound.BLOCK_ANVIL_LAND, SoundCategory.RECORDS, 1f, 1f);
+//        Location center = area[0].clone().add(area[1]).multiply(0.5);
+//        center.getWorld().playSound(center, Sound.BLOCK_ANVIL_LAND, SoundCategory.RECORDS, 1f, 1f);
     }
 
 }

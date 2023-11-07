@@ -1,5 +1,6 @@
 package io.github.mystievous.towerchallenge.quest;
 
+import io.github.mystievous.towerchallenge.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

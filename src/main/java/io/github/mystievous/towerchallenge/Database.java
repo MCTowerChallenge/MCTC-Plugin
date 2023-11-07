@@ -11,6 +11,7 @@ import io.github.mystievous.towerchallenge.configs.DatabaseConfig;
 import io.github.mystievous.towerchallenge.decoration.CustomModel;
 import io.github.mystievous.towerchallenge.god.GodTeam;
 import io.github.mystievous.towerchallenge.hats.HatElement;
+import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.team.ParticipantTeam;
 import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
@@ -141,6 +142,30 @@ public class Database {
                     team.addAllPlayers(teamUsers);
                 }
             }
+        }
+    }
+
+    public Collection<UUID> getAllPlayers() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+                """
+                        SELECT uuid FROM users
+                        WHERE users.team_id IS NOT NULL;
+                        """
+        )) {
+            ResultSet resultSet = statement.executeQuery();
+            Collection<UUID> users = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String userIdString = resultSet.getString("uuid");
+                try {
+                    UUID userId = UUID.fromString(userIdString);
+                    users.add(userId);
+                } catch (IllegalArgumentException e) {
+                    Bukkit.getLogger().warning("Invalid User Id: " + userIdString);
+                }
+            }
+
+            return users;
         }
     }
 
@@ -1112,6 +1137,45 @@ public class Database {
             }
 
             return locations;
+        }
+    }
+
+    public Map<Integer, Collection<String>> getCompletedQuests() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+            """
+                    SELECT teams.id AS team_id, tags.name FROM completed_quests
+                    INNER JOIN teams ON completed_quests.team_id = teams.id
+                    INNER JOIN tags ON completed_quests.tag_id = tags.id;                
+                    """
+        )) {
+            Map<Integer, Collection<String>> completedQuests = new HashMap<>();
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int teamId = resultSet.getInt("team_id");
+                String quest = resultSet.getString("name");
+
+                Collection<String> quests = completedQuests.getOrDefault(teamId, new ArrayList<>());
+                quests.add(quest);
+                completedQuests.put(teamId, quests);
+
+            }
+
+            return completedQuests;
+        }
+    }
+
+    public void setCompletedQuest(TowerTeam team, Quest quest) throws SQLException {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
+            """
+                    INSERT INTO completed_quests(team_id, tag_id)
+                    VALUES (?, (SELECT id FROM tags WHERE name = ?));
+                    """
+        )) {
+            statement.setInt(1, team.getDatabaseId());
+            statement.setString(2, quest.getTag());
+            statement.executeUpdate();
         }
     }
 

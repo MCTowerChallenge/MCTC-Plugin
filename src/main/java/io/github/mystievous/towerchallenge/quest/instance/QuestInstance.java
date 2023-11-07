@@ -1,10 +1,8 @@
 package io.github.mystievous.towerchallenge.quest.instance;
 
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiversePortals.MVPortal;
 import com.onarandombox.MultiversePortals.MultiversePortals;
-import com.onarandombox.MultiversePortals.PortalLocation;
-import com.onarandombox.MultiversePortals.utils.PortalManager;
+import io.github.mystievous.towerchallenge.team.TeamManager;
 import io.github.mystievous.towerchallenge.team.TowerTeam;
 import io.github.mystievous.towerchallenge.utility.MVPortalUtils;
 import io.github.mystievous.towerchallenge.utility.TeamUtils;
@@ -12,6 +10,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -24,21 +23,26 @@ public class QuestInstance {
      * Offset from the base location for this instance
      */
     private final Vector offset;
+    private final Location instanceLocation;
 
     private MultiversePortals multiversePortals;
-    private final TowerTeam team;
+    private final TeamManager teamManager;
+    private final int teamId;
 
     /**
      * Creates a quest instance, and
      * generates the offset based
      * on the {@link Location} parameters
      *
-     * @param team             Team this instance is associated with
+     * @param teamManager      Team Manager instance
+     * @param teamId           database id for the team
      * @param baseLocation     Location of the base instance
      * @param instanceLocation Location of this instance
      */
-    public QuestInstance(TowerTeam team, Location baseLocation, Location instanceLocation) {
-        this.team = team;
+    public QuestInstance(TeamManager teamManager, int teamId, Location baseLocation, Location instanceLocation) {
+        this.teamManager = teamManager;
+        this.teamId = teamId;
+        this.instanceLocation = instanceLocation;
         this.offset = instanceLocation.clone().subtract(baseLocation).toVector();
 
         Plugin mvpPlugin = Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals");
@@ -47,8 +51,8 @@ public class QuestInstance {
         }
     }
 
-    public TowerTeam getTeam() {
-        return team;
+    public @Nullable TowerTeam getTeam() {
+        return teamManager.getTeam(teamId);
     }
 
     /**
@@ -62,6 +66,14 @@ public class QuestInstance {
         return baseLocation.clone().add(offset);
     }
 
+    public Vector getOffset() {
+        return offset;
+    }
+
+    public Location getInstanceLocation() {
+        return instanceLocation;
+    }
+
     /**
      * Creates/Updates a {@link MVPortal} for this instance
      *
@@ -70,6 +82,7 @@ public class QuestInstance {
      * @param destinationLocation Absolute location on the server to teleport the player to.
      */
     public void initPortal(String portalName, Location[] baseCorners, Location destinationLocation) {
+        TowerTeam team = getTeam();
         if (team != null) {
             String teamPortalName = TeamUtils.toTeamTag(team, portalName);
             Location[] instanceCorners = Arrays.stream(baseCorners).map(this::offsetLocation).toArray(Location[]::new);

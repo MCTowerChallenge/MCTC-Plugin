@@ -46,6 +46,8 @@ public class TowerTabComplete implements TabCompleter {
                 strings.add("waitingRoom");
                 strings.add("tpAllSpawn");
                 strings.add("tpToSpawn");
+//                strings.add("whitelist");
+                strings.add("collectBlockVouchers");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
@@ -60,6 +62,14 @@ public class TowerTabComplete implements TabCompleter {
 
                     return strings.stream().filter(compare).collect(Collectors.toList());
                 }
+//                } else if (args[0].equalsIgnoreCase("whitelist")) {
+//                    List<String> strings = new ArrayList<>();
+//
+//                    strings.add("open");
+//                    strings.add("close");
+//
+//                    return strings;
+//                }
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("addplayer")) {
                     return teamManager.getParticipantTeams().stream().map(TowerTeam::getTextName).collect(Collectors.toList());

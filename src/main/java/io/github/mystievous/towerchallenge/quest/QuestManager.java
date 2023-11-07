@@ -37,15 +37,9 @@ public class QuestManager implements Listener {
 
 
     // QUEST TAGS
-    public static final String BAND_TROUBLE = "band-trouble";
-    public static final String TUNNEL = "tunnel";
-    public static final String OTHER_BAND = "other-band";
-    public static final String WAIT = "wait";
-    public static final String MEETING = "meeting";
-    public static final String RIDDLE = "riddle";
-    public static final String CAVE = "cave";
-    public static final String RETURN_STICKS = "return-sticks";
-    public static final String FINISHED_QUESTS = "finished-quests";
+    public static final String TRIVIA = "trivia";
+    public static final String PARKOUR = "parkour";
+    public static final String HAUNTED_HOUSE = "haunted-house";
 
     // No Quest
     public static final String NO_QUEST = "no-quest";
@@ -64,120 +58,21 @@ public class QuestManager implements Listener {
         quests = new HashMap<>();
 
         // Configure Quests
-
         Quest noQuest = new Quest(TowerChallenge.getInstance(), NO_QUEST, "No Quests!");
         noQuest.setDescription("Enjoy the event!");
         quests.put(NO_QUEST, noQuest);
 
-        Quest bandTrouble = new Quest(plugin, BAND_TROUBLE, "Band Trouble");
-        bandTrouble.setDescription("Check out the main stage by the beacons to see what's up with the band.");
+        Quest triviaQuest = new Quest(plugin, TRIVIA, "Trivia");
+        triviaQuest.setDescription("Complete the trivia on the left side of the haunted house!");
+        quests.put(TRIVIA, triviaQuest);
 
-        /*
+        Quest parkourQuest = new Quest(plugin, PARKOUR, "Parkour");
+        parkourQuest.setDescription("Complete the parkour course on the right side of the haunted house!");
+        quests.put(PARKOUR, parkourQuest);
 
-            BROKEN LIGHT
-
-         */
-
-//        lightInteracted = new HashSet<>();
-
-        String brokenLightTag = "broken-light";
-
-        InteractableTaggedEntity brokenLight = new InteractableTaggedEntity(brokenLightTag);
-
-        Dialogue lightInteract = new Dialogue(plugin, Dialogue.playerThoughts("This light has a trail of broken glass leading from it... I should follow and see where it goes."), 6.0d);
-        brokenLight.addQuestInteractionHandler(BAND_TROUBLE, (team, event) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                lightInteract.play(team, () -> {
-//                    lightInteracted.add(team.getTextName());
-                    team.setInDialogue(false);
-                });
-            }
-        });
-
-        InteractableTagManager.registerTag(brokenLight);
-
-        quests.put(BAND_TROUBLE, bandTrouble);
-
-
-        Quest tunnel = new Quest(plugin, TUNNEL, "Odd Tunnel");
-        tunnel.setDescription("Investigate the strange tunnel behind the painting.");
-        quests.put(TUNNEL, tunnel);
-
-
-        Quest otherBand = new Quest(plugin, OTHER_BAND, "Rival Band");
-        otherBand.setDescription("The rival band has a tunnel leading to the main stage... You should check them out.");
-        quests.put(OTHER_BAND, otherBand);
-
-        Quest wait = new Quest(plugin, WAIT, "Meow.");
-        wait.setDescription("(Wait for something to happen.)");
-
-
-
-        quests.put(WAIT, wait);
-
-
-        Quest meeting = new Quest(plugin, MEETING, "Meeting");
-        meeting.setDescription("Head to the taco stand for the mysterious meeting.");
-
-        quests.put(MEETING, meeting);
-
-
-        Quest riddle = new Quest(plugin, RIDDLE, "Riddle");
-        riddle.setDescription("Figure out the riddle that Dave found.");
-
-
-
-        quests.put(RIDDLE, riddle);
-
-
-        Quest cave = new Quest(plugin, CAVE, "Hidden Cave");
-        cave.setDescription("Investigate the mysterious cave underneath the sand.");
-
-        /*
-
-            DRUMSTICKS
-
-         */
-
-        String drumsticks = "drumsticks";
-
-        ItemStack drumstickItem = GuiUtil.formatItem("Drumsticks", Material.STICK, 5);
-        NBTUtils.setBool(plugin, drumsticks, drumstickItem);
-        NBTUtils.noStack(plugin, drumstickItem);
-        NBTUtils.setNoUse(drumstickItem);
-        TextUtil.appendQuestItemLore(drumstickItem);
-        QuestItems.putItem(drumsticks, drumstickItem);
-
-        String drumstickIndividual = "drumstick-individual";
-        ItemStack drumstickIndividualItem = GuiUtil.formatItem("Drumstick", Material.STICK, 4);
-        QuestItems.putItem(drumstickIndividual, drumstickIndividualItem);
-
-        InteractableTaggedEntity drumstickFrame = new InteractableTaggedEntity(drumsticks);
-        drumstickFrame.addQuestInteractionHandler(CAVE, (team, event) -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                Player player = event.getPlayer();
-                Entity entity = event.getRightClicked();
-                if (entity instanceof ItemFrame itemFrame) {
-                    itemFrame.setItem(new ItemStack(Material.AIR));
-                }
-                FullInventory.givePlayerItems(player, drumstickItem);
-                team.sendMessage(getRewards(drumstickItem));
-                team.setQuest(RETURN_STICKS);
-            });
-        });
-
-        quests.put(CAVE, cave);
-
-        Quest returnSticks = new Quest(plugin, RETURN_STICKS, "Return Sticks");
-        returnSticks.setDescription("Return Percy's drumsticks to him at the main stage!");
-
-        quests.put(RETURN_STICKS, returnSticks);
-
-        Quest finishedQuests = new Quest(plugin, FINISHED_QUESTS, "Quest Done!");
-        finishedQuests.setDescription("Enjoy the rest of the event!");
-
-        quests.put(FINISHED_QUESTS, finishedQuests);
+        Quest hauntedHouseQuest = new Quest(plugin, HAUNTED_HOUSE, "Haunted House");
+        hauntedHouseQuest.setDescription("Complete both rooms of the haunted house!");
+        quests.put(HAUNTED_HOUSE, hauntedHouseQuest);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -242,8 +137,8 @@ public class QuestManager implements Listener {
         return questItems;
     }
 
-    public void initTeamQuests(TowerTeam team) {
-        team.setQuests(quests);
+    public void initTeamQuests(TowerTeam team, @Nullable Collection<String> completedQuests) {
+        team.setQuests(quests, completedQuests);
     }
 
 }

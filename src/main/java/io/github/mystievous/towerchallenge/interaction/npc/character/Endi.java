@@ -21,25 +21,6 @@ public class Endi extends QuestCharacter {
 
     public Endi(Plugin plugin) {
         super(plugin, EntityType.ENDERMAN, NAME, NAME_COLOR, TEXT_COLOR);
-
-        String glass = "glass";
-        String endiTalk = "endi-talk";
-
-        Dialogue endiInvestigate = new Dialogue(plugin, formatMessage("Oh, hi there..."), 2.5d);
-        endiInvestigate.append(formatMessage("I'm alright now, thank you."), 3.5d);
-        endiInvestigate.append(formatMessage("The light didn't land too close, it was just scary.."), 4.5d);
-        endiInvestigate.append(formatMessage("I'm worried about Percy though, he seems really upset about his drumsticks."), 5.0d);
-        endiInvestigate.append(formatMessage("I'd go check on him but steve should be back any second with a broom and new glass to fix this up... hopefully"), 7.0d);
-        endiInvestigate.append(formatMessage("Would you mind asking how he's doing for me please?"), 3.5d);
-        addQuestInteractionHandler(QuestManager.NO_QUEST, (team, npcRightClickEvent) -> {
-        });
-        setDefaultInteractionHandler((team, npcRightClickEvent) -> {
-            if (team.getObjective(QuestManager.BAND_TROUBLE, glass) == 0 && team.canStartDialogue()) {
-                team.setInDialogue(true);
-                team.addObjectiveScore(QuestManager.BAND_TROUBLE, endiTalk, 1);
-                endiInvestigate.play(team, () -> team.setInDialogue(false));
-            }
-        });
     }
 
     @Override

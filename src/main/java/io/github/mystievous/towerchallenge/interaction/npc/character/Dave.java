@@ -28,31 +28,6 @@ public class Dave extends QuestCharacter {
 
     public Dave(Plugin plugin) {
         super(plugin, EntityType.STRIDER, NAME, NAME_COLOR, TEXT_COLOR);
-
-        String noteBase64 = "H4sIAAAAAAAA/02PT0vDQBDFJ5aUGPHqechZinjsVUEQvIgIQkGmybRZk+yW3RdjEM9+Mz+Xm3ioh2H+vcdvJida0NmtQJ7VB+Ms0fl3RiemoovOWC297LAevAHUvm6da3JaQPanlB5kryEjooR+PgvoB4p18eR4Z2zFqJXd9k1L8Oh6DqrN5cZu7Etsuj7gqNq2YhtF4KFWr39qA5a4VsFqMt25WE4e77rZ00lZx+N4MKjnQZAWI8NHx4y5nxDXVxygh8CuB5v/gPmCgIkxRbAqzar4ymgpPWrnKX8YA4y+uz5+mMKgVVo+mqqKOaH0xvUWCf0CbmzokT0BAAA=";
-        ItemStack noteItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(noteBase64));
-        BookMeta noteMeta = (BookMeta) noteItem.getItemMeta();
-        noteMeta.setAuthor("Alice Wayward");
-        noteItem.setItemMeta(noteMeta);
-
-        Dialogue daveMeet = new Dialogue(plugin, formatMessage("Thanks for meeting up with me, sorry for being all cryptic but I had to make sure no one sus would catch on."), 6.5d);
-        daveMeet.append(new Dialogue(plugin, formatMessage("I heard you were asking about what's happening over at the main stage, and I may have some info."), 5.0d));
-        daveMeet.append(new Dialogue(plugin, formatMessage("Earlier, I stumbled into Alice and Ari whispering about some hidden cave."), 4.0d));
-        daveMeet.append(new Dialogue(plugin, formatMessage("They kept giggling about it like they did something."), 3.5d));
-        daveMeet.append(new Dialogue(plugin, formatMessage("I found this lying around backstage and think it might have something to do with it."), 4.5d));
-
-        addQuestInteractionHandler(QuestManager.MEETING, (team, event) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                daveMeet.play(team, () -> {
-                    team.setInDialogue(false);
-                    Player player = event.getClicker();
-                    FullInventory.givePlayerItems(player, noteItem);
-                    team.sendMessage(QuestManager.getRewards(noteItem));
-                    team.setQuest(QuestManager.RIDDLE);
-                });
-            }
-        });
     }
 
     @Override

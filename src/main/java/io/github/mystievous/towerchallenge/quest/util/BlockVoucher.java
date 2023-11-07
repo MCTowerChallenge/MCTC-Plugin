@@ -1,6 +1,8 @@
 package io.github.mystievous.towerchallenge.quest.util;
 
+import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mysticore.Palette;
+import io.github.mystievous.towerchallenge.TowerChallenge;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -12,8 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 /**
  * Utility class for Block Vouchers
  */
-public class BlockVoucher extends ItemStack {
+public class BlockVoucher {
 
+    public static final String VOUCHER_TAG = "block-voucher";
     public static final Component VOUCHER_NAME = Component.text("Block Voucher").decoration(TextDecoration.ITALIC, false).color(Palette.PRIMARY.toTextColor());
 
     /**
@@ -28,8 +31,15 @@ public class BlockVoucher extends ItemStack {
         voucherMeta.displayName(VOUCHER_NAME);
         voucherMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         voucherMeta.addEnchant(Enchantment.MENDING, 1, false);
+        NBTUtils.setBool(TowerChallenge.getInstance(), VOUCHER_TAG, voucherMeta, true);
         vouchers.setItemMeta(voucherMeta);
         return vouchers;
     }
+
+    public static boolean isVoucher(ItemStack itemStack) {
+        return NBTUtils.boolState(TowerChallenge.getInstance(), VOUCHER_TAG, itemStack.getItemMeta());
+    }
+
+
 
 }

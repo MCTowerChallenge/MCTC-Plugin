@@ -20,11 +20,11 @@ public class QuestRegion extends EventRegion {
      *
      * @param plugin   Current plugin instance
      * @param instance {@link QuestInstance} this region is associated with
-     * @param area     Area for the region to cover
+     * @param templateArea     Area for the region to cover
      * @param tag      Tag to name the region with
      */
-    public QuestRegion(Plugin plugin, QuestInstance instance, Location[] area, String tag) {
-        super(plugin, Arrays.stream(area).map(instance::offsetLocation).toArray(Location[]::new), instance.getTeam(), tag);
+    public QuestRegion(Plugin plugin, QuestInstance instance, Location[] templateArea, String tag) {
+        super(plugin, Arrays.stream(templateArea).map(instance::offsetLocation).toArray(Location[]::new), instance.getTeam(), tag);
         setFlags(getRegion());
     }
 
@@ -43,9 +43,9 @@ public class QuestRegion extends EventRegion {
         region.setFlag(Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
         region.setFlag(Flags.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
         region.setFlag(Flags.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
-        region.setFlag(Flags.USE, StateFlag.State.ALLOW);
-        region.setFlag(Flags.INTERACT, StateFlag.State.ALLOW);
-        region.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
+        region.setFlag(Flags.USE, StateFlag.State.DENY);
+        region.setFlag(Flags.INTERACT, StateFlag.State.DENY);
+        region.setFlag(Flags.CHEST_ACCESS, StateFlag.State.DENY);
         region.setFlag(Flags.DENY_MESSAGE, null);
         region.setFlag(Flags.ENTRY_DENY_MESSAGE, null);
         region.setFlag(Flags.EXIT_DENY_MESSAGE, null);

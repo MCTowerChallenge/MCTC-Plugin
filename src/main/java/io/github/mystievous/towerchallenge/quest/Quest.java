@@ -12,22 +12,32 @@ import org.jetbrains.annotations.Nullable;
 public class Quest implements Openable {
 
     protected final TowerChallenge plugin;
-    private final String id;
+    private final String tag;
     private final String friendlyName;
     private @Nullable String description;
+    private boolean completed;
 
     /**
      * Creates a new quest.
      *
      * @param plugin       The current plugin instance.
-     * @param id           The unique ID for this quest, matching a database entry.
+     * @param tag           The unique ID for this quest, matching a database entry.
      * @param friendlyName The user-friendly name of the quest for display.
      */
-    public Quest(TowerChallenge plugin, String id, String friendlyName) {
+    public Quest(TowerChallenge plugin, String tag, String friendlyName) {
         this.plugin = plugin;
-        this.id = id;
+        this.tag = tag;
         this.friendlyName = friendlyName;
         this.description = null;
+        this.completed = false;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public boolean isCompleted() {
+        return completed;
     }
 
     /**
@@ -36,7 +46,7 @@ public class Quest implements Openable {
      * @return The copied quest.
      */
     public Quest copy() {
-        Quest quest = new Quest(plugin, id, friendlyName);
+        Quest quest = new Quest(plugin, tag, friendlyName);
         quest.setDescription(description);
         return quest;
     }
@@ -46,8 +56,8 @@ public class Quest implements Openable {
      *
      * @return The quest ID.
      */
-    public String getId() {
-        return id;
+    public String getTag() {
+        return tag;
     }
 
     /**
@@ -81,5 +91,15 @@ public class Quest implements Openable {
     @Override
     public Gui getGui(Player player) {
         return new QuestGui(plugin, friendlyName, description);
+    }
+
+    @Override
+    public String toString() {
+        return "Quest{" +
+                "tag='" + tag + '\'' +
+                ", friendlyName='" + friendlyName + '\'' +
+                ", description='" + description + '\'' +
+                ", completed=" + completed +
+                '}';
     }
 }

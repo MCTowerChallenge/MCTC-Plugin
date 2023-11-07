@@ -5,8 +5,10 @@ import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mystigui.GuiHeldItem;
 import io.github.mystievous.mystigui.element.Representable;
 import io.github.mystievous.towerchallenge.TowerChallenge;
+import io.github.mystievous.towerchallenge.portal.EndPortal;
 import io.github.mystievous.towerchallenge.quest.Quest;
 import io.github.mystievous.towerchallenge.quest.QuestChangeEvent;
+import io.github.mystievous.towerchallenge.quest.QuestCompleteEvent;
 import io.github.mystievous.towerchallenge.quest.QuestManager;
 import io.github.mystievous.towerchallenge.spawncompass.SpawnCompass;
 import io.github.mystievous.mysticore.TextUtil;
@@ -23,6 +25,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -124,9 +127,13 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      *
      * @param quests The quests to copy to this team.
      */
-    public void setQuests(Map<String, Quest> quests) {
+    public void setQuests(Map<String, Quest> quests, Collection<String> completedQuests) {
         for (Map.Entry<String, Quest> questEntry : quests.entrySet()) {
-            this.quests.put(questEntry.getKey(), questEntry.getValue().copy());
+            Quest quest = questEntry.getValue().copy();
+            if (completedQuests != null && completedQuests.contains(questEntry.getKey())) {
+                quest.setCompleted(true);
+            }
+            this.quests.put(questEntry.getKey(), quest);
         }
     }
 
@@ -141,6 +148,30 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      */
     public void setCurrentQuestTag(String currentQuest) {
         this.currentQuest = currentQuest;
+    }
+
+    public Map<String, Quest> getQuests() {
+        return quests;
+    }
+
+    public void completeQuest(String questTag) {
+        Quest quest = getQuest(questTag);
+        if (quest == null || quest.isCompleted()) {
+            return;
+        }
+        QuestCompleteEvent event = new QuestCompleteEvent(this, quest);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled())
+            return;
+        quest.setCompleted(true);
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                teamManager.getDatabase().setCompletedQuest(this, quest);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
+            }
+        });
     }
 
     /**
@@ -320,6 +351,10 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      */
     public String getDye() {
         return dye;
+    }
+
+    public boolean hasPlayer(Player player) {
+        return team.hasPlayer(player);
     }
 
     private Audience getAudience() {
@@ -502,7 +537,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      * @see #dealItems(Player)
      * @see #dealItemsAllPlayers()
      */
-    public Map<Integer, ItemStack> getStartingItems() {
+    public Map<Integer, ItemStack> getStartingItems(@Nullable Player player) {
         Map<Integer, ItemStack> items = new HashMap<>();
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
@@ -527,18 +562,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         shovel.setItemMeta(shovelMeta);
         items.put(2, shovel);
 
-        ItemStack book = new ItemStack(Material.BOOK);
-        NBTUtils.noStack(plugin, book);
-        NBTUtils.setString(plugin, GuiHeldItem.GUI_ID, book, QuestManager.GUI_ID);
-        ItemMeta bookMeta = book.getItemMeta();
-        bookMeta.displayName(Component.text("Quest Book").decoration(TextDecoration.ITALIC, false));
-        bookMeta.setCustomModelData(2);
-        bookMeta.lore(TextUtil.formatTexts(
-                Component.text("Use ").append(Component.keybind("key.use")).append(Component.text(" with me in your hand")),
-                Component.text("to open the quest menu!")
-        ));
-        book.setItemMeta(bookMeta);
-
+        ItemStack book = teamManager.getQuestBook().getItem();
         items.put(3, book);
 
         ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
@@ -547,9 +571,14 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
 
         ItemStack torches = new ItemStack(Material.TORCH, 64);
         items.put(5, torches);
-        items.put(6, torches);
+        items.put(32, torches);
 
-        items.put(7, SpawnCompass.getCompass());
+        ItemStack bow = new ItemStack(Material.BOW);
+        items.put(6, bow);
+        ItemStack arrows = new ItemStack(Material.ARROW, 64);
+        items.put(33, arrows);
+
+        items.put(7, SpawnCompass.getCompass(this, player));
 
         items.put(8, getShulker());
         items.put(26, getShulker());
@@ -580,7 +609,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     public void dealItems(Player player) {
         PlayerInventory inventory = player.getInventory();
         Map<EquipmentSlot, ItemStack> equipment = getStartingEquipment();
-        Map<Integer, ItemStack> items = getStartingItems();
+        Map<Integer, ItemStack> items = getStartingItems(player);
         ItemStack hat = inventory.getHelmet();
         if (hat == null || hat.getType().isAir()) {
             hat = equipment.get(EquipmentSlot.HEAD);
@@ -601,6 +630,17 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
 
         }
 
+    }
+
+    public void teleportToSpawn(Player player) {
+        Location spawnpoint = EndPortal.spawnLocation();
+        player.teleport(spawnpoint);
+    }
+
+    public void teleportAllSpawn() {
+        for (Player player : getOnlinePlayers()) {
+            teleportToSpawn(player);
+        }
     }
 
     /*
