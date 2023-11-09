@@ -1,5 +1,5 @@
 name: TowerChallenge
-version: '${project.version}'
+version: '${version}'
 main: io.github.mystievous.towerchallenge.TowerChallenge
 api-version: 1.20
 prefix: TowerChallenge
