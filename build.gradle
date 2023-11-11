@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.9"
     compileOnly "com.onarandombox.multiversecore:multiverse-core:4.3.12"
     compileOnly "com.onarandombox.multiverseportals:multiverse-portals:4.2.3-SNAPSHOT"
