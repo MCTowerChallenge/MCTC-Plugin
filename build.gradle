@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.github.mystievous'
+version = '1.4.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype-repo"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "worldedit-repo"
+        url = "https://maven.enginehub.org/repo/"
+    }
+    maven {
+        name = "multiverse-repo"
+        url = "https://repo.onarandombox.com/content/groups/public/"
+    }
+    maven {
+        name = "mysql-repo"
+        url = "https://mvnrepository.com/artifact/com.mysql/mysql-connector-j"
+    }
+    maven {
+        name = "protocollib-repo"
+        url = "https://repo.dmulloy2.net/repository/public/"
+    }
+    maven {
+        name = "citizens-repo"
+        url = "https://maven.citizensnpcs.co/repo"
+    }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+    compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.9"
+    compileOnly "com.onarandombox.multiversecore:multiverse-core:4.3.12"
+    compileOnly "com.onarandombox.multiverseportals:multiverse-portals:4.2.3-SNAPSHOT"
+    compileOnly "com.comphenix.protocol:ProtocolLib:5.1.0"
+    compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
+        exclude group: '*', module: '*'
+    }
+    implementation "com.mysql:mysql-connector-j:8.2.0"
+    compileOnly "io.github.mystievous:MystiCore:1.1.2"
+    compileOnly "io.github.mystievous:MystiGui:1.2.0"
+    compileOnly "io.github.mystievous:Mystimer:1.2.2"
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}

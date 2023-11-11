@@ -321,7 +321,7 @@ public class Database {
      * Offset from the block location to
      * summon the armor stand for the borders.
      */
-    private static final org.bukkit.util.Vector FRAME_OFFSET = new Vector(0.5, -1.31, 0.5);
+    private static final Vector FRAME_OFFSET = new Vector(0.5, -1.31, 0.5);
 
     // TODO: Change to item displays
 
