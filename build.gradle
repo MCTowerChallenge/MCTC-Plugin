@@ -36,6 +36,14 @@ repositories {
         name = "citizens-repo"
         url = "https://maven.citizensnpcs.co/repo"
     }
+    maven {
+        name = "mysticore-repo"
+        url = "https://maven.pkg.github.com/Mystievous/MystiCore"
+        credentials {
+            username = project.findProperty("gpr.username") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -47,10 +55,10 @@ dependencies {
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
         exclude group: '*', module: '*'
     }
-    implementation "com.mysql:mysql-connector-j:8.2.0"
-    compileOnly "io.github.mystievous:MystiCore:1.1.2"
+    compileOnly "io.github.mystievous:mysticore:1.1.8"
     compileOnly "io.github.mystievous:MystiGui:1.2.0"
     compileOnly "io.github.mystievous:Mystimer:1.2.2"
+    implementation "com.mysql:mysql-connector-j:8.2.0"
 }
 
 def targetJavaVersion = 17
