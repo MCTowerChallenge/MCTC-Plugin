@@ -49,6 +49,7 @@ repositories {
         url = "https://maven.pkg.github.com/Mystievous/MystiGui"
         credentials {
             username = project.findProperty("gpr.username") ?: System.getenv("USERNAME")
+            System.out.println(username.toString())
             password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
         }
     }
