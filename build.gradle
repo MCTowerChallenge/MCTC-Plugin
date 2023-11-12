@@ -3,7 +3,7 @@ plugins {
     id "maven-publish"
 }
 
-group = 'io.github.mystievous'
+group = 'io.github.mctowerchallenge'
 version = System.getenv("VERSION") ?: '0.0.0-dev'
 
 repositories {
@@ -115,7 +115,7 @@ publishing {
     }
     publications {
         gpr(MavenPublication) {
-            groupId 'io.github.mystievous'
+            groupId 'io.github.mctowerchallenge'
             artifactId 'mctc-plugin'
             from components.java
         }
