@@ -1,6 +1,6 @@
 name: TowerChallenge
 version: '${version}'
-main: io.github.mystievous.towerchallenge.TowerChallenge
+main: io.github.mctowerchallenge.mctcplugin.MCTCPlugin
 api-version: 1.20
 prefix: TowerChallenge
 depend:
