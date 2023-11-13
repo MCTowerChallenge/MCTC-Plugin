@@ -3,7 +3,6 @@ package io.github.mctowerchallenge.mctcplugin;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.mctowerchallenge.mctcplugin.decoration.waterspouts.SpoutManager;
-import io.github.mctowerchallenge.mctcplugin.magic.GoatHat;
 import io.github.mctowerchallenge.mctcplugin.spawncompass.SpawnCompass;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mystievous.mystigui.element.Element;
@@ -74,7 +73,6 @@ public class ChallengeManager {
         Bukkit.getServer().getPluginManager().registerEvents(towerListener, getPlugin());
         winnersGUI = new WinnersGUI(plugin, teamManager, Element.blank());
         new SpawnCompass(plugin, teamManager);
-        new GoatHat();
         SpoutManager.runSpouts();
     }
 
