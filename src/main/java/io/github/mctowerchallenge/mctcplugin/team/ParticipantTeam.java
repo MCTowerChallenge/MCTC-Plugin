@@ -1,14 +1,11 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestCompleteEvent;
 import io.github.mctowerchallenge.mctcplugin.team.regions.SpawnRegion;
 import io.github.mctowerchallenge.mctcplugin.team.regions.TowerRegion;
 import io.github.mystievous.mysticore.Color;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
 import io.github.mystievous.mysticore.Palette;
-import io.github.mystievous.mysticore.TextUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -18,7 +15,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -286,44 +282,6 @@ public class ParticipantTeam extends TowerTeam {
         if (spawnRegion != null) {
             spawnRegion.clearPlayers();
         }
-    }
-
-//    /**
-//     * Handles the event when quests are completed/changed for this team.
-//     *
-//     * @param event The quest change event.
-//     */
-//    @EventHandler
-//    public void onQuestChange(final QuestChangeEvent event) {
-//        if (event.isCancelled())
-//            return;
-//        if (event.getTeam().getDatabaseId() != getDatabaseId())
-//            return;
-//
-//        Quest quest = event.getQuest();
-//        if (quest != null) {
-//            sendMessage(TextUtil.formatText("New Quest: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
-//        } else {
-//            sendMessage(TextUtil.formatText("No more quests!"));
-//        }
-//        playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
-//    }
-
-    /**
-     * Handles the event when a quest is completed for this team.
-     *
-     * @param event The quest change event.
-     */
-    @EventHandler
-    public void onQuestComplete(final QuestCompleteEvent event) {
-        if (event.isCancelled())
-            return;
-        if (event.getTeam().getDatabaseId() != getDatabaseId())
-            return;
-
-        Quest quest = event.getQuest();
-        sendMessage(TextUtil.formatText("Quest Complete: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
-        playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
     }
 
     @Override

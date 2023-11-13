@@ -14,25 +14,17 @@ import org.bukkit.plugin.Plugin;
  */
 public class GameFlowManager {
 
-    private final Plugin plugin;
     private final Timer timer;
-    private final CharacterManager characterManager;
-    private final TeamManager teamManager;
     private final PortalControllers portalControllers;
 
     /**
      * Creates a new GameFlowManager instance.
      *
-     * @param plugin The plugin instance.
      * @param timer The timer instance.
-     * @param characterManager The character manager instance.
-     * @param teamManager The team manager instance.
+     * @param portalControllers Controllers for portals
      */
-    public GameFlowManager(Plugin plugin, Timer timer, CharacterManager characterManager, TeamManager teamManager, PortalControllers portalControllers) {
-        this.plugin = plugin;
+    public GameFlowManager(Timer timer, PortalControllers portalControllers) {
         this.timer = timer;
-        this.characterManager = characterManager;
-        this.teamManager = teamManager;
         this.portalControllers = portalControllers;
     }
 

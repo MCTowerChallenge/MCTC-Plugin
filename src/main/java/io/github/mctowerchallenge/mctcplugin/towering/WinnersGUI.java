@@ -23,7 +23,6 @@ public class WinnersGUI extends TeamGui {
                 teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(),
                 (selectingPlayer, selectedTeam) -> new ConfirmationGUI(plugin, Component.text("Confirm ").append(selectedTeam.getDisplayName()).append(Component.text(" as the winning team.")),
                         player -> {
-                            teamManager.updateWinningTeam(selectedTeam);
                             Title title = Title.title(selectedTeam.getDisplayName(), Component.text("is the winner of the event!").color(NamedTextColor.WHITE));
                             Bukkit.getServer().showTitle(title);
                             Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "ui.toast.challenge_complete"), Sound.Source.MASTER, 100, 1));

@@ -1,12 +1,6 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
-import io.github.mctowerchallenge.mctcplugin.quest.QuestGui;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestTableOfContents;
 import io.github.mystievous.mysticore.Palette;
-import io.github.mystievous.mysticore.TextUtil;
-import io.github.mystievous.mystigui.GuiHeldItem;
-import io.github.mystievous.mystigui.page.Gui;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Database;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
@@ -31,8 +25,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.PortalCreateEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,12 +49,10 @@ public class TeamManager implements Listener {
 
     private final MCTCPlugin plugin;
     private final Database database;
-    private final QuestManager questManager;
 
-    public TeamManager(MCTCPlugin plugin, Database database, QuestManager questManager) {
+    public TeamManager(MCTCPlugin plugin, Database database) {
         this.plugin = plugin;
         this.database = database;
-        this.questManager = questManager;
         loadTeams();
         loadPlayers();
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -89,10 +79,6 @@ public class TeamManager implements Listener {
             this.allTeams = new ArrayList<>();
             this.allTeams.add(this.godTeam);
             this.allTeams.addAll(this.teams);
-            Map<Integer, Collection<String>> completedQuests = database.getCompletedQuests();
-            for (TowerTeam team : allTeams) {
-                questManager.initTeamQuests(team, completedQuests.get(team.getDatabaseId()));
-            }
             HiddenEntityManager.refreshAllEntities();
         } catch (SQLException e) {
             Bukkit.getLogger().warning("SQL Error retrieving teams: " + e.getMessage());
@@ -182,56 +168,6 @@ public class TeamManager implements Listener {
      */
     public List<TowerTeam> getAllTeams() {
         return allTeams;
-    }
-
-    /**
-     * Retrieves a GUI for the current quest of a player's team.
-     *
-     * @param player The player whose team's quest GUI is requested.
-     * @return The quest GUI for the player's team's current quest.
-     */
-    public Gui getTeamQuestGui(Player player) {
-        TowerTeam team = getPlayerTeam(player);
-        if (team != null) {
-//            String currentQuestId = team.getCurrentQuestTag();
-//            Quest currentQuest = team.getQuest(currentQuestId);
-//            if (currentQuest != null) {
-//                return currentQuest.getGui(player);
-//            }
-            return new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", team);
-        }
-        return new QuestGui(plugin, "Error", "Error fetching quest.");
-    }
-
-    /**
-     * Retrieves a GUI-held item representing the quest book.
-     *
-     * @return The quest book GUI-held item.
-     */
-    public GuiHeldItem getQuestBook() {
-        ItemStack book = new ItemStack(Material.BOOK);
-        ItemMeta bookMeta = book.getItemMeta();
-        bookMeta.displayName(Component.text("Quest Book").decoration(TextDecoration.ITALIC, false));
-        bookMeta.setCustomModelData(2);
-        bookMeta.lore(TextUtil.formatTexts(
-                Component.text("Use ").append(Component.keybind("key.use")).append(Component.text(" with me in your hand")),
-                Component.text("to open the quest menu!")
-        ));
-        book.setItemMeta(bookMeta);
-        return new GuiHeldItem(plugin, QuestManager.GUI_ID, book, this::getTeamQuestGui);
-    }
-
-    /**
-     * Updates the winning team in the database.
-     *
-     * @param team The winning team to update.
-     */
-    public void updateWinningTeam(TowerTeam team) {
-        try {
-            database.updateWinningTeam(team);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error updating winning team to " + team.getTextName());
-        }
     }
 
     /**

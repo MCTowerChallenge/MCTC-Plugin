@@ -1,9 +1,5 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestChangeEvent;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestCompleteEvent;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mystigui.element.Representable;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
@@ -38,7 +34,6 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -67,20 +62,6 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     private final Color color;
     private final String dye;
 
-    private final Map<String, Quest> quests;
-    private String currentQuest;
-    /**
-     * Whether the team is currently
-     * listening to dialogue.
-     */
-    private boolean inDialogue;
-    /**
-     * If true, the next dialogue
-     * playing for this team
-     * will not trigger.
-     */
-    private boolean stopDialogue;
-
     /**
      * When initialized, creates a server team
      * with the given values if one does not exist.
@@ -107,8 +88,6 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
             this.team.displayName(Component.text(displayName));
         }
         this.team.prefix(Component.text("[").append(Component.text(displayName, color.toTextColor())).append(Component.text("] ")));
-        this.quests = new HashMap<>();
-        this.inDialogue = false;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -117,176 +96,6 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      */
     public void unregisterEvents() {
         HandlerList.unregisterAll(this);
-    }
-
-    /**
-     * Sets the quest instances for this team based on the given quests.
-     *
-     * @param quests The quests to copy to this team.
-     */
-    public void setQuests(Map<String, Quest> quests, Collection<String> completedQuests) {
-        for (Map.Entry<String, Quest> questEntry : quests.entrySet()) {
-            Quest quest = questEntry.getValue().copy();
-            if (completedQuests != null && completedQuests.contains(questEntry.getKey())) {
-                quest.setCompleted(true);
-            }
-            this.quests.put(questEntry.getKey(), quest);
-        }
-    }
-
-    /**
-     * Sets the current quest for this team.
-     * <p></p>
-     * Team members will automatically be
-     * shown the new quest when they reopen
-     * the quest book.
-     *
-     * @param currentQuest The new quest to set.
-     */
-    public void setCurrentQuestTag(String currentQuest) {
-        this.currentQuest = currentQuest;
-    }
-
-    public Map<String, Quest> getQuests() {
-        return quests;
-    }
-
-    public void completeQuest(String questTag) {
-        Quest quest = getQuest(questTag);
-        if (quest == null || quest.isCompleted()) {
-            return;
-        }
-        QuestCompleteEvent event = new QuestCompleteEvent(this, quest);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled())
-            return;
-        quest.setCompleted(true);
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                teamManager.getDatabase().setCompletedQuest(this, quest);
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Sets a team's quest to the one with the given ID.
-     *
-     * @param questId The ID of the quest to change to.
-     */
-    public void setQuest(String questId) {
-        QuestChangeEvent event = new QuestChangeEvent(this, getQuest(getCurrentQuestTag()), getQuest(questId));
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled())
-            return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                teamManager.getDatabase().setTeamQuest(this, questId);
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Gets the tag of the current quest for this team.
-     *
-     * @return The quest tag.
-     */
-    public String getCurrentQuestTag() {
-        if (currentQuest == null) {
-            return QuestManager.NO_QUEST;
-        }
-        return currentQuest;
-    }
-
-    /**
-     * Gets the current quest instance for this team.
-     *
-     * @return The current quest instance or null if none.
-     */
-    public @Nullable Quest getCurrentQuest() {
-        return getQuest(getCurrentQuestTag());
-    }
-
-    /**
-     * Gets a specific quest instance for this team.
-     *
-     * @param tag The quest tag to retrieve.
-     * @return The instance of the Quest or null if not found.
-     */
-    public @Nullable Quest getQuest(String tag) {
-        return quests.get(tag);
-    }
-
-    /**
-     * Adds to a quest objective score for this team.
-     *
-     * @param tag   The quest tag.
-     * @param name  The name of the objective.
-     * @param value The value to add.
-     */
-    public void addObjectiveScore(String tag, String name, int value) {
-        try {
-            teamManager.getDatabase().addObjectiveScore(this, tag, name, value);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error updating database: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Gets the value of a quest objective for this team.
-     *
-     * @param tag  The quest tag.
-     * @param name The name of the objective.
-     * @return The value of the quest objective.
-     */
-    public int getObjective(String tag, String name) {
-        try {
-            return teamManager.getDatabase().getObjective(this, tag, name);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error reading database: " + e.getMessage());
-        }
-        return 0;
-    }
-
-    /**
-     * Sets the team to be currently in dialogue or not.
-     *
-     * @param inDialogue The value to set.
-     */
-    public void setInDialogue(boolean inDialogue) {
-        this.inDialogue = inDialogue;
-    }
-
-    /**
-     * Checks if the team can start a new dialogue.
-     *
-     * @return True if the team is not already in a dialogue.
-     */
-    public boolean canStartDialogue() {
-        return !inDialogue;
-    }
-
-    /**
-     * Sets whether the team's current dialogue should not continue.
-     *
-     * @param shouldStop Whether the dialogue should stop.
-     */
-    public void setStopDialogue(boolean shouldStop) {
-        stopDialogue = shouldStop;
-    }
-
-    /**
-     * Checks if the team's next dialogue should not trigger.
-     *
-     * @return True if the next dialogue should not trigger.
-     */
-    public boolean shouldStopDialogue() {
-        return stopDialogue;
     }
 
     /**
@@ -558,9 +367,6 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         shovelMeta.addEnchant(Enchantment.DIG_SPEED, 3, false);
         shovel.setItemMeta(shovelMeta);
         items.put(2, shovel);
-
-        ItemStack book = teamManager.getQuestBook().getItem();
-        items.put(3, book);
 
         ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
         items.put(4, steak);

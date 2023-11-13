@@ -2,8 +2,6 @@ package io.github.mctowerchallenge.mctcplugin;
 
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import io.github.mctowerchallenge.mctcplugin.hats.HatElement;
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -26,7 +24,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -179,9 +176,8 @@ public class Database {
     public @Nullable GodTeam getGodTeam(TeamManager teamManager) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
-                        SELECT teams.id, teams.name, teams.color, teams.dye, t.name AS quest_name
+                        SELECT teams.id, teams.name, teams.color, teams.dye
                         FROM teams
-                        LEFT JOIN tags t on teams.quest_tag_id = t.id
                         WHERE teams.id = 1;
                         """
         )) {
@@ -191,12 +187,7 @@ public class Database {
                 String name = resultSet.getString("name");
                 int color = resultSet.getInt("color");
                 String dye = resultSet.getString("dye");
-                GodTeam team = new GodTeam(plugin, teamManager, id, name, new Color(color), dye);
-                String questName = resultSet.getString("quest_name");
-                if (!resultSet.wasNull()) {
-                    team.setCurrentQuestTag(questName);
-                }
-                return team;
+                return new GodTeam(plugin, teamManager, id, name, new Color(color), dye);
             } else {
                 return null;
             }
@@ -213,9 +204,8 @@ public class Database {
     public List<ParticipantTeam> getParticipantTeams(TeamManager teamManager) throws SQLException {
         try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
                 """
-                        SELECT teams.id, teams.name, teams.color, teams.dye, t.name AS quest_name
+                        SELECT teams.id, teams.name, teams.color, teams.dye
                         FROM teams
-                        LEFT JOIN tags t on teams.quest_tag_id = t.id
                         WHERE teams.disabled = 0
                         AND teams.is_participant = 1;
                         """
@@ -228,10 +218,6 @@ public class Database {
                 int color = resultSet.getInt("color");
                 String dye = resultSet.getString("dye");
                 ParticipantTeam team = new ParticipantTeam(plugin, teamManager, id, name, new Color(color), dye);
-                String questName = resultSet.getString("quest_name");
-                if (!resultSet.wasNull()) {
-                    team.setCurrentQuestTag(questName);
-                }
                 teams.add(team);
             }
             return teams;
@@ -494,27 +480,6 @@ public class Database {
     }
 
     /**
-     * Sets the current quest for a team in the database.
-     *
-     * @param team The team to set.
-     * @param tag  The quest to set the team to.
-     */
-    public void setTeamQuest(TowerTeam team, String tag) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        UPDATE teams
-                        SET teams.quest_tag_id = (SELECT id FROM tags WHERE tags.name = ?)
-                        WHERE teams.id = ?;
-                        """
-        )) {
-            statement.setString(1, tag);
-            statement.setInt(2, team.getDatabaseId());
-            statement.executeUpdate();
-            team.setCurrentQuestTag(tag);
-        }
-    }
-
-    /**
      * Gets the value of an objective for the given team.
      *
      * @param team The team to select.
@@ -622,42 +587,6 @@ public class Database {
     }
 
     /**
-     * Sets a team as the winners, granting access to the crown.
-     *
-     * @param team The team to set as winners.
-     */
-    public void updateWinningTeam(@NotNull TowerTeam team) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement clearWinnersStatement = conn.prepareStatement(
-                """
-                        DELETE FROM user_hatgroups
-                        WHERE
-                            user_hatgroups.hatgroup_id = 8;
-                            """
-        ); PreparedStatement addWinnersStatement = conn.prepareStatement(
-                """
-                            INSERT INTO user_hatgroups (user_uuid, hatgroup_id)
-                            VALUES (?, 8);
-                        """
-        )) {
-            clearWinnersStatement.executeUpdate();
-            ItemStack hat = getHat(16).getItem();
-            for (OfflinePlayer player : team.getOfflinePlayers()) {
-                String userId = player.getUniqueId().toString();
-                addWinnersStatement.setString(1, userId);
-                Player onlinePlayer = player.getPlayer();
-                if (onlinePlayer != null) {
-                    onlinePlayer.getInventory().setHelmet(hat);
-                }
-                int rowCount = addWinnersStatement.executeUpdate();
-                if (rowCount == 0) {
-                    Bukkit.getLogger().warning(String.format("Failed to set winner:\n    user: %s", userId));
-                    return;
-                }
-            }
-        }
-    }
-
-    /**
      * Gives a team a specific hat group.
      *
      * @param hatGroupId The hat group to give.
@@ -739,99 +668,6 @@ public class Database {
             if (rowCount == 0) {
                 Bukkit.getLogger().warning(String.format("Failed to update color for:\n    user: %s\n    color: %s", userId, color));
             }
-        }
-    }
-
-    /**
-     * Takes the result set from getting player
-     * hats and returns the element for
-     * the current row.
-     *
-     * @param resultSet The result set from the
-     *                  hat query.
-     * @return The hat element.
-     * @throws IllegalArgumentException If the material of
-     *                                  the hat is invalid.
-     */
-    public HatElement getHatFromResultSet(ResultSet resultSet) throws SQLException, IllegalArgumentException {
-        String name = resultSet.getString("name");
-        Material material;
-        material = Material.valueOf(resultSet.getString("material"));
-        int customModelData = resultSet.getInt("custom_model_data");
-        int colorInt = resultSet.getInt("color");
-        Color color = null;
-        if (!resultSet.wasNull()) {
-            color = new Color(colorInt);
-        }
-        String author = resultSet.getString("author");
-        String referenced = resultSet.getString("referenced");
-        boolean handheld = resultSet.getBoolean("handheld");
-        return new HatElement(name, material, customModelData, color, author, referenced, handheld);
-    }
-
-    /**
-     * Gets a specific hat from
-     * the database.
-     *
-     * @param hatId The hat to get.
-     * @return The hat element.
-     */
-    public HatElement getHat(int hatId) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        SELECT
-                            hats.id,
-                            hats.name,
-                            materials.name AS material,
-                            hats.custom_model_data,
-                            hats.color,
-                            author_people.name AS author,
-                            referenced_people.name AS referenced,
-                            hats.handheld
-                        FROM
-                            hats
-                                INNER JOIN
-                            materials ON hats.material_id = materials.id
-                                LEFT JOIN
-                            hat_people AS author_people ON hats.author_id = author_people.id
-                                LEFT JOIN
-                            hat_people AS referenced_people ON hats.referenced_id = referenced_people.id
-                        WHERE hats.id = ?;
-                        """
-        )) {
-            statement.setInt(1, hatId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return getHatFromResultSet(resultSet);
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Gets all hats for the given player.
-     *
-     * @param uuid The player's {@link UUID}
-     * @return The list of elements for the hats.
-     */
-    public List<Element> getPlayerHats(@NotNull UUID uuid) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-                """
-                        SELECT * FROM user_hats
-                        WHERE user_hats.user_uuid = ?;
-                        """
-        )) {
-            statement.setString(1, uuid.toString());
-            ResultSet resultSet = statement.executeQuery();
-            List<Element> hats = new ArrayList<>();
-            while (resultSet.next()) {
-                try {
-                    hats.add(getHatFromResultSet(resultSet));
-                } catch (IllegalArgumentException e) {
-                    Bukkit.getLogger().warning("Invalid Hat: " + resultSet.getString("name"));
-                }
-            }
-            return hats;
         }
     }
 
@@ -1163,19 +999,6 @@ public class Database {
             }
 
             return completedQuests;
-        }
-    }
-
-    public void setCompletedQuest(TowerTeam team, Quest quest) throws SQLException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement statement = conn.prepareStatement(
-            """
-                    INSERT INTO completed_quests(team_id, tag_id)
-                    VALUES (?, (SELECT id FROM tags WHERE name = ?));
-                    """
-        )) {
-            statement.setInt(1, team.getDatabaseId());
-            statement.setString(2, quest.getTag());
-            statement.executeUpdate();
         }
     }
 

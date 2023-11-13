@@ -1,7 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.portal;
 
 import io.github.mctowerchallenge.mctcplugin.Worlds;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestUtil;
+import io.github.mctowerchallenge.mctcplugin.utility.WorldUtils;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,7 +37,7 @@ public class NetherPortal {
         Orientable portalData = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL);
         portalData.setAxis(Axis.Z);
         for (Location[] layer : portalLayers) {
-            QuestUtil.fillArea(layer, portalData);
+            WorldUtils.fillArea(layer, portalData);
         }
     }
 
@@ -46,7 +46,7 @@ public class NetherPortal {
      */
     public void resetPortal() {
         for (Location[] layer : portalLayers) {
-            QuestUtil.fillArea(layer, Material.AIR);
+            WorldUtils.fillArea(layer, Material.AIR);
         }
     }
 

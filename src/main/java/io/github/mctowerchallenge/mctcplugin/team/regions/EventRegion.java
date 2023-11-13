@@ -4,7 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
-import io.github.mctowerchallenge.mctcplugin.utility.RegionUtils;
+import io.github.mctowerchallenge.mctcplugin.utility.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -75,7 +75,7 @@ public abstract class EventRegion implements Listener {
 
         String name = getRegionName();
 
-        region = RegionUtils.upsertRegion(name, area[0], area[1], parentRegionName());
+        region = WorldUtils.upsertRegion(name, area[0], area[1], parentRegionName());
 
     }
 

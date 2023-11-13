@@ -3,12 +3,9 @@ package io.github.mctowerchallenge.mctcplugin.towering;
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
-import io.github.mctowerchallenge.mctcplugin.hats.HatUtil;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
@@ -20,10 +17,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,20 +44,6 @@ public class TowerListener implements Listener {
                         return;
                     }
                 }
-            }
-        }
-
-        Player player = (Player) event.getWhoClicked();
-        if (player.getGameMode().equals(GameMode.CREATIVE))
-            return;
-
-        ItemStack item = event.getCurrentItem();
-        int slot = event.getSlot();
-
-        if (HatUtil.isHat(item)) {
-            if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
-                event.setCancelled(true);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.getInventory().clear(slot), 1);
             }
         }
     }

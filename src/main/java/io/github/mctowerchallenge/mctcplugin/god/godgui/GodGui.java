@@ -1,13 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.god.godgui;
 
-import io.github.mctowerchallenge.mctcplugin.GameFlowManager;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mctowerchallenge.mctcplugin.gui.page.TeamGui;
-import io.github.mctowerchallenge.mctcplugin.magic.MagicItems;
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestTableOfContents;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -23,9 +17,7 @@ import io.github.mctowerchallenge.mctcplugin.decoration.customblock.CustomBlockM
 import io.github.mctowerchallenge.mctcplugin.god.GodManager;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.teleport.TeleportHistoryManager;
-import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -58,15 +50,11 @@ public class GodGui extends PresetGui implements Openable {
      *
      * @param plugin                The main TowerChallenge plugin instance.
      * @param godManager            The manager for God-related functionalities.
-     * @param gameFlowManager       The manager for controlling the flow of the game.
-     * @param questManager          The manager for quests in the game.
-     * @param oct2023QuestManager   The manager for October 2023 event-specific quests.
      * @param teleportHistoryManager The manager for teleport history.
      * @param teamManager           The manager for player teams.
-     * @param magicItems            The manager for magic items.
      * @param portalControllers     The manager for controlling portals.
      */
-    public GodGui(MCTCPlugin plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Oct2023QuestManager oct2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodGui(MCTCPlugin plugin, @NotNull GodManager godManager, CustomBlockManager customBlockManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, PortalControllers portalControllers) {
         super(plugin, COMPONENT_NAME, ROWS);
 
         /*
@@ -113,55 +101,11 @@ public class GodGui extends PresetGui implements Openable {
         startingItemsItem.setItemMeta(startingItemsMeta);
         ButtonElement startingItemsElement = new ButtonElement(startingItemsItem, startingItemsTeamGui::openInventory);
 
-        /*
-            GUI with all the magic items,
-            equivalent to `/wand`
-         */
-        Gui magicGui = magicItems.getGui(null);
-        ItemStack magicItem = new ItemStack(Material.PAPER);
-        ItemMeta magicMeta = magicItem.getItemMeta();
-        magicMeta.displayName(TextUtil.noItalic("Magic Items"));
-        magicMeta.setCustomModelData(13);
-        magicItem.setItemMeta(magicMeta);
-        ButtonElement magicElement = new ButtonElement(magicItem, magicGui::openInventory);
-
-
         ButtonElement anvil = new ButtonElement(new ItemStack(Material.ANVIL), player -> player.openAnvil(null, true));
 
         ButtonElement enderChest = new ButtonElement(new ItemStack(Material.ENDER_CHEST), player -> player.openInventory(player.getEnderChest()));
 
         ButtonElement crafting = new ButtonElement(new ItemStack(Material.CRAFTING_TABLE), player -> player.openWorkbench(null, true));
-
-        /*
-            Shows GUI with all the hats for
-            the player that opens it.
-            Equivalent to `/hat`
-         */
-        ItemStack hatItem = GuiUtil.formatItem("Hat Gui", Material.PAPER, 11);
-        Element hatElement = new ButtonElement(hatItem, player -> {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    ListGui hatGui = new ListGui(plugin, Component.text("Select a Hat:"), teamManager.getDatabase().getPlayerHats(player.getUniqueId()), new ButtonElement(Icons.exitItem(), this::openInventory));
-                    Bukkit.getScheduler().runTask(plugin, () -> hatGui.openInventory(player));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    player.sendMessage(CommandUtils.errorMessage("Error getting hats."));
-                }
-            });
-        });
-
-        /*
-            Opens the Developer Menu,
-            a GUI for placing misc items
-            used for testing
-         */
-        ItemStack devItem = new ItemStack(Material.PAPER);
-        ItemMeta devMeta = devItem.getItemMeta();
-        devMeta.displayName(TextUtil.noItalic("Developer Menu"));
-        devMeta.setCustomModelData(4);
-        devItem.setItemMeta(devMeta);
-        DeveloperGui devGui = new DeveloperGui(plugin, teamManager);
-        Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
         /*
             Opens/closes the nether portal
@@ -195,90 +139,6 @@ public class GodGui extends PresetGui implements Openable {
             new SetTeamGui(plugin, teamManager, Arrays.stream(Bukkit.getOfflinePlayers()).toList(), this).openInventory(player);
         });
 
-        /*
-            GUI with all the special Items for the quests
-            so that gods can give them if a team loses them
-            or it bugs.
-         */
-        ItemStack questBook = GuiUtil.formatItem("Quest Manager", Material.BOOK, 2);
-        ButtonElement questButton = new ButtonElement(questBook, player -> {
-            PresetGui questGui = new PresetGui(plugin, Component.text("Quest Manager"), 3);
-
-            ItemStack questItemsIcon = GuiUtil.formatItem("Quest Items", Material.PAPER, 6);
-            ButtonElement questItems = new ButtonElement(questItemsIcon, player1 -> questManager.getQuestItems().getGui(player).openInventory(player));
-            questGui.placeElement(2, 2, questItems);
-
-            ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
-            ButtonElement questUtil = new ButtonElement(totem, player1 -> oct2023QuestManager.getGui(player).openInventory(player));
-            questGui.placeElement(2, 4, questUtil);
-
-//            ItemStack writableBook = GuiUtil.formatItem("Set Team Quest", Material.WRITABLE_BOOK, 0);
-//            ButtonElement setQuest = new ButtonElement(writableBook, player1 -> {
-//                new TeamGui(plugin, Component.text("Select team to set the quest of:"), team -> {
-//                    Quest currentQuest = team.getCurrentQuest();
-//                    if (currentQuest != null) {
-//                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
-//                    } else {
-//                        return TextUtil.formatTexts("Current: None");
-//                    }
-//                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-//                    new TargetListGui<>(plugin, Component.text("Select a quest to set for " + selectedTeam.getTextName() + ":"), quest -> {
-//                        ItemStack item = GuiUtil.formatItem(quest.getFriendlyName(), Material.WRITABLE_BOOK, 0);
-//                        ItemMeta meta = item.getItemMeta();
-//                        meta.lore(TextUtil.formatTexts(quest.getTag()));
-//                        item.setItemMeta(meta);
-//                        return item;
-//                    }, questManager.getQuests().values().stream().toList(), (questClickPlayer, questClicked) -> {
-//                        selectedTeam.setQuest(questClicked.getTag());
-//                    }, new ButtonElement(Icons.backItem())).openInventory(clickingPlayer);
-//                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
-//            });
-//            questGui.placeElement(1, 6, setQuest);
-
-            ItemStack questBook2 = GuiUtil.formatItem("See Team Quest", Material.BOOK, 2);
-            ButtonElement getQuest = new ButtonElement(questBook2, player1 -> {
-                new TeamGui(plugin, Component.text("Select team to get the quest of:"), team -> {
-                    Quest currentQuest = team.getCurrentQuest();
-                    if (currentQuest != null) {
-                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
-                    } else {
-                        return TextUtil.formatTexts("Current: None");
-                    }
-                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-                    new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", selectedTeam).openInventory(clickingPlayer);
-                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
-            });
-            questGui.placeElement(3, 6, getQuest);
-
-//            ItemStack strider = GuiUtil.formatItem("Reset Dave", Material.STRIDER_SPAWN_EGG, 0);
-//            ButtonElement resetDave = new ButtonElement(strider, player1 -> questManager.teleportDaveStage());
-//            questGui.placeElement(1, 8, resetDave);
-
-            ItemStack eventStart = GuiUtil.formatItem("Start Event", Material.REINFORCED_DEEPSLATE, 0);
-            ButtonElement eventStartElement = new ButtonElement(eventStart, player1 -> {
-                new ConfirmationGUI(plugin, Component.text("!!! Confirm STARTING THE EVENT !!!").color(NamedTextColor.RED), player2 -> {
-                    gameFlowManager.startEvent();
-                }, questGui::openInventory).openInventory(player1);
-            });
-
-            questGui.placeElement(1, 9, eventStartElement);
-
-//            ItemStack strider2 = GuiUtil.formatItem("Taco Dave", Material.STRIDER_SPAWN_EGG, 0);
-//            ButtonElement tacoDave = new ButtonElement(strider2, player1 -> questManager.teleportDaveTacos());
-//            questGui.placeElement(3, 8, tacoDave);
-
-            ItemStack endIntermission = GuiUtil.formatItem("End Intermission", Material.BEDROCK, 0);
-            ButtonElement endIntermissionElement = new ButtonElement(endIntermission, player1 -> {
-                new ConfirmationGUI(plugin, Component.text("!!! Confirm ENDING INTERMISSION !!!").color(NamedTextColor.RED), player2 -> {
-                    gameFlowManager.endIntermission();
-                }, questGui::openInventory).openInventory(player1);
-            });
-
-            questGui.placeElement(3, 9,endIntermissionElement);
-
-            questGui.openInventory(player);
-        });
-
         ItemStack customBlockIcon = GuiUtil.formatItem("Custom Blocks", Material.BOOK, 0);
         GuiHeldItem customBlockItem = new GuiHeldItem(plugin, CustomBlockManager.CUSTOM_BLOCK_TAG, customBlockIcon, customBlockManager);
         ButtonElement customBlockElement = new ButtonElement(customBlockIcon, player -> player.getInventory().addItem(customBlockItem.getItem()));
@@ -289,7 +149,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(1, 4, Icons.blankSlot);
         placeElement(1, 5, Icons.blankSlot);
         placeElement(1, 6, Icons.blankSlot);
-        placeElement(1, 7, devElement);
+        placeElement(1, 7, Icons.blankSlot);
         placeElement(1, 8, Icons.blankSlot);
         placeElement(1, 9, new ButtonElement(Icons.exitItem(), HumanEntity::closeInventory));
 
@@ -302,9 +162,9 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(3, 3, Icons.blankSlot);
         placeElement(3, 4, netherPortal);
         placeElement(3, 5, Icons.blankSlot);
-        placeElement(3, 6, questButton);
+        placeElement(3, 6, Icons.blankSlot);
         placeElement(3, 7, Icons.blankSlot);
-        placeElement(3, 8, hatElement);
+        placeElement(3, 8, Icons.blankSlot);
         placeElement(3, 9, Icons.blankSlot);
 
         placeElement(4, 1, Icons.blankSlot);
@@ -314,7 +174,7 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(4, 5, Icons.blankSlot);
         placeElement(4, 6, Icons.blankSlot);
         placeElement(4, 7, Icons.blankSlot);
-        placeElement(4, 8, magicElement);
+        placeElement(4, 8, Icons.blankSlot);
         placeElement(4, 9, Icons.blankSlot);
 
         placeElement(5, 1, Icons.blankSlot);

@@ -1,17 +1,11 @@
 package io.github.mctowerchallenge.mctcplugin.god;
 
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestCompleteEvent;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
 import io.github.mystievous.mysticore.Color;
-import io.github.mystievous.mysticore.TextUtil;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -43,48 +37,4 @@ public class GodTeam extends TowerTeam {
         item.setItemMeta(itemMeta);
         return item;
     }
-
-//    /**
-//     * Notifies the God team when a quest is completed/changed for any team.
-//     *
-//     * @param event The quest change event.
-//     */
-//    @EventHandler
-//    public void onQuestChange(final QuestChangeEvent event) {
-//        if (event.isCancelled())
-//            return;
-//
-//        TowerTeam team = event.getTeam();
-//        Quest quest = event.getQuest();
-//        Quest prevQuest = event.getPrevQuest();
-//        if (prevQuest != null) {
-//            if (quest == null) {
-//                sendMessage(team.getDisplayName()
-//                        .append(Component.text(" has no more quests! ").color(NamedTextColor.WHITE)));
-//            } else {
-//                sendMessage(team.getDisplayName()
-//                        .append(Component.text(" has completed a quest! ").color(NamedTextColor.WHITE))
-//                        .append(TextUtil.formatText(String.format("%s -> %s", prevQuest.getFriendlyName(), quest.getFriendlyName()))));
-//            }
-//
-//        }
-//    }
-
-    /**
-     * Notifies the God team when a quest is completed for any team.
-     *
-     * @param event The quest complete event.
-     */
-    @EventHandler
-    public void onQuestComplete(final QuestCompleteEvent event) {
-        if (event.isCancelled())
-            return;
-
-        TowerTeam team = event.getTeam();
-        Quest quest = event.getQuest();
-        sendMessage(team.getDisplayName()
-                .append(Component.text(" has completed a quest! ").color(NamedTextColor.WHITE))
-                .append(TextUtil.formatText(quest.getFriendlyName())));
-    }
-
 }
