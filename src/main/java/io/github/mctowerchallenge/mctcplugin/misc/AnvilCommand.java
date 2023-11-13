@@ -1,0 +1,27 @@
+package io.github.mctowerchallenge.mctcplugin.misc;
+
+import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+
+public class AnvilCommand implements CommandExecutor {
+
+    public AnvilCommand(JavaPlugin plugin) {
+        plugin.getCommand("anvil").setExecutor(this);
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
+            return true;
+        }
+        player.openAnvil(null, true);
+
+        return true;
+    }
+}
