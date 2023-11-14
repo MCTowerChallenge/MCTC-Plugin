@@ -29,25 +29,18 @@ public class TowerTabComplete implements TabCompleter {
             if (args.length == 1) {
                 List<String> strings = new ArrayList<>();
 
-                strings.add("toggleTower");
+                strings.add("addPlayer");
                 strings.add("addFullBlock");
                 strings.add("removeFullBlock");
-                strings.add("dealItems");
-                strings.add("shulker");
-                strings.add("voucher");
-                strings.add("showTowerScores");
-                strings.add("resetEndPortal");
                 strings.add("reloadTeams");
+                strings.add("resetEndPortal");
+                strings.add("showTowerScores");
+                strings.add("dealItems");
                 strings.add("resetTeams");
-                strings.add("addScore");
-                strings.add("removeScore");
                 strings.add("pickWinner");
-                strings.add("addPlayer");
-                strings.add("waitingRoom");
+                strings.add("toggleTower");
                 strings.add("tpAllSpawn");
                 strings.add("tpToSpawn");
-//                strings.add("whitelist");
-                strings.add("collectBlockVouchers");
 
                 Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[0].toLowerCase());
 
@@ -55,21 +48,15 @@ public class TowerTabComplete implements TabCompleter {
 
             } else if (args.length == 2) {
 
-                if (args[0].equalsIgnoreCase("tpToSpawn") || args[0].equalsIgnoreCase("addplayer") || args[0].equalsIgnoreCase("shulker") || args[0].equalsIgnoreCase("dealItems") || args[0].equalsIgnoreCase("addScore") || args[0].equalsIgnoreCase("removeScore")) {
+                if (args[0].equalsIgnoreCase("tpToSpawn") ||
+                        args[0].equalsIgnoreCase("addplayer") ||
+                        args[0].equalsIgnoreCase("dealItems")) {
                     List<String> strings = new ArrayList<>(Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).toList());
 
                     Predicate<String> compare = cmd -> cmd.toLowerCase().contains(args[1].toLowerCase());
 
                     return strings.stream().filter(compare).collect(Collectors.toList());
                 }
-//                } else if (args[0].equalsIgnoreCase("whitelist")) {
-//                    List<String> strings = new ArrayList<>();
-//
-//                    strings.add("open");
-//                    strings.add("close");
-//
-//                    return strings;
-//                }
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("addplayer")) {
                     return teamManager.getParticipantTeams().stream().map(TowerTeam::getTextName).collect(Collectors.toList());

@@ -5,8 +5,6 @@ import io.github.mctowerchallenge.mctcplugin.Database;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
-import io.github.mctowerchallenge.mctcplugin.waitingroom.WaitingRoom;
-import io.github.mystievous.mysticore.Palette;
 import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
@@ -29,19 +27,15 @@ import java.util.*;
 
 public class TowerCommands implements CommandExecutor {
 
-    public static final TextComponent PERMISSION_WARN = Component.text("You do not have permission to use this command!").color(NamedTextColor.DARK_RED);
-
     private final ChallengeManager challengeManager;
     private final TeamManager teamManager;
     private final EndPortal endPortal;
-    private final WaitingRoom waitingRoom;
     private final Database database;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, Database database) {
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, Database database) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.endPortal = portalControllers.getEndPortal();
-        this.waitingRoom = waitingRoom;
         this.database = database;
     }
 
@@ -51,22 +45,6 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
-                    case ("pronouns") -> {
-                        if (sender instanceof Player player) {
-                            player.displayName(player.name().append(Component.space()).append(Component.text("(She/they)").font(Key.key(Key.MINECRAFT_NAMESPACE, "uniform"))));
-                        }
-                    }
-                    case ("deserialize") -> { // Deserializes the item in the player's hand, for use in the plugin.
-                        if (sender instanceof Player player) {
-                            ItemStack item = player.getInventory().getItemInMainHand();
-                            byte[] bytes = item.serializeAsBytes();
-                            String output = Base64.getEncoder().encodeToString(bytes);
-                            player.sendMessage(output);
-                            Bukkit.getServer().getLogger().info(output);
-                        } else {
-                            sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
-                        }
-                    }
                     case ("addplayer") -> { // Adds a player to a certain team.
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
                         StringBuilder teamNameBuilder = new StringBuilder();
@@ -175,27 +153,6 @@ public class TowerCommands implements CommandExecutor {
                         }
                     }
                     case ("resetteams") -> teamManager.resetTeams(); // resets teams and re-adds players.
-                    case ("shulker") -> { // gives a certain player their team's shulker boxes.
-                        if (args.length < 2) {
-                            sender.sendMessage(CommandUtils.errorMessage("Please enter a player to give a shulker"));
-                        } else {
-                            Player player = Bukkit.getPlayer(args[1]);
-                            if (player != null) {
-                                if (args.length < 3) {
-                                    teamManager.getPlayerTeam(player).giveShulker(player, 1);
-                                } else {
-                                    try {
-                                        int number = Integer.parseInt(args[2]);
-                                        teamManager.getPlayerTeam(player).giveShulker(player, number);
-                                    } catch (NumberFormatException e) {
-                                        sender.sendMessage(CommandUtils.errorMessage("Please enter a valid number of shulkers."));
-                                    }
-                                }
-                            } else {
-                                sender.sendMessage(CommandUtils.PLAYER_DOES_NOT_EXIST);
-                            }
-                        }
-                    }
                     case ("pickwinner") -> { // Picks the winning team of the event; announces and gives them the crown.
                         if (sender instanceof Player player) {
                             challengeManager.getWinnersGUI().openInventory(player);
@@ -210,58 +167,6 @@ public class TowerCommands implements CommandExecutor {
                         } else if (challengeManager.getChallengePhase().equals(ChallengeManager.ChallengePhase.IN_PROGRESS)) {
                             challengeManager.setChallengePhase(ChallengeManager.ChallengePhase.TOWERING);
                             sender.sendMessage(Component.text("Tower Phase Enabled").color(NamedTextColor.GREEN));
-                        }
-                    }
-                    case ("whitelist") -> {
-                        if (args.length < 2) {
-                            sender.sendMessage(CommandUtils.errorMessage("Please specify whether to open or close the whitelist."));
-                        }
-
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (args[1].equalsIgnoreCase("open")) {
-                                    try {
-                                        for (UUID uuid : database.getAllPlayers()) {
-                                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                                            new BukkitRunnable() {
-                                                @Override
-                                                public void run() {
-                                                    offlinePlayer.setWhitelisted(true);
-                                                }
-                                            }.runTask(teamManager.getPlugin());
-                                        }
-                                        sender.sendMessage(TextUtil.formatText("Done opening whitelist"));
-                                    } catch (SQLException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                } else {
-                                    Collection<UUID> godUUIDs = teamManager.getGodTeam().getOfflinePlayers().stream().map(OfflinePlayer::getUniqueId).toList();
-                                    OfflinePlayer[] allPlayers = Bukkit.getOfflinePlayers();
-
-                                    for (OfflinePlayer player : allPlayers) {
-                                        if (!godUUIDs.contains(player.getUniqueId())) {
-                                            new BukkitRunnable() {
-                                                @Override
-                                                public void run() {
-                                                    player.setWhitelisted(false);
-                                                }
-                                            }.runTask(teamManager.getPlugin());
-                                        }
-                                    }
-                                    sender.sendMessage(TextUtil.formatText("Done closing whitelist"));
-                                }
-                            }
-                        }.runTaskAsynchronously(teamManager.getPlugin());
-                    }
-                    case ("waitingroom") -> {
-                        boolean isEnabled = waitingRoom.isEnabled();
-                        if (isEnabled) {
-                            waitingRoom.setEnabled(false);
-                            sender.sendMessage(Component.text("Waiting Room Disabled").color(Palette.NEGATIVE_COLOR.toTextColor()));
-                        } else {
-                            waitingRoom.setEnabled(true);
-                            sender.sendMessage(Component.text("Waiting Room Enabled").color(Palette.PRIMARY.toTextColor()));
                         }
                     }
                     case ("tpallspawn") -> {

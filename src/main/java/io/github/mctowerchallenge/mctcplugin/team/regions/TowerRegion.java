@@ -99,28 +99,16 @@ public class TowerRegion extends EventRegion {
             return false;
         }
 
-        // block is already in tower
-        if (!block.getType().equals(Material.BEDROCK)) {
-            if (blocks.get(material) == null) {
-                blocks.put(material, block);
-                if (score != null) {
-                    score.setScore(blocks.size());
-                }
-                return false;
-            } else {
-                audience.sendActionBar(Component.text("You've already placed ").append(Component.text(TextUtil.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
-                return true;
+        // block isn't already in tower
+        if (blocks.get(material) == null) {
+            blocks.put(material, block);
+            if (score != null) {
+                score.setScore(blocks.size());
             }
-        } else {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    getTeam().addExtraScore(1);
-                    audience.sendActionBar(TextUtil.formatText(String.format("1 point added (%d total)", getTeam().getExtraScore())));
-                } catch (SQLException e) {
-                    audience.sendActionBar(CommandUtils.errorMessage("Error updating database"));
-                }
-            });
             return false;
+        } else {
+            audience.sendActionBar(Component.text("You've already placed ").append(Component.text(TextUtil.formatBlockType(block.getType())).color(NamedTextColor.DARK_RED)));
+            return true;
         }
     }
 
@@ -129,26 +117,15 @@ public class TowerRegion extends EventRegion {
      *
      * @param block Block to be removed
      */
-    private void removeBlock(Audience audience, BlockState block) {
+    private void removeBlock(BlockState block) {
         if (exclude(block)) {
             return;
         }
 
         Material material = block.getType();
-        if (!material.equals(Material.BEDROCK)) {
-            blocks.remove(material);
-            if (score != null) {
-                score.setScore(blocks.size());
-            }
-        } else {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    getTeam().addExtraScore(-1);
-                    audience.sendActionBar(TextUtil.formatText(String.format("1 point removed (%d total)", getTeam().getExtraScore())));
-                } catch (SQLException e) {
-                    audience.sendActionBar(CommandUtils.errorMessage("Error updating database"));
-                }
-            });
+        blocks.remove(material);
+        if (score != null) {
+            score.setScore(blocks.size());
         }
     }
 
@@ -207,7 +184,7 @@ public class TowerRegion extends EventRegion {
             return;
         BlockState block = event.getBlock().getState();
         if (checkInRegion(block)) {
-            removeBlock(event.getPlayer(), event.getBlock().getState());
+            removeBlock(event.getBlock().getState());
         }
     }
 

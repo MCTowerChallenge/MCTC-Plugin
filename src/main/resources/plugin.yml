@@ -18,24 +18,10 @@ commands:
     description: Commands relating to the towers
     usage: /tower
     permission: towerchallenge.tower
-  hat:
-    description: Opens the hat gui
-    usage: /hat
-    aliases:
-      - accessories
-  wand:
-    description: Opens the wand gui
-    usage: /wand
-    permission: towerchallenge.wand
   timer:
     description: Commands relating to the Event Timer
     usage: /timer
     permission: towerchallenge.timer
-  questbook:
-    description: Gives the player a questbook
-    usage: /questbook
-    aliases:
-      - qb
   broadcast:
     description: Broadcasts a message to all players
     usage: /broadcast
@@ -88,24 +74,7 @@ commands:
     permission: towerchallenge.godmenu
     aliases:
       - gm
-  spectatetp:
-    permission: towerchallenge.spectatetp
   back:
     description: Teleports you to your last location
     usage: /back
     permission: towerchallenge.back
-  resourcepack:
-    description: Utilities for the Resource Pack
-    usage: /resourcepack
-    aliases:
-      - rp
-      - pack
-  stopdialogue:
-    description: Stops dialogue for a team
-    usage: /stopdialogue <team>
-    permission: towerchallenge.stopdialogue
-  fullinventory:
-    description: Gives the player any excess items that could not be given to them
-    usage: /fullinventory
-    aliases:
-      - fullinv

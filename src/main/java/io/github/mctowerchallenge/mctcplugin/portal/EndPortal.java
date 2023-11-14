@@ -5,6 +5,7 @@ import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
+import io.github.mctowerchallenge.mctcplugin.utility.WorldUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -41,14 +42,14 @@ public class EndPortal implements Listener {
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MIN = new Location(Worlds.Jun2023(), 203, 67, -2256);
+    public static final Location PORTAL_MIN = new Location(Worlds.WORLD(), 203, 67, -2256);
 
     /**
      * Second corner of the inner-portal bounds.
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MAX = new Location(Worlds.Jun2023(), 206, 67, -2253);
+    public static final Location PORTAL_MAX = new Location(Worlds.WORLD(), 206, 67, -2253);
 
     /**
      * Creates an EndPortal instance.
@@ -94,7 +95,7 @@ public class EndPortal implements Listener {
     }
 
     public static Location spawnLocation() {
-        return PortalControllers.randomPointInFlatRing(new Vector(0.5, 63, 0.5), 6, 13).toLocation(Worlds.Oct2023_the_end());
+        return WorldUtils.randomPointInFlatRing(new Vector(0.5, 63, 0.5), 6, 13).toLocation(Worlds.Oct2023_the_end());
     }
 
     @EventHandler

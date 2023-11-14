@@ -171,22 +171,6 @@ public class TeamManager implements Listener {
     }
 
     /**
-     * Gives a team a specific hat group.
-     *
-     * @param hatGroupId The ID of the hat group to give.
-     * @param team       The team to give the hat group to.
-     */
-    public void giveTeamHatgroup(int hatGroupId, TowerTeam team) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                database.giveTeamHatGroup(hatGroupId, team);
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Failed to give team hatgroup: " + e.getMessage());
-            }
-        });
-    }
-
-    /**
      * Assigns a player to a team.
      *
      * @param player The player to assign.
@@ -229,28 +213,6 @@ public class TeamManager implements Listener {
     }
 
     /**
-     * Adds extra score to a participant team.
-     *
-     * @param team  The participant team to add score to.
-     * @param score The amount of score to add.
-     * @throws SQLException if a SQL error occurs.
-     */
-    public void addExtraScore(ParticipantTeam team, int score) throws SQLException {
-        database.addTeamScore(team, score);
-    }
-
-    /**
-     * Gets the extra score of a participant team.
-     *
-     * @param participantTeam The participant team to get the extra score of.
-     * @return The extra score of the participant team.
-     * @throws SQLException if a SQL error occurs.
-     */
-    public int getExtraScore(ParticipantTeam participantTeam) throws SQLException {
-        return database.getTeamScore(participantTeam);
-    }
-
-    /**
      * Grabs all team scores from the scoreboard and database
      * and displays them in chat to the given audience.
      *
@@ -258,19 +220,10 @@ public class TeamManager implements Listener {
      */
     public void showTowerScores(Audience audience) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Map<Integer, Integer> addedScores = new HashMap<>();
-            try {
-                addedScores.putAll(database.getAddedScores());
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Error retrieving added team scores");
-            }
             Map<Integer, Integer> totalScores = new HashMap<>();
             Objective objective = ChallengeManager.getScoreObjective();
             for (ParticipantTeam team : getParticipantTeams()) {
                 int score = objective.getScore(team.getTextName()).getScore();
-                if (addedScores.containsKey(team.getDatabaseId())) {
-                    score += addedScores.get(team.getDatabaseId());
-                }
                 totalScores.put(team.getDatabaseId(), score);
             }
 

@@ -23,10 +23,6 @@ public class Icons {
         setItemMeta(meta);
     }});
 
-    public static ItemStack completedQuest(@Nullable Component name) {
-        return GuiUtil.formatItem(name, Material.PAPER, 1);
-    }
-
     /**
      * Red left arrow item
      *

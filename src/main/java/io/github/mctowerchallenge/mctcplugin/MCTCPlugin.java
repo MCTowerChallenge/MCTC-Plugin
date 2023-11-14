@@ -1,14 +1,10 @@
 package io.github.mctowerchallenge.mctcplugin;
 
 import io.github.mctowerchallenge.mctcplugin.god.GodManager;
+import io.github.mctowerchallenge.mctcplugin.god.GodMenuCommand;
 import io.github.mctowerchallenge.mctcplugin.misc.*;
-import io.github.mctowerchallenge.mctcplugin.misc.resourcepack.ResourcePack;
-import io.github.mctowerchallenge.mctcplugin.misc.resourcepack.ResourcePackListener;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
-import io.github.mctowerchallenge.mctcplugin.waitingroom.WaitingRoom;
 import io.github.mctowerchallenge.mctcplugin.configs.Config;
-import io.github.mctowerchallenge.mctcplugin.decoration.customblock.CustomBlockManager;
-import io.github.mctowerchallenge.mctcplugin.decoration.WaterDrips;
 import io.github.mctowerchallenge.mctcplugin.messaging.MessageCommands;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.timer.OrganizationTimer;
@@ -61,8 +57,6 @@ public final class MCTCPlugin extends JavaPlugin {
 
         TeamManager teamManager = new TeamManager(this, database);
 
-//        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
-
         PortalControllers portalControllers = new PortalControllers(this, teamManager);
 
         ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
@@ -72,15 +66,11 @@ public final class MCTCPlugin extends JavaPlugin {
         this.getCommand("timer").setExecutor(timerCommands);
         this.getCommand("timer").setTabCompleter(timerTabComplete);
 
-        WaterDrips waterDrips = new WaterDrips(this, database);
+        GodManager godManager = new GodManager(this, teamManager, portalControllers);
+        GodMenuCommand command = new GodMenuCommand(godManager);
+        Bukkit.getPluginCommand("godmenu").setExecutor(command);
 
-        CustomBlockManager customBlockManager = new CustomBlockManager(this);
-
-        new GodManager(this, customBlockManager, teamManager, portalControllers);
-
-        WaitingRoom waitingRoom = new WaitingRoom(this);
-
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom, database);
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, database);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);
@@ -91,10 +81,6 @@ public final class MCTCPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chatHandler, this);
 
         // Other
-        ResourcePack resourcePack = new ResourcePack();
-        this.getCommand("resourcepack").setExecutor(resourcePack);
-        new ResourcePackListener(challengeManager);
-
         BroadcastCommand broadcastCommand = new BroadcastCommand(teamManager);
         this.getCommand("broadcast").setExecutor(broadcastCommand);
 
@@ -105,8 +91,6 @@ public final class MCTCPlugin extends JavaPlugin {
         new AnvilCommand(this);
         new CraftCommand(this);
         new RenameCommand(this);
-        new SpectateTPCommand();
-        new MystiSkinListener(this);
 
     }
 
@@ -116,7 +100,6 @@ public final class MCTCPlugin extends JavaPlugin {
 
         // Cancel all scheduled tasks.
         Bukkit.getScheduler().cancelTasks(this);
-//        ferrisWheel.unloadCars();
 
         // Unload end portal borders.
         Database.unloadPortalBorders();

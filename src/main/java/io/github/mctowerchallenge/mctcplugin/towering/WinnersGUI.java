@@ -18,9 +18,9 @@ import java.util.ArrayList;
 public class WinnersGUI extends TeamGui {
 
     public WinnersGUI(MCTCPlugin plugin, TeamManager teamManager, Element exitElement) {
-        super(plugin, Component.text("Pick the winning team!"),
+        super(plugin, Component.text("Pick the team that won!"),
                 participantTeam -> new ArrayList<>(),
-                teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(),
+                teamManager.getParticipantTeams(),
                 (selectingPlayer, selectedTeam) -> new ConfirmationGUI(plugin, Component.text("Confirm ").append(selectedTeam.getDisplayName()).append(Component.text(" as the winning team.")),
                         player -> {
                             Title title = Title.title(selectedTeam.getDisplayName(), Component.text("is the winner of the event!").color(NamedTextColor.WHITE));

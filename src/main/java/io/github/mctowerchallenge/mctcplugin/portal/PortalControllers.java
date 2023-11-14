@@ -2,7 +2,6 @@ package io.github.mctowerchallenge.mctcplugin.portal;
 
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 
 /**
  * Manages instances of both the EndPortal and NetherPortal classes, providing access to their functionalities.
@@ -39,14 +38,6 @@ public class PortalControllers {
      */
     public NetherPortal getNetherPortal() {
         return netherPortal;
-    }
-
-    public static Vector randomPointInFlatRing(Vector center, double minimumRadius, double maximumRadius) {
-        double r = Math.sqrt(Math.random() * (Math.pow(maximumRadius, 2) - Math.pow(minimumRadius, 2)) + Math.pow(minimumRadius, 2));
-        double theta = Math.random() * 2 * Math.PI;
-        double x = center.getX() + r * Math.cos(theta);
-        double z = center.getZ() + r * Math.sin(theta);
-        return new Vector(x, center.getY(), z);
     }
 
 }

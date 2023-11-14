@@ -26,7 +26,7 @@ public class TeamGui extends TargetListGui<TowerTeam> {
         }, teamList.stream().map(TowerTeam.class::cast).toList(), biConsumer, lastElement);
     }
 
-    public TeamGui(Plugin plugin, Component name, List<Component> lore, List<TowerTeam> teamList, BiConsumer<Player, TowerTeam> biConsumer, Element lastElement) {
+    public TeamGui(Plugin plugin, Component name, List<Component> lore, List<? extends TowerTeam> teamList, BiConsumer<Player, TowerTeam> biConsumer, Element lastElement) {
         this(plugin, name, team -> lore, teamList, biConsumer, lastElement);
     }
 

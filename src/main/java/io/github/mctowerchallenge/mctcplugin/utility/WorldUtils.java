@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 public class WorldUtils {
@@ -69,5 +70,13 @@ public class WorldUtils {
         } else {
             throw new NullPointerException("Region Manager for " + world.getName() + " does not exist!");
         }
+    }
+
+    public static Vector randomPointInFlatRing(Vector center, double minimumRadius, double maximumRadius) {
+        double r = Math.sqrt(Math.random() * (Math.pow(maximumRadius, 2) - Math.pow(minimumRadius, 2)) + Math.pow(minimumRadius, 2));
+        double theta = Math.random() * 2 * Math.PI;
+        double x = center.getX() + r * Math.cos(theta);
+        double z = center.getZ() + r * Math.sin(theta);
+        return new Vector(x, center.getY(), z);
     }
 }

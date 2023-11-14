@@ -1,7 +1,5 @@
 package io.github.mctowerchallenge.mctcplugin.team.regions;
 
-import com.onarandombox.MultiversePortals.MVPortal;
-import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -10,10 +8,6 @@ import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
 import io.github.mctowerchallenge.mctcplugin.hideentity.HiddenEntityManager;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
-import io.github.mctowerchallenge.mctcplugin.utility.MVPortalUtils;
-import io.github.mctowerchallenge.mctcplugin.utility.TeamUtils;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -62,9 +56,7 @@ public class SpawnRegion extends EventRegion {
     private final EventRegion borderRegion;
 
     private final BlockDisplay highlightEntity;
-    private final BlockDisplay teleportHighlightEntity;
     private final Map<UUID, BukkitTask> highlighted;
-    private final MVPortal teleportPortal;
 
     public SpawnRegion(MCTCPlugin plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
         super(plugin, bounds, team, REGION_TAG);
@@ -83,24 +75,6 @@ public class SpawnRegion extends EventRegion {
         highlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
         highlightEntity.setTransformation(new Transformation(new Vector3f(-3.5f, 0.01f, -3.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(7.0f, 0.98f, 7.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
         HiddenEntityManager.register(highlightEntity);
-        Location teleporterLocation = TeleporterLocations.get(team.getDatabaseId());
-        if (teleporterLocation != null) {
-            this.teleportPortal = MVPortalUtils.initPortal(TeamUtils.toTeamTag(team, "spawn-teleporter"), new Location[]{teleporterLocation.clone().add(0, 1, 0), teleporterLocation.clone().add(0.0, 2, 0.0)}, spawnLocation);
-            Location teleportHighlightLocation = teleporterLocation.clone().add(0.5, 0.0, 0.5);
-            teleportHighlightLocation.setPitch(0.0f);
-            teleportHighlightLocation.setYaw(0.0f);
-            teleportHighlightLocation.getChunk().load();
-            teleportHighlightEntity = (BlockDisplay) teleportHighlightLocation.getWorld().spawnEntity(teleportHighlightLocation, EntityType.BLOCK_DISPLAY);
-            teleportHighlightEntity.addScoreboardTag("team-spawn-highlight");
-            teleportHighlightEntity.setBlock(Bukkit.createBlockData(Material.valueOf(String.format("%s_STAINED_GLASS", team.getDye()))));
-            teleportHighlightEntity.setGlowing(true);
-            teleportHighlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
-            teleportHighlightEntity.setTransformation(new Transformation(new Vector3f(-1.5f, 0.01f, -1.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(3.0f, 0.98f, 3.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
-            HiddenEntityManager.register(teleportHighlightEntity);
-        } else {
-            teleportHighlightEntity = null;
-            this.teleportPortal = null;
-        }
         highlighted = new HashMap<>();
     }
 
@@ -122,9 +96,6 @@ public class SpawnRegion extends EventRegion {
 
     public void showHighlight(Player player) {
         HiddenEntityManager.showToPlayer(highlightEntity, player);
-        if (teleportHighlightEntity != null) {
-            HiddenEntityManager.showToPlayer(teleportHighlightEntity, player);
-        }
         UUID uuid = player.getUniqueId();
         BukkitTask task = highlighted.get(uuid);
         if (task != null) {
@@ -135,33 +106,8 @@ public class SpawnRegion extends EventRegion {
             @Override
             public void run() {
                 HiddenEntityManager.hideFromPlayer(highlightEntity, player);
-                if (teleportHighlightEntity != null) {
-                    HiddenEntityManager.hideFromPlayer(teleportHighlightEntity, player);
-                }
             }
         }.runTaskLater(plugin, 100));
-    }
-
-    @EventHandler
-    public void onPlayerPortal(final MVPortalEvent event) {
-        if (event.isCancelled())
-            return;
-        if (teleportPortal == null)
-            return;
-
-        if (event.getSendingPortal().getName().equals(teleportPortal.getName())) {
-            Sound sound = Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.enderman.teleport"), Sound.Source.PLAYER, 1f, 1.5f);
-            Location from = event.getFrom();
-            from.getWorld().playSound(sound, from.getX(), from.getY(), from.getZ());
-            Location to = event.getDestination().getLocation(event.getTeleportee());
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    to.getWorld().playSound(sound, to.getX(), to.getY(), to.getZ());
-                }
-            }.runTaskLater(plugin, 1);
-        }
-
     }
 
     /**
@@ -191,7 +137,6 @@ public class SpawnRegion extends EventRegion {
     public void onPluginDisable(final PluginDisableEvent event) {
         spawnLocation.getChunk().load();
         highlightEntity.remove();
-        teleportHighlightEntity.remove();
         for (Map.Entry<UUID, BukkitTask> entry : highlighted.entrySet()) {
             entry.getValue().cancel();
         }
@@ -201,11 +146,8 @@ public class SpawnRegion extends EventRegion {
     public void unregisterEvents() {
         PlayerRespawnEvent.getHandlerList().unregister(this);
         HiddenEntityManager.unregister(highlightEntity);
-        HiddenEntityManager.unregister(teleportHighlightEntity);
         highlightEntity.getLocation().getChunk().load();
         highlightEntity.remove();
-        teleportHighlightEntity.getLocation().getChunk().load();
-        teleportHighlightEntity.remove();
     }
 
     @Override

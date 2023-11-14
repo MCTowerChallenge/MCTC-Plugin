@@ -1,13 +1,10 @@
 package io.github.mctowerchallenge.mctcplugin;
 
-import io.github.mctowerchallenge.mctcplugin.interaction.npc.CharacterManager;
-import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mystievous.mystimer.Timer;
 import io.github.mystievous.mystimer.exception.TimerUnsetException;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.timer.TimerCommands;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 /**
  * Manages the flow of the game events and intermissions.

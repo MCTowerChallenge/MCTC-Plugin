@@ -5,7 +5,6 @@ package io.github.mctowerchallenge.mctcplugin.utility;
  * defined in the database.
  */
 public class WorldNotStoredException extends Exception {
-
     public WorldNotStoredException(String string) {
         super(string);
     }

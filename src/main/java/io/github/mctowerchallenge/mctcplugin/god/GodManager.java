@@ -3,7 +3,6 @@ package io.github.mctowerchallenge.mctcplugin.god;
 import io.github.mctowerchallenge.mctcplugin.god.godgui.GodGui;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
-import io.github.mctowerchallenge.mctcplugin.decoration.customblock.CustomBlockManager;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.teleport.TeleportHistoryManager;
 import org.bukkit.Bukkit;
@@ -22,12 +21,9 @@ public class GodManager {
      * @param teamManager         The manager for teams.
      * @param portalControllers   The manager for portal controllers.
      */
-    public GodManager(MCTCPlugin plugin, CustomBlockManager customBlockManager, TeamManager teamManager, PortalControllers portalControllers) {
+    public GodManager(MCTCPlugin plugin, TeamManager teamManager, PortalControllers portalControllers) {
         TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(plugin, this);
-        godGui = new GodGui(plugin, this, customBlockManager, teleportHistoryManager, teamManager, portalControllers);
-
-        GodMenuCommand command = new GodMenuCommand(this);
-        Bukkit.getPluginCommand("godmenu").setExecutor(command);
+        godGui = new GodGui(plugin, this, teleportHistoryManager, teamManager, portalControllers);
     }
 
     /**

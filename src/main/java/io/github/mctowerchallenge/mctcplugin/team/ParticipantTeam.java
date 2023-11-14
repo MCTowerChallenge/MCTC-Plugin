@@ -168,26 +168,6 @@ public class ParticipantTeam extends TowerTeam {
         this.frameLocation = teamManager.getPortalFrame(this);
     }
 
-    /**
-     * Adds extra score to the team's total score.
-     *
-     * @param score The additional score to be added.
-     * @throws SQLException If a database error occurs.
-     */
-    public void addExtraScore(int score) throws SQLException {
-        teamManager.addExtraScore(this, score);
-    }
-
-    /**
-     * Retrieves the extra score of the team.
-     *
-     * @return The extra score of the team.
-     * @throws SQLException If a database error occurs.
-     */
-    public int getExtraScore() throws SQLException {
-        return teamManager.getExtraScore(this);
-    }
-
     @Override
     public void addTeamPlayer(OfflinePlayer player) {
         super.addTeamPlayer(player);

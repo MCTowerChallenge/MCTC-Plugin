@@ -13,7 +13,6 @@ import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.*;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
-import io.github.mctowerchallenge.mctcplugin.decoration.customblock.CustomBlockManager;
 import io.github.mctowerchallenge.mctcplugin.god.GodManager;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.teleport.TeleportHistoryManager;
@@ -54,7 +53,7 @@ public class GodGui extends PresetGui implements Openable {
      * @param teamManager           The manager for player teams.
      * @param portalControllers     The manager for controlling portals.
      */
-    public GodGui(MCTCPlugin plugin, @NotNull GodManager godManager, CustomBlockManager customBlockManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, PortalControllers portalControllers) {
+    public GodGui(MCTCPlugin plugin, @NotNull GodManager godManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, PortalControllers portalControllers) {
         super(plugin, COMPONENT_NAME, ROWS);
 
         /*
@@ -91,7 +90,7 @@ public class GodGui extends PresetGui implements Openable {
         BiConsumer<Player, TowerTeam> startingItemsBiconsumer = (player, team) -> (new StartingItemsGui(plugin, (ParticipantTeam) team)).openInventory(player);
         TeamGui startingItemsTeamGui = new TeamGui(plugin, startingItemsTitle,
                 new ArrayList<>(),
-                teamManager.getParticipantTeams().stream().map(participantTeam -> (TowerTeam) participantTeam).toList(),
+                teamManager.getParticipantTeams(),
                 startingItemsBiconsumer,
                 new ButtonElement(Icons.backItem(), player1 -> godManager.getGodGui().openInventory(player1)));
         ItemStack startingItemsItem = new ItemStack(Material.PAPER);
@@ -139,10 +138,6 @@ public class GodGui extends PresetGui implements Openable {
             new SetTeamGui(plugin, teamManager, Arrays.stream(Bukkit.getOfflinePlayers()).toList(), this).openInventory(player);
         });
 
-        ItemStack customBlockIcon = GuiUtil.formatItem("Custom Blocks", Material.BOOK, 0);
-        GuiHeldItem customBlockItem = new GuiHeldItem(plugin, CustomBlockManager.CUSTOM_BLOCK_TAG, customBlockIcon, customBlockManager);
-        ButtonElement customBlockElement = new ButtonElement(customBlockIcon, player -> player.getInventory().addItem(customBlockItem.getItem()));
-
         placeElement(1, 1, crafting);
         placeElement(1, 2, anvil);
         placeElement(1, 3, enderChest);
@@ -180,25 +175,11 @@ public class GodGui extends PresetGui implements Openable {
         placeElement(5, 1, Icons.blankSlot);
         placeElement(5, 2, addPlayerElement);
         placeElement(5, 3, Icons.blankSlot);
-//        placeElement(5, 4, endButton);
-        placeElement(5, 4, Icons.blankSlot);
+        placeElement(5, 4, endButton);
         placeElement(5, 5, Icons.blankSlot);
-        placeElement(5, 6, customBlockElement);
+        placeElement(5, 6, Icons.blankSlot);
         placeElement(5, 7, Icons.blankSlot);
-        try {
-            /*
-                GUI with all the custom models in the database,
-                grouped by modelgroups
-             */
-            ListGui modelGui = new ListGui(plugin, Component.text("Model Groups:"), teamManager.getDatabase().getModelGroupGuis(), Element.blank());
-            ItemStack modelItem = GuiUtil.formatItem("Models", Material.PAPER, 12);
-            Element modelElement = new ButtonElement(modelItem, modelGui::openInventory);
-            placeElement(5, 8, modelElement);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Models have failed: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().warning("Model has invalid material: " + e.getMessage());
-        }
+        placeElement(5, 8, Icons.blankSlot);
         placeElement(5, 9, Icons.blankSlot);
 
         for (int i = 1; i <= 9; i++) {
