@@ -84,8 +84,6 @@ public abstract class PlayerQuestCharacter extends QuestCharacter {
         SkinTrait skinTrait = npc.getOrAddTrait(SkinTrait.class);
         skinTrait.setSkinName(getTextName());
         npc.setName(getMiniMessageName());
-//        TeamTrait teamTrait = npc.getOrAddTrait(TeamTrait.class);
-//        teamTrait.setTeam(team);
         return npc;
     }
 

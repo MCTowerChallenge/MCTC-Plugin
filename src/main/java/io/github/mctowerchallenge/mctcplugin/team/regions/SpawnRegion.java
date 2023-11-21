@@ -59,8 +59,6 @@ public class SpawnRegion extends EventRegion {
 
     private final Location spawnLocation;
 
-    private final EventRegion borderRegion;
-
     private final BlockDisplay highlightEntity;
     private final BlockDisplay teleportHighlightEntity;
     private final Map<UUID, BukkitTask> highlighted;
@@ -71,7 +69,7 @@ public class SpawnRegion extends EventRegion {
         this.spawnLocation = spawnLocation;
         setFlags(getRegion());
         Location[] borderBounds = { bounds[0].add(0, -24, 0), bounds[1] };
-        this.borderRegion = new SpawnBorderRegion(plugin, borderBounds, team);
+        new SpawnBorderRegion(plugin, borderBounds, team);
         Location highlightLocation = spawnLocation.clone().subtract(0, 1, 0);
         highlightLocation.setPitch(0.0f);
         highlightLocation.setYaw(0.0f);
@@ -229,6 +227,11 @@ public class SpawnRegion extends EventRegion {
         region.setFlag(Flags.CORAL_FADE, StateFlag.State.ALLOW);
         region.setFlag(Flags.COPPER_FADE, StateFlag.State.ALLOW);
 
+        setMobDamageFlags(region);
+
+    }
+
+    public static void setMobDamageFlags(ProtectedRegion region) {
         region.setFlag(Flags.MOB_DAMAGE, StateFlag.State.DENY);
         region.setFlag(Flags.CREEPER_EXPLOSION, StateFlag.State.DENY);
         region.setFlag(Flags.ENDERDRAGON_BLOCK_DAMAGE, StateFlag.State.DENY);
@@ -239,7 +242,6 @@ public class SpawnRegion extends EventRegion {
         region.setFlag(Flags.RAVAGER_RAVAGE, StateFlag.State.DENY);
         region.setFlag(Flags.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
         region.setFlag(Flags.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
-
     }
 
     @Override

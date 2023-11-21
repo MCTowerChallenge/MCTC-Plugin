@@ -28,45 +28,26 @@ public class Posters {
 
     /**
      * Registers interactable posters with their corresponding interaction handlers.
-     *
-     * @param teamManager The TeamManager instance to handle interactions.
      */
-    public static void registerPosterInteractables(TeamManager teamManager) {
-        ItemStack generalItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(GENERAL_DESERIALIZED));
+    public static void registerPosterInteractables() {
+        registerPoster(GENERAL_DESERIALIZED, GENERAL_POSTER);
+
+        registerPoster(FUNGAL_RECKONING_DESERIALIZED, FUNGAL_RECKONING_POSTER);
+
+        registerPoster(WITHERING_GROOVE_DESERIALIZED, WITHERING_GROOVE_POSTER);
+    }
+
+    private static void registerPoster(String deserializedItem, String posterTag) {
+        ItemStack generalItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(deserializedItem));
         BookMeta generalMeta = (BookMeta) generalItem.getItemMeta();
         generalMeta.author(Component.text("MCTC Committee"));
         generalItem.setItemMeta(generalMeta);
 
-        InteractableTaggedEntity generalPoster = new InteractableTaggedEntity(GENERAL_POSTER);
+        InteractableTaggedEntity generalPoster = new InteractableTaggedEntity(posterTag);
         generalPoster.setDefaultInteractionHandler((team, event) -> {
             Player player = event.getPlayer();
             player.getInventory().addItem(generalItem);
         });
         InteractableTagManager.registerTag(generalPoster);
-
-        ItemStack fungalItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(FUNGAL_RECKONING_DESERIALIZED));
-        BookMeta fungalMeta = (BookMeta) fungalItem.getItemMeta();
-        fungalMeta.author(Component.text("MCTC Committee"));
-        fungalItem.setItemMeta(fungalMeta);
-
-        InteractableTaggedEntity fungalPoster = new InteractableTaggedEntity(FUNGAL_RECKONING_POSTER);
-        fungalPoster.setDefaultInteractionHandler((team, event) -> {
-            Player player = event.getPlayer();
-            player.getInventory().addItem(fungalItem);
-        });
-        InteractableTagManager.registerTag(fungalPoster);
-
-        ItemStack witheringItem = ItemStack.deserializeBytes(Base64.getDecoder().decode(WITHERING_GROOVE_DESERIALIZED));
-        BookMeta witheringMeta = (BookMeta) witheringItem.getItemMeta();
-        witheringMeta.displayName(TextUtil.noItalic("The Withering Groove Machine"));
-        witheringMeta.author(Component.text("MCTC Committee"));
-        witheringItem.setItemMeta(witheringMeta);
-
-        InteractableTaggedEntity witheringPoster = new InteractableTaggedEntity(WITHERING_GROOVE_POSTER);
-        witheringPoster.setDefaultInteractionHandler((team, event) -> {
-            Player player = event.getPlayer();
-            player.getInventory().addItem(witheringItem);
-        });
-        InteractableTagManager.registerTag(witheringPoster);
     }
 }

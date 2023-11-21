@@ -32,13 +32,11 @@ public class TriviaRoom implements Listener {
     public static final Location TEMPLATE_LEAVE_COMMAND_BLOCK = new Location(Worlds.Oct2023_quest(), -33, 66, -13);
 
     private final int roomNumber;
-    private final Trivia triviaInstance;
     private final Oct2023QuestInstance oct2023QuestInstance;
     private final CuboidRegion instanceBounds;
 
     public TriviaRoom(String label, int[] correctIndices, int roomNumber, Trivia triviaInstance, Oct2023QuestInstance oct2023QuestInstance, Plugin plugin, boolean finalRoom) {
         this.roomNumber = roomNumber;
-        this.triviaInstance = triviaInstance;
         this.oct2023QuestInstance = oct2023QuestInstance;
 
         this.instanceBounds = new CuboidRegion(

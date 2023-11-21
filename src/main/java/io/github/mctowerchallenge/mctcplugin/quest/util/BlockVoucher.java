@@ -31,15 +31,13 @@ public class BlockVoucher {
         voucherMeta.displayName(VOUCHER_NAME);
         voucherMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         voucherMeta.addEnchant(Enchantment.MENDING, 1, false);
-        NBTUtils.setBool(MCTCPlugin.getInstance(), VOUCHER_TAG, voucherMeta, true);
+        NBTUtils.setBool(MCTCPlugin.namespacedKey(VOUCHER_TAG), voucherMeta, true);
         vouchers.setItemMeta(voucherMeta);
         return vouchers;
     }
 
     public static boolean isVoucher(ItemStack itemStack) {
-        return NBTUtils.getBool(MCTCPlugin.getInstance(), VOUCHER_TAG, itemStack.getItemMeta());
+        return NBTUtils.getBool(MCTCPlugin.namespacedKey(VOUCHER_TAG), itemStack.getItemMeta());
     }
-
-
 
 }

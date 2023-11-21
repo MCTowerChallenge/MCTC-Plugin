@@ -93,7 +93,6 @@ public class CharacterManager implements Listener {
     // Instance variables
     private final Plugin plugin;
     private final TeamManager teamManager;
-    private final Database database;
     private final QuestCharacter steve;
 
     /**
@@ -106,7 +105,6 @@ public class CharacterManager implements Listener {
     public CharacterManager(Plugin plugin, TeamManager teamManager, Database database) {
         this.plugin = plugin;
         this.teamManager = teamManager;
-        this.database = database;
 
         // Character initialization and registration
         steve = new SteveSkellington(plugin);
@@ -136,22 +134,6 @@ public class CharacterManager implements Listener {
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TextDisplayTrait.class));
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
-     * Retrieves the dialogue for the event start.
-     *
-     * @return The start event dialogue.
-     */
-    public Dialogue getEventStartDialogue() {
-        Dialogue startDialogue = new Dialogue(plugin, TextUtil.formatText("* Announcement Sound"), 3.0d, MCTCPlugin.key("bell"));
-        startDialogue.append(steve.formatMessage("Hello everyone."), 3.0d, MCTCPlugin.key("steve.hello_everyone"));
-        startDialogue.append(steve.formatMessage("It is with a grave face that I must tell you that, due to lost and damaged equipment, the band The Withering Groove Machine will be unable to perform until further notice."),
-                16.0d, MCTCPlugin.key("steve.grave_face"));
-        startDialogue.append(steve.formatMessage("Please enjoy the rest of the festivities, as we await further news on the matter."), 7.5d, MCTCPlugin.key("steve.further_news"));
-        startDialogue.append(Dialogue.playerThoughts("Huh, sounds like something’s up with the band."), 4.0d);
-        startDialogue.append(Dialogue.playerThoughts("Maybe I should head to the main stage by the beacons to see if they need help?"), 4.0d);
-        return startDialogue;
     }
 
     /**

@@ -212,29 +212,6 @@ public class GodGui extends PresetGui implements Openable {
             ButtonElement questUtil = new ButtonElement(totem, player1 -> oct2023QuestManager.getGui(player).openInventory(player));
             questGui.placeElement(2, 4, questUtil);
 
-//            ItemStack writableBook = GuiUtil.formatItem("Set Team Quest", Material.WRITABLE_BOOK, 0);
-//            ButtonElement setQuest = new ButtonElement(writableBook, player1 -> {
-//                new TeamGui(plugin, Component.text("Select team to set the quest of:"), team -> {
-//                    Quest currentQuest = team.getCurrentQuest();
-//                    if (currentQuest != null) {
-//                        return TextUtil.formatTexts("Current: " + currentQuest.getFriendlyName());
-//                    } else {
-//                        return TextUtil.formatTexts("Current: None");
-//                    }
-//                }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-//                    new TargetListGui<>(plugin, Component.text("Select a quest to set for " + selectedTeam.getTextName() + ":"), quest -> {
-//                        ItemStack item = GuiUtil.formatItem(quest.getFriendlyName(), Material.WRITABLE_BOOK, 0);
-//                        ItemMeta meta = item.getItemMeta();
-//                        meta.lore(TextUtil.formatTexts(quest.getTag()));
-//                        item.setItemMeta(meta);
-//                        return item;
-//                    }, questManager.getQuests().values().stream().toList(), (questClickPlayer, questClicked) -> {
-//                        selectedTeam.setQuest(questClicked.getTag());
-//                    }, new ButtonElement(Icons.backItem())).openInventory(clickingPlayer);
-//                }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
-//            });
-//            questGui.placeElement(1, 6, setQuest);
-
             ItemStack questBook2 = GuiUtil.formatItem("See Team Quest", Material.BOOK, 2);
             ButtonElement getQuest = new ButtonElement(questBook2, player1 -> {
                 new TeamGui(plugin, Component.text("Select team to get the quest of:"), team -> {
@@ -250,10 +227,6 @@ public class GodGui extends PresetGui implements Openable {
             });
             questGui.placeElement(3, 6, getQuest);
 
-//            ItemStack strider = GuiUtil.formatItem("Reset Dave", Material.STRIDER_SPAWN_EGG, 0);
-//            ButtonElement resetDave = new ButtonElement(strider, player1 -> questManager.teleportDaveStage());
-//            questGui.placeElement(1, 8, resetDave);
-
             ItemStack eventStart = GuiUtil.formatItem("Start Event", Material.REINFORCED_DEEPSLATE, 0);
             ButtonElement eventStartElement = new ButtonElement(eventStart, player1 -> {
                 new ConfirmationGUI(plugin, Component.text("!!! Confirm STARTING THE EVENT !!!").color(NamedTextColor.RED), player2 -> {
@@ -262,10 +235,6 @@ public class GodGui extends PresetGui implements Openable {
             });
 
             questGui.placeElement(1, 9, eventStartElement);
-
-//            ItemStack strider2 = GuiUtil.formatItem("Taco Dave", Material.STRIDER_SPAWN_EGG, 0);
-//            ButtonElement tacoDave = new ButtonElement(strider2, player1 -> questManager.teleportDaveTacos());
-//            questGui.placeElement(3, 8, tacoDave);
 
             ItemStack endIntermission = GuiUtil.formatItem("End Intermission", Material.BEDROCK, 0);
             ButtonElement endIntermissionElement = new ButtonElement(endIntermission, player1 -> {

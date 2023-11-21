@@ -193,11 +193,6 @@ public class TeamManager implements Listener {
     public Gui getTeamQuestGui(Player player) {
         TowerTeam team = getPlayerTeam(player);
         if (team != null) {
-//            String currentQuestId = team.getCurrentQuestTag();
-//            Quest currentQuest = team.getQuest(currentQuestId);
-//            if (currentQuest != null) {
-//                return currentQuest.getGui(player);
-//            }
             return new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", team);
         }
         return new QuestGui(plugin, "Error", "Error fetching quest.");

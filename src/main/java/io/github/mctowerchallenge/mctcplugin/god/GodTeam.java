@@ -44,32 +44,6 @@ public class GodTeam extends TowerTeam {
         return item;
     }
 
-//    /**
-//     * Notifies the God team when a quest is completed/changed for any team.
-//     *
-//     * @param event The quest change event.
-//     */
-//    @EventHandler
-//    public void onQuestChange(final QuestChangeEvent event) {
-//        if (event.isCancelled())
-//            return;
-//
-//        TowerTeam team = event.getTeam();
-//        Quest quest = event.getQuest();
-//        Quest prevQuest = event.getPrevQuest();
-//        if (prevQuest != null) {
-//            if (quest == null) {
-//                sendMessage(team.getDisplayName()
-//                        .append(Component.text(" has no more quests! ").color(NamedTextColor.WHITE)));
-//            } else {
-//                sendMessage(team.getDisplayName()
-//                        .append(Component.text(" has completed a quest! ").color(NamedTextColor.WHITE))
-//                        .append(TextUtil.formatText(String.format("%s -> %s", prevQuest.getFriendlyName(), quest.getFriendlyName()))));
-//            }
-//
-//        }
-//    }
-
     /**
      * Notifies the God team when a quest is completed for any team.
      *

@@ -119,7 +119,11 @@ public class DeveloperGui extends PresetGui {
 
             // -15 -175
             PresetGui testQuest = new PresetGui(plugin, text.build(), -15, FontUtils.toGuiFont("\uE003"), -175, 6);
-            Element questOpen = new ButtonElement(NBTUtils.setUniqueID(plugin, teamManager.getDatabase().getModel(10, false, false).getItem(), null), testQuest::openInventory);
+            Element questOpen = new ButtonElement(
+                    NBTUtils.applyToItemMeta(
+                            teamManager.getDatabase().getModel(10, false, false).getItem(),
+                            itemMeta -> NBTUtils.setUUID(Element.UUID_KEY(plugin), itemMeta, null)
+                    ), testQuest::openInventory);
             placeElement(1, 4, questOpen);
         } catch (SQLException ignored) {
         }

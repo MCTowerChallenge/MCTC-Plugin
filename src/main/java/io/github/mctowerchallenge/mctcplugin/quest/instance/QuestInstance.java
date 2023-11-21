@@ -25,7 +25,6 @@ public class QuestInstance {
     private final Vector offset;
     private final Location instanceLocation;
 
-    private MultiversePortals multiversePortals;
     private final TeamManager teamManager;
     private final int teamId;
 
@@ -44,11 +43,6 @@ public class QuestInstance {
         this.teamId = teamId;
         this.instanceLocation = instanceLocation;
         this.offset = instanceLocation.clone().subtract(baseLocation).toVector();
-
-        Plugin mvpPlugin = Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-        if (mvpPlugin instanceof MultiversePortals portals) {
-            this.multiversePortals = portals;
-        }
     }
 
     public @Nullable TowerTeam getTeam() {

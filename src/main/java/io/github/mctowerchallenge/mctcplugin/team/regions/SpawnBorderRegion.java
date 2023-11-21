@@ -25,12 +25,12 @@ public class SpawnBorderRegion extends EventRegion {
     @Override
     protected void setFlags(ProtectedRegion region) {
         region.setPriority(0);
-        region.setFlag(Flags.DENY_MESSAGE, null);
-        region.setFlag(Flags.ENTRY_DENY_MESSAGE, null);
-        region.setFlag(Flags.EXIT_DENY_MESSAGE, null);
         region.setFlag(Flags.USE, StateFlag.State.ALLOW);
         region.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
         region.setFlag(Flags.INTERACT, StateFlag.State.ALLOW);
+        region.setFlag(Flags.DENY_MESSAGE, null);
+        region.setFlag(Flags.ENTRY_DENY_MESSAGE, null);
+        region.setFlag(Flags.EXIT_DENY_MESSAGE, null);
 
         region.setFlag(Flags.MUSHROOMS, StateFlag.State.DENY);
         region.setFlag(Flags.LEAF_DECAY, StateFlag.State.DENY);
@@ -43,16 +43,7 @@ public class SpawnBorderRegion extends EventRegion {
         region.setFlag(Flags.CORAL_FADE, StateFlag.State.DENY);
         region.setFlag(Flags.COPPER_FADE, StateFlag.State.DENY);
 
-        region.setFlag(Flags.MOB_DAMAGE, StateFlag.State.DENY);
-        region.setFlag(Flags.CREEPER_EXPLOSION, StateFlag.State.DENY);
-        region.setFlag(Flags.ENDERDRAGON_BLOCK_DAMAGE, StateFlag.State.DENY);
-        region.setFlag(Flags.GHAST_FIREBALL, StateFlag.State.DENY);
-        region.setFlag(Flags.OTHER_EXPLOSION, StateFlag.State.DENY);
-        region.setFlag(Flags.WITHER_DAMAGE, StateFlag.State.DENY);
-        region.setFlag(Flags.ENDER_BUILD, StateFlag.State.DENY);
-        region.setFlag(Flags.RAVAGER_RAVAGE, StateFlag.State.DENY);
-        region.setFlag(Flags.ENTITY_PAINTING_DESTROY, StateFlag.State.DENY);
-        region.setFlag(Flags.ENTITY_ITEM_FRAME_DESTROY, StateFlag.State.DENY);
+        SpawnRegion.setMobDamageFlags(region);
     }
 
     @Override

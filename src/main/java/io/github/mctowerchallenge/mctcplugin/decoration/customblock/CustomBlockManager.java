@@ -1,5 +1,6 @@
 package io.github.mctowerchallenge.mctcplugin.decoration.customblock;
 
+import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mystievous.mysticore.NBTUtils;
 import io.github.mystievous.mystigui.GuiUtil;
@@ -11,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -49,6 +51,8 @@ public class CustomBlockManager implements Listener, Openable {
 
     private final Plugin plugin;
 
+    private final NamespacedKey key;
+
     private final Map<String, CustomBlock> blocks;
 
     public CustomBlockManager(Plugin plugin) {
@@ -56,6 +60,8 @@ public class CustomBlockManager implements Listener, Openable {
         this.plugin = plugin;
 
         blocks = new HashMap<>();
+
+        key = MCTCPlugin.namespacedKey(CUSTOM_BLOCK_TAG);
 
         for (int i = 0; i < dyeColors.length; i++) {
             DyeColor dyeColor = dyeColors[i];
@@ -69,19 +75,19 @@ public class CustomBlockManager implements Listener, Openable {
 
             String obsidianName = name + " Obsidian";
             ItemStack obsidian = GuiUtil.formatItem(obsidianName, Material.CRYING_OBSIDIAN, obsidianId);
-            NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, obsidian, obsidianName);
+            NBTUtils.applyToItemMeta(obsidian, itemMeta -> NBTUtils.setString(key, itemMeta, obsidianName));
             blocks.put(obsidianName, new CustomBlock(obsidian));
 
             String cryingObsidianName = name + " Crying Obsidian";
             ItemStack cryingObsidian = GuiUtil.formatItem(cryingObsidianName, Material.CRYING_OBSIDIAN, cryingObsidianId);
-            NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, cryingObsidian, cryingObsidianName);
+            NBTUtils.applyToItemMeta(cryingObsidian, itemMeta -> NBTUtils.setString(key, itemMeta, cryingObsidianName));
             blocks.put(cryingObsidianName, new CustomBlock(cryingObsidian));
 
         }
 
         String witherSkullName = "Wither Skull";
         ItemStack witherSkull = GuiUtil.formatItem(witherSkullName, Material.WITHER_SKELETON_SKULL, 0);
-        NBTUtils.setString(plugin, CUSTOM_BLOCK_TAG, witherSkull, witherSkullName);
+        NBTUtils.applyToItemMeta(witherSkull, itemMeta -> NBTUtils.setString(key, itemMeta, witherSkullName));
         CustomBlock witherCustomBlock = new CustomBlock(witherSkull);
         witherCustomBlock.setScale(new Vector3f(2, 2 , 2));
         witherCustomBlock.setTranslation(new Vector3f(0, 0.5f, 0));
@@ -104,7 +110,9 @@ public class CustomBlockManager implements Listener, Openable {
     @EventHandler
     public void onPlaceBlock(final BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
-        String customBlockName = NBTUtils.getString(plugin, CUSTOM_BLOCK_TAG, item);
+        if (!item.hasItemMeta())
+            return;
+        String customBlockName = NBTUtils.getString(key, item.getItemMeta());
         if (customBlockName == null) {
             return;
         }

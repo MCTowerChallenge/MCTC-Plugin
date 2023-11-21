@@ -37,6 +37,7 @@ import io.github.mctowerchallenge.mctcplugin.towering.TowerCommands;
 import io.github.mctowerchallenge.mctcplugin.towering.TowerTabComplete;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,6 +49,10 @@ public final class MCTCPlugin extends JavaPlugin {
     // Get a key in the MCTC namespace
     public static Key key(String value) {
         return Key.key(MCTC_NAMESPACE, value);
+    }
+
+    public static NamespacedKey namespacedKey(String value) {
+        return NamespacedKey.fromString(value, getInstance());
     }
 
     private static MCTCPlugin me;
@@ -108,7 +113,7 @@ public final class MCTCPlugin extends JavaPlugin {
         new SelectionHandler(this, database);
         new IceCream(this);
         new Gallery(this);
-        Posters.registerPosterInteractables(teamManager);
+        Posters.registerPosterInteractables();
 
         InteractableTaggedEntity seat = new InteractableTaggedEntity("seat");
         seat.setDefaultInteractionHandler((team, event) -> Bukkit.getScheduler().runTask(this, () -> {

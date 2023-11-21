@@ -288,27 +288,6 @@ public class ParticipantTeam extends TowerTeam {
         }
     }
 
-//    /**
-//     * Handles the event when quests are completed/changed for this team.
-//     *
-//     * @param event The quest change event.
-//     */
-//    @EventHandler
-//    public void onQuestChange(final QuestChangeEvent event) {
-//        if (event.isCancelled())
-//            return;
-//        if (event.getTeam().getDatabaseId() != getDatabaseId())
-//            return;
-//
-//        Quest quest = event.getQuest();
-//        if (quest != null) {
-//            sendMessage(TextUtil.formatText("New Quest: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
-//        } else {
-//            sendMessage(TextUtil.formatText("No more quests!"));
-//        }
-//        playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.RECORD, 1f, 1f));
-//    }
-
     /**
      * Handles the event when a quest is completed for this team.
      *

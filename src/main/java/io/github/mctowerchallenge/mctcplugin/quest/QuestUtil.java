@@ -49,8 +49,6 @@ public class QuestUtil {
                 }
             }
         }
-//        Location center = area[0].clone().add(area[1]).multiply(0.5);
-//        center.getWorld().playSound(center, Sound.BLOCK_ANVIL_LAND, SoundCategory.RECORDS, 1f, 1f);
     }
 
 }

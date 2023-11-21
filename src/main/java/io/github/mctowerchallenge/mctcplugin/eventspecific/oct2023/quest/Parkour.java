@@ -38,12 +38,10 @@ public class Parkour implements Listener {
 
 
     private final Oct2023QuestInstance questInstance;
-    private final Location instanceLeaveLocation;
     private final String instanceCompleteName;
 
     public Parkour(Oct2023QuestInstance questInstance) {
         this.questInstance = questInstance;
-        this.instanceLeaveLocation = questInstance.offsetLocation(TEMPLATE_LEAVE_LOCATION);
 
         MVPortalUtils.initPortal(TeamUtils.toTeamTag(questInstance.getTeam(), TEMPLATE_LEAVE_NAME), new Location[]{
                 questInstance.offsetLocation(TEMPLATE_PARKOUR_LEAVE_PORTAL[0]),

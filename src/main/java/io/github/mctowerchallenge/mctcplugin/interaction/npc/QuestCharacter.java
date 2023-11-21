@@ -229,14 +229,7 @@ public abstract class QuestCharacter {
     public @NotNull NPC setNPCProperties(NPC npc) {
         LookClose lookClose = npc.getOrAddTrait(LookClose.class);
         lookClose.setRandomLook(true);
-//        lookClose.lookClose(true);
         lookClose.setLinkedBody(true);
-//        lookClose.setPerPlayer(true);
-//        HologramTrait hologramTrait = npc.getTraitNullable(HologramTrait.class);
-//        if (hologramTrait != null) {
-//            hologramTrait.setUseTextDisplay(true);
-//        }
-//        TextDisplayTrait trait = npc.getOrAddTrait(TextDisplayTrait.class);
         return npc;
     }
 
