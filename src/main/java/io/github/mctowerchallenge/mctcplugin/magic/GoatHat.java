@@ -41,7 +41,7 @@ public class GoatHat implements Listener {
     @EventHandler
     public void onPlayerToggleSneak(final PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
-            if (NBTUtils.boolState(MCTCPlugin.getInstance(), GOAT_HAT, event.getPlayer().getEquipment().getHelmet())) {
+            if (NBTUtils.getBool(MCTCPlugin.getInstance(), GOAT_HAT, event.getPlayer().getEquipment().getHelmet())) {
                 createGoat(event.getPlayer().getLocation());
             }
         }

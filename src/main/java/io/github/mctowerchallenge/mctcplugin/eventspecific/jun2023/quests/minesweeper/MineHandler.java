@@ -293,7 +293,7 @@ public class MineHandler implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && block != null && item != null) {
             GamePiece gamePiece = vectorToGamePiece(block.getLocation().toVector());
             if (gamePiece != null) {
-                if (NBTUtils.boolState(plugin, Flag.FLAG_TAG, item)) {
+                if (NBTUtils.getBool(plugin, Flag.FLAG_TAG, item)) {
                     if (gamePiece.placeFlag(item)) {
                         event.getPlayer().sendActionBar(TextUtil.formatText("Placed Flag"));
                     }

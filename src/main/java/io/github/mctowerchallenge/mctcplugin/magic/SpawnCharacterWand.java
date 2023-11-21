@@ -36,7 +36,7 @@ public class SpawnCharacterWand extends Wand {
             if (item == null)
                 return;
 
-            if (NBTUtils.boolState(plugin, COOLDOWN_TAG, item)) {
+            if (NBTUtils.getBool(plugin, COOLDOWN_TAG, item)) {
                 return;
             }
 

@@ -37,7 +37,7 @@ public class BlockVoucher {
     }
 
     public static boolean isVoucher(ItemStack itemStack) {
-        return NBTUtils.boolState(MCTCPlugin.getInstance(), VOUCHER_TAG, itemStack.getItemMeta());
+        return NBTUtils.getBool(MCTCPlugin.getInstance(), VOUCHER_TAG, itemStack.getItemMeta());
     }
 
 

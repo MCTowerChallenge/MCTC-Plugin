@@ -85,7 +85,7 @@ public class HatElement extends ButtonElement {
             if (!handheld) {
                 PlayerInventory inventory = player.getInventory();
                 ItemStack helmet = inventory.getHelmet();
-                if (NBTUtils.boolState(MCTCPlugin.getInstance(), GoatHat.GOAT_HAT, helmet)) {
+                if (NBTUtils.getBool(MCTCPlugin.getInstance(), GoatHat.GOAT_HAT, helmet)) {
                     FullInventory.givePlayerItems(player, helmet);
                 }
                 inventory.setHelmet(getItem());

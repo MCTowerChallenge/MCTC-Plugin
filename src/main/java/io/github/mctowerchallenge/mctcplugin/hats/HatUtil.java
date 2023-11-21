@@ -42,7 +42,7 @@ public class HatUtil {
      * @return whether the item is a hat
      */
     public static Boolean isHat(ItemStack itemStack) {
-        return NBTUtils.boolState(MCTCPlugin.getInstance(), NBT_TAG, itemStack);
+        return NBTUtils.getBool(MCTCPlugin.getInstance(), NBT_TAG, itemStack);
     }
 
 }

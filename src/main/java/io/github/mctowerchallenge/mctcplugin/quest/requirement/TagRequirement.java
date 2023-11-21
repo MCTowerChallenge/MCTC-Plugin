@@ -27,7 +27,7 @@ public class TagRequirement extends MaterialRequirement {
 
     @Override
     public boolean matchItem(ItemStack item) {
-        return NBTUtils.boolState(plugin, tag, item);
+        return NBTUtils.getBool(plugin, tag, item);
     }
 
     @Override
