@@ -71,7 +71,7 @@ dependencies {
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
         exclude group: '*', module: '*'
     }
-    compileOnly "io.github.mystievous:mysticore:1.1.8"
+    compileOnly "io.github.mystievous:mysticore:1.1.12"
     compileOnly "io.github.mystievous:mystigui:1.2.6"
     compileOnly "io.github.mystievous:mystimer:1.2.4"
     implementation "com.mysql:mysql-connector-j:8.2.0"
