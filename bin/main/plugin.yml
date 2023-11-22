@@ -1,0 +1,80 @@
+name: TowerChallenge
+version: '${version}'
+main: io.github.mctowerchallenge.mctcplugin.MCTCPlugin
+api-version: 1.20
+prefix: TowerChallenge
+depend:
+  - WorldEdit
+  - WorldGuard
+  - Multiverse-Core
+  - Multiverse-Portals
+  - ProtocolLib
+  - MystiCore
+  - MystiGui
+  - Mystimer
+  - Citizens
+commands:
+  tower:
+    description: Commands relating to the towers
+    usage: /tower
+    permission: towerchallenge.tower
+  timer:
+    description: Commands relating to the Event Timer
+    usage: /timer
+    permission: towerchallenge.timer
+  broadcast:
+    description: Broadcasts a message to all players
+    usage: /broadcast
+    permission: towerchallenge.broadcast
+    aliases:
+      - bc
+      - bcast
+      - announce
+  enderchest:
+    description: Opens the player's enderchest
+    usage: /enderchest
+    permission: towerchallenge.enderchest
+    aliases:
+      - ec
+  anvil:
+    description: Opens an anvil inventory
+    usage: /anvil
+    permission: towerchallenge.anvil
+    aliases:
+      - av
+  craft:
+    description: Opens a crafting inventory
+    usage: /craft
+    permission: towerchallenge.craft
+  fly:
+    description: Allows the player creative flight
+    usage: /fly
+    permission: towerchallenge.fly
+  rename:
+    description: Renames an item
+    usage: /rename <Name>
+    permission: towerchallenge.rename
+  inventorysee:
+    description: Views a player's inventory
+    usage: /<command> [Player Name]
+    permission: towerchallenge.invsee
+    aliases:
+      - invsee
+  msg:
+    description: message
+    usage: /msg <Player> <Message>
+  godhelp:
+    description: Messages the gods
+    usage: /godhelp <Message>
+    aliases:
+      - gh
+  godmenu:
+    description: Gets the god menu book
+    usage: /godmenu
+    permission: towerchallenge.godmenu
+    aliases:
+      - gm
+  back:
+    description: Teleports you to your last location
+    usage: /back
+    permission: towerchallenge.back

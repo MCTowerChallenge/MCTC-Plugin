@@ -191,4 +191,18 @@ public class TowerCommands implements CommandExecutor {
 
         return true;
     }
+
+    private void getVouchersFromInventory(Map<String, Integer> voucherAmounts, Inventory inventory, String serverTeamName, TowerTeam team) {
+        for (ItemStack itemStack : inventory.getContents()) {
+            if (itemStack == null || !BlockVoucher.isVoucher(itemStack)) {
+                continue;
+            }
+
+            int amount = itemStack.getAmount();
+            int voucherAmount = voucherAmounts.getOrDefault(serverTeamName, 0);
+            voucherAmount += amount;
+            voucherAmounts.put(serverTeamName, voucherAmount);
+            inventory.removeItem(itemStack);
+        }
+    }
 }

@@ -17,6 +17,8 @@ public class HiddenEntityManager implements Listener {
 
     public static final String PLAYERS_TO_SHOW = "players_to_show";
 
+    public static final NamespacedKey PLAYERS_KEY = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
+
     public static final Map<UUID, Location> hiddenEntities = new HashMap<>();
 
     public static void register(Entity entity) {
@@ -30,34 +32,29 @@ public class HiddenEntityManager implements Listener {
     }
 
     public static void resetShownPlayers(Entity entity) {
-        NamespacedKey key = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
-        NBTUtils.setUUIDSet(key, entity, null);
+        NBTUtils.setUUIDSet(PLAYERS_KEY, entity, null);
         refreshHiddenState(entity);
     }
 
-    public static void showToPlayer(Entity entity, Player player) {
+    public static Set<UUID> loadAndGetPlayers(Entity entity) {
         Location location = hiddenEntities.get(entity.getUniqueId());
-        if (location == null) {
-            return;
+        if (location != null) {
+            location.getChunk().load();
         }
-        location.getChunk().load();
-        NamespacedKey key = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
-        Set<UUID> shownPlayers = NBTUtils.getUUIDSet(key, entity);
+        return NBTUtils.getUUIDSet(PLAYERS_KEY, entity);
+    }
+
+    public static void showToPlayer(Entity entity, Player player) {
+        Set<UUID> shownPlayers = loadAndGetPlayers(entity);
         shownPlayers.add(player.getUniqueId());
-        NBTUtils.setUUIDSet(key, entity, shownPlayers);
+        NBTUtils.setUUIDSet(PLAYERS_KEY, entity, shownPlayers);
         player.showEntity(MCTCPlugin.getInstance(), entity);
     }
 
     public static void hideFromPlayer(Entity entity, Player player) {
-        Location location = hiddenEntities.get(entity.getUniqueId());
-        if (location == null) {
-            return;
-        }
-        location.getChunk().load();
-        NamespacedKey key = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
-        Set<UUID> shownPlayers = NBTUtils.getUUIDSet(key, entity);
+        Set<UUID> shownPlayers = loadAndGetPlayers(entity);
         shownPlayers.remove(player.getUniqueId());
-        NBTUtils.setUUIDSet(key, entity, shownPlayers);
+        NBTUtils.setUUIDSet(PLAYERS_KEY, entity, shownPlayers);
         player.hideEntity(MCTCPlugin.getInstance(), entity);
     }
 
@@ -68,8 +65,7 @@ public class HiddenEntityManager implements Listener {
             if (entity == null) {
                 continue;
             }
-            NamespacedKey key = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
-            Set<UUID> shownPlayers = NBTUtils.getUUIDSet(key, entity);
+            Set<UUID> shownPlayers = NBTUtils.getUUIDSet(PLAYERS_KEY, entity);
             if (shownPlayers.contains(player.getUniqueId())) {
                 player.showEntity(MCTCPlugin.getInstance(), entity);
             } else {
@@ -79,16 +75,10 @@ public class HiddenEntityManager implements Listener {
     }
 
     public static void refreshHiddenState(Entity entity) {
-        Location location = hiddenEntities.get(entity.getUniqueId());
-        if (location == null) {
-            return;
-        }
-        location.getChunk().load();
-        NamespacedKey key = new NamespacedKey(MCTCPlugin.getInstance(), PLAYERS_TO_SHOW);
-        Set<UUID> shownPlayers = NBTUtils.getUUIDSet(key, entity);
+        Set<UUID> shownPlayers = loadAndGetPlayers(entity);
         if (shownPlayers == null) {
             shownPlayers = new HashSet<>();
-            NBTUtils.setUUIDSet(key, entity, shownPlayers);
+            NBTUtils.setUUIDSet(PLAYERS_KEY, entity, shownPlayers);
             return;
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
