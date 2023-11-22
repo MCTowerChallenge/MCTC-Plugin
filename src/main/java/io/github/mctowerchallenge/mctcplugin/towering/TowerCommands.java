@@ -2,28 +2,24 @@ package io.github.mctowerchallenge.mctcplugin.towering;
 
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Database;
+import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
+import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
-import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
-import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
 import io.github.mystievous.mysticore.TextUtil;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class TowerCommands implements CommandExecutor {
 
@@ -190,19 +186,5 @@ public class TowerCommands implements CommandExecutor {
         }
 
         return true;
-    }
-
-    private void getVouchersFromInventory(Map<String, Integer> voucherAmounts, Inventory inventory, String serverTeamName, TowerTeam team) {
-        for (ItemStack itemStack : inventory.getContents()) {
-            if (itemStack == null || !BlockVoucher.isVoucher(itemStack)) {
-                continue;
-            }
-
-            int amount = itemStack.getAmount();
-            int voucherAmount = voucherAmounts.getOrDefault(serverTeamName, 0);
-            voucherAmount += amount;
-            voucherAmounts.put(serverTeamName, voucherAmount);
-            inventory.removeItem(itemStack);
-        }
     }
 }
