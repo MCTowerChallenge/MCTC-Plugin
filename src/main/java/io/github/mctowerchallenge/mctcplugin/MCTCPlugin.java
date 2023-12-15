@@ -1,5 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin;
 
+import io.github.mctowerchallenge.mctcplugin.data.database.Database;
+import io.github.mctowerchallenge.mctcplugin.data.database.PortalFrameDB;
 import io.github.mctowerchallenge.mctcplugin.god.GodManager;
 import io.github.mctowerchallenge.mctcplugin.god.GodMenuCommand;
 import io.github.mctowerchallenge.mctcplugin.misc.*;
@@ -17,8 +19,6 @@ import io.github.mctowerchallenge.mctcplugin.towering.TowerTabComplete;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MCTCPlugin extends JavaPlugin {
@@ -109,7 +109,7 @@ public final class MCTCPlugin extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
 
         // Unload end portal borders.
-        Database.unloadPortalBorders();
+        PortalFrameDB.unloadPortalBorders();
     }
 
 }

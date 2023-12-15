@@ -18,8 +18,6 @@ public class Config {
      */
     public Config(MCTCPlugin plugin) {
 
-        plugin.saveDefaultConfig();
-
         dbConfig = new DatabaseConfig(plugin);
 
     }

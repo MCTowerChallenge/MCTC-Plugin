@@ -1,8 +1,10 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
+import io.github.mctowerchallenge.mctcplugin.data.database.PortalFrameDB;
+import io.github.mctowerchallenge.mctcplugin.data.database.TeamDB;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
-import io.github.mctowerchallenge.mctcplugin.Database;
+import io.github.mctowerchallenge.mctcplugin.data.database.Database;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
 import io.github.mctowerchallenge.mctcplugin.hideentity.HiddenEntityManager;
@@ -64,8 +66,8 @@ public class TeamManager implements Listener {
      */
     public void loadTeams() {
         try {
-            Database.unloadPortalBorders();
-            database.placePortalBorders();
+            PortalFrameDB.unloadPortalBorders();
+            database.getPortalFrameDB().placePortalBorders();
 
             if (allTeams != null) {
                 for (TowerTeam team : allTeams) {
@@ -73,8 +75,8 @@ public class TeamManager implements Listener {
                 }
             }
 
-            this.godTeam = database.getGodTeam(this);
-            this.teams = database.getParticipantTeams(this);
+            this.godTeam = database.getTeamDB().getGodTeam(this);
+            this.teams = database.getTeamDB().getParticipantTeams(this);
 
             this.allTeams = new ArrayList<>();
             this.allTeams.add(this.godTeam);
@@ -92,7 +94,7 @@ public class TeamManager implements Listener {
     public void loadPlayers() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                database.setGameTeamPlayers(this.allTeams);
+                database.getTeamDB().setGameTeamPlayers(this.allTeams);
             } catch (SQLException e) {
                 Bukkit.getLogger().warning("SQL Error setting player teams: " + e.getMessage());
             }
@@ -179,7 +181,7 @@ public class TeamManager implements Listener {
      */
     public boolean setPlayerTeam(OfflinePlayer player, TowerTeam team) {
         try {
-            return database.upsertUserTeam(player.getUniqueId(), team);
+            return database.getUsersDB().upsertUserTeam(player.getUniqueId(), team);
         } catch (SQLException e) {
             return false;
         }
@@ -276,7 +278,7 @@ public class TeamManager implements Listener {
      */
     public void setPortalFrameFilled(ParticipantTeam team, boolean filled) {
         try {
-            database.setPortalFrameFilled(team, filled);
+            database.getPortalFrameDB().setPortalFrameFilled(team, filled);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
         }
@@ -290,7 +292,7 @@ public class TeamManager implements Listener {
      */
     public Location getPortalFrame(ParticipantTeam team) {
         try {
-            return database.getPortalFrame(team);
+            return database.getPortalFrameDB().getPortalFrame(team);
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Failed to get team portal frame: " + team.getTextName());
             return null;
@@ -304,7 +306,7 @@ public class TeamManager implements Listener {
      */
     public int getRemainingPortalFrames() {
         try {
-            return database.getRemainingPortalFrames();
+            return database.getPortalFrameDB().getRemainingPortalFrames();
         } catch (SQLException e) {
             Bukkit.getLogger().warning("Error getting remaining portalframes");
             return -1;

@@ -1,0 +1,10 @@
+# File version (do NOT edit):
+file-version: 1
+
+# Database Credentials
+database:
+  host:
+  port: 3306
+  database:
+  user:
+  password:

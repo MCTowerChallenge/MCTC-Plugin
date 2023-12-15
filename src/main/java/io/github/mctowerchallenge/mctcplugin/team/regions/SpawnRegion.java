@@ -4,7 +4,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
 import io.github.mctowerchallenge.mctcplugin.hideentity.HiddenEntityManager;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
@@ -17,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
@@ -56,7 +56,7 @@ public class SpawnRegion extends EventRegion {
     private final BlockDisplay highlightEntity;
     private final Map<UUID, BukkitTask> highlighted;
 
-    public SpawnRegion(MCTCPlugin plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
+    public SpawnRegion(Plugin plugin, Location[] bounds, Location spawnLocation, ParticipantTeam team) {
         super(plugin, bounds, team, REGION_TAG);
         this.spawnLocation = spawnLocation;
         setFlags(getRegion());

@@ -1,6 +1,3 @@
-database:
-  host:
-  port: 3306
-  database:
-  user:
-  password:
+# File version (do NOT edit):
+file-version: 1
+

@@ -1,7 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.towering;
 
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
-import io.github.mctowerchallenge.mctcplugin.Database;
+import io.github.mctowerchallenge.mctcplugin.data.database.Database;
 import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;

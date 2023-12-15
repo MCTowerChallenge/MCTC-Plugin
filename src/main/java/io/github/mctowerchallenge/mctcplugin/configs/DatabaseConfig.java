@@ -1,9 +1,20 @@
 package io.github.mctowerchallenge.mctcplugin.configs;
 
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
+import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
+import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
+import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Represents the configuration for the database connection.
@@ -11,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DatabaseConfig {
 
-    private final MCTCPlugin plugin;
+    private final YamlDocument databaseConfig;
 
     /**
      * Constructs a new DatabaseConfig instance associated with the provided plugin.
@@ -19,7 +30,18 @@ public class DatabaseConfig {
      * @param plugin The main plugin instance.
      */
     public DatabaseConfig(MCTCPlugin plugin) {
-        this.plugin = plugin;
+        try {
+            databaseConfig = YamlDocument.create(
+                    new File(plugin.getDataFolder(), "database.yml"),
+                    Objects.requireNonNull(plugin.getResource("database.yml")),
+                    GeneralSettings.DEFAULT,
+                    LoaderSettings.builder().setAutoUpdate(true).build(),
+                    DumperSettings.DEFAULT,
+                    UpdaterSettings.builder().setVersioning(new BasicVersioning("file-version")).build()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -27,8 +49,11 @@ public class DatabaseConfig {
      *
      * @return The database config section.
      */
-    private @Nullable ConfigurationSection getConfigSection() {
-        return plugin.getConfig().getConfigurationSection("database");
+    private @Nullable Section getConfigSection() {
+        if (databaseConfig == null) {
+            return null;
+        }
+        return databaseConfig.getSection("database");
     }
 
     /**
@@ -39,7 +64,7 @@ public class DatabaseConfig {
      */
     public String getHost() throws InvalidConfigurationException {
         final String key = "host";
-        ConfigurationSection dbConfig = getConfigSection();
+        Section dbConfig = getConfigSection();
         if (dbConfig != null && dbConfig.isString(key)) {
             return dbConfig.getString(key);
         } else {
@@ -55,7 +80,7 @@ public class DatabaseConfig {
      */
     public int getPort() {
         final String key = "port";
-        ConfigurationSection dbConfig = getConfigSection();
+        Section dbConfig = getConfigSection();
         if (dbConfig != null && dbConfig.isInt(key)) {
             return dbConfig.getInt(key);
         } else {
@@ -71,7 +96,7 @@ public class DatabaseConfig {
      */
     public String getDatabase() throws InvalidConfigurationException {
         final String key = "database";
-        ConfigurationSection dbConfig = getConfigSection();
+        Section dbConfig = getConfigSection();
         if (dbConfig != null && dbConfig.isString(key)) {
             return dbConfig.getString(key);
         } else {
@@ -87,7 +112,7 @@ public class DatabaseConfig {
      */
     public String getUser() throws InvalidConfigurationException {
         final String key = "user";
-        ConfigurationSection dbConfig = getConfigSection();
+        Section dbConfig = getConfigSection();
         if (dbConfig != null && dbConfig.isString(key)) {
             return dbConfig.getString(key);
         } else {
@@ -103,7 +128,7 @@ public class DatabaseConfig {
      */
     public String getPassword() throws InvalidConfigurationException {
         final String key = "password";
-        ConfigurationSection dbConfig = getConfigSection();
+        Section dbConfig = getConfigSection();
         if (dbConfig != null && dbConfig.isString(key)) {
             return dbConfig.getString(key);
         } else {

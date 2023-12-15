@@ -64,16 +64,24 @@ repositories {
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.9"
+
     compileOnly "com.onarandombox.multiversecore:multiverse-core:4.3.12"
     compileOnly "com.onarandombox.multiverseportals:multiverse-portals:4.2.3-SNAPSHOT"
+
     compileOnly "com.comphenix.protocol:ProtocolLib:5.1.0"
+
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
         exclude group: '*', module: '*'
     }
+
+    implementation "dev.dejvokep:boosted-yaml:1.3.1"
+
     compileOnly "io.github.mystievous:mysticore:1.1.14"
     implementation "io.github.mystievous:mystigui:1.2.9"
     implementation "io.github.mystievous:mystimer:1.2.5"
+
     implementation "com.mysql:mysql-connector-j:8.2.0"
 }
 

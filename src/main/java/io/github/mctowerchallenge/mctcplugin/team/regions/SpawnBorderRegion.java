@@ -3,16 +3,16 @@ package io.github.mctowerchallenge.mctcplugin.team.regions;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
 
 public class SpawnBorderRegion extends EventRegion {
 
     public static final String REGION_TAG = "spawn_border";
 
-    public SpawnBorderRegion(MCTCPlugin plugin, Location[] bounds, ParticipantTeam team) {
+    public SpawnBorderRegion(Plugin plugin, Location[] bounds, ParticipantTeam team) {
         super(plugin, bounds, team, REGION_TAG);
         setFlags(getRegion());
     }

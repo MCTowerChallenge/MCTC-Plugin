@@ -2,7 +2,6 @@ package io.github.mctowerchallenge.mctcplugin.team;
 
 import io.github.mystievous.mysticore.Color;
 import io.github.mystievous.mystigui.element.Representable;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
 import io.github.mctowerchallenge.mctcplugin.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
@@ -29,6 +28,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     private final int databaseId;
     private final Team team;
     protected final TeamManager teamManager;
-    private final MCTCPlugin plugin;
+    private final Plugin plugin;
     private final Color color;
     private final String dye;
 
@@ -73,7 +73,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      * @param color       The color to make this team.
      * @param dye         The name of the in-game dye to use for this team. i.e. {@code MAGENTA}
      */
-    public TowerTeam(MCTCPlugin plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
+    public TowerTeam(Plugin plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
         this.teamManager = teamManager;
         this.databaseId = databaseId;
         this.plugin = plugin;
@@ -221,7 +221,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      *
      * @return The plugin instance.
      */
-    public MCTCPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 

@@ -4,17 +4,14 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.ChallengePhaseChangeEvent;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.utility.BlockSets;
-import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
 import io.github.mystievous.mysticore.TextUtil;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -23,10 +20,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
-import java.sql.SQLException;
 import java.util.EnumMap;
 
 public class TowerRegion extends EventRegion {
@@ -36,7 +33,7 @@ public class TowerRegion extends EventRegion {
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
     private final Score score;
 
-    public TowerRegion(MCTCPlugin plugin, Location[] bounds, ParticipantTeam team, String name) {
+    public TowerRegion(Plugin plugin, Location[] bounds, ParticipantTeam team, String name) {
         super(plugin, bounds, team, REGION_TAG);
         Objective objective = ChallengeManager.getScoreObjective();
         if (objective != null) {

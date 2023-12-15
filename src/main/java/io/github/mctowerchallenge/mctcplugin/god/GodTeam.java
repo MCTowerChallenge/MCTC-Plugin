@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 /**
  * A special team representing the Gods/Admins of the event.
@@ -24,7 +25,7 @@ public class GodTeam extends TowerTeam {
      * @param color       The color of the team.
      * @param dye         The dye color name associated with the team.
      */
-    public GodTeam(MCTCPlugin plugin, TeamManager teamManager, int databaseId, String name, Color color, String dye) {
+    public GodTeam(Plugin plugin, TeamManager teamManager, int databaseId, String name, Color color, String dye) {
         super(plugin, teamManager, databaseId, name, color, dye);
     }
 

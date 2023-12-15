@@ -3,7 +3,6 @@ package io.github.mctowerchallenge.mctcplugin.team;
 import io.github.mctowerchallenge.mctcplugin.team.regions.SpawnRegion;
 import io.github.mctowerchallenge.mctcplugin.team.regions.TowerRegion;
 import io.github.mystievous.mysticore.Color;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
 import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.key.Key;
@@ -17,9 +16,9 @@ import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,7 +118,7 @@ public class ParticipantTeam extends TowerTeam {
      * @param color       The color of the team.
      * @param dye         The dye color name associated with the team.
      */
-    public ParticipantTeam(MCTCPlugin plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
+    public ParticipantTeam(Plugin plugin, TeamManager teamManager, int databaseId, String displayName, Color color, String dye) {
         super(plugin, teamManager, databaseId, displayName, color, dye);
         this.loadRegions();
         this.loadPortal();
