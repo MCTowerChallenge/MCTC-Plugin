@@ -3,30 +3,11 @@ package io.github.mctowerchallenge.mctcplugin.data.database;
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
-import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
-import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
-import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
-import io.github.mystievous.mysticore.Color;
-import io.github.mctowerchallenge.mctcplugin.configs.DatabaseConfig;
-import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.EndPortalFrame;
-import org.bukkit.command.CommandSender;
+import io.github.mctowerchallenge.mctcplugin.data.config.DatabaseConfig;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
 
 /**
  * Manages database operations for the plugin.
@@ -102,6 +83,10 @@ public class Database {
         dataSource.setPassword(password.strip());
         testDataSource(dataSource);
         return dataSource;
+    }
+
+    public DataSource getDataSource() {
+        return this.dataSource;
     }
 
     public UserDB getUsersDB() {

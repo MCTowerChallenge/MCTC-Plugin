@@ -1,20 +1,13 @@
-package io.github.mctowerchallenge.mctcplugin.configs;
+package io.github.mctowerchallenge.mctcplugin.data.config;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
-import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
-import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
-import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
-import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
-import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
-import org.bukkit.configuration.ConfigurationSection;
+import io.github.mctowerchallenge.mctcplugin.utility.ConfigUtils;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Represents the configuration for the database connection.
@@ -22,26 +15,15 @@ import java.util.Objects;
  */
 public class DatabaseConfig {
 
-    private final YamlDocument databaseConfig;
+    private final YamlDocument config;
 
     /**
      * Constructs a new DatabaseConfig instance associated with the provided plugin.
      *
      * @param plugin The main plugin instance.
      */
-    public DatabaseConfig(MCTCPlugin plugin) {
-        try {
-            databaseConfig = YamlDocument.create(
-                    new File(plugin.getDataFolder(), "database.yml"),
-                    Objects.requireNonNull(plugin.getResource("database.yml")),
-                    GeneralSettings.DEFAULT,
-                    LoaderSettings.builder().setAutoUpdate(true).build(),
-                    DumperSettings.DEFAULT,
-                    UpdaterSettings.builder().setVersioning(new BasicVersioning("file-version")).build()
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public DatabaseConfig(Plugin plugin) throws IOException {
+        config = ConfigUtils.initConfigFile(plugin, "database.yml");
     }
 
     /**
@@ -50,10 +32,10 @@ public class DatabaseConfig {
      * @return The database config section.
      */
     private @Nullable Section getConfigSection() {
-        if (databaseConfig == null) {
+        if (config == null) {
             return null;
         }
-        return databaseConfig.getSection("database");
+        return config.getSection("database");
     }
 
     /**

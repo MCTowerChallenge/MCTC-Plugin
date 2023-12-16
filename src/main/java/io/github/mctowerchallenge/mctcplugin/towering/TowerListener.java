@@ -55,49 +55,4 @@ public class TowerListener implements Listener {
         }
     }
 
-    private final Location spawnPortalLocation = new Location(Worlds.Oct2023_the_end(), -31.5, 73, 11.5, -90, 10);
-    private final Location netherPortalLocation = new Location(Worlds.Oct2023_nether(), -93.5, 68, 439.5);
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityPortal(final EntityPortalEvent event) {
-        if (event.isCancelled())
-            return;
-        Location toLocation = event.getTo();
-        if (toLocation != null) {
-            if (toLocation.getWorld().equals(netherPortalLocation.getWorld())) {
-                event.setCancelled(true);
-                event.getEntity().teleport(netherPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-            } else if (toLocation.getWorld().equals(spawnPortalLocation.getWorld())) {
-                event.setCancelled(true);
-                event.setTo(spawnPortalLocation);
-                event.getEntity().teleport(spawnPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerPortal(final PlayerPortalEvent event) {
-        if (event.isCancelled())
-            return;
-        Player player = event.getPlayer();
-        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-            if (event.getTo().getWorld().equals(netherPortalLocation.getWorld())) {
-                event.setCancelled(true);
-                player.teleport(netherPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                Advancement enterNetherAdvancement = this.plugin.getServer().getAdvancement(NamespacedKey.minecraft("story/enter_the_nether"));
-                if (enterNetherAdvancement != null) {
-                    String enterNetherCriteria = "entered_nether";
-                    AdvancementProgress advancementProgress = player.getAdvancementProgress(enterNetherAdvancement);
-                    if (!advancementProgress.isDone()) {
-                        advancementProgress.awardCriteria(enterNetherCriteria);
-                    }
-                }
-            } else if (event.getTo().getWorld().equals(spawnPortalLocation.getWorld())) {
-                event.setCancelled(true);
-                event.setTo(spawnPortalLocation);
-                player.teleport(spawnPortalLocation, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-            }
-        }
-    }
-
 }

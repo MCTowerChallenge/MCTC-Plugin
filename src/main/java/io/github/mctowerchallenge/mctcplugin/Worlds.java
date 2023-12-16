@@ -5,14 +5,6 @@ import org.bukkit.World;
 
 public class Worlds {
 
-    public static World Oct2023() {
-        return Bukkit.getWorld("Oct2023");
-    }
-
-    public static World Oct2023_nether() {
-        return Bukkit.getWorld("Oct2023_nether");
-    }
-
     public static World Oct2023_the_end() {
         return Bukkit.getWorld("Oct2023_the_end");
     }
@@ -22,11 +14,11 @@ public class Worlds {
     }
 
     public static World WORLD() {
-        return Oct2023();
+        return Bukkit.getWorld("world");
     }
 
     public static World NETHER() {
-        return Oct2023_nether();
+        return Bukkit.getWorld("world_nether");
     }
 
     public static World THE_END() {

@@ -6,7 +6,7 @@ import io.github.mctowerchallenge.mctcplugin.god.GodManager;
 import io.github.mctowerchallenge.mctcplugin.god.GodMenuCommand;
 import io.github.mctowerchallenge.mctcplugin.misc.*;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
-import io.github.mctowerchallenge.mctcplugin.configs.Config;
+import io.github.mctowerchallenge.mctcplugin.data.config.PluginConfig;
 import io.github.mctowerchallenge.mctcplugin.messaging.MessageCommands;
 import io.github.mctowerchallenge.mctcplugin.portal.PortalControllers;
 import io.github.mctowerchallenge.mctcplugin.timer.OrganizationTimer;
@@ -20,6 +20,8 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
 
 public final class MCTCPlugin extends JavaPlugin {
 
@@ -44,61 +46,78 @@ public final class MCTCPlugin extends JavaPlugin {
         Bukkit.getLogger().info(text);
     }
 
+    private PluginConfig pluginConfig;
+    private Database pluginDatabase;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
 
         me = this;
 
-        // Load plugin configuration
-        Config config = new Config(this);
+        try {
+            // Load plugin configuration
+            pluginConfig = new PluginConfig(this);
 
-        // Initialize the plugin's database
-        Database database = new Database(this, config.getDBConfig());
+            // Initialize the plugin's database
+            pluginDatabase = new Database(this, pluginConfig.getDBConfig());
 
-        // Initialize timers and timer-related commands
-        OrganizationTimer organizationTimer = new OrganizationTimer(this);
-        TowerTimer timer = new TowerTimer(this);
-        TimerCommands timerCommands = new TimerCommands(timer, organizationTimer);
-        TimerTabComplete timerTabComplete = new TimerTabComplete();
+            // Initialize timers and timer-related commands
+            OrganizationTimer organizationTimer = new OrganizationTimer(this);
+            TowerTimer timer = new TowerTimer(this);
+            TimerCommands timerCommands = new TimerCommands(timer, organizationTimer);
+            TimerTabComplete timerTabComplete = new TimerTabComplete();
 
-        TeamManager teamManager = new TeamManager(this, database);
+            TeamManager teamManager = new TeamManager(this, pluginDatabase);
 
-        PortalControllers portalControllers = new PortalControllers(this, teamManager);
+            PortalControllers portalControllers = new PortalControllers(this, teamManager);
 
-        ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
+            ChallengeManager challengeManager = new ChallengeManager(this, teamManager);
 
-        GameFlowManager gameFlowManager = new GameFlowManager(timer, portalControllers);
+            GameFlowManager gameFlowManager = new GameFlowManager(timer, portalControllers);
 
-        this.getCommand("timer").setExecutor(timerCommands);
-        this.getCommand("timer").setTabCompleter(timerTabComplete);
+            this.getCommand("timer").setExecutor(timerCommands);
+            this.getCommand("timer").setTabCompleter(timerTabComplete);
 
-        GodManager godManager = new GodManager(this, teamManager, portalControllers);
-        GodMenuCommand command = new GodMenuCommand(godManager);
-        Bukkit.getPluginCommand("godmenu").setExecutor(command);
+            GodManager godManager = new GodManager(this, teamManager, portalControllers);
+            GodMenuCommand command = new GodMenuCommand(godManager);
+            Bukkit.getPluginCommand("godmenu").setExecutor(command);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, database);
-        TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
+            TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, pluginDatabase);
+            TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
-        this.getCommand("tower").setExecutor(towerCommands);
-        this.getCommand("tower").setTabCompleter(towerTabComplete);
+            this.getCommand("tower").setExecutor(towerCommands);
+            this.getCommand("tower").setTabCompleter(towerTabComplete);
 
-        // Teams
-        ChatHandler chatHandler = new ChatHandler(this);
-        getServer().getPluginManager().registerEvents(chatHandler, this);
+            // Teams
+            ChatHandler chatHandler = new ChatHandler(this);
+            getServer().getPluginManager().registerEvents(chatHandler, this);
 
-        // Other
-        BroadcastCommand broadcastCommand = new BroadcastCommand(teamManager);
-        this.getCommand("broadcast").setExecutor(broadcastCommand);
+            // Other
+            BroadcastCommand broadcastCommand = new BroadcastCommand(teamManager);
+            this.getCommand("broadcast").setExecutor(broadcastCommand);
 
-        new EnderChestCommand(this);
-        new InvseeCommand(this);
-        new FlyCommand(this);
-        new MessageCommands(this, teamManager);
-        new AnvilCommand(this);
-        new CraftCommand(this);
-        new RenameCommand(this);
+            new EnderChestCommand(this);
+            new InvseeCommand(this);
+            new FlyCommand(this);
+            new MessageCommands(this, teamManager);
+            new AnvilCommand(this);
+            new CraftCommand(this);
+            new RenameCommand(this);
+        } catch (IOException e) {
+            Bukkit.getLogger().severe("IOException has occurred: " + e.getMessage());
+            Bukkit.getLogger().severe("Disabling Tower Challenge Plugin...");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
+    }
+
+    public Database getPluginDatabase() {
+        return pluginDatabase;
+    }
+
+    public PluginConfig getPluginConfig() {
+        return pluginConfig;
     }
 
     @Override

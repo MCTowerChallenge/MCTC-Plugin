@@ -1,12 +1,14 @@
-package io.github.mctowerchallenge.mctcplugin.configs;
+package io.github.mctowerchallenge.mctcplugin.data.config;
 
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
+import org.bukkit.plugin.Plugin;
+
+import java.io.IOException;
 
 /**
  * Represents the configuration manager for the plugin.
  * This class handles loading and managing various configuration settings.
  */
-public class Config {
+public class PluginConfig {
 
     private final DatabaseConfig dbConfig;
 
@@ -16,7 +18,7 @@ public class Config {
      *
      * @param plugin The main plugin instance.
      */
-    public Config(MCTCPlugin plugin) {
+    public PluginConfig(Plugin plugin) throws IOException {
 
         dbConfig = new DatabaseConfig(plugin);
 
