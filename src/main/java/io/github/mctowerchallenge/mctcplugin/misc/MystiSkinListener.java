@@ -29,7 +29,7 @@ public class MystiSkinListener {
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 PacketContainer packet = event.getPacket();
-                if (player.getUniqueId().equals(MYSTI_UUID)) {
+                if (player.getUniqueId().equals(MYSTI_UUID) && packet.getIntegers().size() > 0) {
                     int value = packet.getIntegers().read(1) >> 6 & 1;
                     if (currentValue == null || value != currentValue) {
                         currentValue = value;
