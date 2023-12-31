@@ -71,7 +71,7 @@ public class ParticipantTeam extends TowerTeam {
     /**
      * The anchor location of the base team spawn.
      */
-    public static final Location baseSpawnLocation = new Location(Worlds.Oct2023_the_end(), 0.5f, 80f, -59.5f, 180f, 16f); // Red
+    public static final Location baseSpawnLocation = new Location(Worlds.Jan2024(), -1390, 86, -451); // Red
 
     /**
      * Location in the base team spawn that players

@@ -1,6 +1,5 @@
 package io.github.mctowerchallenge.mctcplugin.teleport;
 
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.page.Gui;
@@ -16,6 +15,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class TeleportHistoryIndividualGui extends ListGui implements Openable {
 
-    public TeleportHistoryIndividualGui(MCTCPlugin plugin, TeleportHistoryManager teleportHistoryManager, OfflinePlayer player, Gui leaveGui) {
+    public TeleportHistoryIndividualGui(JavaPlugin plugin, TeleportHistoryManager teleportHistoryManager, OfflinePlayer player, Gui leaveGui) {
         super(plugin, Component.text(player.getName()).append(Component.text("'s Teleport History")), new ButtonElement(Icons.backItem(), leaveGui::openInventory));
         List<TeleportLocation> locations = teleportHistoryManager.get(player);
         for (int i = locations.size()-1; i >= 0; i--) {

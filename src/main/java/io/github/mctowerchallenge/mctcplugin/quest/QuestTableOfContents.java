@@ -3,19 +3,19 @@ package io.github.mctowerchallenge.mctcplugin.quest;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public class QuestTableOfContents extends QuestGui {
 
-    public QuestTableOfContents(MCTCPlugin plugin, String name, @Nullable String body, TowerTeam team) {
+    public QuestTableOfContents(JavaPlugin plugin, String name, @Nullable String body, TowerTeam team) {
         super(plugin, name, body);
         Map<String, Quest> quests = team.getQuests();
         Quest trivia = quests.get(QuestManager.TRIVIA);

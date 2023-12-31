@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -22,7 +23,7 @@ public class TeleportHistoryManager implements Listener, Openable {
 
     private final Map<UUID, List<TeleportLocation>> teleports;
 
-    private final MCTCPlugin plugin;
+    private final JavaPlugin plugin;
     private final GodManager godManager;
 
     /**
@@ -31,7 +32,7 @@ public class TeleportHistoryManager implements Listener, Openable {
      * @param plugin     The main plugin instance.
      * @param godManager The manager for God-related functionalities.
      */
-    public TeleportHistoryManager(MCTCPlugin plugin, GodManager godManager) {
+    public TeleportHistoryManager(JavaPlugin plugin, GodManager godManager) {
         this.plugin = plugin;
         this.godManager = godManager;
         teleports = new HashMap<>();

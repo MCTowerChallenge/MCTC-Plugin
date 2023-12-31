@@ -63,6 +63,22 @@ public class Worlds {
         return Bukkit.getWorld("Oct2023_tower");
     }
 
+    public static World Jan2024() {
+        return Bukkit.getWorld("Jan2024");
+    }
+
+    public static World Jan2024_nether() {
+        return Bukkit.getWorld("Jan2024_nether");
+    }
+
+    public static World Jan2024_the_end() {
+        return Bukkit.getWorld("Jan2024_the_end");
+    }
+
+    public static World Jan2024_tower() {
+        return Bukkit.getWorld("Jan2024_tower");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }

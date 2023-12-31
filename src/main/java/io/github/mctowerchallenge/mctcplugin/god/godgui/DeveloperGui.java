@@ -13,7 +13,6 @@ import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.mystigui.page.PlayerGui;
 import io.github.mystievous.mystigui.page.PresetGui;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
 import io.github.mctowerchallenge.mctcplugin.utility.FontUtils;
 import net.kyori.adventure.text.Component;
@@ -22,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.List;
 
 public class DeveloperGui extends PresetGui {
 
-    public DeveloperGui(MCTCPlugin plugin, TeamManager teamManager) {
+    public DeveloperGui(JavaPlugin plugin, TeamManager teamManager) {
         super(plugin, Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);

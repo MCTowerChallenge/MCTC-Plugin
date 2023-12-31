@@ -4,10 +4,10 @@ import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
 import io.github.mystievous.mystigui.page.PresetGui;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ public class StartingItemsGui extends PresetGui {
      *
      * @param team The team to show the items from.
      */
-    public StartingItemsGui(MCTCPlugin plugin, @NotNull ParticipantTeam team) {
+    public StartingItemsGui(JavaPlugin plugin, @NotNull ParticipantTeam team) {
         super(plugin, Component.text("Starting Items for " + team.getTextName()), 5);
         Map<Integer, ItemStack> startingItems = team.getStartingItems(null);
         Map<EquipmentSlot, ItemStack> startingEquipment = team.getStartingEquipment();

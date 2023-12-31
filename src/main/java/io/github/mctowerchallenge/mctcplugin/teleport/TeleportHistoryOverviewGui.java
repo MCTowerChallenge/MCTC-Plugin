@@ -1,6 +1,5 @@
 package io.github.mctowerchallenge.mctcplugin.teleport;
 
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.page.Gui;
@@ -9,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class TeleportHistoryOverviewGui extends PlayerGui {
 
     public static final String TITLE = "Teleport Histories:";
 
-    public TeleportHistoryOverviewGui(MCTCPlugin plugin, TeleportHistoryManager historyManager, Gui exitGui) {
+    public TeleportHistoryOverviewGui(JavaPlugin plugin, TeleportHistoryManager historyManager, Gui exitGui) {
         super(plugin, Component.text(TITLE),
                 player -> new ArrayList<>() {{
                     add(Component.text(historyManager.get(player).size())
