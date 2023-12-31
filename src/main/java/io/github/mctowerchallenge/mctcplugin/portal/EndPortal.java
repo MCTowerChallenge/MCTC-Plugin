@@ -41,14 +41,14 @@ public class EndPortal implements Listener {
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MIN = new Location(Worlds.Jun2023(), 203, 67, -2256);
+    public static final Location PORTAL_MIN = new Location(Worlds.Jan2024(), -1419, 64, -474);
 
     /**
      * Second corner of the inner-portal bounds.
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MAX = new Location(Worlds.Jun2023(), 206, 67, -2253);
+    public static final Location PORTAL_MAX = new Location(Worlds.Jan2024(), -1416, 64, -471);
 
     /**
      * Creates an EndPortal instance.
@@ -116,11 +116,11 @@ public class EndPortal implements Listener {
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
-            if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
-                event.setRespawnLocation(EndPortal.overworldSpawn);
-            }
-        }
+//        if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
+//            if (event.getRespawnReason().equals(PlayerRespawnEvent.RespawnReason.END_PORTAL)) {
+//                event.setRespawnLocation(EndPortal.overworldSpawn);
+//            }
+//        }
     }
 
     /**
@@ -144,18 +144,16 @@ public class EndPortal implements Listener {
                             Location teamBlockLocation = participantTeam.getFrameLocation().toBlockLocation();
                             if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
                                 player.getInventory().setItem(event.getHand(), player.getInventory().getItem(event.getHand()).subtract(1));
-                                participantTeam.placeEye();
-                                if (teamManager.getRemainingPortalFrames() <= 0) {
-                                    openPortal();
-                                }
+                                participantTeam.placeEye(this);
                             }
                         } else if (team instanceof GodTeam) {
-                            teamManager.getParticipantTeams().forEach(checkTeam -> {
+                            for (ParticipantTeam checkTeam : teamManager.getParticipantTeams()) {
                                 Location teamBlockLocation = checkTeam.getFrameLocation().toBlockLocation();
                                 if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {
-                                    checkTeam.placeEye();
+                                    checkTeam.placeEye(this);
+                                    break;
                                 }
-                            });
+                            }
                         }
                     }
                 }

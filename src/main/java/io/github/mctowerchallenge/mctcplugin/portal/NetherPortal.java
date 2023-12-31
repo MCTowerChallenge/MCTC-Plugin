@@ -24,8 +24,8 @@ public class NetherPortal {
      */
     public NetherPortal() {
         portalLayers = new Location[][]{{
-                new Location(Worlds.Oct2023_the_end(), -32, 73, 11),
-                new Location(Worlds.Oct2023_the_end(), -32, 75, 11)
+                new Location(Worlds.Jan2024(), -1379, 69, -478),
+                new Location(Worlds.Jan2024(), -1379, 71, -478)
         }};
     }
 

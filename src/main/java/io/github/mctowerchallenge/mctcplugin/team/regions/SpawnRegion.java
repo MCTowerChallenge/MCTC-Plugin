@@ -30,29 +30,27 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SpawnRegion extends EventRegion {
 
     public static final Map<Integer, Location> TeleporterLocations = new HashMap<>() {{
-        put(2, new Location(Worlds.Oct2023_the_end(), 0, 60, -60));    // Red
-        put(3, new Location(Worlds.Oct2023_the_end(), 23, 61, -55));    // Orange
-        put(4, new Location(Worlds.Oct2023_the_end(), 42, 62, -42));    // Yellow
-        put(5, new Location(Worlds.Oct2023_the_end(), 55, 62, -23));    // Lime
-        put(6, new Location(Worlds.Oct2023_the_end(), 60, 60, 0));    // Green
-        put(7, new Location(Worlds.Oct2023_the_end(), 55, 59, 23));    // Cyan
-        put(8, new Location(Worlds.Oct2023_the_end(), 42, 59, 42));    // Light Blue
-        put(9, new Location(Worlds.Oct2023_the_end(), 23, 59, 55));    // Blue
-        put(10, new Location(Worlds.Oct2023_the_end(), 0, 59, 60));   // Purple
-        put(11, new Location(Worlds.Oct2023_the_end(), -23, 60, 55));   // Magenta
-        put(12, new Location(Worlds.Oct2023_the_end(), -42, 58, 42));   // Pink
-        put(13, new Location(Worlds.Oct2023_the_end(), -55, 58, 23));   // White
-        put(14, new Location(Worlds.Oct2023_the_end(), -60, 60, 0));   // Light Gray
-        put(15, new Location(Worlds.Oct2023_the_end(), -55, 61, -23));   // Gray
-        put(16, new Location(Worlds.Oct2023_the_end(), -42, 62, -42));   // Black
-        put(17, new Location(Worlds.Oct2023_the_end(), -23, 60, -55));   // Brown
+        put(2, new Location(Worlds.Jan2024(), -1393, 68, -451));    // Red
+        put(3, new Location(Worlds.Jan2024(), -1393, 68, -414));    // Orange
+        put(4, new Location(Worlds.Jan2024(), -1393, 68, -426));    // Yellow
+        put(5, new Location(Worlds.Jan2024(), -1411, 68, -401));    // Lime
+        put(6, new Location(Worlds.Jan2024(), -1411, 68, -450));    // Green
+        put(7, new Location(Worlds.Jan2024(), -1411, 68, -437));    // Cyan
+        put(8, new Location(Worlds.Jan2024(), -1411, 68, -377));    // Light Blue
+        put(9, new Location(Worlds.Jan2024(), -1411, 68, -365));    // Blue
+        put(10, new Location(Worlds.Jan2024(), -1393, 68, -387));   // Purple
+        put(11, new Location(Worlds.Jan2024(), -1393, 68, -439));   // Magenta
+        put(12, new Location(Worlds.Jan2024(), -1393, 68, -376));   // Pink
+        put(13, new Location(Worlds.Jan2024(), -1411, 68, -412));   // White
+        put(14, new Location(Worlds.Jan2024(), -1411, 68, -424));   // Light Gray
+        put(15, new Location(Worlds.Jan2024(), -1393, 68, -364));   // Gray
+        put(16, new Location(Worlds.Jan2024(), -1411, 68, -389));   // Black
+        put(17, new Location(Worlds.Jan2024(), -1393, 68, -401));   // Brown
     }};
 
     public static final String REGION_TAG = "spawn";
@@ -61,6 +59,9 @@ public class SpawnRegion extends EventRegion {
 
     private final BlockDisplay highlightEntity;
     private final BlockDisplay teleportHighlightEntity;
+
+    private final List<BlockDisplay> highlightEntities;
+
     private final Map<UUID, BukkitTask> highlighted;
     private final MVPortal teleportPortal;
 
@@ -70,6 +71,7 @@ public class SpawnRegion extends EventRegion {
         setFlags(getRegion());
         Location[] borderBounds = { bounds[0].add(0, -24, 0), bounds[1] };
         new SpawnBorderRegion(plugin, borderBounds, team);
+        highlightEntities = new ArrayList<>();
         Location highlightLocation = spawnLocation.clone().subtract(0, 1, 0);
         highlightLocation.setPitch(0.0f);
         highlightLocation.setYaw(0.0f);
@@ -79,8 +81,9 @@ public class SpawnRegion extends EventRegion {
         highlightEntity.setBlock(Bukkit.createBlockData(Material.valueOf(String.format("%s_STAINED_GLASS", team.getDye()))));
         highlightEntity.setGlowing(true);
         highlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
-        highlightEntity.setTransformation(new Transformation(new Vector3f(-3.5f, 0.01f, -3.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(7.0f, 0.98f, 7.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
+        highlightEntity.setTransformation(new Transformation(new Vector3f(-4.5f, 0.01f, -3.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(9.0f, 0.98f, 7.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
         HiddenEntityManager.register(highlightEntity);
+        highlightEntities.add(highlightEntity);
         Location teleporterLocation = TeleporterLocations.get(team.getDatabaseId());
         if (teleporterLocation != null) {
             this.teleportPortal = MVPortalUtils.initPortal(TeamUtils.toTeamTag(team, "spawn-teleporter"), new Location[]{teleporterLocation.clone().add(0, 1, 0), teleporterLocation.clone().add(0.0, 2, 0.0)}, spawnLocation);
@@ -95,6 +98,7 @@ public class SpawnRegion extends EventRegion {
             teleportHighlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
             teleportHighlightEntity.setTransformation(new Transformation(new Vector3f(-1.5f, 0.01f, -1.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(3.0f, 0.98f, 3.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
             HiddenEntityManager.register(teleportHighlightEntity);
+            highlightEntities.add(teleportHighlightEntity);
         } else {
             teleportHighlightEntity = null;
             this.teleportPortal = null;
@@ -119,10 +123,7 @@ public class SpawnRegion extends EventRegion {
     }
 
     public void showHighlight(Player player) {
-        HiddenEntityManager.showToPlayer(highlightEntity, player);
-        if (teleportHighlightEntity != null) {
-            HiddenEntityManager.showToPlayer(teleportHighlightEntity, player);
-        }
+        highlightEntities.forEach(blockDisplay -> HiddenEntityManager.showToPlayer(blockDisplay, player));
         UUID uuid = player.getUniqueId();
         BukkitTask task = highlighted.get(uuid);
         if (task != null) {
@@ -132,10 +133,7 @@ public class SpawnRegion extends EventRegion {
         highlighted.put(uuid, new BukkitRunnable() {
             @Override
             public void run() {
-                HiddenEntityManager.hideFromPlayer(highlightEntity, player);
-                if (teleportHighlightEntity != null) {
-                    HiddenEntityManager.hideFromPlayer(teleportHighlightEntity, player);
-                }
+                highlightEntities.forEach(blockDisplay -> HiddenEntityManager.hideFromPlayer(blockDisplay, player));
             }
         }.runTaskLater(plugin, 100));
     }
