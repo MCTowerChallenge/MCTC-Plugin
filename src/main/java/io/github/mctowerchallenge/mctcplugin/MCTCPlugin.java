@@ -1,5 +1,6 @@
 package io.github.mctowerchallenge.mctcplugin;
 
+import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.IceCream;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.Posters;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.flags.SelectionHandler;
@@ -20,6 +21,7 @@ import io.github.mctowerchallenge.mctcplugin.misc.resourcepack.ResourcePack;
 import io.github.mctowerchallenge.mctcplugin.misc.resourcepack.ResourcePackListener;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestCommands;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
+import io.github.mctowerchallenge.mctcplugin.quest.QuestTags;
 import io.github.mctowerchallenge.mctcplugin.quest.util.FullInventory;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.waitingroom.WaitingRoom;
@@ -89,6 +91,7 @@ public final class MCTCPlugin extends JavaPlugin {
 
 //        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
         Oct2023QuestManager oct2023QuestManager = new Oct2023QuestManager(this, teamManager);
+        Jan2024QuestManager jan2024QuestManager = new Jan2024QuestManager(this, teamManager);
 
         QuestCommands commands = new QuestCommands(teamManager);
         getCommand("questbook").setExecutor(commands);
@@ -106,7 +109,7 @@ public final class MCTCPlugin extends JavaPlugin {
             stopDialogue.setTabCompleter(dialogueCommands);
         }
 
-        GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager, portalControllers);
+        GameFlowManager gameFlowManager = new GameFlowManager(this, timer, characterManager, teamManager, portalControllers, jan2024QuestManager);
 
         InteractableTagManager tagManager = new InteractableTagManager(this, teamManager);
 
@@ -116,6 +119,8 @@ public final class MCTCPlugin extends JavaPlugin {
         Posters.registerPosterInteractables();
 
         InteractableTaggedEntity seat = new InteractableTaggedEntity("seat");
+        seat.addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
+        });
         seat.setDefaultInteractionHandler((team, event) -> Bukkit.getScheduler().runTask(this, () -> {
             Entity entity = event.getRightClicked();
             if (entity.getPassengers().isEmpty()) {
@@ -134,11 +139,11 @@ public final class MCTCPlugin extends JavaPlugin {
 
         CustomBlockManager customBlockManager = new CustomBlockManager(this);
 
-        new GodManager(this, gameFlowManager, customBlockManager, questManager, oct2023QuestManager, teamManager, magicItems, portalControllers);
+        new GodManager(this, gameFlowManager, customBlockManager, questManager, jan2024QuestManager, teamManager, magicItems, portalControllers);
 
         WaitingRoom waitingRoom = new WaitingRoom(this);
 
-        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom, oct2023QuestManager, database);
+        TowerCommands towerCommands = new TowerCommands(challengeManager, teamManager, portalControllers, waitingRoom, jan2024QuestManager, database);
         TowerTabComplete towerTabComplete = new TowerTabComplete(teamManager);
 
         this.getCommand("tower").setExecutor(towerCommands);

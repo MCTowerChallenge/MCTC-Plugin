@@ -646,7 +646,9 @@ public class Database {
                 addWinnersStatement.setString(1, userId);
                 Player onlinePlayer = player.getPlayer();
                 if (onlinePlayer != null) {
-                    onlinePlayer.getInventory().setHelmet(hat);
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        onlinePlayer.getInventory().setHelmet(hat);
+                    });
                 }
                 int rowCount = addWinnersStatement.executeUpdate();
                 if (rowCount == 0) {

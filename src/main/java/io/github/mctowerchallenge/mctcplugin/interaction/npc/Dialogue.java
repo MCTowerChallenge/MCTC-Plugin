@@ -152,12 +152,13 @@ public class Dialogue {
      *
      * @param dialogue The dialogue to append.
      */
-    public void append(Dialogue dialogue) {
+    public Dialogue append(Dialogue dialogue) {
         if (next != null) {
             next.append(dialogue);
         } else {
             setNext(dialogue);
         }
+        return this;
     }
 
     /**
@@ -174,7 +175,7 @@ public class Dialogue {
         } else {
             setNext(dialogue);
         }
-        return dialogue;
+        return this;
     }
 
     /**

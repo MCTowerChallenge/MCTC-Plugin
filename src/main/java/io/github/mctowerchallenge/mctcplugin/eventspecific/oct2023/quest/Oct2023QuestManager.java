@@ -187,20 +187,6 @@ public class Oct2023QuestManager implements Listener, Openable {
     }
 
     public static void checkCompletedQuests(TowerTeam team, Player player) {
-        Quest parkour = team.getQuest(QuestManager.PARKOUR);
-        Quest trivia = team.getQuest(QuestManager.TRIVIA);
-        if (parkour == null || !parkour.isCompleted() || trivia == null || !trivia.isCompleted()) {
-            return;
-        }
 
-        Quest hauntedHouse = team.getQuest(QuestManager.HAUNTED_HOUSE);
-        if (hauntedHouse == null || hauntedHouse.isCompleted()) {
-            return;
-        }
-
-        team.completeQuest(QuestManager.HAUNTED_HOUSE);
-        ItemStack blockVouchers = BlockVoucher.getVouchers(2);
-        player.sendMessage(QuestManager.getRewards(blockVouchers));
-        FullInventory.givePlayerItems(player, blockVouchers);
     }
 }

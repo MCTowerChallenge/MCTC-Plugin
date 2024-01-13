@@ -1,10 +1,11 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
+import io.github.mctowerchallenge.mctcplugin.quest.MultiObjectiveQuest;
 import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestChangeEvent;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestCompleteEvent;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
 import io.github.mystievous.mysticore.Color;
+import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.element.Representable;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.portal.EndPortal;
@@ -12,6 +13,7 @@ import io.github.mctowerchallenge.mctcplugin.spawncompass.SpawnCompass;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -147,6 +149,25 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         this.currentQuest = currentQuest;
     }
 
+    /**
+     * Sets a team's quest to the one with the given ID.
+     *
+     * @param questId The ID of the quest to change to.
+     */
+    public void setQuest(String questId) {
+        Quest quest = getQuest(questId);
+        if (quest != null) {
+            sendMessage(TextUtil.formatText("New Quest Started: ").append(Component.text(quest.getFriendlyName()).color(NamedTextColor.WHITE)));
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                teamManager.getDatabase().setTeamQuest(this, questId);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
+            }
+        });
+    }
+
     public Map<String, Quest> getQuests() {
         return quests;
     }
@@ -165,26 +186,6 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 teamManager.getDatabase().setCompletedQuest(this, quest);
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Sets a team's quest to the one with the given ID.
-     *
-     * @param questId The ID of the quest to change to.
-     */
-    public void setQuest(String questId) {
-        QuestChangeEvent event = new QuestChangeEvent(this, getQuest(getCurrentQuestTag()), getQuest(questId));
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled())
-            return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                teamManager.getDatabase().setTeamQuest(this, questId);
             } catch (SQLException e) {
                 Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
             }
@@ -219,7 +220,21 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
      * @return The instance of the Quest or null if not found.
      */
     public @Nullable Quest getQuest(String tag) {
-        return quests.get(tag);
+        Quest quest = quests.get(tag);
+        if (quest != null) {
+            return quest;
+        }
+
+        for (Quest checkQuest : quests.values()) {
+            if (checkQuest instanceof MultiObjectiveQuest multiObjectiveQuest) {
+                Quest subQuest = multiObjectiveQuest.getSubQuest(tag);
+                if (subQuest != null) {
+                    return subQuest;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -630,7 +645,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
     }
 
     public void teleportToSpawn(Player player) {
-        Location spawnpoint = EndPortal.spawnLocation();
+        Location spawnpoint = SpawnCompass.OVERWORLD_LOCATION;
         player.teleport(spawnpoint);
     }
 

@@ -1,20 +1,27 @@
 package io.github.mctowerchallenge.mctcplugin.quest;
 
+import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.mystigui.GuiUtil;
+import io.github.mystievous.mystigui.element.Representable;
 import io.github.mystievous.mystigui.page.Gui;
 import io.github.mystievous.mystigui.page.Openable;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a quest in the Tower Challenge plugin.
  */
-public class Quest implements Openable {
+public class Quest implements Openable, Representable {
 
     protected final MCTCPlugin plugin;
     private final String tag;
     private final String friendlyName;
     private @Nullable String description;
+    private ItemStack item;
     private boolean completed;
 
     /**
@@ -29,6 +36,7 @@ public class Quest implements Openable {
         this.tag = tag;
         this.friendlyName = friendlyName;
         this.description = null;
+        this.item = new ItemStack(Material.PAPER);
         this.completed = false;
     }
 
@@ -40,6 +48,10 @@ public class Quest implements Openable {
         return completed;
     }
 
+    public void setItem(ItemStack item) {
+        this.item = item;
+    }
+
     /**
      * Creates a copy of this quest instance.
      *
@@ -47,6 +59,7 @@ public class Quest implements Openable {
      */
     public Quest copy() {
         Quest quest = new Quest(plugin, tag, friendlyName);
+        quest.setCompleted(completed);
         quest.setDescription(description);
         return quest;
     }
@@ -101,5 +114,15 @@ public class Quest implements Openable {
                 ", description='" + description + '\'' +
                 ", completed=" + completed +
                 '}';
+    }
+
+    @Override
+    public ItemStack getRepresentation() {
+        ItemStack item = this.item.clone();
+        item.editMeta(itemMeta -> {
+            itemMeta.displayName(Component.text(getFriendlyName()));
+            itemMeta.lore(TextUtil.formatTexts(Component.text("Click to open!")));
+        });
+        return item;
     }
 }

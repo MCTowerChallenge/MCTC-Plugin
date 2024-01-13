@@ -1,6 +1,5 @@
 package io.github.mctowerchallenge.mctcplugin.towering;
 
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.gui.page.TeamGui;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -12,12 +11,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
 public class WinnersGUI extends TeamGui {
 
-    public WinnersGUI(MCTCPlugin plugin, TeamManager teamManager, Element exitElement) {
+    public WinnersGUI(Plugin plugin, TeamManager teamManager, Element exitElement) {
         super(plugin, Component.text("Pick the winning team!"),
                 participantTeam -> new ArrayList<>(),
                 teamManager.getParticipantTeams().stream().map(TowerTeam.class::cast).toList(),

@@ -12,7 +12,6 @@ import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
 import io.github.mctowerchallenge.mctcplugin.gui.page.TeamGui;
 import io.github.mctowerchallenge.mctcplugin.interaction.InteractableTagManager;
 import io.github.mctowerchallenge.mctcplugin.interaction.InteractableTaggedEntity;
-import io.github.mctowerchallenge.mctcplugin.interaction.Sparkle;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.Dialogue;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -77,8 +76,6 @@ public class Jun2023QuestManager implements Listener, Openable {
         for (Map.Entry<Integer, Location> entry : teamLocations.entrySet()) {
             questInstances.put(entry.getKey(), new Jun2023QuestInstance(plugin, teamManager, entry.getKey(), entry.getValue()));
         }
-
-        new Sparkle(plugin, new Location(Worlds.Jun2023(), 276, 62.5, -2034.55), 0.3f, 0.45f, 0.01f);
 
         Dialogue doorNoOpen = new Dialogue(plugin, Dialogue.playerThoughts("The door won't open..."), 0.0);
         BiConsumer<TowerTeam, PlayerInteractEntityEvent> doorNoOpenEvent = (team, event) -> {

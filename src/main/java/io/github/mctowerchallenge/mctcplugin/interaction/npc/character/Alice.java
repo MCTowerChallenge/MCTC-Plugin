@@ -1,6 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.interaction.npc.character;
 
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
+import io.github.mctowerchallenge.mctcplugin.quest.QuestTags;
 import io.github.mystievous.mysticore.Color;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.Dialogue;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.QuestCharacter;
@@ -21,17 +22,17 @@ public class Alice extends QuestCharacter {
     public Alice(Plugin plugin) {
         super(plugin, EntityType.ALLAY, NAME, NAME_COLOR, TEXT_COLOR);
 
-        Dialogue aliceSearch = new Dialogue(plugin, formatMessage("Ughh where is it??"), 2.0d);
-        aliceSearch.append(new Dialogue(plugin, formatMessage("Where the nether is it???"), 2.0d));
-        aliceSearch.append(new Dialogue(plugin, formatMessage("Where did I leave that old thing?"), 3.0d));
-        aliceSearch.append(new Dialogue(plugin, formatMessage("Hey, do you mind?!"), 2.0d));
+        Dialogue aliceConversation = new Dialogue(plugin, formatMessage("I know you're excited, but we have to keep this down low!"), 4.0d);
+        aliceConversation.append(new Dialogue(plugin, formatMessage("You know they don't want us snooping around down there."), 3.0d));
 
-        addQuestInteractionHandler(QuestManager.NO_QUEST, (team, event) -> {
+        addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, event) -> {
+        });
+        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
         });
         setDefaultInteractionHandler((team, event) -> {
             if (team.canStartDialogue()) {
                 team.setInDialogue(true);
-                aliceSearch.play(team, () -> {
+                aliceConversation.play(team, () -> {
                     team.setInDialogue(false);
                 });
             }

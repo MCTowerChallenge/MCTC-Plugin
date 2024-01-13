@@ -1,13 +1,12 @@
 package io.github.mctowerchallenge.mctcplugin.god.godgui;
 
 import io.github.mctowerchallenge.mctcplugin.GameFlowManager;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mctowerchallenge.mctcplugin.gui.page.TeamGui;
 import io.github.mctowerchallenge.mctcplugin.magic.MagicItems;
 import io.github.mctowerchallenge.mctcplugin.quest.Quest;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestTableOfContents;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -56,17 +55,17 @@ public class GodGui extends PresetGui implements Openable {
     /**
      * Initializes a new instance of the GodGui class.
      *
-     * @param plugin                The main TowerChallenge plugin instance.
-     * @param godManager            The manager for God-related functionalities.
-     * @param gameFlowManager       The manager for controlling the flow of the game.
-     * @param questManager          The manager for quests in the game.
-     * @param oct2023QuestManager   The manager for October 2023 event-specific quests.
+     * @param plugin                 The main TowerChallenge plugin instance.
+     * @param godManager             The manager for God-related functionalities.
+     * @param gameFlowManager        The manager for controlling the flow of the game.
+     * @param questManager           The manager for quests in the game.
+     * @param jan2024QuestManager    The manager for event-specific quests.
      * @param teleportHistoryManager The manager for teleport history.
-     * @param teamManager           The manager for player teams.
-     * @param magicItems            The manager for magic items.
-     * @param portalControllers     The manager for controlling portals.
+     * @param teamManager            The manager for player teams.
+     * @param magicItems             The manager for magic items.
+     * @param portalControllers      The manager for controlling portals.
      */
-    public GodGui(JavaPlugin plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Oct2023QuestManager oct2023QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodGui(JavaPlugin plugin, @NotNull GodManager godManager, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Jan2024QuestManager jan2024QuestManager, TeleportHistoryManager teleportHistoryManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
         super(plugin, COMPONENT_NAME, ROWS);
 
         /*
@@ -160,7 +159,7 @@ public class GodGui extends PresetGui implements Openable {
         devMeta.displayName(TextUtil.noItalic("Developer Menu"));
         devMeta.setCustomModelData(4);
         devItem.setItemMeta(devMeta);
-        DeveloperGui devGui = new DeveloperGui(plugin, teamManager);
+        DeveloperGui devGui = new DeveloperGui(plugin, teamManager, gameFlowManager);
         Element devElement = new ButtonElement(devItem, devGui::openInventory);
 
         /*
@@ -200,7 +199,7 @@ public class GodGui extends PresetGui implements Openable {
             so that gods can give them if a team loses them
             or it bugs.
          */
-        ItemStack questBook = GuiUtil.formatItem("Quest Manager", Material.BOOK, 2);
+        ItemStack questBook = GuiUtil.formatItem("Event Manager", Material.BOOK, 2);
         ButtonElement questButton = new ButtonElement(questBook, player -> {
             PresetGui questGui = new PresetGui(plugin, Component.text("Quest Manager"), 3);
 
@@ -209,8 +208,8 @@ public class GodGui extends PresetGui implements Openable {
             questGui.placeElement(2, 2, questItems);
 
             ItemStack totem = GuiUtil.formatItem("Quest Manager", Material.TOTEM_OF_UNDYING, 0);
-            ButtonElement questUtil = new ButtonElement(totem, player1 -> oct2023QuestManager.getGui(player).openInventory(player));
-            questGui.placeElement(2, 4, questUtil);
+            ButtonElement questUtil = new ButtonElement(totem, player1 -> jan2024QuestManager.getGui(player).openInventory(player));
+            questGui.placeElement(1, 4, questUtil);
 
             ItemStack questBook2 = GuiUtil.formatItem("See Team Quest", Material.BOOK, 2);
             ButtonElement getQuest = new ButtonElement(questBook2, player1 -> {
@@ -222,10 +221,13 @@ public class GodGui extends PresetGui implements Openable {
                         return TextUtil.formatTexts("Current: None");
                     }
                 }, teamManager.getAllTeams(), (clickingPlayer, selectedTeam) -> {
-                    new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", selectedTeam).openInventory(clickingPlayer);
+                    Quest quest = selectedTeam.getCurrentQuest();
+                    if (quest != null) {
+                        quest.getGui(clickingPlayer).openInventory(clickingPlayer);
+                    }
                 }, new ButtonElement(Icons.backItem(), questGui::openInventory)).openInventory(player1);
             });
-            questGui.placeElement(3, 6, getQuest);
+            questGui.placeElement(3, 4, getQuest);
 
             ItemStack eventStart = GuiUtil.formatItem("Start Event", Material.REINFORCED_DEEPSLATE, 0);
             ButtonElement eventStartElement = new ButtonElement(eventStart, player1 -> {
@@ -234,7 +236,7 @@ public class GodGui extends PresetGui implements Openable {
                 }, questGui::openInventory).openInventory(player1);
             });
 
-            questGui.placeElement(1, 9, eventStartElement);
+            questGui.placeElement(1, 6, eventStartElement);
 
             ItemStack endIntermission = GuiUtil.formatItem("End Intermission", Material.BEDROCK, 0);
             ButtonElement endIntermissionElement = new ButtonElement(endIntermission, player1 -> {
@@ -243,7 +245,32 @@ public class GodGui extends PresetGui implements Openable {
                 }, questGui::openInventory).openInventory(player1);
             });
 
-            questGui.placeElement(3, 9,endIntermissionElement);
+            questGui.placeElement(3, 6, endIntermissionElement);
+
+            Element yellowWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.YELLOW_STAINED_GLASS_PANE, 0));
+            Element blackWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.BLACK_STAINED_GLASS_PANE, 0));
+
+            Element startPositions = new ButtonElement(GuiUtil.formatItem("Load Start Positions", Material.OBSIDIAN, 0), player1 -> {
+                jan2024QuestManager.loadStartPositions();
+            });
+            Element performPositions = new ButtonElement(GuiUtil.formatItem("Load Perform Positions", Material.OBSIDIAN, 0), player1 -> {
+                jan2024QuestManager.loadPerformPositions();
+            });
+
+            Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
+                new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
+                    new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
+                        gameFlowManager.triggerWinners(team);
+                    }, HumanEntity::closeInventory).openInventory(player2);
+                }, Element.blank()).openInventory(player1);
+            });
+
+            questGui.placeElement(1, 7, yellowWarn);
+            questGui.placeElement(2, 7, blackWarn);
+            questGui.placeElement(3, 7, yellowWarn);
+            questGui.placeElement(1, 8, startPositions);
+            questGui.placeElement(3, 8, performPositions);
+            questGui.placeElement(2, 9, winners);
 
             questGui.openInventory(player);
         });

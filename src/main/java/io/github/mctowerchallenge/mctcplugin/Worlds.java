@@ -88,19 +88,19 @@ public class Worlds {
     }
 
     public static World WORLD() {
-        return Oct2023();
+        return Jan2024();
     }
 
     public static World NETHER() {
-        return Oct2023_nether();
+        return Jan2024_nether();
     }
 
     public static World THE_END() {
-        return Oct2023_the_end();
+        return Jan2024_the_end();
     }
 
     public static World TOWER() {
-        return Oct2023_tower();
+        return Jan2024_tower();
     }
 
 }

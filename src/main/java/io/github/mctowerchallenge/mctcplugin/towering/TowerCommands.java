@@ -6,6 +6,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Database;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mctowerchallenge.mctcplugin.quest.Quest;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
@@ -52,15 +53,15 @@ public class TowerCommands implements CommandExecutor {
     private final TeamManager teamManager;
     private final EndPortal endPortal;
     private final WaitingRoom waitingRoom;
-    private final Oct2023QuestManager oct2023QuestManager;
+    private final Jan2024QuestManager jan2024QuestManager;
     private final Database database;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, Oct2023QuestManager oct2023QuestManager, Database database) {
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, Jan2024QuestManager jan2024QuestManager, Database database) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.endPortal = portalControllers.getEndPortal();
         this.waitingRoom = waitingRoom;
-        this.oct2023QuestManager = oct2023QuestManager;
+        this.jan2024QuestManager = jan2024QuestManager;
         this.database = database;
     }
 
@@ -314,12 +315,6 @@ public class TowerCommands implements CommandExecutor {
                             }
                         }
                     }
-                    case ("copyquestinstances") -> {
-                        oct2023QuestManager.copyTemplateToTeams();
-                    }
-                    case ("deletequestinstances") -> {
-                        oct2023QuestManager.deleteTeamInstances();
-                    }
                     case ("collectblockvouchers") -> {
                         if (!(sender instanceof Player player)) {
                             sender.sendMessage(CommandUtils.SENDER_NOT_PLAYER);
@@ -365,36 +360,6 @@ public class TowerCommands implements CommandExecutor {
                             bedrock.setAmount(teamVouchers.getValue());
                             FullInventory.givePlayerItems(player, bedrock);
                             sender.sendMessage(TextUtil.formatText("Done collecting vouchers"));
-                        }
-                    }
-                    case ("completetrivia") -> {
-                        // tower completetrivia team_id Oct2023_quest x y z x' y' z' destx desty destz
-                        TowerTeam team = teamManager.getTeam(Integer.parseInt(args[1]));
-                        if (team != null) {
-                            World world = Bukkit.getWorld(args[2]);
-                            if (world == null) {
-                                return true;
-                            }
-
-                            CuboidRegion cuboidRegion = new CuboidRegion(BukkitAdapter.adapt(world),
-                                    BlockVector3.at(Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5])),
-                                    BlockVector3.at(Double.parseDouble(args[6]), Double.parseDouble(args[7]), Double.parseDouble(args[8])));
-                            Location teleportLocation = new Location(world, Double.parseDouble(args[9]), Double.parseDouble(args[10]), Double.parseDouble(args[11]), Float.parseFloat(args[12]), Float.parseFloat(args[13]));
-                            boolean rewardGiven = false;
-                            Quest quest = team.getQuest(QuestManager.TRIVIA);
-                            for (Player player : Bukkit.getOnlinePlayers()) {
-                                if (cuboidRegion.contains(BukkitAdapter.asBlockVector(player.getLocation()))) {
-                                    if (quest != null && !quest.isCompleted() && !rewardGiven && team.hasPlayer(player)) {
-                                        team.completeQuest(QuestManager.TRIVIA);
-                                        rewardGiven = true;
-                                        ItemStack bundle = QuestUtil.randomBlockBundle(5);
-                                        player.sendMessage(QuestManager.getRewards(bundle));
-                                        FullInventory.givePlayerItems(player, bundle);
-                                        Oct2023QuestManager.checkCompletedQuests(team, player);
-                                    }
-                                    player.teleport(teleportLocation);
-                                }
-                            }
                         }
                     }
                     default -> sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));

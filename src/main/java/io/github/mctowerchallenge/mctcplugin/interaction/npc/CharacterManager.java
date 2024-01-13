@@ -1,5 +1,6 @@
 package io.github.mctowerchallenge.mctcplugin.interaction.npc;
 
+import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.character.*;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
@@ -13,11 +14,13 @@ import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitInfo;
 import net.citizensnpcs.api.trait.TraitName;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -124,6 +127,7 @@ public class CharacterManager implements Listener {
         registerCharacter(new Soup(plugin));
         registerCharacter(new Alice(plugin));
         registerCharacter(new Dave(plugin));
+        registerCharacter(new GenericMaintenanceMan(plugin));
 
         registerCharacter(new Mystievous(plugin, teamManager.getGodTeam()));
         registerCharacter(new Apple(plugin, teamManager.getGodTeam()));
@@ -131,7 +135,6 @@ public class CharacterManager implements Listener {
         registerCharacter(new Lovebot(plugin, database));
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TeamTrait.class));
-        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TextDisplayTrait.class));
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -158,5 +161,20 @@ public class CharacterManager implements Listener {
 
             character.runInteractionHandler(team, event);
         });
+    }
+
+    /**
+     * Stops non-gods from mounting a god mount
+     */
+    @EventHandler
+    public void onEntityMount(final EntityMountEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            Entity entity = event.getMount();
+            if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                if (!(TeamManager.getInstance().getPlayerTeam(player) instanceof GodTeam)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 }

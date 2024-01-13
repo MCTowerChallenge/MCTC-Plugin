@@ -38,36 +38,36 @@ public class ParticipantTeam extends TowerTeam {
     /**
      * The anchor location of the base tower.
      */
-    public static final Location baseTowerLocation = new Location(Worlds.TOWER(), -61, -63, 2); // Red
+    public static final Location baseTowerLocation = new Location(Worlds.TOWER(), 0, -63, -7); // Red
 
     /**
      * The bounds of the base tower.
      */
     public static final Location[] baseTowerBounds = new Location[]{
-            new Location(Worlds.TOWER(), -60, -62, 3),
-            new Location(Worlds.TOWER(), -62, 319, 1)
+            new Location(Worlds.TOWER(), 1, -62, -6),
+            new Location(Worlds.TOWER(), -1, 319, -8)
     };
 
     /**
      * The anchor locations for all the team towers.
      */
     public static final Map<Integer, Location> towerLocations = new HashMap<>(Map.ofEntries(
-            Map.entry(2, new Location(Worlds.TOWER(), -61, -63, 2)),    // Red
-            Map.entry(3, new Location(Worlds.TOWER(), -54, -63, 9)),    // Orange
-            Map.entry(4, new Location(Worlds.TOWER(), -61, -63, 16)),   // Yellow
-            Map.entry(5, new Location(Worlds.TOWER(), -68, -63, 9)),    // Lime
-            Map.entry(6, new Location(Worlds.TOWER(), -69, -63, 1)),    // Green
-            Map.entry(7, new Location(Worlds.TOWER(), -64, -63, -4)),   // Cyan
-            Map.entry(8, new Location(Worlds.TOWER(), -58, -63, -4)),   // Light_Blue
-            Map.entry(9, new Location(Worlds.TOWER(), -53, -63, 1)),    // Blue
-            Map.entry(10, new Location(Worlds.TOWER(), -48, -63, 6)),   // Purple
-            Map.entry(11, new Location(Worlds.TOWER(), -48, -63, 12)),  // Magenta
-            Map.entry(12, new Location(Worlds.TOWER(), -53, -63, 17)),  // Pink
-            Map.entry(13, new Location(Worlds.TOWER(), -58, -63, 22)),  // White
-            Map.entry(14, new Location(Worlds.TOWER(), -64, -63, 22)),  // Light_Gray
-            Map.entry(15, new Location(Worlds.TOWER(), -69, -63, 17)),  // Gray
-            Map.entry(16, new Location(Worlds.TOWER(), -74, -63, 12)),  // Black
-            Map.entry(17, new Location(Worlds.TOWER(), -74, -63, 7))    // Brown
+            Map.entry(2, new Location(Worlds.TOWER(), 0, -63, -7)),    // Red
+            Map.entry(3, new Location(Worlds.TOWER(), 7, -63, 0)),    // Orange
+            Map.entry(4, new Location(Worlds.TOWER(), 0, -63, 7)),   // Yellow
+            Map.entry(5, new Location(Worlds.TOWER(), -7, -63, 0)),    // Lime
+            Map.entry(6, new Location(Worlds.TOWER(), -8, -63, -8)),    // Green
+            Map.entry(7, new Location(Worlds.TOWER(), -3, -63, -13)),   // Cyan
+            Map.entry(8, new Location(Worlds.TOWER(), 3, -63, -13)),   // Light_Blue
+            Map.entry(9, new Location(Worlds.TOWER(), 8, -63, -8)),    // Blue
+            Map.entry(10, new Location(Worlds.TOWER(), 13, -63, -3)),   // Purple
+            Map.entry(11, new Location(Worlds.TOWER(), 13, -63, 3)),  // Magenta
+            Map.entry(12, new Location(Worlds.TOWER(), 8, -63, 8)),  // Pink
+            Map.entry(13, new Location(Worlds.TOWER(), 3, -63, 13)),  // White
+            Map.entry(14, new Location(Worlds.TOWER(), -3, -63, 13)),  // Light_Gray
+            Map.entry(15, new Location(Worlds.TOWER(), -8, -63, 8)),  // Gray
+            Map.entry(16, new Location(Worlds.TOWER(), -13, -63, 3)),  // Black
+            Map.entry(17, new Location(Worlds.TOWER(), -13, -63, -3))    // Brown
     ));
 
     /**
@@ -85,7 +85,7 @@ public class ParticipantTeam extends TowerTeam {
      * Bounds of the base spawn.
      */
     public static final Location[] baseSpawnBounds = new Location[]{
-            new Location(Worlds.Jan2024(), -1396, 85, -456),
+            new Location(Worlds.Jan2024(), -1396, 86, -456),
             new Location(Worlds.Jan2024(), -1384, 319, -446)
     };
 

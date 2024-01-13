@@ -1,6 +1,8 @@
 package io.github.mctowerchallenge.mctcplugin.interaction.npc.character;
 
+import io.github.mctowerchallenge.mctcplugin.interaction.npc.CharacterManager;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
+import io.github.mctowerchallenge.mctcplugin.quest.QuestTags;
 import io.github.mystievous.mysticore.Color;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.Dialogue;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.QuestCharacter;
@@ -28,13 +30,12 @@ public class Ari extends QuestCharacter {
         super(plugin, EntityType.PARROT, NAME, NAME_COLOR, TEXT_COLOR);
 
         Dialogue[] ariLines = {
-                new Dialogue(plugin, formatMessage("Hi there! Hi there! Hi there!"), 1.5d),
-                new Dialogue(plugin, formatMessage("Wha happa? Wha happa?"), 1.5d),
-                new Dialogue(plugin, formatMessage("Salty treat? Salty treat?"), 1.5d),
-                new Dialogue(plugin, formatMessage("Yippee!"), 1.5d)
+                new Dialogue(plugin, formatMessage("Yippee! Yippee! Yippee!"), 3.0d)
         };
 
-        addQuestInteractionHandler(QuestManager.NO_QUEST, (team, event) -> {
+        addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, event) -> {
+        });
+        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
         });
         setDefaultInteractionHandler((team, event) -> {
             if (team.canStartDialogue()) {

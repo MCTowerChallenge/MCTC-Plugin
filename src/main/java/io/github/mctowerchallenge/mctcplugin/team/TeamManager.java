@@ -1,8 +1,8 @@
 package io.github.mctowerchallenge.mctcplugin.team;
 
+import io.github.mctowerchallenge.mctcplugin.quest.Quest;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestGui;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestTableOfContents;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
@@ -47,6 +47,7 @@ import java.util.*;
 public class TeamManager implements Listener {
 
     private static TeamManager instance;
+
     public static TeamManager getInstance() {
         return instance;
     }
@@ -64,6 +65,9 @@ public class TeamManager implements Listener {
         this.database = database;
         this.questManager = questManager;
         loadTeams();
+        for (TowerTeam team : allTeams) {
+            questManager.getBallSparkle().removeTeam(team);
+        }
         loadPlayers();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         instance = this;
@@ -193,7 +197,10 @@ public class TeamManager implements Listener {
     public Gui getTeamQuestGui(Player player) {
         TowerTeam team = getPlayerTeam(player);
         if (team != null) {
-            return new QuestTableOfContents(plugin, "Quest Book", "Investigate the rooms in the haunted house.", team);
+            Quest quest = team.getCurrentQuest();
+            if (quest != null) {
+                return quest.getGui(player);
+            }
         }
         return new QuestGui(plugin, "Error", "Error fetching quest.");
     }
@@ -222,11 +229,13 @@ public class TeamManager implements Listener {
      * @param team The winning team to update.
      */
     public void updateWinningTeam(TowerTeam team) {
-        try {
-            database.updateWinningTeam(team);
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("Error updating winning team to " + team.getTextName());
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                database.updateWinningTeam(team);
+            } catch (SQLException e) {
+                Bukkit.getLogger().warning("Error updating winning team to " + team.getTextName());
+            }
+        });
     }
 
     /**
@@ -348,6 +357,41 @@ public class TeamManager implements Listener {
                                 .append(Component.text(" blocks"))));
             }
         });
+    }
+
+    /**
+     * Grabs all team scores from the scoreboard and formats them
+     */
+    public Component getTowerScoresNoAdded() {
+        Map<Integer, Integer> totalScores = new HashMap<>();
+        Objective objective = ChallengeManager.getScoreObjective();
+        for (ParticipantTeam team : getParticipantTeams()) {
+            int score = objective.getScore(team.getTextName()).getScore();
+            totalScores.put(team.getDatabaseId(), score);
+        }
+
+        List<ParticipantTeam> sortedTeams = getParticipantTeams();
+        sortedTeams.sort((o1, o2) -> {
+            int score1 = totalScores.get(o1.getDatabaseId());
+            int score2 = totalScores.get(o2.getDatabaseId());
+            return Integer.compare(score2, score1);
+        });
+
+        TextComponent.Builder builder = Component.text();
+        builder.append(Component.text("Final Scores: ", Palette.PRIMARY.toTextColor()));
+        builder.appendNewline();
+
+        for (ParticipantTeam team : sortedTeams) {
+            builder.append(team.getDisplayName().color(team.getColor().toTextColor())
+                    .append(Component.text(" has ").color(NamedTextColor.WHITE)
+                            .append(Component.text(totalScores.get(team.getDatabaseId())).color(Palette.PRIMARY.toTextColor()))
+                            .append(Component.text(" blocks"))
+                    )
+                    .append(Component.newline())
+            );
+        }
+
+        return builder.build();
     }
 
     /**

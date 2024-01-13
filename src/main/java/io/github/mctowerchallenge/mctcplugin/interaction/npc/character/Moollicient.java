@@ -1,6 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.interaction.npc.character;
 
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
+import io.github.mctowerchallenge.mctcplugin.quest.QuestTags;
 import io.github.mystievous.mysticore.Color;
 import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.Dialogue;
@@ -34,7 +35,9 @@ public class Moollicient extends QuestCharacter {
         Dialogue moollicientSideEye = new Dialogue(plugin, actionMessage("gives you side eye"), 2.5d);
         moollicientSideEye.setSoundKey(Key.key(MCTCPlugin.MCTC_NAMESPACE, "vine"));
 
-        addQuestInteractionHandler(QuestManager.NO_QUEST, (team, npcRightClickEvent) -> {
+        addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, npcRightClickEvent) -> {
+        });
+        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
         });
         setDefaultInteractionHandler((team, npcRightClickEvent) -> {
             if (team.canStartDialogue()) {

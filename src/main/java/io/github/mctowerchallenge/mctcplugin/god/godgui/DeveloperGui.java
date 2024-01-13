@@ -1,5 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin.god.godgui;
 
+import io.github.mctowerchallenge.mctcplugin.GameFlowManager;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.gui.Icons;
 import io.github.mctowerchallenge.mctcplugin.gui.page.TeamGui;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestbookTextUtil;
@@ -10,6 +12,7 @@ import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiUtil;
 import io.github.mystievous.mystigui.element.ButtonElement;
 import io.github.mystievous.mystigui.element.Element;
+import io.github.mystievous.mystigui.page.ConfirmationGUI;
 import io.github.mystievous.mystigui.page.ListGui;
 import io.github.mystievous.mystigui.page.PlayerGui;
 import io.github.mystievous.mystigui.page.PresetGui;
@@ -19,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +34,7 @@ import java.util.List;
 
 public class DeveloperGui extends PresetGui {
 
-    public DeveloperGui(JavaPlugin plugin, TeamManager teamManager) {
+    public DeveloperGui(JavaPlugin plugin, TeamManager teamManager, GameFlowManager gameFlowManager) {
         super(plugin, Component.text("Developer Menu"), 6);
 
         ItemStack listTest = new ItemStack(Material.PAPER);
@@ -96,6 +100,15 @@ public class DeveloperGui extends PresetGui {
         } catch (IllegalArgumentException e) {
             Bukkit.getLogger().warning("Model has invalid material: " + e.getMessage());
         }
+
+        Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
+            new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
+                new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
+                    gameFlowManager.triggerWinners(team, true);
+                }, HumanEntity::closeInventory).openInventory(player2);
+            }, Element.blank()).openInventory(player1);
+        });
+        placeElement(3, 1, winners);
 
         String title = "Test Quest";
 

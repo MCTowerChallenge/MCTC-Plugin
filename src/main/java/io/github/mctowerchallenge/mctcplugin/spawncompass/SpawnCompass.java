@@ -31,8 +31,8 @@ import java.util.Map;
 
 public class SpawnCompass implements Listener {
 
-    public static final Location OVERWORLD_LOCATION = new Location(Worlds.Oct2023(), 46, 63, -100);
-    public static final Location NETHER_LOCATION = new Location(Worlds.Jun2023_nether(), 62, 72, -293);
+    public static final Location OVERWORLD_LOCATION = new Location(Worlds.Jan2024(), -1401.5, 69, -460.5);
+    public static final Location NETHER_LOCATION = new Location(Worlds.Jan2024_nether(), -190, 76, -128);
     public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
     /**
@@ -60,9 +60,6 @@ public class SpawnCompass implements Listener {
             player.setCompassTarget(NETHER_LOCATION);
         } else if (playerWorldName.equals(Worlds.THE_END().getName())) {
             Location location = THE_END_LOCATION;
-            if (team instanceof ParticipantTeam participantTeam) {
-                location = participantTeam.getSpawnpoint();
-            }
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
                 compassMeta.setLodestone(location);
                 compassMeta.setLodestoneTracked(false);
@@ -70,12 +67,16 @@ public class SpawnCompass implements Listener {
             }
             player.setCompassTarget(location);
         } else {
+            Location location = OVERWORLD_LOCATION;
+            if (team instanceof ParticipantTeam participantTeam) {
+                location = participantTeam.getSpawnpoint();
+            }
             if (compass.getItemMeta() instanceof CompassMeta compassMeta) {
                 compassMeta.setLodestone(null);
                 compassMeta.setLodestoneTracked(false);
                 compass.setItemMeta(compassMeta);
             }
-            player.setCompassTarget(OVERWORLD_LOCATION);
+            player.setCompassTarget(location);
         }
         return compass;
     }

@@ -229,7 +229,10 @@ public abstract class QuestCharacter {
     public @NotNull NPC setNPCProperties(NPC npc) {
         LookClose lookClose = npc.getOrAddTrait(LookClose.class);
         lookClose.setRandomLook(true);
-        lookClose.setLinkedBody(true);
+        lookClose.setLinkedBody(false);
+        npc.data().set(NPC.Metadata.AMBIENT_SOUND, null);
+        npc.data().set(NPC.Metadata.HURT_SOUND, null);
+        npc.data().set(NPC.Metadata.DEATH_SOUND, null);
         return npc;
     }
 

@@ -35,6 +35,97 @@ public class QuestUtil {
         return bundle;
     }
 
+    public static final Material[] dyes = {
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+            Material.BROWN_DYE,
+
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+            Material.GREEN_DYE,
+
+            Material.RED_DYE,
+            Material.ORANGE_DYE,
+            Material.YELLOW_DYE,
+            Material.LIME_DYE,
+            Material.CYAN_DYE,
+            Material.LIGHT_BLUE_DYE,
+            Material.BLUE_DYE,
+            Material.PURPLE_DYE,
+            Material.MAGENTA_DYE,
+            Material.PINK_DYE,
+            Material.WHITE_DYE,
+            Material.LIGHT_GRAY_DYE,
+            Material.GRAY_DYE,
+            Material.BLACK_DYE
+    };
+
+    public static ItemStack randomDyeBundle() {
+        ItemStack bundle = new ItemStack(Material.BUNDLE);
+        BundleMeta bundleMeta = (BundleMeta) bundle.getItemMeta();
+
+        Map<Material, Integer> chosenDyes = new HashMap<>();
+        for (int i = 0; i < 8; i++) {
+            Material dye = dyes[RANDOM.nextInt(dyes.length)];
+            int amount = chosenDyes.getOrDefault(dye, 0);
+            chosenDyes.put(dye, amount + 1);
+        }
+
+        for (Map.Entry<Material, Integer> entry : chosenDyes.entrySet()) {
+            bundleMeta.addItem(new ItemStack(entry.getKey(), entry.getValue()));
+        }
+
+        bundle.setItemMeta(bundleMeta);
+
+        return bundle;
+    }
+
     public static void fillArea(Location[] area, Material blockType) {
         fillArea(area, Bukkit.createBlockData(blockType));
     }

@@ -56,33 +56,7 @@ public class Parkour implements Listener {
     }
 
     public boolean complete(Player player) {
-        Quest quest =  questInstance.getTeam().getQuest(QuestManager.PARKOUR);
-        if (quest != null && quest.isCompleted()) {
-            return false;
-        } else {
-            questInstance.getTeam().completeQuest(QuestManager.PARKOUR);
-            ItemStack[] items = {
-                    new ItemStack(Material.ENCHANTED_BOOK) {{
-                        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) getItemMeta();
-                        meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, true);
-                        setItemMeta(meta);
-                    }},
-                    new ItemStack(Material.ENCHANTED_BOOK) {{
-                        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) getItemMeta();
-                        meta.addEnchant(Enchantment.THORNS, 1, true);
-                        setItemMeta(meta);
-                    }},
-                    new ItemStack(Material.ENCHANTED_BOOK) {{
-                        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) getItemMeta();
-                        meta.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
-                        setItemMeta(meta);
-                    }},
-            };
-            player.sendMessage(QuestManager.getRewards(items));
-            FullInventory.givePlayerItems(player, items);
-            Oct2023QuestManager.checkCompletedQuests(questInstance.getTeam(), player);
-            return true;
-        }
+        return true;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -6,11 +6,15 @@ import io.github.mystievous.mysticore.TextUtil;
 import io.github.mctowerchallenge.mctcplugin.Database;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.QuestCharacter;
 import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
+import io.github.mystievous.mystigui.GuiUtil;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
+import net.citizensnpcs.api.trait.trait.Equipment;
+import net.citizensnpcs.trait.ArmorStandTrait;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -57,6 +61,7 @@ public class Lovebot extends QuestCharacter {
             return cookieId;
         }
     }
+
     private final static State[] ANSWER_STATES = new State[]{
             State.YES,
             State.MAYBE,
@@ -132,7 +137,7 @@ public class Lovebot extends QuestCharacter {
      * Sets the state of the Lovebot NPC.
      *
      * @param entity The LivingEntity representing Lovebot.
-     * @param state The new state to set.
+     * @param state  The new state to set.
      * @throws SQLException If a database operation fails.
      */
     public void setState(LivingEntity entity, State state) throws SQLException {
@@ -177,6 +182,16 @@ public class Lovebot extends QuestCharacter {
                 armorStand.setInvisible(true);
             }
         }
+
+//        @Override
+//        public void onAttach() {
+//            npc.getOrAddTrait(Equipment.class).set(Equipment.EquipmentSlot.HELMET, GuiUtil.formatItem("Lovebot", Material.LEATHER_HORSE_ARMOR, 1007));
+//
+//            ArmorStandTrait trait = npc.getTraitNullable(ArmorStandTrait.class);
+//            if (trait != null) {
+//                trait.setVisible(false);
+//            }
+//        }
     }
 
 }
