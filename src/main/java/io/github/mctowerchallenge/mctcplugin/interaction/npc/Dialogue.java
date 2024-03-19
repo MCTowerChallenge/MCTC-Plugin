@@ -61,6 +61,7 @@ public class Dialogue {
 
     private final Plugin plugin;
     private String friendlyName;
+    private Dialogue previous;
     private Dialogue next;
     private final Component message;
     private final long delayTicks;
@@ -147,6 +148,10 @@ public class Dialogue {
         this.next = next;
     }
 
+    private void setPrevious(Dialogue previous) {
+        this.previous = previous;
+    }
+
     /**
      * Appends a dialogue to the end of this dialogue's sequence.
      *
@@ -156,6 +161,7 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
+            dialogue.setPrevious(this);
             setNext(dialogue);
         }
         return this;
@@ -173,6 +179,7 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
+            dialogue.setPrevious(this);
             setNext(dialogue);
         }
         return this;
@@ -191,6 +198,7 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
+            dialogue.setPrevious(this);
             setNext(dialogue);
         }
     }
