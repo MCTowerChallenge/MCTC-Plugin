@@ -73,7 +73,7 @@ dependencies {
     }
     compileOnly "io.github.mystievous:mysticore:1.1.14"
     implementation "io.github.mystievous:mystigui:1.2.9"
-    implementation "io.github.mystievous:mystimer:1.2.6"
+    implementation "io.github.mystievous:mystimer:1.2.7"
     implementation "com.mysql:mysql-connector-j:8.2.0"
 }
 

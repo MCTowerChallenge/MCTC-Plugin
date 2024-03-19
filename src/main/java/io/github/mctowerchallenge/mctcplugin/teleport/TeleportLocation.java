@@ -29,6 +29,27 @@ public class TeleportLocation extends Location {
         PORTAL(portalItem()),
         PEARL(pearlItem());
 
+        private final ItemStack item;
+
+        /**
+         * Constructs a Reason enum with the associated item.
+         *
+         * @param item The ItemStack associated with the reason.
+         */
+        Reason(ItemStack item) {
+            this.item = item;
+        }
+
+        /**
+         * Gets the ItemStack associated with the reason.
+         *
+         * @return The associated ItemStack.
+         */
+        public ItemStack getItem() {
+            return new ItemStack(item);
+        }
+
+
         private static ItemStack deathItem() {
             ItemStack item = new ItemStack(Material.RED_MUSHROOM);
             ItemMeta meta = item.getItemMeta();
@@ -59,26 +80,6 @@ public class TeleportLocation extends Location {
             meta.displayName(Component.text("Enderpearl").decoration(TextDecoration.ITALIC, false));
             item.setItemMeta(meta);
             return item;
-        }
-
-        private final ItemStack item;
-
-        /**
-         * Constructs a Reason enum with the associated item.
-         *
-         * @param item The ItemStack associated with the reason.
-         */
-        Reason(ItemStack item) {
-            this.item = item;
-        }
-
-        /**
-         * Gets the ItemStack associated with the reason.
-         *
-         * @return The associated ItemStack.
-         */
-        public ItemStack getItem() {
-            return new ItemStack(item);
         }
     }
 

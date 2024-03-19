@@ -181,9 +181,6 @@ public class NewYearsBall {
             Bukkit.getServer().sendMessage(teamManager.getTowerScoresNoAdded());
         }));
         timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(31148)), timer1 -> {
-
-        }));
-        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(34143)), timer1 -> {
             Bukkit.getServer().sendMessage(Component.text("Thanks to: ").decorate(TextDecoration.BOLD));
             Bukkit.getServer().sendMessage(getCredit("Hosts: ", new Component[]{
                     Component.text("Lafonda1525"),
@@ -195,10 +192,10 @@ public class NewYearsBall {
                     Component.text("Ajax")
             })));
         }));
-        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(37006)), timer1 -> {
+        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(34143)), timer1 -> {
 
         }));
-        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(40050)), timer1 -> {
+        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(37006)), timer1 -> {
             Bukkit.getServer().sendMessage(Component.newline().append(getCredit("Model Designers: ", new Component[]{
                     Component.text("apple270"),
                     Component.text("Mystievous")
@@ -210,22 +207,34 @@ public class NewYearsBall {
                     Component.text("Mystievous")
             })));
         }));
-        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(42996)), timer1 -> {
+        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(40050)), timer1 -> {
 
         }));
+        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(42996)), timer1 -> {
+            Bukkit.getServer().sendMessage(getCredit("Gods: ", new Component[]{
+                    Component.text("HowdsItGoing"),
+                    Component.text("Shork"),
+                    Component.text("Ajax"),
+                    Component.text("Gumko"),
+                    Component.text("Chazz"),
+                    Component.text("Lafonda1525"),
+                    Component.text("apple270"),
+                    Component.text("Mystievous")
+            }).appendNewline());
+        }));
         timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(46007)), timer1 -> {
-            Bukkit.getServer().sendMessage(Component.newline().append(getCredit("Voice Actor: ", new Component[]{
+
+        }));
+        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(48953)), timer1 -> {
+            Bukkit.getServer().sendMessage(getCredit("Voice Actor: ", new Component[]{
                     Component.text("Qrow (steve skellington, Generic Maintenance Man)")
-            })));
+            }).appendNewline());
             Bukkit.getServer().sendMessage(Component.newline().append(getCredit("Patreon Supporters: ", new Component[]{
                     Component.text("Quinklyn"),
                     Component.text("ScaredArti"),
                     Component.text("Claire"),
                     Component.text("Tenshiku")
-            })));
-        }));
-        timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(48953)), timer1 -> {
-
+            })).appendNewline());
         }));
         timer.registerScheduledAction(new ScheduledAction(actionTime(Duration.ofMillis(51881)), timer1 -> {
 

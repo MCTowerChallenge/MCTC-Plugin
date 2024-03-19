@@ -43,7 +43,6 @@ public class BroadcastCommand implements CommandExecutor {
 
         ComponentBuilder<TextComponent, TextComponent.Builder> message = Component.text();
 
-        // \uF801 is the -1 character width from the resource pack
         message.append(Component.text("------ ").append(TextUtil.space(-1)).append(Component.text("ANNOUNCEMENT")).append(TextUtil.space(-1)).append(Component.text(" ------"))).color(Palette.PRIMARY.toTextColor())
                 .append(Component.text("\n\n"));
 
