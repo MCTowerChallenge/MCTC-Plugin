@@ -745,7 +745,6 @@ public class BlockSets {
             Material.STRIPPED_SPRUCE_WOOD,
             Material.STRIPPED_WARPED_HYPHAE,
             Material.STRIPPED_WARPED_STEM,
-            Material.STRUCTURE_BLOCK,
             Material.SUSPICIOUS_GRAVEL,
             Material.SUSPICIOUS_SAND,
             Material.TARGET,

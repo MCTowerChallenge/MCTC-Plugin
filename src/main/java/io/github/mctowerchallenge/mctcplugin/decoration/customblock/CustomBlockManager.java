@@ -82,8 +82,10 @@ public class CustomBlockManager implements Listener, Openable {
             ItemStack cryingObsidian = GuiUtil.formatItem(cryingObsidianName, Material.CRYING_OBSIDIAN, cryingObsidianId);
             NBTUtils.applyToItemMeta(cryingObsidian, itemMeta -> NBTUtils.setString(key, itemMeta, cryingObsidianName));
             blocks.put(cryingObsidianName, new CustomBlock(cryingObsidian));
-
         }
+
+        addDyedBlocks(Material.HONEYCOMB_BLOCK, "%s Honeycomb Block");
+        addDyedBlocks(Material.HONEY_BLOCK, "%s Honey Block");
 
         String witherSkullName = "Wither Skull";
         ItemStack witherSkull = GuiUtil.formatItem(witherSkullName, Material.WITHER_SKELETON_SKULL, 0);
@@ -95,6 +97,27 @@ public class CustomBlockManager implements Listener, Openable {
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
+    }
+
+    public void addDyedBlocks(Material material, String nameFormatPattern, int offset) {
+        for (int i = 0; i < dyeColors.length; i++) {
+            DyeColor dyeColor = dyeColors[i];
+            int id = i + 1 + offset;
+
+            StringBuilder name = new StringBuilder();
+            for (String word : dyeColor.name().split("_")) {
+                name.append(word.charAt(0)).append(word.substring(1).toLowerCase());
+            }
+
+            String fullName = String.format(nameFormatPattern, name);
+            ItemStack item = GuiUtil.formatItem(fullName, material, id);
+            NBTUtils.applyToItemMeta(item, itemMeta -> NBTUtils.setString(key, itemMeta, fullName));
+            blocks.put(fullName, new CustomBlock(item));
+        }
+    }
+
+    public void addDyedBlocks(Material material, String nameFormatPattern) {
+        addDyedBlocks(material, nameFormatPattern, 0);
     }
 
     @Override
