@@ -1,16 +1,10 @@
 package io.github.mctowerchallenge.mctcplugin.towering;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Database;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.Quest;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
-import io.github.mctowerchallenge.mctcplugin.quest.QuestUtil;
 import io.github.mctowerchallenge.mctcplugin.quest.util.BlockVoucher;
 import io.github.mctowerchallenge.mctcplugin.quest.util.FullInventory;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;

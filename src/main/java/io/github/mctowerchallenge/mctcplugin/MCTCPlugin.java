@@ -5,7 +5,6 @@ import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.IceCream;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.Posters;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.flags.SelectionHandler;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.gallery.Gallery;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mctowerchallenge.mctcplugin.god.GodManager;
 import io.github.mctowerchallenge.mctcplugin.hats.HatCommands;
 import io.github.mctowerchallenge.mctcplugin.hats.HatTabComplete;
@@ -90,7 +89,6 @@ public final class MCTCPlugin extends JavaPlugin {
         TeamManager teamManager = new TeamManager(this, database, questManager);
 
 //        Jun2023QuestManager jun2023QuestManager = new Jun2023QuestManager(this, teamManager);
-        Oct2023QuestManager oct2023QuestManager = new Oct2023QuestManager(this, teamManager);
         Jan2024QuestManager jan2024QuestManager = new Jan2024QuestManager(this, teamManager);
 
         QuestCommands commands = new QuestCommands(teamManager);

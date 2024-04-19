@@ -32,8 +32,6 @@ import org.bukkit.util.Vector;
  */
 public class EndPortal implements Listener {
 
-    public static final Location overworldSpawn = Worlds.Oct2023().getSpawnLocation();
-
     private final TeamManager teamManager;
 
     /**

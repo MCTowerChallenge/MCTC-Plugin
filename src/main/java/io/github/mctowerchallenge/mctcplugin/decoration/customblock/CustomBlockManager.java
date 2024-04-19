@@ -15,13 +15,16 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -94,6 +97,18 @@ public class CustomBlockManager implements Listener, Openable {
         witherCustomBlock.setScale(new Vector3f(2, 2 , 2));
         witherCustomBlock.setTranslation(new Vector3f(0, 0.5f, 0));
         blocks.put(witherSkullName, witherCustomBlock);
+
+        String bookshelfName = "Vertical Bookshelf";
+        ItemStack bookshelf = GuiUtil.formatItem(bookshelfName, Material.BOOKSHELF, 0);
+        bookshelf.editMeta((meta) -> {
+            NBTUtils.setString(key, meta, bookshelfName);
+        });
+        CustomBlock bookshelfCustomBlock = new CustomBlock(bookshelf);
+        bookshelfCustomBlock.setRotation(
+                new Quaternionf(-0.707, 0, 0, 0.707),
+                new Quaternionf(0, 0, 0, 1)
+        );
+        blocks.put(bookshelfName, bookshelfCustomBlock);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
 

@@ -69,7 +69,7 @@ public class MagicItems implements Openable {
     public final Wand locationWand;
     public final EntityWand entityLocationWand;
     public final Element setNPCs;
-    public final EntityWand testNPCWand;
+//    public final EntityWand testNPCWand;
 
     /**
      * Initializes a new instance of the MagicItems class.
@@ -293,22 +293,22 @@ public class MagicItems implements Openable {
             npcGui.openInventory(player);
         });
 
-        testNPCWand = new EntityWand(plugin, "entity-test", GuiUtil.formatItem("Test wand for NPCs", Material.PAPER, 4), event -> {
-            Entity entity = event.getRightClicked();
-            Player player = event.getPlayer();
-
-            if (!entity.hasMetadata("NPC")) {
-                player.sendMessage(CommandUtils.errorMessage("Entity is not an NPC!"));
-                return;
-            }
-
-            NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
-            HologramTrait hologramTrait = npc.getOrAddTrait(HologramTrait.class);
-            hologramTrait.setUseDisplayEntities(true);
-
-            player.sendMessage(TextUtil.formatText("Hologram Trait set to use Text Display"));
-
-        });
+//        testNPCWand = new EntityWand(plugin, "entity-test", GuiUtil.formatItem("Test wand for NPCs", Material.PAPER, 4), event -> {
+//            Entity entity = event.getRightClicked();
+//            Player player = event.getPlayer();
+//
+//            if (!entity.hasMetadata("NPC")) {
+//                player.sendMessage(CommandUtils.errorMessage("Entity is not an NPC!"));
+//                return;
+//            }
+//
+//            NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+//            HologramTrait hologramTrait = npc.getOrAddTrait(HologramTrait.class);
+//            hologramTrait.setUseDisplayEntities(true);
+//
+//            player.sendMessage(TextUtil.formatText("Hologram Trait set to use Text Display"));
+//
+//        });
 
     }
 
@@ -332,7 +332,7 @@ public class MagicItems implements Openable {
         gui.placeElement(3, 2, new ButtonElement(greaterSpeedBoots, player -> player.getInventory().addItem(greaterSpeedBoots)));
         gui.placeElement(3, 4, new ButtonElement(goatHat.getItem(), player -> player.getInventory().addItem(goatHat.getItem())));
 
-        gui.placeElement(1, 8, new ButtonElement(testNPCWand.getItem(), player -> player.getInventory().addItem(testNPCWand.getItem())));
+//        gui.placeElement(1, 8, new ButtonElement(testNPCWand.getItem(), player -> player.getInventory().addItem(testNPCWand.getItem())));
         gui.placeElement(1, 9, setNPCs);
         gui.placeElement(2, 8, new ButtonElement(entityLocationWand.getItem(), player -> player.getInventory().addItem(entityLocationWand.getItem())));
         gui.placeElement(2, 9, new ButtonElement(locationWand.getItem(), player -> player.getInventory().addItem(locationWand.getItem())));

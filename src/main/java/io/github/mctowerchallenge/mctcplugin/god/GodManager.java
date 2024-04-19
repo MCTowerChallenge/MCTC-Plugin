@@ -2,7 +2,6 @@ package io.github.mctowerchallenge.mctcplugin.god;
 
 import io.github.mctowerchallenge.mctcplugin.GameFlowManager;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.oct2023.quest.Oct2023QuestManager;
 import io.github.mctowerchallenge.mctcplugin.god.godgui.GodGui;
 import io.github.mctowerchallenge.mctcplugin.magic.MagicItems;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
