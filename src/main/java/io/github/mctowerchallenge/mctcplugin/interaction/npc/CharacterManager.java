@@ -128,6 +128,8 @@ public class CharacterManager implements Listener {
         registerCharacter(new Alice(plugin));
         registerCharacter(new Dave(plugin));
         registerCharacter(new GenericMaintenanceMan(plugin));
+        registerCharacter(new GenericBeeConservationalistMan(plugin));
+        registerCharacter(new PaulNIzer(plugin));
 
         registerCharacter(new Mystievous(plugin, teamManager.getGodTeam()));
         registerCharacter(new Apple(plugin, teamManager.getGodTeam()));

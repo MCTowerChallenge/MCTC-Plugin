@@ -65,6 +65,11 @@ public class TowerCommands implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("tower")) {
             if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
+                    case ("center") -> {
+                        if (sender instanceof Player player) {
+
+                        }
+                    }
                     case ("pronouns") -> {
                         if (sender instanceof Player player) {
                             player.displayName(player.name().append(Component.space()).append(Component.text("(She/they)").font(Key.key(Key.MINECRAFT_NAMESPACE, "uniform"))));

@@ -39,14 +39,14 @@ public class EndPortal implements Listener {
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MIN = new Location(Worlds.Jan2024(), -1419, 64, -474);
+    public static final Location PORTAL_MIN = new Location(Worlds.May2024(), 577, 55, 397);
 
     /**
      * Second corner of the inner-portal bounds.
      * This is where the actual portal blocks
      * are spawned.
      */
-    public static final Location PORTAL_MAX = new Location(Worlds.Jan2024(), -1416, 64, -471);
+    public static final Location PORTAL_MAX = new Location(Worlds.May2024(), 580, 55, 400);
 
     /**
      * Creates an EndPortal instance.
@@ -131,13 +131,13 @@ public class EndPortal implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
-            TowerTeam team = teamManager.getPlayerTeam(player);
             assert block != null;
             if (block.getType().equals(Material.END_PORTAL_FRAME)) {
                 if (!((EndPortalFrame) block.getBlockData()).hasEye()) {
                     if (event.getItem().getType().equals(Material.ENDER_EYE)) {
                         event.setCancelled(true);
                         Location blockLocation = block.getLocation().toBlockLocation();
+                        TowerTeam team = teamManager.getPlayerTeam(player);
                         if (team instanceof ParticipantTeam participantTeam) {
                             Location teamBlockLocation = participantTeam.getFrameLocation().toBlockLocation();
                             if (blockLocation.clone().setDirection(teamBlockLocation.getDirection()).equals(teamBlockLocation)) {

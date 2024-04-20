@@ -79,6 +79,22 @@ public class Worlds {
         return Bukkit.getWorld("Jan2024_tower");
     }
 
+    public static World May2024() {
+        return Bukkit.getWorld("May2024");
+    }
+
+    public static World May2024_nether() {
+        return Bukkit.getWorld("May2024_nether");
+    }
+
+    public static World May2024_the_end() {
+        return Bukkit.getWorld("May2024_the_end");
+    }
+
+    public static World May2024_tower() {
+        return Bukkit.getWorld("May2024_tower");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }
@@ -88,19 +104,19 @@ public class Worlds {
     }
 
     public static World WORLD() {
-        return Jan2024();
+        return May2024();
     }
 
     public static World NETHER() {
-        return Jan2024_nether();
+        return May2024_nether();
     }
 
     public static World THE_END() {
-        return Jan2024_the_end();
+        return May2024_the_end();
     }
 
     public static World TOWER() {
-        return Jan2024_tower();
+        return May2024_tower();
     }
 
 }

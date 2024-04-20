@@ -73,42 +73,42 @@ public class ParticipantTeam extends TowerTeam {
     /**
      * The anchor location of the base team spawn.
      */
-    public static final Location baseSpawnLocation = new Location(Worlds.Jan2024(), -1389.5, 86, -450.5); // Red
+    public static final Location baseSpawnLocation = new Location(Worlds.May2024(), 551, 65, 424); // Red
 
     /**
      * Location in the base team spawn that players
      * will spawn at.
      */
-    public static final Location basePlayerSpawn = new Location(Worlds.Jan2024(), -1389.5, 86, -450.5, 90, 0);
+    public static final Location basePlayerSpawn = new Location(Worlds.May2024(), 555, 66, 428, 0, 0);
 
     /**
      * Bounds of the base spawn.
      */
     public static final Location[] baseSpawnBounds = new Location[]{
-            new Location(Worlds.Jan2024(), -1396, 86, -456),
-            new Location(Worlds.Jan2024(), -1384, 319, -446)
+            new Location(Worlds.May2024(), 551, 66, 424),
+            new Location(Worlds.May2024(), 558, 319, 431)
     };
 
     /**
      * The anchor locations of all the team spawns.
      */
     public static final Map<Integer, Location> teamSpawnLocations = new HashMap<>(Map.ofEntries(
-            Map.entry(2, new Location(Worlds.Jan2024(), -1390+0.5, 86, -451+0.5, -90f, 16f)),       // Red
-            Map.entry(3, new Location(Worlds.Jan2024(), -1390+0.5, 88, -414+0.5, -90f, 16f)),       // Orange
-            Map.entry(4, new Location(Worlds.Jan2024(), -1390+0.5, 85, -426+0.5, -90f, 16f)),       // Yellow
-            Map.entry(5, new Location(Worlds.Jan2024(), -1414+0.5, 85, -401+0.5, 90f, 16f)),        // Lime
-            Map.entry(6, new Location(Worlds.Jan2024(), -1414+0.5, 85, -450+0.5, 90f, 16f)),        // Green
-            Map.entry(7, new Location(Worlds.Jan2024(), -1414+0.5, 88, -437+0.5, 90f, 16f)),        // Cyan
-            Map.entry(8, new Location(Worlds.Jan2024(), -1414+0.5, 88, -377+0.5, 90f, 16f)),        // Light Blue
-            Map.entry(9, new Location(Worlds.Jan2024(), -1414+0.5, 85, -365+0.5, 90f, 16f)),        // Blue
-            Map.entry(10, new Location(Worlds.Jan2024(), -1390+0.5, 85, -387+0.5, -90f, 16f)),      // Purple
-            Map.entry(11, new Location(Worlds.Jan2024(), -1390+0.5, 85, -439+0.5, -90f, 16f)),      // Magenta
-            Map.entry(12, new Location(Worlds.Jan2024(), -1390+0.5, 85, -376+0.5, -90f, 16f)),      // Pink
-            Map.entry(13, new Location(Worlds.Jan2024(), -1414+0.5, 85, -412+0.5, 90f, 16f)),       // White
-            Map.entry(14, new Location(Worlds.Jan2024(), -1414+0.5, 86, -424+0.5, 90f, 16f)),       // Light Gray
-            Map.entry(15, new Location(Worlds.Jan2024(), -1390+0.5, 88, -364+0.5, 90f, 16f)),       // Gray
-            Map.entry(16, new Location(Worlds.Jan2024(), -1414+0.5, 85, -389+0.5, 90f, 16f)),       // Black
-            Map.entry(17, new Location(Worlds.Jan2024(), -1390+0.5, 86, -401+0.5, -90f, 16f))       // Brown
+            Map.entry(2, new Location(Worlds.May2024(), 551, 65, 424, 0, 16f)),       // Red
+            Map.entry(3, new Location(Worlds.May2024(), 595, 65, 384, 0, 16f)),       // Orange
+            Map.entry(4, new Location(Worlds.May2024(), 573, 65, 424, 0, 16f)),       // Yellow
+            Map.entry(5, new Location(Worlds.May2024(), 606, 65, 404, 0, 16f)),        // Lime
+            Map.entry(6, new Location(Worlds.May2024(), 584, 65, 444, 0, 16f)),        // Green
+            Map.entry(7, new Location(Worlds.May2024(), 584, 65, 364, 0, 16f)),        // Cyan
+            Map.entry(8, new Location(Worlds.May2024(), 540, 65, 404, 0, 16f)),        // Light Blue
+            Map.entry(9, new Location(Worlds.May2024(), 595, 65, 424, 0, 16f)),        // Blue
+            Map.entry(10, new Location(Worlds.May2024(), 628, 65, 404, 0, 16f)),      // Purple
+            Map.entry(11, new Location(Worlds.May2024(), 573, 65, 384, 0, 16f)),      // Magenta
+            Map.entry(12, new Location(Worlds.May2024(), 562, 65, 444, 0, 16f)),      // Pink
+            Map.entry(13, new Location(Worlds.May2024(), 606, 65, 364, 0, 16f)),       // White
+            Map.entry(14, new Location(Worlds.May2024(), 617, 65, 424, 0, 16f)),       // Light Gray
+            Map.entry(15, new Location(Worlds.May2024(), 562, 65, 404, 0, 16f)),       // Gray
+            Map.entry(16, new Location(Worlds.May2024(), 617, 65, 384, 0, 16f)),       // Black
+            Map.entry(17, new Location(Worlds.May2024(), 551, 65, 384, 0, 16f))       // Brown
     ));
 
     private SpawnRegion spawnRegion;

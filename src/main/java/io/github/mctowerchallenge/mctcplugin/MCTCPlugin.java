@@ -1,5 +1,6 @@
 package io.github.mctowerchallenge.mctcplugin;
 
+import io.github.mctowerchallenge.mctcplugin.decoration.Drumset;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.IceCream;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jun2023.Posters;
@@ -174,6 +175,7 @@ public final class MCTCPlugin extends JavaPlugin {
         BroadcastCommand broadcastCommand = new BroadcastCommand(teamManager);
         this.getCommand("broadcast").setExecutor(broadcastCommand);
 
+        Drumset.register();
         new EnderChestCommand(this);
         new InvseeCommand(this);
         new FlyCommand(this);

@@ -1,9 +1,11 @@
 package io.github.mctowerchallenge.mctcplugin.spawncompass;
 
+import io.github.mctowerchallenge.mctcplugin.portal.NetherPortal;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
 import io.github.mctowerchallenge.mctcplugin.Worlds;
+import io.github.mctowerchallenge.mctcplugin.towering.TowerListener;
 import io.github.mystievous.mysticore.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -31,8 +33,8 @@ import java.util.Map;
 
 public class SpawnCompass implements Listener {
 
-    public static final Location OVERWORLD_LOCATION = new Location(Worlds.Jan2024(), -1401.5, 69, -460.5);
-    public static final Location NETHER_LOCATION = new Location(Worlds.Jan2024_nether(), -190, 76, -128);
+    public static final Location OVERWORLD_LOCATION = new Location(Worlds.May2024(), 588, 65, 408);
+    public static final Location NETHER_LOCATION = TowerListener.netherPortalLocation;
     public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
     /**
