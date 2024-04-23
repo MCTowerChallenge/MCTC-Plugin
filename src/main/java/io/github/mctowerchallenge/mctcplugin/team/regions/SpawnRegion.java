@@ -17,7 +17,9 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +35,9 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class SpawnRegion extends EventRegion {
+
+    public static final CommandSender sender = Bukkit.createCommandSender(component -> {
+    });
 
 //    public static final Map<Integer, Location> TeleporterLocations = new HashMap<>() {{
 //        put(2, new Location(Worlds.Jan2024(), -1393, 68, -451));    // Red
@@ -62,6 +67,7 @@ public class SpawnRegion extends EventRegion {
 
     private final List<BlockDisplay> highlightEntities;
 
+    private final String highlightTag;
     private final Map<UUID, BukkitTask> highlighted;
 //    private final MVPortal teleportPortal;
 
@@ -71,17 +77,19 @@ public class SpawnRegion extends EventRegion {
         setFlags(getRegion());
         Location[] borderBounds = { bounds[0].add(0, -24, 0), bounds[1] };
         new SpawnBorderRegion(plugin, borderBounds, team);
+        highlightTag = TeamUtils.toTeamTag(team, "team-spawn-highlight");
+        removeHighlights();
         highlightEntities = new ArrayList<>();
         Location highlightLocation = spawnLocation.clone().subtract(0, 1, 0);
         highlightLocation.setPitch(0.0f);
         highlightLocation.setYaw(0.0f);
         highlightLocation.getChunk().load();
         highlightEntity = (BlockDisplay) highlightLocation.getWorld().spawnEntity(highlightLocation, EntityType.BLOCK_DISPLAY);
-        highlightEntity.addScoreboardTag("team-spawn-highlight");
+        highlightEntity.addScoreboardTag(highlightTag);
         highlightEntity.setBlock(Bukkit.createBlockData(Material.valueOf(String.format("%s_STAINED_GLASS", team.getDye()))));
         highlightEntity.setGlowing(true);
         highlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
-        highlightEntity.setTransformation(new Transformation(new Vector3f(-4.5f, 0.01f, -3.5f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(9.0f, 0.98f, 7.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
+        highlightEntity.setTransformation(new Transformation(new Vector3f(-4f, 0.01f, -4f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), new Vector3f(8.0f, 0.98f, 8.0f), new Quaternionf(0.0f, 0.0f, 0.0f, 1.0f)));
         HiddenEntityManager.register(highlightEntity);
         highlightEntities.add(highlightEntity);
 //        Location teleporterLocation = TeleporterLocations.get(team.getDatabaseId());
@@ -92,7 +100,7 @@ public class SpawnRegion extends EventRegion {
 //            teleportHighlightLocation.setYaw(0.0f);
 //            teleportHighlightLocation.getChunk().load();
 //            teleportHighlightEntity = (BlockDisplay) teleportHighlightLocation.getWorld().spawnEntity(teleportHighlightLocation, EntityType.BLOCK_DISPLAY);
-//            teleportHighlightEntity.addScoreboardTag("team-spawn-highlight");
+//            teleportHighlightEntity.addScoreboardTag(highlightTag);
 //            teleportHighlightEntity.setBlock(Bukkit.createBlockData(Material.valueOf(String.format("%s_STAINED_GLASS", team.getDye()))));
 //            teleportHighlightEntity.setGlowing(true);
 //            teleportHighlightEntity.setGlowColorOverride(team.getColor().toBukkitColor());
@@ -119,6 +127,12 @@ public class SpawnRegion extends EventRegion {
             return BukkitAdapter.adapt(spawnLocation);
         } else {
             return null;
+        }
+    }
+
+    public void removeHighlights() {
+        for (Entity selectEntity : Bukkit.selectEntities(sender, String.format("@e[tag=%s]", highlightTag))) {
+            selectEntity.remove();
         }
     }
 

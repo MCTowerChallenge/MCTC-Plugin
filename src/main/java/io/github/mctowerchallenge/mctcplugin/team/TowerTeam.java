@@ -27,6 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,6 +39,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +69,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
 
     private final int databaseId;
     private final Team team;
+    private final HashMap<UUID, OfflinePlayer> offlinePlayers;
     protected final TeamManager teamManager;
     private final MCTCPlugin plugin;
     private final Color color;
@@ -111,6 +114,7 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
             this.team = scoreboard.registerNewTeam(name);
             this.team.displayName(Component.text(displayName));
         }
+        this.offlinePlayers = new HashMap<>();
         this.team.prefix(Component.text("[").append(Component.text(displayName, color.toTextColor())).append(Component.text("] ")));
         this.quests = new HashMap<>();
         this.inDialogue = false;
@@ -379,13 +383,8 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         return Audience.audience(getOnlinePlayers());
     }
 
-    /**
-     * Gets all players on this team, whether online or not.
-     *
-     * @return The list of offline players.
-     */
-    public Collection<OfflinePlayer> getOfflinePlayers() {
-        Collection<OfflinePlayer> offlinePlayers = new ArrayList<>();
+    private void cacheOfflinePlayers() {
+        HashMap<UUID, OfflinePlayer> cachePlayers = new HashMap<>();
         for (String entry : team.getEntries()) {
             OfflinePlayer offlinePlayer;
             try {
@@ -393,9 +392,19 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
             } catch (IllegalArgumentException e) {
                 offlinePlayer = Bukkit.getOfflinePlayer(entry);
             }
-            offlinePlayers.add(offlinePlayer);
+            cachePlayers.put(offlinePlayer.getUniqueId(), offlinePlayer);
         }
-        return offlinePlayers;
+        offlinePlayers.clear();
+        offlinePlayers.putAll(cachePlayers);
+    }
+
+    /**
+     * Gets all players on this team, whether online or not.
+     *
+     * @return The list of offline players.
+     */
+    public Collection<OfflinePlayer> getOfflinePlayers() {
+        return offlinePlayers.values();
     }
 
     /**
@@ -491,18 +500,17 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         for (OfflinePlayer player : players) {
             addTeamPlayer(player);
         }
+        cacheOfflinePlayers();
     }
 
     /**
      * Clears all players from this team.
      */
     public void clearPlayers() {
-        for (String name : team.getEntries()) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-            if (player.hasPlayedBefore()) {
-                team.removePlayer(player);
-            }
+        for (OfflinePlayer player : offlinePlayers.values()) {
+            team.removePlayer(player);
         }
+        cacheOfflinePlayers();
     }
 
     /**
