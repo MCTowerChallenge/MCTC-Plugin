@@ -141,9 +141,6 @@ public class Jan2024QuestManager implements Listener, Openable {
         Worlds.Jan2024().setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         Worlds.Jan2024().setClearWeatherDuration(10000);
         Worlds.Jan2024().setTime(18000);
-        for (TowerTeam team : teamManager.getAllTeams()) {
-            team.setQuest(QuestTags.PERFORMANCE);
-        }
         newYearsBall.reloadBall();
         for (Map.Entry<Class<? extends Trait>, Integer> idEntry : NPCMaps.npcIds.entrySet()) {
             Class<? extends Trait> traitClass = idEntry.getKey();

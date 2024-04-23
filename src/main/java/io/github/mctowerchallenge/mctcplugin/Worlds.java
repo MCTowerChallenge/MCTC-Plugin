@@ -95,6 +95,10 @@ public class Worlds {
         return Bukkit.getWorld("May2024_tower");
     }
 
+    public static World May2024_quest() {
+        return Bukkit.getWorld("May2024_quest");
+    }
+
     public static World GodInterviews() {
         return Bukkit.getWorld("GodInterviews");
     }

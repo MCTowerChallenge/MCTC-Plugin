@@ -74,8 +74,8 @@ public class TowerListener implements Listener {
         }
     }
 
-    private final Location spawnPortalLocation = new Location(Worlds.May2024(), 597+0.5, 69, 414+0.5, 90f, 16f);
-    public static final Location netherPortalLocation = new Location(Worlds.May2024_nether(), 89, 62, 46);
+    private final Location spawnPortalLocation = new Location(Worlds.May2024(), 597+0.5, 56, 414+0.5, 90f, 16f);
+    public static final Location netherPortalLocation = new Location(Worlds.May2024_nether(), 89.5, 63, 45.5);
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityPortal(final EntityPortalEvent event) {

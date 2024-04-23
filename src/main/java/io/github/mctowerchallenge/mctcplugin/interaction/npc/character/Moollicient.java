@@ -37,8 +37,6 @@ public class Moollicient extends QuestCharacter {
 
         addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, npcRightClickEvent) -> {
         });
-        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
-        });
         setDefaultInteractionHandler((team, npcRightClickEvent) -> {
             if (team.canStartDialogue()) {
                 team.setInDialogue(true);

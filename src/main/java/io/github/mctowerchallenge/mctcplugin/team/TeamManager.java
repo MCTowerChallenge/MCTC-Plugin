@@ -65,9 +65,6 @@ public class TeamManager implements Listener {
         this.database = database;
         this.questManager = questManager;
         loadTeams();
-        for (TowerTeam team : allTeams) {
-            questManager.getBallSparkle().removeTeam(team);
-        }
         loadPlayers();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         instance = this;

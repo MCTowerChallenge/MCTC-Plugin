@@ -4,9 +4,7 @@ import io.github.mctowerchallenge.mctcplugin.god.GodTeam;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.character.*;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
-import io.github.mystievous.mysticore.TextUtil;
 import io.github.mctowerchallenge.mctcplugin.Database;
-import io.github.mctowerchallenge.mctcplugin.MCTCPlugin;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -128,7 +126,7 @@ public class CharacterManager implements Listener {
         registerCharacter(new Alice(plugin));
         registerCharacter(new Dave(plugin));
         registerCharacter(new GenericMaintenanceMan(plugin));
-        registerCharacter(new GenericBeeConservationalistMan(plugin));
+        registerCharacter(new GenericBeeConservationistMan(plugin));
         registerCharacter(new PaulNIzer(plugin));
 
         registerCharacter(new Mystievous(plugin, teamManager.getGodTeam()));

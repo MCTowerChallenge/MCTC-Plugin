@@ -4,7 +4,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.mctowerchallenge.mctcplugin.ChallengeManager;
 import io.github.mctowerchallenge.mctcplugin.Database;
-import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.may2024.quests.May2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.quest.util.BlockVoucher;
 import io.github.mctowerchallenge.mctcplugin.quest.util.FullInventory;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
@@ -47,15 +47,15 @@ public class TowerCommands implements CommandExecutor {
     private final TeamManager teamManager;
     private final EndPortal endPortal;
     private final WaitingRoom waitingRoom;
-    private final Jan2024QuestManager jan2024QuestManager;
+    private final May2024QuestManager may2024QuestManager;
     private final Database database;
 
-    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, Jan2024QuestManager jan2024QuestManager, Database database) {
+    public TowerCommands(ChallengeManager challengeManager, TeamManager teamManager, PortalControllers portalControllers, WaitingRoom waitingRoom, May2024QuestManager may2024QuestManager, Database database) {
         this.challengeManager = challengeManager;
         this.teamManager = teamManager;
         this.endPortal = portalControllers.getEndPortal();
         this.waitingRoom = waitingRoom;
-        this.jan2024QuestManager = jan2024QuestManager;
+        this.may2024QuestManager = may2024QuestManager;
         this.database = database;
     }
 
@@ -360,6 +360,12 @@ public class TowerCommands implements CommandExecutor {
                             FullInventory.givePlayerItems(player, bedrock);
                             sender.sendMessage(TextUtil.formatText("Done collecting vouchers"));
                         }
+                    }
+                    case ("copyquestinstances") -> {
+                        may2024QuestManager.copyTemplateToTeams();
+                    }
+                    case ("deletequestinstances") -> {
+                        may2024QuestManager.deleteTeamInstances();
                     }
                     default -> sender.sendMessage(Component.text("Invalid command usage.").color(NamedTextColor.RED));
                 }

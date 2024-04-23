@@ -12,16 +12,23 @@ import io.github.mctowerchallenge.mctcplugin.utility.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-public class SetTeamGui extends PlayerGui {
+public class SetTeamGui {
 
-    public SetTeamGui(Plugin plugin, TeamManager teamManager, List<OfflinePlayer> playerList, Gui lastPage) {
-        super(plugin, Component.text("Select a player:"), iconPlayer -> {
-            TowerTeam team = teamManager.getPlayerTeam(iconPlayer);
+    public static PlayerGui createPlayerGui(Plugin plugin, TeamManager teamManager, List<OfflinePlayer> playerList, Gui lastPage) {
+        ButtonElement backButton = new ButtonElement(Icons.backItem(), lastPage::openInventory);
+
+        Component title = Component.text("Select a player:");
+
+        Function<OfflinePlayer, List<Component>> loreBuilder = offlinePlayer -> {
+            TowerTeam team = teamManager.getPlayerTeam(offlinePlayer);
             Component currentTeamName;
             if (team != null) {
                 currentTeamName = team.getDisplayName();
@@ -29,8 +36,12 @@ public class SetTeamGui extends PlayerGui {
                 currentTeamName = Component.text("No Current Team");
             }
             return TextUtil.formatTexts(Component.text("Current Team: ").append(currentTeamName));
-        }, playerList, (playerClicking, playerSelected) -> {
-            new TeamGui(plugin, Component.text("Team to Assign:"), team -> new ArrayList<>(), teamManager.getAllTeams(), (playerClicking1, team) -> {
+        };
+
+        BiConsumer<Player, OfflinePlayer> onClick = (playerClicking, playerSelected) -> {
+            Component teamTitle = Component.text("Team to Assign:");
+
+            BiConsumer<Player, TowerTeam> onTeamClick = (playerClicking1, team) -> {
                 String playerIdentifier;
                 if (playerSelected.getName() != null) {
                     playerIdentifier = playerSelected.getName();
@@ -46,8 +57,12 @@ public class SetTeamGui extends PlayerGui {
                             .append(team.getDisplayName())));
                 }
                 lastPage.openInventory(playerClicking);
-            }, new ButtonElement(Icons.backItem(), lastPage::openInventory)).openInventory(playerClicking);
-        }, new ButtonElement(Icons.backItem(), lastPage::openInventory));
+            };
+
+            new TeamGui(plugin, teamTitle, team -> new ArrayList<>(), teamManager.getAllTeams(), onTeamClick, backButton).openInventory(playerClicking);
+        };
+
+        return new PlayerGui(plugin, title, loreBuilder, playerList, onClick, backButton);
     }
 
 }

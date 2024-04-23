@@ -101,14 +101,14 @@ public class DeveloperGui extends PresetGui {
             Bukkit.getLogger().warning("Model has invalid material: " + e.getMessage());
         }
 
-        Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
-            new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
-                new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
-                    gameFlowManager.triggerWinners(team, true);
-                }, HumanEntity::closeInventory).openInventory(player2);
-            }, Element.blank()).openInventory(player1);
-        });
-        placeElement(3, 1, winners);
+//        Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
+//            new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
+//                new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
+//                    gameFlowManager.triggerWinners(team, true);
+//                }, HumanEntity::closeInventory).openInventory(player2);
+//            }, Element.blank()).openInventory(player1);
+//        });
+//        placeElement(3, 1, winners);
 
         String title = "Test Quest";
 

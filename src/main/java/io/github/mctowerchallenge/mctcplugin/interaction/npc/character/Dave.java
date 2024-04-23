@@ -34,8 +34,6 @@ public class Dave extends QuestCharacter {
 
         addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, event) -> {
         });
-        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
-        });
         setDefaultInteractionHandler((team, event) -> {
             if (team.canStartDialogue()) {
                 team.setInDialogue(true);

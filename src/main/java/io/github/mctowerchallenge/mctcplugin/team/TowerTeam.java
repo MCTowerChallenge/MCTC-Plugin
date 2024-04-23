@@ -28,9 +28,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -172,15 +175,15 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
         return quests;
     }
 
-    public void completeQuest(String questTag) {
+    public boolean completeQuest(String questTag) {
         Quest quest = getQuest(questTag);
         if (quest == null || quest.isCompleted()) {
-            return;
+            return false;
         }
         QuestCompleteEvent event = new QuestCompleteEvent(this, quest);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
-            return;
+            return false;
         quest.setCompleted(true);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -190,6 +193,9 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
                 Bukkit.getLogger().warning("Error setting database: " + e.getMessage());
             }
         });
+
+        return true;
+
     }
 
     /**
@@ -411,6 +417,30 @@ public abstract class TowerTeam implements Audience, Listener, Representable {
             }
         }
         return players;
+    }
+
+    private HashMap<UUID, Entity> hiddenEntities = new HashMap<>();
+
+    public void hideEntity(Entity entity) {
+        hiddenEntities.put(entity.getUniqueId(), entity);
+        for (Player onlinePlayer : getOnlinePlayers()) {
+            onlinePlayer.hideEntity(plugin, entity);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        for (Map.Entry<UUID, Entity> uuidEntityEntry : hiddenEntities.entrySet()) {
+            player.hideEntity(plugin, uuidEntityEntry.getValue());
+        }
+    }
+
+    public void showEntity(Entity entity) {
+        hiddenEntities.remove(entity.getUniqueId());
+        for (Player onlinePlayer : getOnlinePlayers()) {
+            onlinePlayer.showEntity(plugin, entity);
+        }
     }
 
     /**

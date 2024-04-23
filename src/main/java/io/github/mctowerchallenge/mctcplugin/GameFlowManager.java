@@ -1,6 +1,7 @@
 package io.github.mctowerchallenge.mctcplugin;
 
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.may2024.quests.May2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.CharacterManager;
 import io.github.mctowerchallenge.mctcplugin.interaction.npc.character.SteveSkellington;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestTags;
@@ -24,7 +25,7 @@ public class GameFlowManager {
     private final CharacterManager characterManager;
     private final TeamManager teamManager;
     private final PortalControllers portalControllers;
-    private final Jan2024QuestManager jan2024QuestManager;
+    private final May2024QuestManager may2024QuestManager;
 
     /**
      * Creates a new GameFlowManager instance.
@@ -34,13 +35,13 @@ public class GameFlowManager {
      * @param characterManager The character manager instance.
      * @param teamManager The team manager instance.
      */
-    public GameFlowManager(Plugin plugin, Timer timer, CharacterManager characterManager, TeamManager teamManager, PortalControllers portalControllers, Jan2024QuestManager jan2024QuestManager) {
+    public GameFlowManager(Plugin plugin, Timer timer, CharacterManager characterManager, TeamManager teamManager, PortalControllers portalControllers, May2024QuestManager may2024QuestManager) {
         this.plugin = plugin;
         this.timer = timer;
         this.characterManager = characterManager;
         this.teamManager = teamManager;
         this.portalControllers = portalControllers;
-        this.jan2024QuestManager = jan2024QuestManager;
+        this.may2024QuestManager = may2024QuestManager;
     }
 
     /**
@@ -60,7 +61,7 @@ public class GameFlowManager {
                         timer.startTimer();
                         teamManager.getAllTeams().forEach(team -> {
                             team.completeQuest(QuestTags.NOT_STARTED);
-                            team.setQuest(QuestTags.STEVE_START);
+                            team.setQuest(QuestTags.GENERIC_BEE_CONSERVATIONIST_START);
                         });
                     } catch (TimerUnsetException e) {
                         Bukkit.getLogger().warning(e.getMessage());
@@ -86,19 +87,19 @@ public class GameFlowManager {
     /**
      * Triggers the winner announcement sequence
      */
-    public void triggerWinners(TowerTeam team, boolean developer) {
-        SteveSkellington steveSkellington = (SteveSkellington) CharacterManager.getCharacter(SteveSkellington.SteveTrait.class);
-        steveSkellington.getBallDropDialogue().play(Bukkit.getServer(), () -> {
-            try {
-                jan2024QuestManager.getNewYearsBall().run(team, developer);
-            } catch (TimerUnsetException e) {
-                e.printStackTrace();
-            }
-        });
-    }
+//    public void triggerWinners(TowerTeam team, boolean developer) {
+//        SteveSkellington steveSkellington = (SteveSkellington) CharacterManager.getCharacter(SteveSkellington.SteveTrait.class);
+//        steveSkellington.getBallDropDialogue().play(Bukkit.getServer(), () -> {
+//            try {
+//                jan2024QuestManager.getNewYearsBall().run(team, developer);
+//            } catch (TimerUnsetException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 
-    public void triggerWinners(TowerTeam team) {
-        triggerWinners(team, false);
-    }
+//    public void triggerWinners(TowerTeam team) {
+//        triggerWinners(team, false);
+//    }
 
 }

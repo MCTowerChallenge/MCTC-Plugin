@@ -8,8 +8,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class RegionUtils {
 
@@ -50,6 +53,21 @@ public class RegionUtils {
             return region;
         } else {
             throw new NullPointerException("Region Manager for " + world.getName() + " does not exist!");
+        }
+    }
+
+    public static void loopThroughChunks(Location corner1, Location corner2, Consumer<Chunk> chunkConsumer) {
+        org.bukkit.World world = corner1.getWorld();
+        int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
+        int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
+        int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
+        int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
+
+        for (int x = minX; x <= maxX; x += 16) {
+            for (int z = minZ; z <= maxZ; z += 16) {
+                Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
+                chunkConsumer.accept(chunk);
+            }
         }
     }
 

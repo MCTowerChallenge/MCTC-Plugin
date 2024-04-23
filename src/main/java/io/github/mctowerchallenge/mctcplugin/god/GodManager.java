@@ -2,6 +2,7 @@ package io.github.mctowerchallenge.mctcplugin.god;
 
 import io.github.mctowerchallenge.mctcplugin.GameFlowManager;
 import io.github.mctowerchallenge.mctcplugin.eventspecific.jan2024.quests.Jan2024QuestManager;
+import io.github.mctowerchallenge.mctcplugin.eventspecific.may2024.quests.May2024QuestManager;
 import io.github.mctowerchallenge.mctcplugin.god.godgui.GodGui;
 import io.github.mctowerchallenge.mctcplugin.magic.MagicItems;
 import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
@@ -30,9 +31,9 @@ public class GodManager {
      * @param magicItems          The manager for magical items.
      * @param portalControllers   The manager for portal controllers.
      */
-    public GodManager(JavaPlugin plugin, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, Jan2024QuestManager jan2024QuestManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
+    public GodManager(JavaPlugin plugin, GameFlowManager gameFlowManager, CustomBlockManager customBlockManager, QuestManager questManager, May2024QuestManager may2024QuestManager, TeamManager teamManager, MagicItems magicItems, PortalControllers portalControllers) {
         TeleportHistoryManager teleportHistoryManager = new TeleportHistoryManager(plugin, this);
-        godGui = new GodGui(plugin, this, gameFlowManager, customBlockManager, questManager, jan2024QuestManager, teleportHistoryManager, teamManager, magicItems, portalControllers);
+        godGui = new GodGui(plugin, this, gameFlowManager, customBlockManager, questManager, may2024QuestManager, teleportHistoryManager, teamManager, magicItems, portalControllers);
 
         GodMenuCommand command = new GodMenuCommand(this);
         Bukkit.getPluginCommand("godmenu").setExecutor(command);

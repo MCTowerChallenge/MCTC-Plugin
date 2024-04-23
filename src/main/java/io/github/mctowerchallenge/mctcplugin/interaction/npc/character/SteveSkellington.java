@@ -52,17 +52,17 @@ public class SteveSkellington extends QuestCharacter {
 
         eventStartDialogue.append(new Dialogue(plugin, playerThoughts("I should go talk to steve and see if there's anything I can help out with."), 4.5d));
 
-        Dialogue steveStartDialogue = new Dialogue(plugin, formatMessage(Component.text("Oh hey, we have a ")
-                .append(Component.text("big").decorate(TextDecoration.ITALIC))
-                .append(Component.text(" issue..."))), 4.128)
-                .setSoundKey(MCTCPlugin.key("steve.jan2024.quest1"));
-        steveStartDialogue.append(new Dialogue(plugin, formatMessage("The mechanism that moves the ball up and down seems to have, uhhh, broken."), 5.874d));
-        steveStartDialogue.append(new Dialogue(plugin, formatMessage("And I'm worried that the person we hired won't get it fixed in time!"), 5.691d));
-        steveStartDialogue.append(new Dialogue(plugin, formatMessage("Can you go see Generic Maintenance Man and help him get this fixed in time for the ball drop?"), 7.506)
-                .setSoundKey(MCTCPlugin.key("steve.jan2024.quest2")));
+//        Dialogue steveStartDialogue = new Dialogue(plugin, formatMessage(Component.text("Oh hey, we have a ")
+//                .append(Component.text("big").decorate(TextDecoration.ITALIC))
+//                .append(Component.text(" issue..."))), 4.128)
+//                .setSoundKey(MCTCPlugin.key("steve.jan2024.quest1"));
+//        steveStartDialogue.append(new Dialogue(plugin, formatMessage("The mechanism that moves the ball up and down seems to have, uhhh, broken."), 5.874d));
+//        steveStartDialogue.append(new Dialogue(plugin, formatMessage("And I'm worried that the person we hired won't get it fixed in time!"), 5.691d));
+//        steveStartDialogue.append(new Dialogue(plugin, formatMessage("Can you go see Generic Maintenance Man and help him get this fixed in time for the ball drop?"), 7.506)
+//                .setSoundKey(MCTCPlugin.key("steve.jan2024.quest2")));
 
-        Dialogue steveIdleDialogue = new Dialogue(plugin, formatMessage("Thank you so much for helping to get the ball fixed!"), 5.0d)
-                .setSoundKey(MCTCPlugin.key("steve.jan2024.questidle"));
+//        Dialogue steveIdleDialogue = new Dialogue(plugin, formatMessage("Thank you so much for helping to get the ball fixed!"), 5.0d)
+//                .setSoundKey(MCTCPlugin.key("steve.jan2024.questidle"));
 
         ballDropDialogue = new Dialogue(plugin, TextUtil.formatText("* Announcement Sound"), 3.0d)
                 .setSoundKey(MCTCPlugin.key("bell"));
@@ -72,27 +72,25 @@ public class SteveSkellington extends QuestCharacter {
         ballDropDialogue.append(new Dialogue(plugin, formatMessage("I hope you all enjoy!"), 3.5d));
 
 
-        setDefaultInteractionHandler((team, npcRightClickEvent) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                steveIdleDialogue.play(team, () -> team.setInDialogue(false));
-            }
-        });
-
-        addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, npcRightClickEvent) -> {
-        });
-        addQuestInteractionHandler(QuestTags.PERFORMANCE, (team, playerInteractEntityEvent) -> {
-        });
-        addQuestInteractionHandler(QuestTags.STEVE_START, (team, npcRightClickEvent) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                steveStartDialogue.play(team, () -> {
-                    team.setInDialogue(false);
-                    team.completeQuest(QuestTags.STEVE_START);
-                    team.setQuest(QuestTags.GEN_START);
-                });
-            }
-        });
+//        setDefaultInteractionHandler((team, npcRightClickEvent) -> {
+//            if (team.canStartDialogue()) {
+//                team.setInDialogue(true);
+//                steveIdleDialogue.play(team, () -> team.setInDialogue(false));
+//            }
+//        });
+//
+//        addQuestInteractionHandler(QuestTags.NOT_STARTED, (team, npcRightClickEvent) -> {
+//        });
+//        addQuestInteractionHandler(QuestTags.STEVE_START, (team, npcRightClickEvent) -> {
+//            if (team.canStartDialogue()) {
+//                team.setInDialogue(true);
+//                steveStartDialogue.play(team, () -> {
+//                    team.setInDialogue(false);
+//                    team.completeQuest(QuestTags.STEVE_START);
+//                    team.setQuest(QuestTags.GEN_START);
+//                });
+//            }
+//        });
 
     }
 

@@ -256,8 +256,13 @@ public class ParticipantTeam extends TowerTeam {
                     .append(Component.text(remainingEyes + " remain... ").color(Palette.PRIMARY.toTextColor()));
 
             // Send the title to your audience
-            Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
-            Bukkit.getServer().sendMessage(chatMessage);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Bukkit.getServer().playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 100, 1));
+                    Bukkit.getServer().sendMessage(chatMessage);
+                }
+            }.runTask(getPlugin());
 
             Bukkit.getServer().sendMessage(Component.text(teamManager.getRemainingPortalFrames()));
             if (teamManager.getRemainingPortalFrames() <= 0) {
