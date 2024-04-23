@@ -35,10 +35,12 @@ public class TowerRegion extends EventRegion {
 
     private final EnumMap<Material, BlockState> blocks = new EnumMap<>(Material.class);
     private final Score score;
+    private int extraScore;
 
     public TowerRegion(MCTCPlugin plugin, Location[] bounds, ParticipantTeam team, String name) {
         super(plugin, bounds, team, REGION_TAG);
         Objective objective = ChallengeManager.getScoreObjective();
+        extraScore = 0;
         if (objective != null) {
             score = objective.getScore(name);
             score.setScore(blocks.size());
@@ -46,6 +48,10 @@ public class TowerRegion extends EventRegion {
             score = null;
         }
         setFlags(getRegion());
+    }
+
+    public int getScore() {
+        return score.getScore() + extraScore;
     }
 
     @Override
@@ -112,14 +118,8 @@ public class TowerRegion extends EventRegion {
                 return true;
             }
         } else {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    getTeam().addExtraScore(1);
-                    audience.sendActionBar(TextUtil.formatText(String.format("1 point added (%d total)", getTeam().getExtraScore())));
-                } catch (SQLException e) {
-                    audience.sendActionBar(CommandUtils.errorMessage("Error updating database"));
-                }
-            });
+            extraScore++;
+            audience.sendActionBar(TextUtil.formatText(String.format("1 point added (%d total)", extraScore)));
             return false;
         }
     }
@@ -141,14 +141,8 @@ public class TowerRegion extends EventRegion {
                 score.setScore(blocks.size());
             }
         } else {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    getTeam().addExtraScore(-1);
-                    audience.sendActionBar(TextUtil.formatText(String.format("1 point removed (%d total)", getTeam().getExtraScore())));
-                } catch (SQLException e) {
-                    audience.sendActionBar(CommandUtils.errorMessage("Error updating database"));
-                }
-            });
+            extraScore--;
+            audience.sendActionBar(TextUtil.formatText(String.format("1 point removed (%d total)", extraScore)));
         }
     }
 

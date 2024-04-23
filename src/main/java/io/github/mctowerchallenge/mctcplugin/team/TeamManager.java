@@ -294,28 +294,6 @@ public class TeamManager implements Listener {
     }
 
     /**
-     * Adds extra score to a participant team.
-     *
-     * @param team  The participant team to add score to.
-     * @param score The amount of score to add.
-     * @throws SQLException if a SQL error occurs.
-     */
-    public void addExtraScore(ParticipantTeam team, int score) throws SQLException {
-        database.addTeamScore(team, score);
-    }
-
-    /**
-     * Gets the extra score of a participant team.
-     *
-     * @param participantTeam The participant team to get the extra score of.
-     * @return The extra score of the participant team.
-     * @throws SQLException if a SQL error occurs.
-     */
-    public int getExtraScore(ParticipantTeam participantTeam) throws SQLException {
-        return database.getTeamScore(participantTeam);
-    }
-
-    /**
      * Grabs all team scores from the scoreboard and database
      * and displays them in chat to the given audience.
      *
@@ -323,20 +301,9 @@ public class TeamManager implements Listener {
      */
     public void showTowerScores(Audience audience) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Map<Integer, Integer> addedScores = new HashMap<>();
-            try {
-                addedScores.putAll(database.getAddedScores());
-            } catch (SQLException e) {
-                Bukkit.getLogger().warning("Error retrieving added team scores");
-            }
             Map<Integer, Integer> totalScores = new HashMap<>();
-            Objective objective = ChallengeManager.getScoreObjective();
             for (ParticipantTeam team : getParticipantTeams()) {
-                int score = objective.getScore(team.getTextName()).getScore();
-                if (addedScores.containsKey(team.getDatabaseId())) {
-                    score += addedScores.get(team.getDatabaseId());
-                }
-                totalScores.put(team.getDatabaseId(), score);
+                totalScores.put(team.getDatabaseId(), team.getScore());
             }
 
             List<ParticipantTeam> sortedTeams = getParticipantTeams();
