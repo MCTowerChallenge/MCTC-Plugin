@@ -248,7 +248,7 @@ public class ParticipantTeam extends TowerTeam {
                 }
             }.runTask(getPlugin());
 
-            Bukkit.getServer().sendMessage(Component.text(teamManager.getRemainingPortalFrames()));
+//            Bukkit.getServer().sendMessage(Component.text(teamManager.getRemainingPortalFrames()));
             if (teamManager.getRemainingPortalFrames() <= 0) {
                 new BukkitRunnable() {
                     @Override

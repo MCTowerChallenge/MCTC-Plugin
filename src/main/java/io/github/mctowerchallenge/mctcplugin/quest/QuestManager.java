@@ -52,7 +52,7 @@ public class QuestManager implements Listener {
         quests.put(QuestTags.GENERIC_BEE_CONSERVATIONIST_START, genericBeeConservationistManStart);
 
         Quest collectNests = new Quest(plugin, QuestTags.COLLECT_NESTS, "Get Bee Nests");
-        collectNests.setDescription("Bring 5 bee nests to Generic Conservationist Man.");
+        collectNests.setDescription("Bring 5 bee nests to Generic Bee Conservationist Man.");
         quests.put(QuestTags.COLLECT_NESTS, collectNests);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);

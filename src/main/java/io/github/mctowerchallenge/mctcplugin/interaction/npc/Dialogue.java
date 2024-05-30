@@ -2,6 +2,8 @@ package io.github.mctowerchallenge.mctcplugin.interaction.npc;
 
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
 import io.github.mystievous.mysticore.TextUtil;
+import io.github.mystievous.mystimer.Timer;
+import io.github.mystievous.mystimer.exception.TimerUnsetException;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -11,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,7 +175,7 @@ public class Dialogue {
      *
      * @param message      The component to append.
      * @param delaySeconds The delay in seconds after appending the dialogue to play the one after it.
-     * @return The appended dialogue.
+     * @return This same dialogue.
      */
     public Dialogue append(Component message, double delaySeconds) {
         Dialogue dialogue = new Dialogue(this.plugin, message, delaySeconds);
@@ -191,8 +194,9 @@ public class Dialogue {
      * @param message      The component to append.
      * @param delaySeconds The delay in seconds after appending the dialogue to play the one after it.
      * @param soundKey     The sound key to play with this dialogue.
+     * @return This same dialogue.
      */
-    public void append(Component message, double delaySeconds, Key soundKey) {
+    public Dialogue append(Component message, double delaySeconds, Key soundKey) {
         Dialogue dialogue = new Dialogue(this.plugin, message, delaySeconds);
         dialogue.setSoundKey(soundKey);
         if (next != null) {
@@ -201,6 +205,7 @@ public class Dialogue {
             dialogue.setPrevious(this);
             setNext(dialogue);
         }
+        return this;
     }
 
     /**
@@ -259,7 +264,8 @@ public class Dialogue {
         if (sound != null) {
             audience.playSound(sound);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+        Timer timer = new Timer(plugin, Duration.ofSeconds(delayTicks / 20), 2L);
+        timer.registerEndAction(timer1 -> {
             if (next != null) {
                 if (audience instanceof TowerTeam team && team.shouldStopDialogue()) {
                     team.setInDialogue(false);
@@ -269,10 +275,16 @@ public class Dialogue {
                 next.play(audience, callback);
             } else {
                 if (callback != null) {
-                    callback.run();
+                    Bukkit.getScheduler().runTask(plugin, callback);
                 }
             }
-        }, delayTicks);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, timer1::cancel, 1);
+        });
+        try {
+            timer.startTimer();
+        } catch (TimerUnsetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -11,6 +11,7 @@ import io.github.mctowerchallenge.mctcplugin.quest.QuestManager;
 import io.github.mctowerchallenge.mctcplugin.team.ParticipantTeam;
 import io.github.mctowerchallenge.mctcplugin.team.TeamManager;
 import io.github.mctowerchallenge.mctcplugin.team.TowerTeam;
+import io.github.mctowerchallenge.mctcplugin.towering.WinnersGUI;
 import io.github.mystievous.mysticore.Palette;
 import io.github.mystievous.mysticore.TextUtil;
 import io.github.mystievous.mystigui.GuiHeldItem;
@@ -248,8 +249,8 @@ public class GodGui extends PresetGui implements Openable {
 
             questGui.placeElement(3, 6, endIntermissionElement);
 
-            Element yellowWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.YELLOW_STAINED_GLASS_PANE, 0));
-            Element blackWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.BLACK_STAINED_GLASS_PANE, 0));
+            Element yellowWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL SET AND ANNOUNCE WINNERS !!!", Material.YELLOW_STAINED_GLASS_PANE, 0));
+            Element blackWarn = new Element(GuiUtil.formatItem("!!! WARNING !!! THIS WILL SET AND ANNOUNCE WINNERS !!!", Material.BLACK_STAINED_GLASS_PANE, 0));
 
 //            Element startPositions = new ButtonElement(GuiUtil.formatItem("Load Start Positions", Material.OBSIDIAN, 0), player1 -> {
 //                jan2024QuestManager.loadStartPositions();
@@ -258,20 +259,20 @@ public class GodGui extends PresetGui implements Openable {
 //                jan2024QuestManager.loadPerformPositions();
 //            });
 
-//            Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL TRIGGER SEQUENCE AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
-//                new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
-//                    new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
-//                        gameFlowManager.triggerWinners(team);
-//                    }, HumanEntity::closeInventory).openInventory(player2);
-//                }, Element.blank()).openInventory(player1);
-//            });
+            Element winners = new ButtonElement(GuiUtil.formatItem("!!! WARNING !!! THIS WILL SET AND ANNOUNCE WINNERS !!!", Material.LEATHER_HORSE_ARMOR, 800), player1 -> {
+                new TeamGui(plugin, Component.text("Pick the team to be the *WINNERS*"), team -> new ArrayList<>(), teamManager.getAllTeams(), (player2, team) -> {
+                    new ConfirmationGUI(plugin, Component.text("Confirm ").append(team.getDisplayName()).append(Component.text(" as the winners?")), confirmPlayer -> {
+                        new WinnersGUI(plugin, teamManager, Element.blank()).openInventory(confirmPlayer);
+                    }, HumanEntity::closeInventory).openInventory(player2);
+                }, Element.blank()).openInventory(player1);
+            });
 
             questGui.placeElement(1, 7, yellowWarn);
             questGui.placeElement(2, 7, blackWarn);
             questGui.placeElement(3, 7, yellowWarn);
 //            questGui.placeElement(1, 8, startPositions);
 //            questGui.placeElement(3, 8, performPositions);
-//            questGui.placeElement(2, 9, winners);
+            questGui.placeElement(2, 9, winners);
 
             questGui.openInventory(player);
         });

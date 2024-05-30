@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class SpawnCompass implements Listener {
 
-    public static final Location OVERWORLD_LOCATION = new Location(Worlds.May2024(), 588, 65, 408);
+    public static final Location OVERWORLD_LOCATION = new Location(Worlds.May2024(), 588, 66, 408);
     public static final Location NETHER_LOCATION = TowerListener.netherPortalLocation;
     public static final Location THE_END_LOCATION = new Location(Worlds.THE_END(), 0.0d, 0.0d, 0.0d);
 
@@ -107,7 +107,7 @@ public class SpawnCompass implements Listener {
     public static ItemStack getCompass(@Nullable TowerTeam team, @Nullable Player player) {
         ItemStack item = new ItemStack(Material.COMPASS);
         CompassMeta meta = (CompassMeta) item.getItemMeta();
-        meta.displayName(Component.text("home home"));
+        meta.displayName(Component.text("There's no place like home."));
         meta.lore(new ArrayList<>() {{
             add(Component.keybind("key.use")
                     .append(Component.text(" to point home :)"))

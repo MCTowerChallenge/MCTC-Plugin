@@ -62,6 +62,13 @@ public class May2024QuestManager implements Listener, Openable {
             {new Location(Worlds.May2024(), 581, 55, 416), new Location(Worlds.May2024(), 584, 57, 416)}
     };
 
+    public static final Location[] BEE_HIVES = new Location[]{
+            new Location(Worlds.May2024_quest(), 23, 67, -21),
+            new Location(Worlds.May2024_quest(), 23, 73, -20),
+            new Location(Worlds.May2024_quest(), 23, 68, -23),
+            new Location(Worlds.May2024_quest(), 21, 75, -23)
+    };
+
     public static final String ENTER_PORTAL_NAME = "May2024_toQuest";
     public static final Location TEMPLATE_ENTER_LOCATION = new Location(Worlds.May2024_quest(), 12.6, 65.0, -16.85, -100.0f, 6.2f);
 

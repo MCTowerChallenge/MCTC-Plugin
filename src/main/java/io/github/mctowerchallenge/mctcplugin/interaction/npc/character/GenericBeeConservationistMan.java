@@ -27,39 +27,110 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
 public class GenericBeeConservationistMan extends QuestCharacter {
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public static final CommandSender sender = Bukkit.createCommandSender(component -> {
     });
 
     public static final String NAME = "Generic Bee Conservationist Man";
-    public static final Color NAME_COLOR = new Color(0x003FD4);
-    public static final Color TEXT_COLOR = new Color(0x0036A4);
+    public static final Color NAME_COLOR = new Color(0x0084d4);
+    public static final Color TEXT_COLOR = new Color(0x006fa4);
     public static final String TRAIT_NAME = "genericbeeconservationistman";
 
     public GenericBeeConservationistMan(Plugin plugin) {
         super(plugin, EntityType.VILLAGER, NAME, NAME_COLOR, TEXT_COLOR);
 
-        Dialogue genericBeeConservationistManStartDialogue = new Dialogue(plugin, formatMessage(Component.text("Bring 5 bee nests pls \uD83D\uDC49\uD83D\uDC48")), 2.0d);
+        Dialogue startLine1 = new Dialogue(plugin, formatMessage(Component.text("I just can't bee-lieve that all the wonderful bees vanished!")), 6.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.start_quest.line_1.3"));
 
-        Dialogue genericBeeConservationistManIdleDialogue = new Dialogue(plugin, formatMessage(Component.text("bees")), 2.0d);
+        Dialogue startLine5 = new Dialogue(plugin, formatMessage(Component.text("I told everyone we didn't appreciate our buzzing friends enough.")), 4.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.start_quest.line_5.2"));
+        startLine1.setNext(startLine5);
 
-        Dialogue collectNestsCompleteDialogue = new Dialogue(plugin, formatMessage(Component.text("Thanks, go in now")), 2.0d);
+        Dialogue startLine2 = new Dialogue(plugin, formatMessage(Component.text("If only I had more abandoned beehives to research, maybe I could figure out where they went.")), 7.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.start_quest.line_2.1"));
+        startLine5.setNext(startLine2);
 
-        setDefaultInteractionHandler((team, npcRightClickEvent) -> {
-            if (team.canStartDialogue()) {
-                team.setInDialogue(true);
-                genericBeeConservationistManIdleDialogue.play(team, () -> team.setInDialogue(false));
-            }
-        });
+        Dialogue startLine3 = new Dialogue(plugin, formatMessage(Component.text("Oh, hey you!")), 1.75d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.start_quest.line_3.2"));
+        startLine2.setNext(startLine3);
+
+        Dialogue startLine4 = new Dialogue(plugin, formatMessage(Component.text("Can you get me some beehives while you're out exploring?")), 4.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.start_quest.line_4.1"));
+        startLine3.setNext(startLine4);
+
+
+        Dialogue collectIdleLine1 = new Dialogue(plugin, formatMessage(Component.text("Yeah I know Generic Maintenance Man, he's my cousin.")), 4.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.collect_idle.line_1.2"));
+
+        Dialogue collectIdleLine2 = new Dialogue(plugin, formatMessage(Component.text("How dare you say I am just like him, that is a deeply offensive stereotype.")), 7.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.collect_idle.line_2.2"));
+        collectIdleLine1.setNext(collectIdleLine2);
+
+        Dialogue collectIdleLine3 = new Dialogue(plugin, formatMessage(Component.text("We are absolutely nothing alike! Now go get me those beehives, buzz off.")), 5.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.collect_idle.line_3.2"));
+        collectIdleLine2.setNext(collectIdleLine3);
+
+
+        Dialogue giveHivesLine1 = new Dialogue(plugin, formatMessage(Component.text("Finally, that took you long enough!")), 3.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_1.1"));
+
+        Dialogue giveHivesLine2 = new Dialogue(plugin, formatMessage(Component.text("Don't you know bees are important here?")), 3.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_2.2"));
+        giveHivesLine1.setNext(giveHivesLine2);
+
+        Dialogue giveHivesLine3 = new Dialogue(plugin, formatMessage(Component.text("Anyway... While you were off collecting blocks for the \"competition\", I've been doing research.")), 7.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_3.1"));
+        giveHivesLine2.setNext(giveHivesLine3);
+
+        Dialogue giveHivesLine4 = new Dialogue(plugin, formatMessage(Component.text("Y'know...")), 1d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_4.1"));
+        giveHivesLine3.setNext(giveHivesLine4);
+
+        Dialogue giveHivesLine5 = new Dialogue(plugin, formatMessage(Component.text("Helpful shit...")), 1.75d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_5.1"));
+        giveHivesLine4.setNext(giveHivesLine5);
+
+        Dialogue giveHivesLine6 = new Dialogue(plugin, formatMessage(Component.text("That people care about...")), 1.90d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_6.1"));
+        giveHivesLine5.setNext(giveHivesLine6);
+
+        Dialogue giveHivesLine7 = new Dialogue(plugin, formatMessage(Component.text("That matters... that, I don't know, might save the day someday.")), 6.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_7.1"));
+        giveHivesLine6.setNext(giveHivesLine7);
+
+        Dialogue giveHivesLine8 = new Dialogue(plugin, formatMessage(Component.text("Anyways...")), 1.1d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_8.1"));
+        giveHivesLine7.setNext(giveHivesLine8);
+
+        Dialogue giveHivesLine9 = new Dialogue(plugin, formatMessage(Component.text("I found that the bees left to go live in a world of their own making, where they would not get taken for granted.")), 7.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_9.2"));
+        giveHivesLine8.setNext(giveHivesLine9);
+
+        Dialogue giveHivesLine10 = new Dialogue(plugin, formatMessage(Component.text("With these last 5 hives, I should be able to open a portal to their world.")), 6.0d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_10.2"));
+        giveHivesLine9.setNext(giveHivesLine10);
+
+        Dialogue giveHivesLine11 = new Dialogue(plugin, formatMessage(Component.text("Get the fuck in there, apologise. Get- Y'know let them know they're loved, let them know they're appreciated. Bring 'em home. We miss them.")), 7.5d)
+                .setSoundKey(MCTCPlugin.key("genericbeeconservationistman.may2024.give_bee_hives.line_11.2"));
+        giveHivesLine10.setNext(giveHivesLine11);
+
+        Dialogue[] finishedIdle = new Dialogue[]{
+                new Dialogue(plugin, formatMessage(Component.text("What're you doing sitting talking to me for? Get a move on already!")), 4.5d),
+                new Dialogue(plugin, formatMessage(Component.text("The fuck are you still doing here? Buzz off! I'm doing research here!")), 5.5d),
+                new Dialogue(plugin, formatMessage(Component.text("Ey! I'm researching here! Get a move on!")), 4.5d),
+        };
 
         addQuestInteractionHandler(QuestTags.GENERIC_BEE_CONSERVATIONIST_START, (team, npcRightClickEvent) -> {
             if (team.canStartDialogue()) {
                 team.setInDialogue(true);
-                genericBeeConservationistManStartDialogue.play(team, () -> {
+                startLine1.play(team, () -> {
                     team.setInDialogue(false);
                     boolean completed = team.completeQuest(QuestTags.GENERIC_BEE_CONSERVATIONIST_START);
                     if (completed) {
@@ -72,10 +143,14 @@ public class GenericBeeConservationistMan extends QuestCharacter {
         addQuestInteractionHandler(QuestTags.COLLECT_NESTS, (team, npcRightClickEvent) -> {
             if (team.canStartDialogue()) {
                 team.setInDialogue(true);
+                Player player = npcRightClickEvent.getClicker();
+                if (!player.getInventory().contains(Material.BEE_NEST)) {
+                    collectIdleLine1.play(team, () -> team.setInDialogue(false));
+                    return;
+                }
                 int nests = getNests(team);
                 if (nests < 5) {
                     int needed = 5 - nests;
-                    Player player = npcRightClickEvent.getClicker();
                     PlayerInventory inventory = player.getInventory();
                     HashMap<Integer, ? extends ItemStack> items = inventory.all(Material.BEE_NEST);
                     for (var entry : items.entrySet()) {
@@ -97,10 +172,10 @@ public class GenericBeeConservationistMan extends QuestCharacter {
                 nests = getNests(team);
                 if (nests < 5) {
                     int needed = 5 - nests;
-                    Dialogue moreDialogue = new Dialogue(plugin, formatMessage(Component.text("I still need " + needed + " more")), 2.0d);
+                    Dialogue moreDialogue = new Dialogue(plugin, formatMessage(Component.text("Thanks! I still need " + needed + " more nests.")), 2.0d);
                     moreDialogue.play(team, () -> team.setInDialogue(false));
                 } else {
-                    collectNestsCompleteDialogue.play(team, () -> {
+                    giveHivesLine1.play(team, () -> {
                         team.setInDialogue(false);
                         boolean completed = team.completeQuest(QuestTags.COLLECT_NESTS);
                         if (completed) {
@@ -111,6 +186,14 @@ public class GenericBeeConservationistMan extends QuestCharacter {
                 }
             }
         });
+
+        addQuestInteractionHandler(QuestTags.NO_QUEST, (team, npcRightClickEvent) -> {
+            if (team.canStartDialogue()) {
+                team.setInDialogue(true);
+                finishedIdle[RANDOM.nextInt(finishedIdle.length)].play(team, () -> team.setInDialogue(false));
+            }
+        });
+
     }
 
     public static final Location tapeLocation = new Location(Worlds.May2024(), 582, 54, 413);

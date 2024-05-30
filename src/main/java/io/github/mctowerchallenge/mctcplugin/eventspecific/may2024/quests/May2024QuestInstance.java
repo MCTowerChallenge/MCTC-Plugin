@@ -42,7 +42,13 @@ public class May2024QuestInstance extends QuestInstance implements Openable {
             }, May2024QuestManager.EXIT_LOCATION);
         }
 
-        QuestInteractRegion questRegion = new QuestInteractRegion(plugin, this, May2024QuestManager.TemplateBounds, "oct2023_quest");
+        QuestInteractRegion questRegion = new QuestInteractRegion(plugin, this, May2024QuestManager.TemplateBounds, "may2024_quest");
+
+        for (int i = 0; i < May2024QuestManager.BEE_HIVES.length; i++) {
+            Location[] bounds = new Location[]{May2024QuestManager.BEE_HIVES[i], May2024QuestManager.BEE_HIVES[i]};
+            BeeHiveRegion beeHiveRegion = new BeeHiveRegion(plugin, this, bounds, "may2024_quest_hive-" + i);
+        }
+
     }
 
     /**
