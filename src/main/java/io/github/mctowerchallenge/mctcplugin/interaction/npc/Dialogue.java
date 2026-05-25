@@ -64,10 +64,9 @@ public class Dialogue {
 
     private final Plugin plugin;
     private String friendlyName;
-    private Dialogue previous;
     private Dialogue next;
     private final Component message;
-    private final long delayTicks;
+    private final Duration delayDuration;
     private Sound sound;
 
     /**
@@ -86,7 +85,7 @@ public class Dialogue {
     public Dialogue(Plugin plugin, Component message, double delaySeconds) {
         this.plugin = plugin;
         this.message = message;
-        this.delayTicks = (long) (delaySeconds * 20L);
+        this.delayDuration = Duration.ofMillis((long)(delaySeconds * 1000));
     }
 
     /**
@@ -103,7 +102,7 @@ public class Dialogue {
     public Dialogue(Plugin plugin, Component message, double delaySeconds, Key soundKey) {
         this.plugin = plugin;
         this.message = message;
-        this.delayTicks = (long) (delaySeconds * 20L);
+        this.delayDuration = Duration.ofMillis((long)(delaySeconds * 1000));
         setSoundKey(soundKey);
     }
 
@@ -138,7 +137,7 @@ public class Dialogue {
         this.friendlyName = dialogue.friendlyName;
         this.next = dialogue.next;
         this.message = dialogue.message;
-        this.delayTicks = dialogue.delayTicks;
+        this.delayDuration = dialogue.delayDuration;
         this.sound = dialogue.sound;
     }
 
@@ -151,10 +150,6 @@ public class Dialogue {
         this.next = next;
     }
 
-    private void setPrevious(Dialogue previous) {
-        this.previous = previous;
-    }
-
     /**
      * Appends a dialogue to the end of this dialogue's sequence.
      *
@@ -164,7 +159,6 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
-            dialogue.setPrevious(this);
             setNext(dialogue);
         }
         return this;
@@ -182,7 +176,6 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
-            dialogue.setPrevious(this);
             setNext(dialogue);
         }
         return this;
@@ -202,7 +195,6 @@ public class Dialogue {
         if (next != null) {
             next.append(dialogue);
         } else {
-            dialogue.setPrevious(this);
             setNext(dialogue);
         }
         return this;
@@ -238,7 +230,7 @@ public class Dialogue {
     }
 
     /**
-     * Sets the friendly name for the dialogue and adds it to the list of dialogues.
+     * Sets the friendly name for the dialogue and registers it into the global list of dialogues.
      *
      * @param friendlyName The friendly name to set.
      */
@@ -264,7 +256,7 @@ public class Dialogue {
         if (sound != null) {
             audience.playSound(sound);
         }
-        Timer timer = new Timer(plugin, Duration.ofSeconds(delayTicks / 20), 2L);
+        Timer timer = new Timer(plugin, delayDuration, 2L);
         timer.registerEndAction(timer1 -> {
             if (next != null) {
                 if (audience instanceof TowerTeam team && team.shouldStopDialogue()) {
@@ -278,6 +270,7 @@ public class Dialogue {
                     Bukkit.getScheduler().runTask(plugin, callback);
                 }
             }
+            // Cancel the timer, otherwise it stays loaded
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, timer1::cancel, 1);
         });
         try {
